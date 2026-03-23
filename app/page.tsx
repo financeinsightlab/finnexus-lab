@@ -106,7 +106,7 @@ export default async function HomePage() {
                 bg: 'bg-purple-50',
                 delay: 300,
               },
-            ].map((pillar, i) => (
+            ].map((pillar) => (
               <ScrollReveal key={pillar.title} delay={pillar.delay}>
                 <Link href={pillar.href} className="card p-6 flex flex-col h-full group cursor-pointer">
                   <div className={`w-12 h-12 rounded-xl ${pillar.bg} flex items-center justify-center text-2xl mb-4`}>

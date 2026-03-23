@@ -1,6 +1,3 @@
-// FILE: components/ui/Tag.tsx
-import { ReactNode } from 'react';
-
 interface TagProps {
   text: string;
   variant?: 'teal' | 'navy' | 'gold' | 'green' | 'silver' | 'red';

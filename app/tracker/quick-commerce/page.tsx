@@ -68,7 +68,7 @@ export default function QuickCommerceTrackerPage() {
             </span>
           </div>
           <p className="text-xl text-gray-300 max-w-3xl mx-auto">
-            Track India's fastest-growing retail segment with comprehensive data on dark stores,
+            Track India&apos;s fastest-growing retail segment with comprehensive data on dark stores,
             order volumes, competitive dynamics, and profitability metrics.
           </p>
         </div>

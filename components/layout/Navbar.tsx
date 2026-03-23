@@ -26,10 +26,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
-
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
   const isHome = pathname === '/';
@@ -111,14 +107,23 @@ export default function Navbar() {
       >
         <div className="flex flex-col space-y-1 p-4">
           {navLinks.map((link) => (
-            <Link key={link.href} href={link.href} className={mobileLinkClasses(link.href)}>
+            <Link
+              key={link.href}
+              href={link.href}
+              className={mobileLinkClasses(link.href)}
+              onClick={() => setIsOpen(false)}
+            >
               {link.label}
             </Link>
           ))}
-          <Link href="/resume" className="block px-4 py-3 text-base font-medium text-brand-slate hover:text-brand-navy transition-colors">
+          <Link
+            href="/resume"
+            className="block px-4 py-3 text-base font-medium text-brand-slate hover:text-brand-navy transition-colors"
+            onClick={() => setIsOpen(false)}
+          >
             Resume
           </Link>
-          <Link href="/contact" className="btn btn-primary mt-4">
+          <Link href="/contact" className="btn btn-primary mt-4" onClick={() => setIsOpen(false)}>
             Work With Me
           </Link>
         </div>

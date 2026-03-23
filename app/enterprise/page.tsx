@@ -156,7 +156,7 @@ export default function EnterprisePage() {
               Enterprise Pricing Plans
             </h2>
             <p className="text-lg text-gray-600">
-              Choose the plan that fits your organization's needs and scale.
+              Choose the plan that fits your organization&apos;s needs and scale.
             </p>
           </div>
 

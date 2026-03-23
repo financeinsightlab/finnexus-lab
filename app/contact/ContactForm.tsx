@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 const SUBJECTS = [
@@ -13,23 +13,17 @@ const SUBJECTS = [
 
 export default function ContactForm() {
   const searchParams = useSearchParams();
+  const initialSubject = searchParams.get('service') ?? '';
 
   const [form, setForm] = useState({
     name: '',
     organisation: '',
     email: '',
-    subject: '',
+    subject: initialSubject,
     message: '',
   });
 
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
-
-  useEffect(() => {
-    const service = searchParams.get('service');
-    if (service) {
-      setForm((prev) => ({ ...prev, subject: service }));
-    }
-  }, [searchParams]);
 
   const update = (field: string, value: string) => {
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -49,7 +43,7 @@ export default function ContactForm() {
       });
 
       setStatus('success');
-    } catch (error) {
+    } catch {
       setStatus('error');
     }
   };

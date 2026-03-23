@@ -1,6 +1,3 @@
-// FILE: components/ui/SectionHeader.tsx
-import { ReactNode } from 'react';
-
 interface SectionHeaderProps {
   label: string;
   title: string;

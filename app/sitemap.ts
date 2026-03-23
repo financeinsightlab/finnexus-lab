@@ -5,16 +5,21 @@ import { getAllResearch, getAllInsights } from '@/lib/content';
 const BASE = 'https://finnexuslab.com'; // ⚠ REPLACE with your real domain
 
 export default function sitemap(): MetadataRoute.Sitemap {
+  const safeDate = (value: unknown) => {
+    const d = value instanceof Date ? value : new Date(typeof value === 'string' || typeof value === 'number' ? value : '');
+    return Number.isFinite(d.getTime()) ? d : new Date();
+  };
+
   const research = getAllResearch().map((post) => ({
     url: `${BASE}/research/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: safeDate(post.date),
     changeFrequency: 'monthly' as const,
     priority: 0.8,
   }));
 
   const insights = getAllInsights().map((post) => ({
     url: `${BASE}/insights/${post.slug}`,
-    lastModified: new Date(post.date),
+    lastModified: safeDate(post.date),
     changeFrequency: 'weekly' as const,
     priority: 0.7,
   }));
