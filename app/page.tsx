@@ -1,65 +1,193 @@
-import Image from "next/image";
+import Link from 'next/link';
+import SectionHeader from '@/components/ui/SectionHeader';
+import ResearchGrid from '@/components/research/ResearchGrid';
+import InsightGrid from '@/components/insights/InsightGrid';
+import NewsletterForm from '@/components/NewsletterForm';
+import ScrollReveal from '@/components/ui/ScrollReveal';
+import { getFeaturedResearch, getFeaturedInsights } from '@/lib/content';
 
-export default function Home() {
+export default async function HomePage() {
+  const research = getFeaturedResearch(3);
+  const insights = getFeaturedInsights(3);
+
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
+    <>
+      <section className="relative min-h-screen bg-brand-navy flex items-center overflow-hidden">
+        <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-gradient-radial from-teal-500/18 to-transparent rounded-full pointer-events-none" />
+        <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-gradient-radial from-gold-500/14 to-transparent rounded-full pointer-events-none" />
+        <div
+          className="absolute inset-0 opacity-[0.035] pointer-events-none bg-grid"
         />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
+        <div className="wrap relative z-10 py-32 md:py-40">
+          <p className="section-label text-teal-300 mb-5 anim-fade">Financial Intelligence Platform</p>
+          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6 anim-fade-up">
+            Smarter Decisions{' '}
+            <span className="bg-gradient-to-r from-[#0D9E9E] to-[#92620A] bg-clip-text text-transparent">
+              Start Here.
+            </span>
           </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl leading-relaxed mb-10 anim-fade-up delay-200">
+            Institutional-quality research on Indian markets — free. Sector analysis, unit economics,
+            and strategic intelligence for investors, analysts, and founders.
           </p>
+          <div className="flex flex-wrap gap-4 anim-fade-up delay-300">
+            <Link href="/research" className="btn-white">
+              View Research →
+            </Link>
+            <Link href="/insights" className="btn-outline-white">
+              Explore Insights
+            </Link>
+          </div>
+          <div className="flex flex-wrap gap-4 mt-16 anim-fade delay-500">
+            <div className="stat-card min-w-[100px]">
+              <p className="text-2xl font-bold text-white mb-1">10+</p>
+              <p className="text-xs text-gray-400">Reports</p>
+            </div>
+            <div className="stat-card min-w-[100px]">
+              <p className="text-2xl font-bold text-white mb-1">₹1T+</p>
+              <p className="text-xs text-gray-400">Market Cap</p>
+            </div>
+            <div className="stat-card min-w-[100px]">
+              <p className="text-2xl font-bold text-white mb-1">5+</p>
+              <p className="text-xs text-gray-400">Sectors</p>
+            </div>
+            <div className="stat-card min-w-[100px]">
+              <p className="text-2xl font-bold text-white mb-1">Free</p>
+              <p className="text-xs text-gray-400">Always</p>
+            </div>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
+          <span className="text-xs text-gray-400 mb-2">SCROLL</span>
+          <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-400 to-transparent" />
+        </div>
+      </section>
+
+      <section className="py-24 bg-white">
+        <ScrollReveal>
+          <SectionHeader
+            label="What We Do"
+            title="Four Pillars of Financial Intelligence"
+            align="center"
+          />
+        </ScrollReveal>
+        <div className="wrap">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-14">
+            {[
+              {
+                icon: '📊',
+                title: 'Research Intelligence',
+                desc: 'Deep-dive reports on market trends, competitive analysis, and strategic positioning.',
+                href: '/research',
+                bg: 'bg-blue-50',
+                delay: 0,
+              },
+              {
+                icon: '📈',
+                title: 'Data Analytics',
+                desc: 'Quantitative insights with proprietary models and financial metrics.',
+                href: '/about',
+                bg: 'bg-teal-50',
+                delay: 100,
+              },
+              {
+                icon: '🧠',
+                title: 'Strategic Insights',
+                desc: 'Expert commentary on sector developments and investment opportunities.',
+                href: '/insights',
+                bg: 'bg-amber-50',
+                delay: 200,
+              },
+              {
+                icon: '🔧',
+                title: 'Financial Tools',
+                desc: 'Practical frameworks and calculators for financial analysis.',
+                href: '/tools',
+                bg: 'bg-purple-50',
+                delay: 300,
+              },
+            ].map((pillar, i) => (
+              <ScrollReveal key={pillar.title} delay={pillar.delay}>
+                <Link href={pillar.href} className="card p-6 flex flex-col h-full group cursor-pointer">
+                  <div className={`w-12 h-12 rounded-xl ${pillar.bg} flex items-center justify-center text-2xl mb-4`}>
+                    {pillar.icon}
+                  </div>
+                  <h3 className="font-bold text-brand-navy mb-2 group-hover:text-brand-teal transition-colors">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-sm text-brand-slate leading-relaxed flex-1">
+                    {pillar.desc}
+                  </p>
+                  <span className="btn-ghost mt-4 text-xs">Explore →</span>
+                </Link>
+              </ScrollReveal>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Featured Research */}
+      <section className="py-20 bg-white">
+        <div className="wrap">
+          <SectionHeader
+            label="Research"
+            title="Featured Research"
+            subtitle="Deep dives into emerging trends and market dynamics"
+            align="center"
+          />
+          <ResearchGrid posts={research} />
+        </div>
+      </section>
+
+      {/* Latest Insights */}
+      <section className="py-20 bg-brand-slate/5">
+        <div className="wrap">
+          <SectionHeader
+            label="Insights"
+            title="Latest Insights"
+            subtitle="Timely analysis and market intelligence"
+            align="center"
+          />
+          <InsightGrid posts={insights} />
+        </div>
+      </section>
+
+      {/* Services CTA */}
+      <section className="py-20 bg-gradient-to-r from-brand-navy to-brand-slate text-white">
+        <div className="wrap text-center">
+          <ScrollReveal>
+            <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Financial Intelligence?</h2>
+            <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+              Access our comprehensive suite of research tools, data analytics, and expert insights to stay ahead in the financial markets.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <Link href="/services" className="btn-primary">
+                Explore Services
+              </Link>
+              <Link href="/contact" className="btn-ghost">
+                Get in Touch
+              </Link>
+            </div>
+          </ScrollReveal>
+        </div>
+      </section>
+
+      {/* Newsletter */}
+      <section className="py-20 bg-white">
+        <div className="wrap">
+          <div className="max-w-2xl mx-auto text-center">
+            <SectionHeader
+              label="Stay Updated"
+              title="Subscribe to Our Newsletter"
+              subtitle="Get the latest research, insights, and market analysis delivered to your inbox"
+              align="center"
             />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+            <ScrollReveal delay={200}>
+              <NewsletterForm />
+            </ScrollReveal>
+          </div>
         </div>
-      </main>
-    </div>
+      </section>
+    </>
   );
 }
