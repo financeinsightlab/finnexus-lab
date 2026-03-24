@@ -60,22 +60,25 @@ function ThemeToggle({ inverted }: { inverted?: boolean }) {
   );
 }
 
+/** Single-path magnifier (reads as one icon, not icon + separate mark) */
 function SearchIcon({ className }: { className?: string }) {
   return (
     <svg
       className={className}
-      width="20"
-      height="20"
+      width="18"
+      height="18"
       viewBox="0 0 24 24"
       fill="none"
-      stroke="currentColor"
-      strokeWidth="2.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
+      xmlns="http://www.w3.org/2000/svg"
       aria-hidden="true"
     >
-      <circle cx="11" cy="11" r="7" />
-      <path d="M20 20l-4.3-4.3" />
+      <path
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M21 21l-5.2-5.2m2.2-5.3a7.5 7.5 0 11-15 0 7.5 7.5 0 0115 0z"
+      />
     </svg>
   );
 }
@@ -139,9 +142,10 @@ export default function Navbar() {
     return `${base} text-brand-slate hover:bg-gray-50 active:bg-gray-100`;
   };
 
+  /* Fixed width + no ⌘K badge at xl → stops layout “jump” on resize. Icon + label only. */
   const searchBtnDesktopClass = isHeroTransparent
-    ? 'inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white bg-white/15 border border-white/25 shadow-sm backdrop-blur-md hover:bg-white/25 active:scale-[0.98] transition-all focus-ring min-h-[44px]'
-    : 'inline-flex items-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white bg-brand-navy border border-brand-navy/20 shadow-md hover:bg-brand-teal hover:border-brand-teal active:scale-[0.98] transition-all focus-ring min-h-[44px]';
+    ? 'hidden md:inline-flex shrink-0 items-center justify-center gap-2 h-10 w-[118px] rounded-full text-sm font-semibold text-white bg-white/20 border border-white/35 backdrop-blur-sm hover:bg-white/30 transition-colors duration-150 focus-ring'
+    : 'hidden md:inline-flex shrink-0 items-center justify-center gap-2 h-10 w-[118px] rounded-full text-sm font-semibold text-brand-navy bg-white border border-gray-200 shadow-sm hover:border-brand-teal hover:text-brand-teal dark:bg-gray-900 dark:text-gray-100 dark:border-gray-600 dark:hover:border-brand-teal transition-colors duration-150 focus-ring';
 
   const searchBtnMobileClass = isHeroTransparent
     ? 'min-h-[44px] min-w-[44px] inline-flex items-center justify-center rounded-full text-white bg-white/15 border border-white/25 backdrop-blur-md hover:bg-white/25 active:scale-95 transition-all focus-ring'
@@ -192,14 +196,12 @@ export default function Navbar() {
             <button
               type="button"
               onClick={openSearch}
-              className={`hidden md:inline-flex ${searchBtnDesktopClass}`}
+              className={searchBtnDesktopClass}
               aria-label="Open search"
+              title="Search — Ctrl+K or ⌘K"
             >
-              <SearchIcon className="shrink-0 opacity-95" />
-              <span>Search</span>
-              <kbd className="hidden xl:inline-flex items-center gap-0.5 rounded-md bg-black/20 px-1.5 py-0.5 text-[10px] font-mono font-medium opacity-90">
-                ⌘K
-              </kbd>
+              <SearchIcon className="shrink-0 pointer-events-none" />
+              <span className="whitespace-nowrap leading-none">Search</span>
             </button>
 
             <button
