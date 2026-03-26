@@ -15,14 +15,19 @@ if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+
+  debug: true, // ✅ ADDED (DO NOT REMOVE)
+
   session: {
     strategy: "jwt",
   },
+
   providers: [
     Google({
       clientId: process.env.GOOGLE_CLIENT_ID!,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
     }),
+
     Credentials({
       name: "credentials",
       credentials: {
@@ -41,10 +46,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         if (!user || !user.password) return null
 
-        const isValid = await bcryptjs.compare(
-          password,
-          user.password
-        )
+        const isValid = await bcryptjs.compare(password, user.password)
 
         if (!isValid) return null
 
@@ -52,6 +54,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+
   callbacks: {
     async jwt({ token, user }) {
       if (user) {
@@ -68,6 +71,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       }
       return token
     },
+
     async session({ session, token }) {
       if (session.user) {
         type TokenData = {
@@ -84,8 +88,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       return session
     },
   },
+
   pages: {
     signIn: "/auth/signin",
     error: "/auth/error",
+  },
+
+  events: {
+    async signIn(message) {
+      console.log("SIGN IN EVENT:", message)
+    },
   },
 })
