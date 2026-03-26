@@ -5,7 +5,7 @@ import Footer from "@/components/layout/Footer";
 import { GoogleAnalytics } from '@next/third-parties/google';
 import Analytics from '@/components/ui/Analytics';
 import Providers from '@/components/ThemeProvider'
-import { SessionProvider } from "next-auth/react";
+import AuthProvider from "@/components/providers/AuthProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -60,12 +60,12 @@ export default function RootLayout({
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
   <body className="min-h-screen flex flex-col bg-white">
     <Providers>
-      <SessionProvider>
+  <AuthProvider>
         <Navbar />
         <Analytics />
         <main className="flex-1">{children}</main>
         <Footer />
-      </SessionProvider>
+      </AuthProvider>
     </Providers>
   </body>
 
