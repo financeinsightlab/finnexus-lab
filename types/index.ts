@@ -10,6 +10,7 @@ export interface ResearchPost {
   featured: boolean;
   coverImage?: string;
   content?: string;
+  readingTime?: string;
 }
 
 export interface InsightPost {

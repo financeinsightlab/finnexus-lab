@@ -1,0 +1,132 @@
+﻿
+> finnexus-lab@0.1.0 build
+> prisma generate && npm run index && next build
+
+Environment variables loaded from .env
+Prisma schema loaded from prisma\schema.prisma
+
+Γ£ö Generated Prisma Client (v5.22.0) to .\node_modules\@prisma\client in 174ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+
+> finnexus-lab@0.1.0 index
+> ts-node --skip-project --esm scripts/algolia-index.ts
+
+[dotenv@17.3.1] injecting env (11) from .env.local -- tip: ΓÜÖ∩╕Å  enable debug logging with { debug: true }
+≡ƒÜÇ Starting Algolia indexing...
+≡ƒôª Preparing 2 records...
+node.exe : (node:9520) 
+[DEP0180] 
+DeprecationWarning: 
+fs.Stats constructor is 
+deprecated.
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~
+    + CategoryInfo         
+     : NotSpecified: ((no  
+  de:9520) [DE... is dep   
+ recated.:String) [], R    
+emoteException
+    + FullyQualifiedErrorI 
+   d : NativeCommandError
+ 
+(Use `node 
+--trace-deprecation ...` 
+to show where the warning 
+was created)
+Γ£à Indexed 2 records successfully.
+Γû▓ Next.js 16.2.1 (Turbopack)
+- Environments: .env.local, .env
+
+  Creating an optimized production build ...
+Γ£ô Compiled successfully in 13.0s
+  Running TypeScript ...
+  Finished TypeScript in 11.1s ...
+  Collecting page data using 7 workers ...
+ΓÜá Using edge runtime on 
+a page currently disables 
+static generation for that 
+page
+  Generating static pages using 7 workers (0/41) ...
+  Generating static pages using 7 workers (10/41) 
+  Generating static pages using 7 workers (20/41) 
+(node:14768) [DEP0169] 
+DeprecationWarning: 
+`url.parse()` behavior is 
+not standardized and prone 
+to errors that have 
+security implications. Use 
+the WHATWG URL API 
+instead. CVEs are not 
+issued for `url.parse()` 
+vulnerabilities.
+(Use `node 
+--trace-deprecation ...` 
+to show where the warning 
+was created)
+  Generating static pages using 7 workers (30/41) 
+Γ£ô Generating static pages using 7 workers (41/41) in 1759ms
+  Finalizing page optimization ...
+
+Route (app)
+Γöî Γùï /
+Γö£ Γùï /_not-found
+Γö£ Γùï /about
+Γö£ ╞Æ /admin/users
+Γö£ ╞Æ /api/admin/make-pro
+Γö£ ╞Æ /api/auth/[...nextauth]
+Γö£ ╞Æ /api/auth/register
+Γö£ ╞Æ /api/contact
+Γö£ ╞Æ /api/insights
+Γö£ ╞Æ /api/research
+Γö£ ╞Æ /api/saved
+Γö£ ╞Æ /api/subscribe
+Γö£ ╞Æ /api/user
+Γö£ Γùï /auth/error
+Γö£ Γùï /auth/signin
+Γö£ Γùï /case-studies
+Γö£ ΓùÅ /case-studies/[slug]
+Γöé Γöö /case-studies/india-qcommerce-market-entry
+Γö£ Γùï /contact
+Γö£ ╞Æ /dashboard
+Γö£ Γùï /dashboard/edit
+Γö£ Γùï /data-lab
+Γö£ ΓùÅ /data-lab/[slug]
+Γöé Γö£ /data-lab/qcommerce-unit-economics-model
+Γöé Γöö /data-lab/india-startup-funding-analysis
+Γö£ Γùï /enterprise
+Γö£ Γùï /insights
+Γö£ ΓùÅ /insights/[slug]
+Γöé Γöö /insights/why-blinkit-ebitda-matters
+Γö£ Γùï /manifest.webmanifest
+Γö£ ╞Æ /opengraph-image
+Γö£ Γùï /podcast
+Γö£ ΓùÅ /podcast/[slug]
+Γöé Γöö /podcast/ep001-blinkit-ebitda-breakdown
+Γö£ Γùï /pricing
+Γö£ Γùï /research
+Γö£ ΓùÅ /research/[slug]
+Γöé Γöö /research/india-quick-commerce-2026
+Γö£ Γùï /resume
+Γö£ Γùï /robots.txt
+Γö£ Γùï /services
+Γö£ Γùï /sitemap.xml
+Γö£ Γùï /speaking
+Γö£ Γùï /tools
+Γö£ Γùï /tracker
+Γöö Γùï /tracker/quick-commerce
+
+
+Γùï  (Static)   prerendered as static content
+ΓùÅ  (SSG)      prerendered as static HTML (uses generateStaticParams)
+╞Æ  (Dynamic)  server-rendered on demand
+

@@ -2,6 +2,12 @@ import { PrismaClient } from "@prisma/client"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import React from "react"
+import type { Metadata } from "next"
+
+export const metadata: Metadata = {
+  title: "Manage Users | Admin Panel",
+  description: "User management and analytics for FinNexus Lab.",
+}
 
 const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined

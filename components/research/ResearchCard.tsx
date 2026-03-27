@@ -13,7 +13,9 @@ export default function ResearchCard({ post }: ResearchCardProps) {
     <article className="research-card p-6 flex flex-col h-full">
       <div className="flex justify-between gap-3 mb-3">
         <Tag text={post.sector} />
-        <span className="text-[11px] text-gray-400 font-mono">{post.pageCount}p</span>
+        <span className="text-[11px] text-gray-400 font-mono">
+          {post.pageCount}p {post.readingTime && `· ${post.readingTime}`}
+        </span>
       </div>
       <h2 className="text-lg font-bold text-brand-navy leading-snug mb-2 line-clamp-2 hover:text-brand-teal transition-colors">
         {post.title}

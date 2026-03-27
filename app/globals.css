@@ -375,3 +375,11 @@ section {
 aside[aria-label="Mobile navigation"] {
   transition: transform 300ms cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
+
+/* ─── PROSE BRAND EXTENSIONS ───────────────────────────────────────────────
+   Styles applied when .prose-brand is used in report / article bodies.
+──────────────────────────────────────────────────────────────────────────── */
+.prose-brand .powerbi-embed {
+  width: 100%;
+  margin: 2rem 0;
+}

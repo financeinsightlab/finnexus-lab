@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import Tag from '@/components/ui/Tag';
+import SaveButton from '@/components/ui/SaveButton';
 import ResearchCard from '@/components/research/ResearchCard';
 import { formatDate } from '@/lib/utils';
 import { getResearchBySlug, getAllResearch, getRelatedResearch } from '@/lib/content';
@@ -83,9 +84,15 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
           <Tag text={post.sector} variant="teal" />
 
           {/* Title */}
-          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-5">
+          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-3">
             {post.title}
           </h1>
+          
+          {post.readingTime && (
+            <p className="text-sm text-teal-200 mb-5 font-medium flex items-center gap-1.5">
+              <span>⏱️</span> ~{post.readingTime}
+            </p>
+          )}
 
           {/* Summary */}
           <p className="text-gray-200 text-lg leading-relaxed mb-8 max-w-3xl">
@@ -108,6 +115,10 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
                 <p className="text-sm text-white font-medium mt-1">{post.pageCount} pages</p>
               </div>
             </div>
+          </div>
+
+          <div className='flex gap-4 mt-6 mb-8'>
+            <SaveButton slug={post.slug} type='research' title={post.title} />
           </div>
 
           {/* Tags */}

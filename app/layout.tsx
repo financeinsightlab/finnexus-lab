@@ -6,6 +6,7 @@ import { GoogleAnalytics } from '@next/third-parties/google';
 import Analytics from '@/components/ui/Analytics';
 import Providers from '@/components/ThemeProvider'
 import AuthProvider from "@/components/providers/AuthProvider";
+import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: {
@@ -42,6 +43,16 @@ export const metadata: Metadata = {
   verification: {
     google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION ?? '',
   },
+
+  // ✅ PWA — manifest link is provided by app/manifest.ts
+  manifest: '/manifest.json',
+
+  // ✅ Apple PWA support
+  appleWebApp: {
+    capable: true,
+    title: 'FinNexus Lab',
+    statusBarStyle: 'black-translucent',
+  },
 };
 
 /** Lets `env(safe-area-inset-*)` work on notched devices (modals, nav). */
@@ -49,6 +60,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   viewportFit: 'cover',
+  // Teal brand colour as the browser chrome / status-bar tint
+  themeColor: '#0D6E6E',
 };
 
 export default function RootLayout({
@@ -58,11 +71,21 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+      <head>
+        {/* Font preconnect — reduces FOUT by establishing the connection early */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Apple touch icon for iOS Add-to-Home-Screen */}
+        <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+      </head>
       <body className="min-h-screen flex flex-col bg-white">
         <Providers>
           <AuthProvider>
             <Navbar />
-            <Analytics />
+            {/* Wrap Analytics in Suspense so it doesn't block the shell render */}
+            <Suspense fallback={null}>
+              <Analytics />
+            </Suspense>
             <main className="flex-1">{children}</main>
             <Footer />
             {process.env.NEXT_PUBLIC_GA_ID && (

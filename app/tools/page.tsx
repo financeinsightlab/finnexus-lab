@@ -1,18 +1,11 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import dynamic from 'next/dynamic';
+import type { Tool } from '@/components/tools/ToolModal';
 
-interface Tool {
-  id: number;
-  icon: string;
-  title: string;
-  category: string;
-  tool: string;
-  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
-  gated: boolean;
-  desc: string;
-  includes: string[];
-}
+// Dynamically import the modal to avoid loading it on initial page render
+const ToolModal = dynamic(() => import('@/components/tools/ToolModal'), { ssr: false });
 
 const TOOLS: Tool[] = [
   {
@@ -93,9 +86,7 @@ const DIFF_CLS = {
 export default function ToolsPage() {
   const [cat, setCat] = useState('All');
   const [modal, setModal] = useState<Tool | null>(null);
-  const [email, setEmail] = useState('');
   const [done, setDone] = useState<Set<number>>(new Set());
-  const [loading, setLoading] = useState(false);
 
   const filtered = useMemo(() => {
     return cat === 'All' ? TOOLS : TOOLS.filter(tool => tool.category === cat);
@@ -109,30 +100,6 @@ export default function ToolsPage() {
     setModal(tool);
   };
 
-  const handleGatedSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!modal) return;
-
-    setLoading(true);
-    try {
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, tag: `tool:${modal.id}` })
-      });
-
-      if (response.ok) {
-        setDone(prev => new Set([...prev, modal.id]));
-        setModal(null);
-        setEmail('');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   const freeTools = TOOLS.filter(t => !t.gated).length;
   const gatedTools = TOOLS.filter(t => t.gated).length;
 
@@ -143,7 +110,7 @@ export default function ToolsPage() {
         <div className="wrap">
           <p className="section-label text-teal-300 mb-5">Financial Tools</p>
           <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
-            Tools & Models
+            Tools &amp; Models
           </h1>
           <p className="text-xl text-white/80 max-w-2xl mb-8">
             Professional-grade financial models, templates, and frameworks for investment analysis and strategic planning.
@@ -168,6 +135,7 @@ export default function ToolsPage() {
             {CATS.map((category) => (
               <button
                 key={category}
+                id={`filter-${category.toLowerCase().replace(/\s+/g, '-')}`}
                 onClick={() => setCat(category)}
                 className={`pill ${cat === category ? 'pill-on' : 'pill-off'}`}
               >
@@ -236,48 +204,13 @@ export default function ToolsPage() {
         </div>
       </main>
 
-      {/* Email Gate Modal */}
+      {/* Email Gate Modal — dynamically loaded */}
       {modal && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm"
-          onClick={() => setModal(null)}
-        >
-          <div
-            className="bg-white rounded-2xl p-8 max-w-md w-full shadow-2xl anim-fade-up"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-center mb-6">
-              <span className="text-4xl mb-4 block">{modal.icon}</span>
-              <h3 className="text-xl font-bold text-brand-navy mb-2">{modal.title}</h3>
-              <p className="text-sm text-brand-slate">{modal.desc}</p>
-            </div>
-
-            <form onSubmit={handleGatedSubmit} className="space-y-4">
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email address"
-                className="input w-full"
-                required
-              />
-              <button
-                type="submit"
-                disabled={loading}
-                className="btn btn-primary w-full disabled:opacity-50"
-              >
-                {loading ? 'Sending...' : 'Send Me the Download Link →'}
-              </button>
-            </form>
-
-            <button
-              onClick={() => setModal(null)}
-              className="w-full mt-4 text-sm text-gray-500 hover:text-gray-700"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
+        <ToolModal
+          tool={modal}
+          onClose={() => setModal(null)}
+          onSuccess={(id) => setDone(prev => new Set([...prev, id]))}
+        />
       )}
     </div>
   );

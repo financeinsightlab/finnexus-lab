@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import readingTime from 'reading-time';
 import type { ResearchPost, InsightPost, DataLabProject, CaseStudy, PodcastEpisode } from '@/types';
 
 const CONTENT = path.join(process.cwd(), 'content');
@@ -11,6 +12,11 @@ function toStringArray(value: unknown): string[] {
 }
 
 function normalizeResearchPost(data: Record<string, unknown>, slug: string, content?: string): ResearchPost {
+  let statsTime;
+  if (content) {
+    const stats = readingTime(content);
+    statsTime = stats.text;
+  }
   return {
     slug,
     title: typeof data.title === 'string' ? data.title : slug,
@@ -23,6 +29,7 @@ function normalizeResearchPost(data: Record<string, unknown>, slug: string, cont
     featured: Boolean(data.featured),
     coverImage: typeof data.coverImage === 'string' ? data.coverImage : undefined,
     content,
+    readingTime: statsTime || (typeof data.readingTime === 'string' ? data.readingTime : undefined),
   };
 }
 

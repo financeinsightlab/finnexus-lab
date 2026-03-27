@@ -4,6 +4,7 @@ import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
 import Tag from '@/components/ui/Tag';
+import SaveButton from '@/components/ui/SaveButton';
 import { formatDate, CATEGORY_VARIANT } from '@/lib/utils';
 import { getInsightBySlug, getAllInsights } from '@/lib/content';
 import InsightCard from '@/components/insights/InsightCard';
@@ -83,6 +84,10 @@ export default async function InsightPage({ params }: { params: Promise<{ slug: 
                 <p className="text-sm text-white font-medium mt-1">{post.author}</p>
               </div>
             </div>
+          </div>
+
+          <div className='flex gap-4 mt-6'>
+            <SaveButton slug={post.slug} type='insight' title={post.title} />
           </div>
         </div>
       </header>

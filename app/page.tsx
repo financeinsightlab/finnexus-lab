@@ -1,5 +1,12 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import SectionHeader from '@/components/ui/SectionHeader';
+
+export const metadata: Metadata = {
+  title: 'Home | FinNexus Lab',
+  description: 'Data-driven insights on markets, strategy and capital. Institutional-quality research.',
+};
+
 import ResearchGrid from '@/components/research/ResearchGrid';
 import InsightGrid from '@/components/insights/InsightGrid';
 import NewsletterForm from '@/components/NewsletterForm';

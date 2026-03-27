@@ -1,0 +1,4 @@
+﻿.next/dev/types/routes.d.ts(104,1): error TS1434: Unexpected keyword or identifier.
+.next/dev/types/routes.d.ts(105,6): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(106,4): error TS1109: Expression expected.
+.next/dev/types/routes.d.ts(112,1): error TS1160: Unterminated template literal.
