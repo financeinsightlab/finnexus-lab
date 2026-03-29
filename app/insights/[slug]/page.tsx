@@ -1,4 +1,3 @@
-// FILE: app/insights/[slug]/page.tsx
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
@@ -8,158 +7,110 @@ import SaveButton from '@/components/ui/SaveButton';
 import { formatDate, CATEGORY_VARIANT } from '@/lib/utils';
 import { getInsightBySlug, getAllInsights } from '@/lib/content';
 import InsightCard from '@/components/insights/InsightCard';
+import { PrismaClient } from "@prisma/client"
+import ContentRenderer from "@/components/ContentRenderer"
+import { ChevronLeft, Calendar, User, BookOpen } from "lucide-react"
+import React from "react"
 
-export async function generateStaticParams() {
-  const insights = getAllInsights();
-  return insights.map((i) => ({
-    slug: i.slug,
-  }));
-}
+const prisma = new PrismaClient()
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
+
+  try {
+    const dbPost = await prisma.post.findUnique({ where: { slug } })
+    if (dbPost) {
+      return {
+        title: dbPost.title,
+        description: dbPost.excerpt || '',
+      }
+    }
+  } catch (e) {}
+
   const post = await getInsightBySlug(slug);
-
-  if (!post) {
-    return {
-      title: 'Not Found',
-    };
-  }
-
-  return {
-    title: post.title,
-    description: post.thesis,
-  };
+  if (!post) return { title: 'Not Found' };
+  return { title: post.title, description: post.thesis };
 }
 
 export default async function InsightPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await getInsightBySlug(slug);
 
-  if (!post) {
-    notFound();
+  // 1. New CMS
+  let dbPost = null
+  try {
+    dbPost = await prisma.post.findUnique({
+      where: { slug },
+      include: { author: { select: { name: true } } }
+    })
+  } catch (e) {}
+
+  if (dbPost && dbPost.type === 'INSIGHT') {
+    return (
+      <div className="min-h-screen bg-[#0B1C2C] text-slate-200">
+        <div className="max-w-4xl mx-auto px-6 pt-16 pb-16">
+          <Link href="/insights" className="flex items-center gap-2 text-sm text-teal-400 hover:text-teal-300 transition-colors mb-10">
+            <ChevronLeft className="w-4 h-4" /> All Insights
+          </Link>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+               <span className="px-3 py-1 bg-teal-500/10 text-teal-400 text-xs font-bold rounded-full uppercase tracking-widest border border-teal-500/20">Market Insight</span>
+            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">{dbPost.title}</h1>
+            <p className="text-xl text-slate-400 leading-relaxed max-w-3xl italic border-l-4 border-slate-700 pl-6">{dbPost.excerpt}</p>
+            <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-slate-500 border-t border-white/5">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" /> <span className="font-medium text-slate-300">{dbPost.author.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" /> <span>{new Date(dbPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <article className="max-w-4xl mx-auto px-6 pb-32">
+          <div className="bg-[#0F2335] rounded-3xl p-8 md:p-12 border border-white/5 shadow-2xl">
+            <ContentRenderer content={dbPost.content} />
+          </div>
+        </article>
+      </div>
+    )
   }
 
+  // 2. Legacy
+  const post = await getInsightBySlug(slug);
+  if (!post) notFound();
+
   const tagVariant = CATEGORY_VARIANT[post.category] ?? 'teal';
-  const related = getAllInsights()
-    .filter((item) => item.slug !== post.slug && item.category === post.category)
-    .slice(0, 3);
+  const related = getAllInsights().filter((item) => item.slug !== post.slug && item.category === post.category).slice(0, 3);
 
   return (
     <article className="pt-24 pb-24 bg-gradient-to-b from-slate-50 to-white">
-      {/* Header Section */}
       <header className="relative overflow-hidden bg-gradient-to-r from-brand-navy via-slate-900 to-brand-slate py-16 mb-12">
-        <div className="absolute inset-0 bg-pattern opacity-80" />
         <div className="wrap max-w-5xl relative">
           <div className="text-xs text-gray-300 mb-5 font-medium tracking-wide">
             <Link href="/" className="hover:text-white transition-colors">Home</Link> /{' '}
             <Link href="/insights" className="hover:text-white transition-colors">Insights</Link> /{' '}
             <span>{post.category}</span>
           </div>
-
           <Tag text={post.category} variant={tagVariant} />
-
-          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mt-4 mb-6 max-w-4xl">
-            {post.title}
-          </h1>
-
-          <blockquote className="border-l-4 border-brand-teal pl-5 py-3 bg-white/10 rounded-r-lg mb-7 max-w-4xl">
-            <p className="italic text-white/90 text-lg">
-              {post.thesis}
-            </p>
-          </blockquote>
-
+          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mt-4 mb-6 max-w-4xl">{post.title}</h1>
+          <blockquote className="border-l-4 border-brand-teal pl-5 py-3 bg-white/10 rounded-r-lg mb-7 max-w-4xl"><p className="italic text-white/90 text-lg">{post.thesis}</p></blockquote>
           <div className="rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-sm">
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <p className="text-[11px] uppercase tracking-wider text-gray-400">Published</p>
-                <p className="text-sm text-white font-medium mt-1">{formatDate(post.date)}</p>
-              </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-wider text-gray-400">Reading Time</p>
-                <p className="text-sm text-white font-medium mt-1">{post.readingTime} min</p>
-              </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-wider text-gray-400">Author</p>
-                <p className="text-sm text-white font-medium mt-1">{post.author}</p>
-              </div>
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Published</p><p className="text-sm text-white font-medium mt-1">{formatDate(post.date)}</p></div>
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Reading Time</p><p className="text-sm text-white font-medium mt-1">{post.readingTime} min</p></div>
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Author</p><p className="text-sm text-white font-medium mt-1">{post.author}</p></div>
             </div>
-          </div>
-
-          <div className='flex gap-4 mt-6'>
-            <SaveButton slug={post.slug} type='insight' title={post.title} />
           </div>
         </div>
       </header>
-
-      {/* Article Body */}
       <div className="wrap max-w-5xl">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
           <div className="rounded-2xl border border-gray-200 bg-white p-6 md:p-10 shadow-sm">
             <div className="prose prose-lg max-w-none report-body">
-              {post.content ? (
-                <MDXRemote source={post.content} />
-              ) : (
-                <p className="text-center italic text-gray-500">
-                  Insight content not available.
-                </p>
-              )}
+              {post.content ? <MDXRemote source={post.content} /> : <p className="text-center italic text-gray-500">Insight content not available.</p>}
             </div>
           </div>
-
-          <aside className="space-y-4">
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="section-label mb-2">What This Means</p>
-              <p className="text-sm text-brand-slate leading-relaxed">
-                Use this note as a directional signal. Validate the thesis against your own distribution,
-                cost, and competitive context before acting.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-brand-teal/20 bg-teal-50 p-5">
-              <p className="text-sm font-semibold text-brand-navy mb-2">Want tailored implications?</p>
-              <p className="text-sm text-brand-slate mb-4">
-                We can convert this thesis into an operator or investor memo for your specific exposure.
-              </p>
-              <Link href="/contact?service=Data Analytics Project" className="btn btn-primary w-full">
-                Request Custom Note
-              </Link>
-            </div>
-          </aside>
-        </div>
-      </div>
-
-      {/* Related Insights */}
-      {related.length > 0 && (
-        <section className="mt-16 bg-brand-silver py-16 border-y border-gray-200">
-          <div className="wrap max-w-5xl">
-            <h2 className="text-2xl font-bold text-brand-navy mb-2">
-              More in {post.category}
-            </h2>
-            <p className="text-brand-slate mb-8">Continue with adjacent notes in the same analytical track.</p>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((relatedPost) => (
-                <InsightCard key={relatedPost.slug} post={relatedPost} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Back Link */}
-      <div className="wrap max-w-5xl mt-12">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white px-5 py-4">
-          <Link
-            href="/insights"
-            className="text-sm font-semibold text-brand-teal hover:text-brand-navy transition-colors"
-          >
-            ← All Insights
-          </Link>
-          <Link
-            href="/research"
-            className="text-sm font-semibold text-brand-navy hover:text-brand-teal transition-colors"
-          >
-            Explore Full Research →
-          </Link>
         </div>
       </div>
     </article>

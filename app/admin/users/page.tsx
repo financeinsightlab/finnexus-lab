@@ -1,24 +1,14 @@
-import { PrismaClient } from "@prisma/client"
+import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import React from "react"
 import type { Metadata } from "next"
 import UsersTableClient from "./UsersTableClient"
+import { Users as UsersIcon, ShieldCheck, Zap, Search, ChevronLeft, ChevronRight } from "lucide-react"
 
 export const metadata: Metadata = {
   title: "Manage Users | Admin Panel",
   description: "User management and analytics for FinNexus Lab.",
-}
-
-const globalForPrisma = globalThis as unknown as {
-  prisma: PrismaClient | undefined
-}
-
-const prisma =
-  globalForPrisma.prisma ?? new PrismaClient()
-
-if (process.env.NODE_ENV !== "production") {
-  globalForPrisma.prisma = prisma
 }
 
 export default async function AdminUsersPage({
@@ -47,18 +37,8 @@ export default async function AdminUsersPage({
   if (searchParams.search) {
     filters.AND.push({
       OR: [
-        {
-          email: {
-            contains: searchParams.search,
-            mode: "insensitive",
-          },
-        },
-        {
-          name: {
-            contains: searchParams.search,
-            mode: "insensitive",
-          },
-        },
+        { email: { contains: searchParams.search, mode: "insensitive" } },
+        { name: { contains: searchParams.search, mode: "insensitive" } },
       ],
     })
   }
@@ -67,149 +47,143 @@ export default async function AdminUsersPage({
     filters.AND.push({ role: searchParams.role })
   }
 
-  if (searchParams.status) {
-    filters.AND.push({
-      subscriptionStatus: searchParams.status,
-    })
-  }
-
   const where = filters.AND.length ? filters : undefined
 
-  // ✅ OPTIMIZED QUERY (NO HEAVY LOAD)
-  const users = await prisma.user.findMany({
-    where,
-    orderBy: { createdAt: "desc" },
-    skip,
-    take: pageSize,
-    include: {
-      _count: {
-        select: {
-          accounts: true,
-          sessions: true,
-          savedArticles: true,
+  // Fetch data with error handling for connection issues
+  let users: any[] = []
+  let totalUsersCount = 0
+  let activeUsers = 0
+  let proUsers = 0
+
+  try {
+    users = await prisma.user.findMany({
+      where,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: pageSize,
+      include: {
+        _count: {
+          select: {
+            accounts: true,
+            sessions: true,
+            savedArticles: true,
+          },
         },
       },
-    },
-  })
+    })
 
-  // ✅ TOTAL COUNT
-  const totalUsersCount = await prisma.user.count({
-    where,
-  })
+    totalUsersCount = await prisma.user.count({ where })
+    
+    // Metrics
+    activeUsers = await prisma.user.count({
+      where: { subscriptionStatus: "ACTIVE" },
+    })
+    proUsers = await prisma.user.count({
+      where: { subscriptionPlan: "PRO" },
+    })
+  } catch (error) {
+    console.error("Database connection error in AdminUsersPage:", error)
+    // We'll proceed with empty values to avoid a complete crash, 
+    // showing the user a more graceful (though limited) interface.
+  }
 
   const totalPages = Math.ceil(totalUsersCount / pageSize)
 
-  // ✅ METRICS (LIGHTWEIGHT)
-  const totalUsers = totalUsersCount
-  const activeUsers = await prisma.user.count({
-    where: { subscriptionStatus: "ACTIVE" },
-  })
-  const proUsers = await prisma.user.count({
-    where: { subscriptionPlan: "PRO" },
-  })
-
   return (
-    <div className="min-h-screen bg-[#0B1C2C] text-white px-6 py-10">
-      <div className="max-w-7xl mx-auto">
-
-        <h1 className="text-2xl font-semibold mb-6">
-          Admin Panel — Users
-        </h1>
-
-        {/* 📊 METRICS */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-
-          <div className="bg-[#1A2B3C] p-4 rounded-xl border border-white/10">
-            <p className="text-gray-400 text-sm">Total Users</p>
-            <p className="text-xl font-semibold">{totalUsers}</p>
-          </div>
-
-          <div className="bg-[#1A2B3C] p-4 rounded-xl border border-white/10">
-            <p className="text-gray-400 text-sm">Active Users</p>
-            <p className="text-xl text-green-400">{activeUsers}</p>
-          </div>
-
-          <div className="bg-[#1A2B3C] p-4 rounded-xl border border-white/10">
-            <p className="text-gray-400 text-sm">Pro Users</p>
-            <p className="text-xl text-teal-400">{proUsers}</p>
-          </div>
-
+    <div className="space-y-10">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <span className="section-label">Access Control</span>
+          <h1 className="text-3xl font-extrabold text-white mt-2">User Directory</h1>
+          <p className="text-slate-400 text-sm mt-2 max-w-md">Oversee platform membership, subscription tiers, and administrative privileges.</p>
         </div>
+      </div>
 
-        {/* 🔍 FILTERS */}
-        <form className="mb-6 flex flex-wrap gap-3 relative z-50">
+      {/* 📊 METRICS */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        {[
+          { label: "Total Membership", value: totalUsersCount, icon: UsersIcon, color: "text-blue-400" },
+          { label: "Active Sessions", value: activeUsers, icon: ShieldCheck, color: "text-emerald-400" },
+          { label: "Tier 1 (Pro)", value: proUsers, icon: Zap, color: "text-amber-400" },
+        ].map((stat, i) => (
+          <div key={i} className="bg-[#1A1F2E] p-6 rounded-3xl border border-[#2D3748] shadow-xl">
+            <div className="flex items-center gap-4 mb-3">
+              <div className={`p-2 rounded-xl bg-white/5 ${stat.color}`}>
+                <stat.icon className="w-5 h-5" />
+              </div>
+              <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">{stat.label}</p>
+            </div>
+            <p className="text-3xl font-extrabold text-white tracking-tight">{stat.value}</p>
+          </div>
+        ))}
+      </div>
 
-          <input
-            type="text"
-            name="search"
-            placeholder="Search name or email..."
-            defaultValue={searchParams.search || ""}
-            className="px-4 py-2 rounded bg-white/10 border border-white/10 text-sm w-60"
-          />
+      {/* 🔍 SEARCH & FILTERS */}
+      <div className="bg-[#1A1F2E] p-6 rounded-3xl border border-[#2D3748] shadow-2xl">
+        <form className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <div className="md:col-span-2 relative group">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#0D6E6E] transition-colors" />
+            <input
+              type="text"
+              name="search"
+              placeholder="Filter by name or email identity..."
+              defaultValue={searchParams.search || ""}
+              className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white focus:outline-none focus:border-[#0D6E6E]/50 focus:bg-white/10 transition-all placeholder:text-slate-600"
+            />
+          </div>
 
           <select
             name="role"
             defaultValue={searchParams.role || ""}
-            className="px-4 py-2 rounded bg-[#1A2B3C] text-white border border-white/10 text-sm"
+            className="appearance-none bg-white/5 border border-white/10 rounded-2xl text-sm px-5 py-3 text-slate-300 outline-none focus:border-[#0D6E6E]/50 focus:bg-white/10 transition-all cursor-pointer"
           >
-            <option value="">All Roles</option>
-            <option value="ADMIN">ADMIN</option>
-            <option value="VIEWER">VIEWER</option>
-            <option value="MEMBER">MEMBER</option>
+            <option value="" className="bg-[#1A1F2E]">All Authority Levels</option>
+            <option value="ADMIN" className="bg-[#1A1F2E]">ADMIN</option>
+            <option value="VIEWER" className="bg-[#1A1F2E]">VIEWER</option>
+            <option value="MEMBER" className="bg-[#1A1F2E]">MEMBER</option>
           </select>
 
-          <select
-            name="plan"
-            defaultValue={searchParams.status || ""}
-            className="px-4 py-2 rounded bg-[#1A2B3C] text-white border border-white/10 text-sm"
-          >
-            <option value="">All Plans</option>
-            <option value="FREE">FREE</option>
-            <option value="PRO">PRO</option>
-            <option value="ELITE">ELITE</option>
-            <option value="TEAM">TEAM</option>
-            <option value="ENTERPRISE">ENTERPRISE</option>
-          </select>
-
-          <button className="bg-[#0D6E6E] px-4 py-2 rounded text-sm">
-            Apply
+          <button className="btn-primary flex items-center justify-center gap-2">
+            Confirm Filter
           </button>
-
         </form>
+      </div>
 
-        {/* INTERACTIVE TABLE COMPONENTS */}
+      {/* TABLE */}
+      <div className="bg-[#1A1F2E] rounded-3xl border border-[#2D3748] overflow-hidden shadow-2xl">
         <UsersTableClient initialUsers={users} />
+      </div>
 
-        {/* PAGINATION */}
-        <div className="flex justify-between mt-6">
+      {/* PAGINATION */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-4 px-2">
+        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
+          Showing <span className="text-white">{(page - 1) * pageSize + 1} - {Math.min(page * pageSize, totalUsersCount)}</span> of <span className="text-white">{totalUsersCount}</span> Identities
+        </p>
 
-          <p className="text-sm text-gray-400">
-            Page {page} of {totalPages}
-          </p>
+        <div className="flex items-center gap-2">
+          {page > 1 && (
+            <a
+              href={`?page=${page - 1}&search=${searchParams.search || ""}&role=${searchParams.role || ""}`}
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+            >
+              <ChevronLeft className="w-4 h-4" /> Previous
+            </a>
+          )}
 
-          <div className="flex gap-2">
-
-            {page > 1 && (
-              <a
-                href={`?page=${page - 1}&search=${searchParams.search || ""}&role=${searchParams.role || ""}&status=${searchParams.status || ""}`}
-                className="px-3 py-1 bg-white/10 rounded"
-              >
-                Prev
-              </a>
-            )}
-
-            {page < totalPages && (
-              <a
-                href={`?page=${page + 1}&search=${searchParams.search || ""}&role=${searchParams.role || ""}&status=${searchParams.status || ""}`}
-                className="px-3 py-1 bg-[#0D6E6E] rounded"
-              >
-                Next
-              </a>
-            )}
-
+          <div className="flex items-center gap-1 px-4 py-2 bg-[#0D6E6E]/10 rounded-xl border border-[#0D6E6E]/20">
+             <span className="text-xs font-bold text-[#0D6E6E]">PAGE {page}</span>
           </div>
-        </div>
 
+          {page < totalPages && (
+            <a
+              href={`?page=${page + 1}&search=${searchParams.search || ""}&role=${searchParams.role || ""}`}
+              className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-400 hover:text-white hover:bg-white/10 transition-all"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </a>
+          )}
+        </div>
       </div>
     </div>
   )

@@ -7,204 +7,118 @@ import SaveButton from '@/components/ui/SaveButton';
 import ResearchCard from '@/components/research/ResearchCard';
 import { formatDate } from '@/lib/utils';
 import { getResearchBySlug, getAllResearch, getRelatedResearch } from '@/lib/content';
+import { PrismaClient } from "@prisma/client"
+import ContentRenderer from "@/components/ContentRenderer"
+import { ChevronLeft, Calendar, User, Tag as TagIcon } from "lucide-react"
+import React from "react"
 
-export async function generateStaticParams() {
-  const research = getAllResearch();
-  return research.map((r) => ({
-    slug: r.slug,
-  }));
-}
+const prisma = new PrismaClient()
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const post = await getResearchBySlug(slug);
+  
+  // Try Prisma first
+  try {
+    const dbPost = await prisma.post.findUnique({ where: { slug } })
+    if (dbPost) {
+      return {
+        title: dbPost.title,
+        description: dbPost.excerpt || '',
+      }
+    }
+  } catch (e) {}
 
-  if (!post) {
-    return {
-      title: 'Not Found',
-    };
-  }
+  // Fallback to Legacy
+  const post = await getResearchBySlug(slug);
+  if (!post) return { title: 'Not Found' };
 
   return {
     title: post.title,
     description: post.summary,
-    openGraph: {
-      title: post.title,
-      description: post.summary,
-      type: 'article',
-      publishedTime: post.date,
-    },
   };
 }
 
 export default async function ResearchReportPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  const post = await getResearchBySlug(slug);
 
-  if (!post) {
-    notFound();
+  // 1. Try fetching from New CMS (Prisma)
+  let dbPost = null
+  try {
+    dbPost = await prisma.post.findUnique({
+      where: { slug },
+      include: { author: { select: { name: true } } }
+    })
+  } catch (e) {}
+
+  if (dbPost && dbPost.type === 'RESEARCH') {
+    return (
+      <div className="min-h-screen bg-[#0B1C2C] text-slate-200">
+        <div className="max-w-4xl mx-auto px-6 pt-10 pb-16">
+          <Link href="/research" className="flex items-center gap-2 text-sm text-teal-400 hover:text-teal-300 transition-colors mb-10">
+            <ChevronLeft className="w-4 h-4" /> Back to Research Library
+          </Link>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3">
+               <span className="px-3 py-1 bg-teal-500/10 text-teal-400 text-xs font-bold rounded-full uppercase tracking-widest border border-teal-500/20">Strategic Research</span>
+               {!dbPost.published && <span className="px-3 py-1 bg-orange-500/10 text-orange-400 text-xs font-bold rounded-full uppercase tracking-widest border border-orange-500/20">Draft Preview</span>}
+            </div>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">{dbPost.title}</h1>
+            <p className="text-xl text-slate-400 leading-relaxed max-w-3xl italic border-l-4 border-slate-700 pl-6">{dbPost.excerpt}</p>
+            <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-slate-500 border-t border-white/5">
+              <div className="flex items-center gap-2">
+                <User className="w-4 h-4" /> <span className="font-medium text-slate-300">{dbPost.author.name}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Calendar className="w-4 h-4" /> <span>{new Date(dbPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <article className="max-w-4xl mx-auto px-6 pb-32">
+          <div className="bg-[#0F2335] rounded-3xl p-8 md:p-12 border border-white/5 shadow-2xl">
+            <ContentRenderer content={dbPost.content} />
+          </div>
+        </article>
+      </div>
+    )
   }
+
+  // 2. Fallback to Legacy System (Contentful/Local)
+  const post = await getResearchBySlug(slug);
+  if (!post) notFound();
 
   const related = getRelatedResearch(post.slug, post.sector, 3);
   const tags = post.tags ?? [];
 
   return (
     <article className="pt-16 bg-gradient-to-b from-slate-50 to-white">
-      {/* Reading Progress Bar */}
-      <div id="reading-progress" />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `
-            window.addEventListener('scroll', function() {
-              const progress = document.getElementById('reading-progress');
-              const scrollTop = window.scrollY;
-              const docHeight = document.body.scrollHeight - window.innerHeight;
-              const scrollPercent = (scrollTop / docHeight) * 100;
-              progress.style.width = scrollPercent + '%';
-            });
-          `,
-        }}
-      />
-
-      {/* Report Header */}
       <header className="relative overflow-hidden bg-brand-navy py-16 md:py-20">
-        <div className="absolute inset-0 bg-pattern opacity-70" />
-        <div className="absolute -right-16 -top-16 h-64 w-64 rounded-full bg-brand-teal/20 blur-3xl" />
-        <div className="absolute -left-20 bottom-0 h-56 w-56 rounded-full bg-cyan-400/10 blur-3xl" />
-
         <div className="wrap relative">
-          {/* Breadcrumb */}
           <div className="text-xs text-gray-300 mb-6 font-medium tracking-wide">
             <Link href="/" className="hover:text-white transition-colors">Home</Link> /{' '}
             <Link href="/research" className="hover:text-white transition-colors">Research</Link> /{' '}
             <span>{post.sector}</span>
           </div>
-
-          {/* Sector Tag */}
           <Tag text={post.sector} variant="teal" />
-
-          {/* Title */}
-          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-3">
-            {post.title}
-          </h1>
-          
-          {post.readingTime && (
-            <p className="text-sm text-teal-200 mb-5 font-medium flex items-center gap-1.5">
-              <span>⏱️</span> ~{post.readingTime}
-            </p>
-          )}
-
-          {/* Summary */}
-          <p className="text-gray-200 text-lg leading-relaxed mb-8 max-w-3xl">
-            {post.summary}
-          </p>
-
-          {/* Metadata Card */}
+          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mb-3">{post.title}</h1>
+          <p className="text-gray-200 text-lg leading-relaxed mb-8 max-w-3xl">{post.summary}</p>
           <div className="mb-6 rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-sm">
             <div className="grid gap-4 sm:grid-cols-3">
-              <div>
-                <p className="text-[11px] uppercase tracking-wider text-gray-400">Published</p>
-                <p className="text-sm text-white font-medium mt-1">{formatDate(post.date)}</p>
-              </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-wider text-gray-400">Author</p>
-                <p className="text-sm text-white font-medium mt-1">{post.author}</p>
-              </div>
-              <div>
-                <p className="text-[11px] uppercase tracking-wider text-gray-400">Length</p>
-                <p className="text-sm text-white font-medium mt-1">{post.pageCount} pages</p>
-              </div>
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Published</p><p className="text-sm text-white font-medium mt-1">{formatDate(post.date)}</p></div>
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Author</p><p className="text-sm text-white font-medium mt-1">{post.author}</p></div>
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Length</p><p className="text-sm text-white font-medium mt-1">{post.pageCount} pages</p></div>
             </div>
           </div>
-
-          <div className='flex gap-4 mt-6 mb-8'>
-            <SaveButton slug={post.slug} type='research' title={post.title} />
-          </div>
-
-          {/* Tags */}
-          {tags.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="text-[11px] px-2.5 py-1 rounded-full bg-white/10 text-gray-200 font-mono border border-white/10"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          )}
         </div>
       </header>
 
-      {/* Report Body */}
       <div className="wrap max-w-5xl mt-10 mb-16">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
           <div className="rounded-2xl border border-gray-200 bg-white p-6 md:p-10 shadow-sm">
             <div className="prose prose-lg max-w-none report-body">
-              {post.content ? (
-                <MDXRemote source={post.content} />
-              ) : (
-                <p className="text-center italic text-gray-500">
-                  Report content not available.
-                </p>
-              )}
+              {post.content ? <MDXRemote source={post.content} /> : <p className="text-center italic text-gray-500">Report content not available.</p>}
             </div>
           </div>
-
-          <aside className="space-y-4">
-            <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm">
-              <p className="section-label mb-2">Research Brief</p>
-              <p className="text-sm text-brand-slate leading-relaxed">
-                This report tracks market dynamics, operating metrics, and strategic positioning to help
-                teams evaluate where opportunity and risk are shifting.
-              </p>
-            </div>
-            <div className="rounded-2xl border border-brand-teal/20 bg-teal-50 p-5">
-              <p className="text-sm font-semibold text-brand-navy mb-2">Need a custom cut for your team?</p>
-              <p className="text-sm text-brand-slate mb-4">
-                Get a focused version with company-specific benchmarks and decision-ready recommendations.
-              </p>
-              <Link href="/contact" className="btn btn-primary w-full">
-                Request Custom Research
-              </Link>
-            </div>
-          </aside>
-        </div>
-      </div>
-
-      {/* Related Reports */}
-      {related.length > 0 && (
-        <section className="bg-brand-silver py-16 border-y border-gray-200">
-          <div className="wrap max-w-5xl">
-            <h2 className="text-2xl font-bold text-brand-navy mb-2">
-              Related {post.sector} Research
-            </h2>
-            <p className="text-brand-slate mb-8">Explore adjacent reports to compare assumptions and outcomes.</p>
-            <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {related.map((relatedPost) => (
-                <ResearchCard key={relatedPost.slug} post={relatedPost} />
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Back Link */}
-      <div className="wrap max-w-5xl mt-12 pb-14">
-        <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-gray-200 bg-white px-5 py-4">
-          <Link
-            href="/research"
-            className="text-sm font-semibold text-brand-teal hover:text-brand-navy transition-colors"
-          >
-            ← Back to All Research
-          </Link>
-          <Link
-            href="/contact?service=Research Inquiry"
-            className="text-sm font-semibold text-brand-navy hover:text-brand-teal transition-colors"
-          >
-            Discuss This Sector →
-          </Link>
         </div>
       </div>
     </article>

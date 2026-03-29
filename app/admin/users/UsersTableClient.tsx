@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { updateUserAccess, updatePurchasedServices, deleteUser } from './actions';
 import { UserRole } from '@prisma/client';
+import { Shield, Trash2, CheckCircle2, XCircle, ChevronDown, User as UserIcon } from 'lucide-react';
 
 type UserData = {
   id: string;
@@ -83,99 +84,117 @@ export default function UsersTableClient({ initialUsers }: { initialUsers: UserD
   };
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-white/10 hide-scrollbar mt-6">
-      <table className="w-full text-sm">
-        <thead className="bg-[#1A2B3C] text-gray-300">
-          <tr>
-            <th className="p-4 text-left">Identity</th>
-            <th className="p-4 text-left">Access Role</th>
-            <th className="p-4 text-left">Subscription Tier</th>
-            <th className="p-4 text-left">B2B Services</th>
-            <th className="p-4 text-center">Actions</th>
+    <div className="overflow-x-auto">
+      <table className="w-full text-left border-collapse">
+        <thead>
+          <tr className="bg-white/5">
+            <th className="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">Identity</th>
+            <th className="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">Access Role</th>
+            <th className="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">Subscription</th>
+            <th className="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">Procured Services</th>
+            <th className="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-[0.2em] text-center">Actions</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="divide-y divide-white/5">
           {initialUsers.map((user) => (
-            <React.Fragment key={user.id}>
-              {/* Primary Row */}
-              <tr className={`border-t border-white/10 hover:bg-white/5 transition-colors ${loadingId === user.id ? 'opacity-50' : ''}`}>
-                <td className="p-4">
-                  <p className="font-semibold text-white">{user.name || "Anonymous"}</p>
-                  <p className="text-gray-400 text-xs">{user.email}</p>
-                  <span className="text-[10px] uppercase text-gray-500 bg-gray-900 px-1.5 py-0.5 rounded mt-1 inline-block">ID: {user.id.slice(0, 8)}...</span>
-                </td>
-                
-                {/* Secure Role Selector */}
-                <td className="p-4">
+            <tr key={user.id} className={`hover:bg-white/[0.02] transition-all group ${loadingId === user.id ? 'opacity-40 animate-pulse' : ''}`}>
+              {/* Identity Column */}
+              <td className="px-8 py-6">
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 rounded-2xl bg-[#0D6E6E]/10 border border-[#0D6E6E]/20 flex items-center justify-center text-[#0D6E6E] group-hover:bg-[#0D6E6E] group-hover:text-white transition-all shadow-inner">
+                    <UserIcon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white group-hover:text-[#0D6E6E] transition-colors">{user.name || "Anonymous User"}</p>
+                    <p className="text-[11px] text-slate-500 font-medium mt-0.5">{user.email}</p>
+                    <div className="mt-1.5 flex items-center gap-2">
+                       <span className="text-[9px] font-bold uppercase tracking-widest text-slate-600 bg-black/30 px-2 py-0.5 rounded-md border border-white/5">UID: {user.id.slice(0, 8)}</span>
+                    </div>
+                  </div>
+                </div>
+              </td>
+              
+              {/* Role Column */}
+              <td className="px-8 py-6">
+                <div className="relative inline-block w-32 group/select">
                   <select
                     value={user.role}
                     onChange={(e) => handleAccessChange(user.id, 'role', e.target.value, user)}
-                    className={`bg-[#0B1C2C] border border-white/20 rounded px-2 py-1.5 text-xs font-semibold focus:ring-1 focus:ring-teal-500 outline-none
-                      ${user.role === 'ADMIN' ? 'text-yellow-400 border-yellow-500/30' : 'text-gray-300'}
+                    className={`appearance-none w-full bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-xs font-bold outline-none focus:border-[#0D6E6E]/50 transition-all cursor-pointer
+                      ${user.role === 'ADMIN' ? 'text-amber-400 border-amber-500/30' : 'text-slate-300'}
                     `}
                   >
-                    {ROLES.map(r => <option key={r} value={r}>{r}</option>)}
+                    {ROLES.map(r => <option key={r} value={r} className="bg-[#1A1F2E]">{r}</option>)}
                   </select>
-                </td>
+                  <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-600 pointer-events-none group-hover/select:text-slate-400 transition-colors" />
+                </div>
+              </td>
 
-                {/* SaaS Subscription Dropsdowns */}
-                <td className="p-4">
-                  <div className="flex flex-col gap-2">
+              {/* Tier Column */}
+              <td className="px-8 py-6">
+                <div className="flex flex-col gap-2 w-40">
+                  <div className="relative group/select">
                     <select
                       value={user.subscriptionPlan || 'FREE'}
                       onChange={(e) => handleAccessChange(user.id, 'plan', e.target.value, user)}
-                      className="bg-[#0B1C2C] border border-white/20 text-gray-300 rounded px-2 py-1.5 text-xs focus:ring-1 focus:ring-teal-500 outline-none"
+                      className="appearance-none w-full bg-white/5 border border-white/10 text-slate-300 rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-wider outline-none focus:border-[#0D6E6E]/50 transition-all cursor-pointer"
                     >
-                      {PLANS.map(p => <option key={p} value={p}>{p.replace('_', ' ')}</option>)}
+                      {PLANS.map(p => <option key={p} value={p} className="bg-[#1A1F2E]">{p.replace('_', ' ')}</option>)}
                     </select>
-
-                    <select
-                      value={user.subscriptionStatus}
-                      onChange={(e) => handleAccessChange(user.id, 'status', e.target.value, user)}
-                      className={`bg-[#0B1C2C] border border-white/20 rounded px-2 py-1.5 text-[10px] focus:ring-1 outline-none
-                        ${user.subscriptionStatus === 'ACTIVE' ? 'text-green-400' : 'text-gray-400'}
-                      `}
-                    >
-                      {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
-                    </select>
+                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-600 pointer-events-none" />
                   </div>
-                </td>
 
-                <td className="p-4">
-                  <div className="flex flex-wrap gap-1 max-w-[250px]">
-                    {SERVICES.map(service => {
-                      const isActive = (user.purchasedServices || []).includes(service);
-                      return (
-                        <button
-                          key={service}
-                          onClick={() => toggleService(user.id, service, user)}
-                          className={`text-[10px] px-2 py-1 rounded-full border transition-all ${
-                            isActive 
-                              ? 'bg-brand-teal/20 border-brand-teal text-brand-teal' 
-                              : 'bg-transparent border-gray-700 text-gray-500 hover:border-gray-500'
-                          }`}
-                        >
-                          {service}
-                        </button>
-                      );
-                    })}
+                  <div className="flex items-center gap-2 px-4">
+                    <div className={`w-1.5 h-1.5 rounded-full ${user.subscriptionStatus === 'ACTIVE' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-700'}`} />
+                    <span className={`text-[9px] font-bold uppercase tracking-[0.1em] ${user.subscriptionStatus === 'ACTIVE' ? 'text-emerald-500' : 'text-slate-500'}`}>
+                      {user.subscriptionStatus}
+                    </span>
                   </div>
-                </td>
+                </div>
+              </td>
 
-                <td className="p-4 text-center">
-                  <button 
-                    onClick={() => handleDelete(user.id)}
-                    className="bg-red-900/40 text-red-500 hover:bg-red-800 hover:text-white px-3 py-1.5 text-xs rounded transition-colors"
-                  >
-                    Delete User
-                  </button>
-                </td>
-              </tr>
-            </React.Fragment>
+              {/* Services Column */}
+              <td className="px-8 py-6">
+                <div className="flex flex-wrap gap-1.5 max-w-[300px]">
+                  {SERVICES.map(service => {
+                    const isActive = (user.purchasedServices || []).includes(service);
+                    return (
+                      <button
+                        key={service}
+                        onClick={() => toggleService(user.id, service, user)}
+                        className={`text-[9px] font-bold px-3 py-1.5 rounded-lg border transition-all uppercase tracking-tight ${
+                          isActive 
+                            ? 'bg-[#0D6E6E]/10 border-[#0D6E6E]/40 text-[#0D6E6E]' 
+                            : 'bg-transparent border-white/5 text-slate-600 hover:border-slate-500 hover:text-slate-400'
+                        }`}
+                      >
+                        {service}
+                      </button>
+                    );
+                  })}
+                </div>
+              </td>
+
+              {/* Status/Actions Column */}
+              <td className="px-8 py-6 text-center">
+                <button 
+                  onClick={() => handleDelete(user.id)}
+                  className="p-3 text-slate-600 hover:text-red-400 bg-white/5 hover:bg-red-400/10 rounded-2xl transition-all border border-transparent hover:border-red-400/20 shadow-sm"
+                  title="Sever Identity"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              </td>
+            </tr>
           ))}
           {initialUsers.length === 0 && (
             <tr>
-              <td colSpan={5} className="p-8 text-center text-gray-400">No users found matching filters.</td>
+              <td colSpan={5} className="px-8 py-20 text-center">
+                 <div className="flex flex-col items-center justify-center space-y-3">
+                   <XCircle className="w-12 h-12 text-slate-800" />
+                   <p className="text-slate-500 font-medium">Zero identities match the current parameters.</p>
+                 </div>
+              </td>
             </tr>
           )}
         </tbody>

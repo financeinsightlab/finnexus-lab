@@ -1,6 +1,9 @@
 import type { Metadata } from 'next';
 import AlgoliaSearch from '@/components/research/AlgoliaSearch';
 import { getAllResearchFromCMS } from '@/lib/contentful';
+import { prisma } from "@/lib/prisma"
+import Link from 'next/link';
+import React from "react"
 
 export const metadata: Metadata = {
   title: 'Research | FinNexus Lab',
@@ -9,9 +12,36 @@ export const metadata: Metadata = {
 };
 
 export default async function ResearchPage() {
-  const reports = await getAllResearchFromCMS();
+  // 1. Fetch from Contentful (Legacy)
+  const legacyReports = await getAllResearchFromCMS();
+  
+  // 2. Fetch from our New In-House CMS (Prisma)
+  let dbReports: any[] = []
+  try {
+    dbReports = await (prisma as any).post.findMany({
+      where: { type: 'RESEARCH', published: true },
+      orderBy: { createdAt: 'desc' }
+    })
+  } catch (e) {
+    console.error("New CMS fetch failed (tables might not be ready):", e)
+  }
 
-  const featuredReports = reports.filter((r) => r.featured);
+  // Combine both for now to ensure no data loss during transition
+  const allReports = [
+    ...dbReports.map(r => ({
+      slug: r.slug,
+      title: r.title,
+      summary: r.excerpt,
+      sector: 'Strategic Research',
+      author: 'FinNexus Admin',
+      date: r.createdAt.toISOString(),
+      featured: true, // New posts default to featured for visibility
+      isNewCMS: true
+    })),
+    ...legacyReports
+  ];
+
+  const featuredReports = allReports.filter((r) => r.featured);
 
   return (
     <>
@@ -43,20 +73,28 @@ export default async function ResearchPage() {
           <p className="text-gray-500">No featured reports yet.</p>
         ) : (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredReports.map((report) => (
-              <div
+            {featuredReports.map((report: any) => (
+              <Link
                 key={report.slug}
-                className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition"
+                href={report.isNewCMS ? `/research/${report.slug}` : `/research/${report.slug}`}
+                className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition group"
               >
-                <p className="text-sm text-[#0D6E6E] font-medium">
-                  {report.sector}
-                </p>
+                <div className="flex justify-between items-start">
+                   <p className="text-sm text-[#0D6E6E] font-medium">
+                    {report.sector}
+                  </p>
+                  {report.isNewCMS && (
+                    <span className="px-2 py-0.5 bg-teal-500/10 text-teal-600 text-[10px] font-bold rounded uppercase tracking-wider">
+                      New CMS
+                    </span>
+                  )}
+                </div>
 
-                <h3 className="mt-2 text-lg font-semibold text-[#1A2B3C]">
+                <h3 className="mt-2 text-lg font-semibold text-[#1A2B3C] group-hover:text-teal-700 transition-colors">
                   {report.title}
                 </h3>
 
-                <p className="mt-2 text-sm text-gray-600">
+                <p className="mt-2 text-sm text-gray-600 line-clamp-3">
                   {report.summary}
                 </p>
 
@@ -64,7 +102,7 @@ export default async function ResearchPage() {
                   <span>{report.author}</span>
                   <span>{new Date(report.date).toDateString()}</span>
                 </div>
-              </div>
+              </Link>
             ))}
           </div>
         )}

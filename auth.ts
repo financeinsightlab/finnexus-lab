@@ -2,16 +2,9 @@ import NextAuth from "next-auth"
 import Google from "next-auth/providers/google"
 import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
-import { PrismaClient, type SubscriptionStatus, type UserRole } from "@prisma/client"
+import { prisma } from "@/lib/prisma"
+import { type SubscriptionStatus, type UserRole } from "@prisma/client"
 import bcryptjs from "bcryptjs"
-
-declare global {
-  var prisma: PrismaClient | undefined
-}
-
-const prisma = globalThis.prisma ?? new PrismaClient()
-
-if (process.env.NODE_ENV !== "production") globalThis.prisma = prisma
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
