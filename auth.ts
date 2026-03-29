@@ -62,12 +62,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           id: string
           role: UserRole
           subscriptionStatus: SubscriptionStatus
+          subscriptionPlan: string | null
         }
 
         const u = user as unknown as TokenUser
         token.id = u.id
         token.role = u.role
         token.subscriptionStatus = u.subscriptionStatus
+        token.subscriptionPlan = u.subscriptionPlan
       }
       return token
     },
@@ -78,12 +80,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           id?: string
           role?: UserRole
           subscriptionStatus?: SubscriptionStatus
+          subscriptionPlan?: string | null
         }
 
         const t = token as unknown as TokenData
         session.user.id = t.id as string
         session.user.role = t.role as UserRole
         session.user.subscriptionStatus = t.subscriptionStatus as SubscriptionStatus
+        session.user.subscriptionPlan = t.subscriptionPlan as string | null
       }
       return session
     },

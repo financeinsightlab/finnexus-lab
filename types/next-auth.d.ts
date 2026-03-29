@@ -8,7 +8,7 @@ declare module 'next-auth' {
       id: string;
       role: UserRole;
       subscriptionStatus: SubscriptionStatus;
-      // Stripe plan name isn't attached to the session in this repo.
+      subscriptionPlan?: string | null;
     };
   }
 }
@@ -18,6 +18,7 @@ declare module 'next-auth/jwt' {
     id?: string;
     role?: UserRole;
     subscriptionStatus?: SubscriptionStatus;
+    subscriptionPlan?: string | null;
   }
 }
 

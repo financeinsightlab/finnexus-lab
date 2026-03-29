@@ -8,12 +8,8 @@ datasource db {
 }
 
 enum UserRole {
-  FREE
-  PRO
-  ELITE
-  TEAM
-  ENTERPRISE
-  GUEST_RESEARCHER
+  MEMBER
+  VIEWER
   ADMIN
 }
 
@@ -32,12 +28,13 @@ model User {
   emailVerified        DateTime?
   image                String?
   password             String?
-  role                 UserRole            @default(FREE)
+  role                 UserRole            @default(MEMBER)
   stripeCustomerId     String?             @unique
   subscriptionStatus   SubscriptionStatus  @default(INACTIVE)
   subscriptionPlan     String?
   createdAt            DateTime            @default(now())
   updatedAt            DateTime            @updatedAt
+  purchasedServices    String[]
 
   accounts             Account[]
   sessions             Session[]

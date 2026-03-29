@@ -3,6 +3,7 @@ import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import React from "react"
 import type { Metadata } from "next"
+import UsersTableClient from "./UsersTableClient"
 
 export const metadata: Metadata = {
   title: "Manage Users | Admin Panel",
@@ -153,21 +154,21 @@ export default async function AdminUsersPage({
           >
             <option value="">All Roles</option>
             <option value="ADMIN">ADMIN</option>
-            <option value="FREE">FREE</option>
-            <option value="PRO">PRO</option>
-            <option value="ELITE">ELITE</option>
+            <option value="VIEWER">VIEWER</option>
+            <option value="MEMBER">MEMBER</option>
           </select>
 
           <select
-            name="status"
+            name="plan"
             defaultValue={searchParams.status || ""}
             className="px-4 py-2 rounded bg-[#1A2B3C] text-white border border-white/10 text-sm"
           >
-            <option value="">All Status</option>
-            <option value="ACTIVE">ACTIVE</option>
-            <option value="INACTIVE">INACTIVE</option>
-            <option value="CANCELED">CANCELED</option>
-            <option value="TRIALING">TRIALING</option>
+            <option value="">All Plans</option>
+            <option value="FREE">FREE</option>
+            <option value="PRO">PRO</option>
+            <option value="ELITE">ELITE</option>
+            <option value="TEAM">TEAM</option>
+            <option value="ENTERPRISE">ENTERPRISE</option>
           </select>
 
           <button className="bg-[#0D6E6E] px-4 py-2 rounded text-sm">
@@ -176,116 +177,8 @@ export default async function AdminUsersPage({
 
         </form>
 
-        {/* TABLE */}
-        <div className="overflow-x-auto rounded-xl border border-white/10">
-
-          <table className="w-full text-sm">
-
-            <thead className="bg-[#1A2B3C] text-gray-300">
-              <tr>
-                <th className="p-4 text-left">Name</th>
-                <th className="p-4 text-left">Email</th>
-                <th className="p-4 text-left">Role</th>
-                <th className="p-4 text-left">Subscription</th>
-                <th className="p-4 text-left">Created</th>
-                <th className="p-4 text-left">Actions</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {users.map((user) => (
-  <React.Fragment key={user.id}>
-
-    <tr className="border-t border-white/10 hover:bg-white/5">
-      <td className="p-4">{user.name || "—"}</td>
-      <td className="p-4">{user.email}</td>
-      <td className="p-4">{user.role}</td>
-      <td className="p-4">{user.subscriptionStatus}</td>
-      <td className="p-4">
-        {new Date(user.createdAt).toLocaleDateString()}
-      </td>
-
-      <td className="p-4 flex gap-2">
-
-        <form action="/api/admin/make-pro" method="POST">
-          <input type="hidden" name="userId" value={user.id} />
-          <button className="bg-[#0D6E6E] px-2 py-1 text-xs rounded">
-            PRO
-          </button>
-        </form>
-
-        <form action="/api/admin/make-admin" method="POST">
-          <input type="hidden" name="userId" value={user.id} />
-          <button className="bg-yellow-600 px-2 py-1 text-xs rounded">
-            ADMIN
-          </button>
-        </form>
-
-        <form action="/api/admin/delete-user" method="POST">
-          <input type="hidden" name="userId" value={user.id} />
-          <button className="bg-red-600 px-2 py-1 text-xs rounded">
-            Delete
-          </button>
-        </form>
-
-      </td>
-    </tr>
-
-    {/* DETAILS */}
-    <tr className="bg-[#0F2538] text-xs text-gray-400">
-      <td colSpan={6} className="p-4">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-
-          <div>
-            <p>User ID</p>
-            <p>{user.id}</p>
-          </div>
-
-          <div>
-            <p>Stripe</p>
-            <p>{user.stripeCustomerId || "—"}</p>
-          </div>
-
-          <div>
-            <p>Plan</p>
-            <p>{user.subscriptionPlan || "FREE"}</p>
-          </div>
-
-          <div>
-            <p>Verified</p>
-            <p>{user.emailVerified ? "Yes" : "No"}</p>
-          </div>
-
-          <div>
-            <p>Accounts</p>
-            <p>{user._count.accounts}</p>
-          </div>
-
-          <div>
-            <p>Sessions</p>
-            <p>{user._count.sessions}</p>
-          </div>
-
-          <div>
-            <p>Saved</p>
-            <p>{user._count.savedArticles}</p>
-          </div>
-
-          <div>
-            <p>Updated</p>
-            <p>{new Date(user.updatedAt).toLocaleDateString()}</p>
-          </div>
-
-        </div>
-      </td>
-    </tr>
-
-  </React.Fragment>
- ))}
-            </tbody>
-
-          </table>
-        </div>
+        {/* INTERACTIVE TABLE COMPONENTS */}
+        <UsersTableClient initialUsers={users} />
 
         {/* PAGINATION */}
         <div className="flex justify-between mt-6">

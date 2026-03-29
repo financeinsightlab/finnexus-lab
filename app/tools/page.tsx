@@ -1,11 +1,21 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import dynamic from 'next/dynamic';
-import type { Tool } from '@/components/tools/ToolModal';
+import { useRouter } from 'next/navigation';
+// Simplified approach w/ direct routing to calculators
 
-// Dynamically import the modal to avoid loading it on initial page render
-const ToolModal = dynamic(() => import('@/components/tools/ToolModal'), { ssr: false });
+export interface Tool {
+  id: number;
+  icon: string;
+  title: string;
+  category: string;
+  tool: string;
+  difficulty: 'Beginner' | 'Intermediate' | 'Advanced';
+  gated: boolean;
+  desc: string;
+  includes: string[];
+  slug: string;
+}
 
 const TOOLS: Tool[] = [
   {
@@ -17,7 +27,8 @@ const TOOLS: Tool[] = [
     difficulty: 'Intermediate',
     gated: true,
     desc: 'Full DCF model with 3 scenarios, sensitivity analysis, and WACC calculator.',
-    includes: ['Revenue projections (5-year)', 'WACC calculator', 'Sensitivity tables', '3 scenarios']
+    includes: ['Revenue projections (5-year)', 'WACC calculator', 'Sensitivity tables', '3 scenarios'],
+    slug: 'dcf-valuation-model'
   },
   {
     id: 2,
@@ -28,7 +39,8 @@ const TOOLS: Tool[] = [
     difficulty: 'Intermediate',
     gated: true,
     desc: 'Complete financial model for early-stage companies.',
-    includes: ['P&L · Balance Sheet · Cash Flow', 'Headcount planner', 'Runway calculator', 'Unit economics']
+    includes: ['P&L · Balance Sheet · Cash Flow', 'Headcount planner', 'Runway calculator', 'Unit economics'],
+    slug: '3-statement-model'
   },
   {
     id: 3,
@@ -39,7 +51,8 @@ const TOOLS: Tool[] = [
     difficulty: 'Beginner',
     gated: false,
     desc: 'Templates for market size estimation and analysis.',
-    includes: ['Top-down template', 'Bottom-up template', 'India market data', 'Worked examples']
+    includes: ['Top-down template', 'Bottom-up template', 'India market data', 'Worked examples'],
+    slug: 'market-sizing-framework'
   },
   {
     id: 4,
@@ -50,7 +63,8 @@ const TOOLS: Tool[] = [
     difficulty: 'Advanced',
     gated: true,
     desc: 'Detailed unit economics for quick commerce businesses.',
-    includes: ['Dark store P&L', 'Order volume scenarios', 'CM% waterfall chart', 'Breakeven calculator']
+    includes: ['Dark store P&L', 'Order volume scenarios', 'CM% waterfall chart', 'Breakeven calculator'],
+    slug: 'q-commerce-model'
   },
   {
     id: 5,
@@ -61,7 +75,8 @@ const TOOLS: Tool[] = [
     difficulty: 'Beginner',
     gated: false,
     desc: 'Strategic analysis framework for competitive positioning.',
-    includes: ['5-Forces visual template', 'Rating framework', 'India sector examples', 'Strategy notes']
+    includes: ['5-Forces visual template', 'Rating framework', 'India sector examples', 'Strategy notes'],
+    slug: 'porters-five-forces'
   },
   {
     id: 6,
@@ -72,11 +87,60 @@ const TOOLS: Tool[] = [
     difficulty: 'Intermediate',
     gated: true,
     desc: 'Peer company comparison and valuation multiples.',
-    includes: ['Peer comp table', 'Multiple normalisation', 'Sector medians', 'Visual benchmarks']
+    includes: ['Peer comp table', 'Multiple normalisation', 'Sector medians', 'Visual benchmarks'],
+    slug: 'cca-valuation'
+  },
+  {
+    id: 7,
+    icon: '💻',
+    title: 'SaaS LTV/CAC & Cohort Analysis',
+    category: 'SaaS & Tech',
+    tool: 'Excel',
+    difficulty: 'Advanced',
+    gated: true,
+    desc: 'Comprehensive SaaS unit economics with cohort retention mapping.',
+    includes: ['LTV:CAC ratio calculator', 'Subscription cohort heatmap', 'Churn velocity model', 'Payback period'],
+    slug: 'saas-ltv-cac-model'
+  },
+  {
+    id: 8,
+    icon: '🤖',
+    title: 'Enterprise AI ROI Calculator',
+    category: 'AI Strategy',
+    tool: 'Excel',
+    difficulty: 'Intermediate',
+    gated: false,
+    desc: 'Framework to calculate the ROI of deploying AI agents vs human capital.',
+    includes: ['Cost-displacement model', 'Productivity multiplier', 'Implementation Capex amortisation', 'Breakeven timeline'],
+    slug: 'ai-agent-roi-calculator'
+  },
+  {
+    id: 9,
+    icon: '🪙',
+    title: 'Web3 Tokenomics & Vesting Model',
+    category: 'Web3',
+    tool: 'Excel',
+    difficulty: 'Advanced',
+    gated: true,
+    desc: 'Token distribution, vesting schedule modeling, and circulating supply forecasting.',
+    includes: ['Vesting cliff schedules', 'Inflation rate modeling', 'FDV vs Market Cap tracker', 'Allocation pie charts'],
+    slug: 'crypto-tokenomics-model'
+  },
+  {
+    id: 10,
+    icon: '🎯',
+    title: 'B2B Enterprise Marketing ROI & Pipeline',
+    category: 'Growth & Marketing',
+    tool: 'Excel',
+    difficulty: 'Advanced',
+    gated: true,
+    desc: 'Full-funnel attribution and ROI tracking for enterprise B2B sales cycles.',
+    includes: ['Lead-to-Close pipeline tracker', 'CAC by acquisition channel', 'Marketing spend ROI calculator', 'Sales quota modelling'],
+    slug: 'b2b-enterprise-marketing-roi'
   }
 ];
 
-const CATS = ['All', 'Valuation', 'Financial Model', 'Market Analysis', 'Sector Model', 'Strategy'];
+const CATS = ['All', 'Valuation', 'Financial Model', 'Market Analysis', 'Sector Model', 'Strategy', 'SaaS & Tech', 'AI Strategy', 'Web3', 'Growth & Marketing'];
 const DIFF_CLS = {
   Beginner: 'tag tag-green',
   Intermediate: 'tag tag-gold',
@@ -84,6 +148,7 @@ const DIFF_CLS = {
 };
 
 export default function ToolsPage() {
+  const router = useRouter();
   const [cat, setCat] = useState('All');
   const [modal, setModal] = useState<Tool | null>(null);
   const [done, setDone] = useState<Set<number>>(new Set());
@@ -93,11 +158,7 @@ export default function ToolsPage() {
   }, [cat]);
 
   const handleDownload = (tool: Tool) => {
-    if (!tool.gated) {
-      alert(`Downloading: ${tool.title}`);
-      return;
-    }
-    setModal(tool);
+    router.push(`/tools/${tool.slug}`);
   };
 
   const freeTools = TOOLS.filter(t => !t.gated).length;
@@ -194,7 +255,7 @@ export default function ToolsPage() {
                       onClick={() => handleDownload(tool)}
                       className="text-sm font-medium text-brand-teal hover:text-brand-navy transition-colors"
                     >
-                      {tool.gated ? 'Get Access →' : 'Download Free →'}
+                      Open Calculator →
                     </button>
                   )}
                 </div>
@@ -204,14 +265,7 @@ export default function ToolsPage() {
         </div>
       </main>
 
-      {/* Email Gate Modal — dynamically loaded */}
-      {modal && (
-        <ToolModal
-          tool={modal}
-          onClose={() => setModal(null)}
-          onSuccess={(id) => setDone(prev => new Set([...prev, id]))}
-        />
-      )}
+
     </div>
   );
 }
