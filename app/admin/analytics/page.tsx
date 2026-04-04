@@ -56,7 +56,7 @@ export default async function AdminAnalytics() {
     take: 50,
   })
 
-  const userIds = [...new Set(recentViewsRaw.filter((v) => v.userId).map((v) => v.userId as string))]
+  const userIds = Array.from<string>(new Set(recentViewsRaw.filter((v: any) => v.userId).map((v: any) => v.userId as string)))
   const usersMap: Record<string, { name: string | null; email: string | null }> = {}
   if (userIds.length > 0) {
     const users = await prisma.user.findMany({
@@ -66,7 +66,7 @@ export default async function AdminAnalytics() {
     users.forEach((u) => { usersMap[u.id] = { name: u.name, email: u.email } })
   }
 
-  const liveViews = recentViewsRaw.map((v) => ({
+  const liveViews = recentViewsRaw.map((v: any) => ({
     id: v.id,
     path: v.path,
     userId: v.userId,
@@ -86,7 +86,7 @@ export default async function AdminAnalytics() {
 
   // Monthly user signups (last 6 months)
   const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
-  const monthlyData = []
+  const monthlyData: Array<{ month: string; users: number; logins: number }> = []
   for (let i = 5; i >= 0; i--) {
     const month = new Date(now.getFullYear(), now.getMonth() - i, 1)
     const monthEnd = new Date(now.getFullYear(), now.getMonth() - i + 1, 0)
@@ -182,7 +182,7 @@ export default async function AdminAnalytics() {
               <span className="text-xl font-bold text-purple-400">{totalLogins.toLocaleString()}</span>
             </div>
             <div className="h-px bg-[#2D3748]" />
-            {loginsByProvider.length > 0 ? loginsByProvider.map((g, i) => (
+            {loginsByProvider.length > 0 ? loginsByProvider.map((g: any, i: number) => (
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className={`w-2 h-2 rounded-full ${g.provider === "google" ? "bg-blue-400" : g.provider === "credentials" ? "bg-[#0D6E6E]" : "bg-slate-400"}`} />
