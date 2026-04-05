@@ -16,37 +16,43 @@ export default function AdminLayoutClient({
   userRole = "ADMIN",
   userInitial = "A"
 }: AdminLayoutClientProps) {
-  // Initialize state from localStorage (client-side only)
-  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(() => {
-    if (typeof window !== "undefined") {
-      const savedState = localStorage.getItem("admin-sidebar-collapsed")
-      return savedState === "true"
-    }
-    return false
-  })
+  // Initialize state to false (same on server and client to avoid hydration mismatch)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
-  // Listen for sidebar state changes
+  // Load state from localStorage after hydration (client-side only)
   useEffect(() => {
-    const handleStorageChange = () => {
+    if (typeof window !== "undefined") {
       const savedState = localStorage.getItem("admin-sidebar-collapsed")
       if (savedState !== null) {
         setIsSidebarCollapsed(savedState === "true")
       }
     }
+  }, [])
 
-    // Listen for storage changes (from other tabs/windows)
-    window.addEventListener("storage", handleStorageChange)
+  // Listen for sidebar state changes
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const handleStorageChange = () => {
+        const savedState = localStorage.getItem("admin-sidebar-collapsed")
+        if (savedState !== null) {
+          setIsSidebarCollapsed(savedState === "true")
+        }
+      }
 
-    // Custom event for sidebar toggle within same tab
-    const handleSidebarToggle = (event: CustomEvent) => {
-      setIsSidebarCollapsed(event.detail.isCollapsed)
-    }
-    
-    window.addEventListener("sidebar-toggle", handleSidebarToggle as EventListener)
+      // Listen for storage changes (from other tabs/windows)
+      window.addEventListener("storage", handleStorageChange)
 
-    return () => {
-      window.removeEventListener("storage", handleStorageChange)
-      window.removeEventListener("sidebar-toggle", handleSidebarToggle as EventListener)
+      // Custom event for sidebar toggle within same tab
+      const handleSidebarToggle = (event: CustomEvent) => {
+        setIsSidebarCollapsed(event.detail.isCollapsed)
+      }
+      
+      window.addEventListener("sidebar-toggle", handleSidebarToggle as EventListener)
+
+      return () => {
+        window.removeEventListener("storage", handleStorageChange)
+        window.removeEventListener("sidebar-toggle", handleSidebarToggle as EventListener)
+      }
     }
   }, [])
 

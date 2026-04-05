@@ -13,7 +13,8 @@ import {
   ChevronLeft,
   ChevronRight as ChevronRightIcon,
   Menu,
-  X
+  X,
+  Target
 } from "lucide-react"
 
 interface CollapsibleSidebarProps {
@@ -27,19 +28,25 @@ export default function CollapsibleSidebar({
   userRole = "ADMIN",
   userInitial = "A"
 }: CollapsibleSidebarProps) {
-  // Initialize state from localStorage (client-side only)
-  const [isCollapsed, setIsCollapsed] = useState(() => {
+  // Initialize state to false (same on server and client to avoid hydration mismatch)
+  const [isCollapsed, setIsCollapsed] = useState(false)
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
+
+  // Load state from localStorage after hydration (client-side only)
+  useEffect(() => {
     if (typeof window !== "undefined") {
       const savedState = localStorage.getItem("admin-sidebar-collapsed")
-      return savedState === "true"
+      if (savedState !== null) {
+        setIsCollapsed(savedState === "true")
+      }
     }
-    return false
-  })
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
+  }, [])
 
   // Save state to localStorage
   useEffect(() => {
-    localStorage.setItem("admin-sidebar-collapsed", isCollapsed.toString())
+    if (typeof window !== "undefined") {
+      localStorage.setItem("admin-sidebar-collapsed", isCollapsed.toString())
+    }
   }, [isCollapsed])
 
   const toggleSidebar = () => {
@@ -63,6 +70,7 @@ export default function CollapsibleSidebar({
   const menuItems = [
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
     { label: "Content CMS", href: "/admin/cms", icon: FileText },
+    { label: "Predictions", href: "/admin/predictions", icon: Target },
     { label: "User Management", href: "/admin/users", icon: Users },
     { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
     { label: "Settings", href: "/admin/settings", icon: Settings },

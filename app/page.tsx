@@ -14,6 +14,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { getFeaturedResearch, getFeaturedInsights } from '@/lib/content';
 import { prisma } from '@/lib/prisma';
 import type { ResearchPost, InsightPost } from '@/types';
+import { GlobalForecastingTicker } from '@/components/ui/GlobalForecastingTicker';
 
 async function getHomePagePosts() {
   // Try to get DB-driven featured selections first
@@ -365,6 +366,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Global Forecasting Ticker */}
+      <GlobalForecastingTicker />
     </>
   );
 }

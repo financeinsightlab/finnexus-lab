@@ -1,7 +1,6 @@
 "use client"
 
 import { useEditor, EditorContent, ReactRenderer } from "@tiptap/react"
-import { BubbleMenu } from "@tiptap/react/menus"
 import { Extension } from "@tiptap/core"
 import StarterKit from "@tiptap/starter-kit"
 import Underline from "@tiptap/extension-underline"
@@ -348,8 +347,8 @@ const Editor = ({ content, onChange }: EditorProps) => {
         <EditorContent editor={editor} />
       </div>
 
-      {/* Bubble Menu for quick formatting */}
-      {editor && (
+      {/* Bubble Menu for quick formatting - temporarily disabled due to import issues */}
+      {/* {editor && (
         <BubbleMenu editor={editor} options={{ offset: 12 }} className="flex bg-[#1A1F2E] border border-[#2D3748] rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)] anim-fade-up border-white/10 p-1 gap-1">
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
@@ -371,7 +370,7 @@ const Editor = ({ content, onChange }: EditorProps) => {
             <LinkIcon className="w-4 h-4" />
           </button>
         </BubbleMenu>
-      )}
+      )} */}
     </div>
   )
 }

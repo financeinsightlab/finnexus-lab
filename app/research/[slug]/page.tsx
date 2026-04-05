@@ -11,6 +11,7 @@ import { PrismaClient } from "@prisma/client"
 import ContentRenderer from "@/components/ContentRenderer"
 import { ChevronLeft, Calendar, User, Tag as TagIcon } from "lucide-react"
 import React from "react"
+import { CommentSection } from "@/components/ui/CommentSection"
 
 const prisma = new PrismaClient()
 
@@ -77,6 +78,7 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
         <article className="max-w-4xl mx-auto px-6 pb-32">
           <div className="bg-[#0F2335] rounded-3xl p-8 md:p-12 border border-white/5 shadow-2xl">
             <ContentRenderer content={dbPost.content} />
+            <CommentSection postId={dbPost.id} currentPath={`/research/${slug}`} />
           </div>
         </article>
       </div>

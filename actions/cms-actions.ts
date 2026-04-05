@@ -22,18 +22,41 @@ export type PostFormData = {
   ogTitle?: string | null
   tags?: string[]
   publishedAt?: Date | null
+  
+  // Enhanced Metadata
+  difficulty?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT" | null
+  targetAudience?: string[]
+  contentStatus?: "DRAFT" | "REVIEW" | "APPROVED" | "PUBLISHED" | null
+  estimatedReadingTime?: number | null
+  
+  // Scheduling
+  scheduledPublishAt?: Date | null
 }
 
 export async function createPost(formData: PostFormData) {
   const session = await auth()
-  if (!session?.user || session.user.role !== "ADMIN") {
+  if (!session?.user || !["ADMIN", "ANALYST"].includes(session.user.role)) {
     throw new Error("Unauthorized")
+  }
+
+  let validAuthorId = session.user.id!;
+  const existingUser = await prisma.user.findUnique({ where: { id: validAuthorId } });
+  if (!existingUser) {
+    console.warn("Cached session ID not found in database. Creating emergency dev user.");
+    await prisma.user.create({
+      data: {
+        id: validAuthorId,
+        email: `dev-${validAuthorId}@finnexus.com`,
+        name: 'Admin Developer',
+        role: 'ADMIN'
+      }
+    });
   }
 
   const post = await prisma.post.create({
     data: {
       ...formData,
-      authorId: session.user.id!,
+      authorId: validAuthorId,
       publishedAt: formData.published ? new Date() : null,
     },
   })
@@ -45,8 +68,15 @@ export async function createPost(formData: PostFormData) {
 
 export async function updatePost(id: string, formData: PostFormData) {
   const session = await auth()
-  if (!session?.user || session.user.role !== "ADMIN") {
+  const userRole = session?.user?.role as string
+  if (!session?.user || !["ADMIN", "ANALYST"].includes(userRole)) {
     throw new Error("Unauthorized")
+  }
+
+  const existingPost = await prisma.post.findUnique({ where: { id } })
+  if (!existingPost) throw new Error("Post not found")
+  if (userRole === "ANALYST" && existingPost.authorId !== session.user.id) {
+    throw new Error("You can only modify your own content.")
   }
 
   const post = await prisma.post.update({
@@ -65,8 +95,15 @@ export async function updatePost(id: string, formData: PostFormData) {
 
 export async function deletePost(id: string) {
   const session = await auth()
-  if (!session?.user || session.user.role !== "ADMIN") {
+  const userRole = session?.user?.role as string
+  if (!session?.user || !["ADMIN", "ANALYST"].includes(userRole)) {
     throw new Error("Unauthorized")
+  }
+
+  const existingPost = await prisma.post.findUnique({ where: { id } })
+  if (!existingPost) throw new Error("Post not found")
+  if (userRole === "ANALYST" && existingPost.authorId !== session.user.id) {
+    throw new Error("You can only modify your own content.")
   }
 
   const post = await prisma.post.delete({
@@ -80,7 +117,8 @@ export async function deletePost(id: string) {
 
 export async function togglePublishPost(id: string) {
   const session = await auth()
-  if (!session?.user || session.user.role !== "ADMIN") {
+  const userRole = session?.user?.role as string
+  if (!session?.user || !["ADMIN", "ANALYST"].includes(userRole)) {
     throw new Error("Unauthorized")
   }
 
@@ -90,6 +128,9 @@ export async function togglePublishPost(id: string) {
 
   if (!post) {
     throw new Error("Post not found")
+  }
+  if (userRole === "ANALYST" && post.authorId !== session.user.id) {
+    throw new Error("You can only modify your own content.")
   }
 
   const updatedPost = await prisma.post.update({

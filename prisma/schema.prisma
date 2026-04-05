@@ -14,6 +14,7 @@ model User {
   emailVerified      DateTime?
   image              String?
   password           String?
+  customBadge        String?
   role               UserRole           @default(MEMBER)
   stripeCustomerId   String?            @unique
   subscriptionStatus SubscriptionStatus @default(INACTIVE)
@@ -25,6 +26,9 @@ model User {
   posts              Post[]
   savedArticles      SavedArticle[]
   sessions           Session[]
+  predictions        Prediction[]
+  comments           Comment[]
+  analystScore       AnalystScore?
 }
 
 model Account {
@@ -88,11 +92,17 @@ model Post {
   ogImage         String?
   ogTitle         String?
   tags            String[]    @default([])
+  difficulty      String      @default("INTERMEDIATE")
+  targetAudience  String[]    @default([])
+  contentStatus   String      @default("DRAFT") // DRAFT, REVIEW, APPROVED, PUBLISHED
+  estimatedReadingTime Int      @default(5)
+  scheduledPublishAt DateTime?
   viewCount       Int         @default(0)
   publishedAt     DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   author          User        @relation(fields: [authorId], references: [id])
+  comments        Comment[]
 
   @@index([type])
   @@index([published])
@@ -194,6 +204,7 @@ enum UserRole {
   MEMBER
   VIEWER
   ADMIN
+  ANALYST
 }
 
 enum SubscriptionStatus {
@@ -219,4 +230,70 @@ enum HomePageSection {
   TRACKERS
   PODCAST
   HERO_STATS
+}
+
+// ─── ANALYST CALIBRATION SCORE ────────────────────────────────────────────────
+
+enum PredictionStatus {
+  PENDING
+  CONFIRMED
+  INCORRECT
+  PARTIAL
+}
+
+model Prediction {
+  id             String           @id @default(cuid())
+  slug           String           @unique
+  authorId       String
+  author         User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  claim          String           // The prediction text
+  sector         String
+  resolveDate    DateTime
+  status         PredictionStatus @default(PENDING)
+  resolutionNote String?
+  reportSlug     String?          // Which post/report it came from
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+  comments       Comment[]
+
+  @@index([authorId])
+  @@index([status])
+  @@index([sector])
+  @@index([resolveDate])
+}
+
+model AnalystScore {
+  id               String   @id @default(cuid())
+  authorId         String   @unique
+  author           User     @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  totalPredictions Int      @default(0)
+  confirmed        Int      @default(0)
+  incorrect        Int      @default(0)
+  partial          Int      @default(0)
+  calibrationScore Float    @default(0)
+  longestStreak    Int      @default(0)
+  lastCalculated   DateTime @default(now())
+
+  @@index([authorId])
+  @@index([calibrationScore])
+}
+
+// ─── COMMENTS & COMMUNITY ──────────────────────────────────────────────────────
+
+model Comment {
+  id           String      @id @default(cuid())
+  content      String
+  authorId     String
+  author       User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  postId       String?
+  post         Post?       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  predictionId String?
+  prediction   Prediction? @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([authorId])
+  @@index([postId])
+  @@index([predictionId])
+  @@index([createdAt])
 }

@@ -10,7 +10,8 @@ export default async function AdminLayout({
   const session = await auth()
 
   if (!session?.user) redirect("/auth/signin")
-  if (session.user.role !== "ADMIN") redirect("/")
+  const userRole = session.user.role as string
+  if (!["ADMIN", "ANALYST"].includes(userRole)) redirect("/")
 
   return (
     <AdminLayoutClient

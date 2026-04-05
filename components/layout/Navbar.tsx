@@ -18,6 +18,9 @@ const mainLinks = [
 ];
 
 const moreLinks = [
+  { label: 'Radar',        href: '/radar',          icon: '📡' },
+  { label: 'Predictions',  href: '/predictions',    icon: '🎯' },
+  { label: 'Data Freshness',href: '/data-freshness',icon: '🟢' },
   { label: 'Services',     href: '/services',     icon: '🎯' },
   { label: 'About',        href: '/about',        icon: 'ℹ️' },
   { label: 'Podcast',      href: '/podcast',      icon: '🎙️' },
