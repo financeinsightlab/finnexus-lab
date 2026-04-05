@@ -18,7 +18,7 @@ const SECTORS = [
 export default async function AdminPredictionsPage() {
   const session = await auth();
   if (!session?.user) redirect('/auth/signin');
-  if (session.user.role !== 'ADMIN') redirect('/');
+  if (!["ADMIN", "ANALYST"].includes(session.user.role as string)) redirect('/');
 
   const [overdueRaw, allRaw, scores] = await Promise.all([
     getOverduePendingPredictions(),

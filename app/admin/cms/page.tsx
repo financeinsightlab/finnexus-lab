@@ -25,7 +25,7 @@ export default async function CMSDashboard({
 }) {
   const session = await auth()
   if (!session?.user) redirect("/auth/signin")
-  if (session.user.role !== "ADMIN") redirect("/")
+  if (!["ADMIN", "ANALYST"].includes(session.user.role as string)) redirect("/")
 
   const params = await searchParams
   const type = params.type as ArticleType | undefined

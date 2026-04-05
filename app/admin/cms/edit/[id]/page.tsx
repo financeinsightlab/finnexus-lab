@@ -12,7 +12,7 @@ export default async function EditPostPage({
   const session = await auth()
   const { id } = await params
 
-  if (!session?.user || session.user.role !== "ADMIN") redirect("/")
+  if (!session?.user || !["ADMIN", "ANALYST"].includes(session.user.role as string)) redirect("/")
 
   // Fetch the post
   let post = null
@@ -29,6 +29,11 @@ export default async function EditPostPage({
   }
 
   if (!post) {
+    redirect("/admin/cms")
+  }
+
+  // Analysts can only edit their own posts
+  if (session.user.role === "ANALYST" && post.authorId !== session.user.id) {
     redirect("/admin/cms")
   }
 
