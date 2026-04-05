@@ -29,7 +29,7 @@ type UserData = {
 export default function UsersTableClient({ initialUsers }: { initialUsers: UserData[] }) {
   const [loadingId, setLoadingId] = useState<string | null>(null);
 
-  const ROLES = ['MEMBER', 'VIEWER', 'ADMIN'] as const;
+  const ROLES = ['MEMBER', 'VIEWER', 'ANALYST', 'ADMIN'] as const;
   const PLANS = ['FREE', 'PRO', 'ELITE', 'TEAM', 'PROFESSIONAL', 'ENTERPRISE', 'API_ONLY'];
   const STATUSES = ['ACTIVE', 'INACTIVE', 'TRIALING', 'PAST_DUE', 'CANCELED'];
   const SERVICES = [

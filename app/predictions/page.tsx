@@ -27,6 +27,7 @@ export default async function PredictionsBoardPage() {
 
   const session = await auth();
   const isLoggedIn = !!session?.user;
+  const isAdmin = session?.user?.role === "ADMIN";
 
   return (
     <div className="min-h-screen bg-[#0B0D13]">
@@ -35,6 +36,7 @@ export default async function PredictionsBoardPage() {
         sectors={sectors}
         stats={stats}
         isLoggedIn={isLoggedIn}
+        isAdmin={isAdmin}
       />
     </div>
   );

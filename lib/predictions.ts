@@ -46,7 +46,7 @@ export async function getOverduePendingPredictions() {
     },
     orderBy: { resolveDate: 'asc' },
     include: {
-      author: { select: { id: true, name: true, email: true } },
+      author: { select: { id: true, name: true, email: true, role: true, customBadge: true } },
     },
   });
 }
@@ -55,7 +55,7 @@ export async function getPredictionBySlug(slug: string) {
   return prisma.prediction.findUnique({
     where: { slug },
     include: {
-      author: { select: { id: true, name: true, email: true } },
+      author: { select: { id: true, name: true, email: true, role: true, customBadge: true } },
     },
   });
 }

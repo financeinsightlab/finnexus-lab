@@ -11,6 +11,7 @@ interface PredictionsClientProps {
   sectors: string[]
   stats: any
   isLoggedIn: boolean
+  isAdmin: boolean
 }
 
 const STATUS_CONFIG = {
@@ -24,7 +25,7 @@ function slugify(str: string) {
   return (str ?? '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 }
 
-export default function PredictionsClient({ predictions, sectors, stats, isLoggedIn }: PredictionsClientProps) {
+export default function PredictionsClient({ predictions, sectors, stats, isLoggedIn, isAdmin }: PredictionsClientProps) {
   const [activeSector, setActiveSector] = useState('All')
   const [activeStatus, setActiveStatus] = useState('All')
 
@@ -193,16 +194,16 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
               </div>
             )}
 
-            {/* Infinite Scrolling Ticker container */}
+            {/* Community Feed Scrolling Container */}
             <div className="relative h-[800px] overflow-hidden bg-[#1A1F2E]/50 rounded-2xl border border-white/5 py-4 shrink-0">
               {/* Fade out edges */}
-              <div className="absolute top-0 w-full h-20 bg-gradient-to-b from-[#0B0D13] to-transparent z-10 pointer-events-none" />
-              <div className="absolute bottom-0 w-full h-20 bg-gradient-to-t from-[#0B0D13] to-transparent z-10 pointer-events-none" />
+              <div className="absolute top-0 w-full h-10 bg-gradient-to-b from-[#0B0D13] to-transparent z-10 pointer-events-none" />
+              <div className="absolute bottom-0 w-full h-10 bg-gradient-to-t from-[#0B0D13] to-transparent z-10 pointer-events-none" />
               
-              <div className="flex flex-col gap-4 animate-marquee-vertical hover:[animation-play-state:paused] px-4">
-                {/* Duplicate the array a few times to ensure endless seamless scrolling */}
-                {[...communityPredictions, ...communityPredictions, ...communityPredictions].map((p, idx) => (
-                  <div key={`${p.id}-${idx}`} className="bg-white/5 border border-white/10 rounded-xl p-4 shrink-0">
+              <div className="flex flex-col gap-4 overflow-y-auto h-full px-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                {/* Scrollable List without duplicates */}
+                {communityPredictions.map((p) => (
+                  <div key={p.id} className="bg-white/5 border border-white/10 rounded-xl p-4 shrink-0 relative group">
                     <div className="flex justify-between items-center mb-2">
                        <span className="font-bold text-white text-xs">{p.author.name}</span>
                        <VerificationBadge role={p.author.role} customBadge={p.author.customBadge} />
@@ -212,8 +213,30 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
                        <span>{new Date(p.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                        <span className="text-teal-400">{p.status}</span>
                     </div>
+                    
+                    {/* Admin Delete Action for live feed */}
+                    {isAdmin && (
+                       <button
+                         onClick={async () => {
+                           if (!confirm("Delete this community prediction?")) return;
+                           const formData = new FormData();
+                           formData.append("id", p.id);
+                           const { deletePredictionAction } = await import('@/app/admin/predictions/actions');
+                           await deletePredictionAction(formData);
+                         }}
+                         className="absolute top-2 right-2 text-xs font-bold bg-red-500/10 text-red-400 px-2 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                       >
+                         Delete
+                       </button>
+                    )}
                   </div>
                 ))}
+                
+                {communityPredictions.length === 0 && (
+                  <div className="text-center py-20">
+                    <p className="text-slate-500 text-sm">No community predictions yet. Be the first!</p>
+                  </div>
+                )}
               </div>
             </div>
 

@@ -20,11 +20,14 @@ export default async function AdminPredictionsPage() {
   if (!session?.user) redirect('/auth/signin');
   if (session.user.role !== 'ADMIN') redirect('/');
 
-  const [overdue, all, scores] = await Promise.all([
+  const [overdueRaw, allRaw, scores] = await Promise.all([
     getOverduePendingPredictions(),
     getAllPredictions(),
     getAllAnalystScores(),
   ]);
+
+  const all = allRaw.filter((p) => p.author.role === "ADMIN" || p.author.role === "ANALYST");
+  const overdue = overdueRaw.filter((p) => p.author.role === "ADMIN" || p.author.role === "ANALYST");
 
   const pending = all.filter((p) => p.status === 'PENDING').length;
   const confirmed = all.filter((p) => p.status === 'CONFIRMED').length;

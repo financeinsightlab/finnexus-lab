@@ -155,6 +155,7 @@ export default async function AdminUsersPage({
           >
             <option value="">All Roles</option>
             <option value="ADMIN">ADMIN</option>
+            <option value="ANALYST">ANALYST</option>
             <option value="VIEWER">VIEWER</option>
             <option value="MEMBER">MEMBER</option>
           </select>
