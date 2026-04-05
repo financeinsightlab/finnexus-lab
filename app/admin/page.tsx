@@ -19,7 +19,7 @@ import React from "react"
 export default async function AdminDashboard() {
   const session = await auth()
   if (!session?.user) redirect("/auth/signin")
-  if (session.user.role !== "ADMIN") redirect("/")
+  if (session.user.role !== "ADMIN") redirect("/admin/cms")
 
   const now = new Date()
   const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000)

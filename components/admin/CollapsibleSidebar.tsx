@@ -14,7 +14,8 @@ import {
   ChevronRight as ChevronRightIcon,
   Menu,
   X,
-  Target
+  Target,
+  Lock
 } from "lucide-react"
 
 interface CollapsibleSidebarProps {
@@ -68,12 +69,12 @@ export default function CollapsibleSidebar({
   }
 
   const menuItems = [
-    { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
+    { label: "Dashboard", href: "/admin", icon: LayoutDashboard, adminOnly: true },
     { label: "Content CMS", href: "/admin/cms", icon: FileText },
     { label: "Predictions", href: "/admin/predictions", icon: Target },
-    { label: "User Management", href: "/admin/users", icon: Users },
-    { label: "Analytics", href: "/admin/analytics", icon: BarChart3 },
-    { label: "Settings", href: "/admin/settings", icon: Settings },
+    { label: "User Management", href: "/admin/users", icon: Users, adminOnly: true },
+    { label: "Analytics", href: "/admin/analytics", icon: BarChart3, adminOnly: true },
+    { label: "Settings", href: "/admin/settings", icon: Settings, adminOnly: true },
   ]
 
   // Sidebar width classes
@@ -129,7 +130,39 @@ export default function CollapsibleSidebar({
 
           {/* Navigation */}
           <nav className="flex-1 px-4 space-y-1">
-            {menuItems.map((item) => (
+            {menuItems.map((item) => {
+              const isLocked = item.adminOnly && userRole !== "ADMIN"
+              
+              if (isLocked) {
+                return (
+                  <div 
+                    key={item.href}
+                    className={`
+                      flex items-center gap-3 px-4 py-3 rounded-xl 
+                      transition-all relative overflow-hidden group
+                      opacity-40 cursor-not-allowed bg-transparent
+                      ${isCollapsed ? 'justify-center' : ''}
+                    `}
+                    title={isCollapsed ? `${item.label} (Locked)` : "LOCKED"}
+                  >
+                    <div className="absolute inset-y-2 left-0 w-1 bg-slate-600 rounded-full scale-y-0 transition-transform duration-200"></div>
+                    <item.icon className="w-5 h-5 opacity-50 flex-shrink-0 text-slate-500" />
+                    
+                    <span className={`
+                      text-sm font-medium transition-all duration-300 text-slate-500
+                      ${isCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}
+                    `}>
+                      {item.label}
+                    </span>
+                    
+                    {!isCollapsed && (
+                      <Lock className="ml-auto w-4 h-4 text-slate-600 flex-shrink-0" />
+                    )}
+                  </div>
+                )
+              }
+
+              return (
               <Link 
                 key={item.href}
                 href={item.href} 
@@ -159,7 +192,7 @@ export default function CollapsibleSidebar({
                   ${isCollapsed ? 'hidden' : ''}
                 `} />
               </Link>
-            ))}
+            )})}
           </nav>
 
           {/* User Profile / Exit Control */}

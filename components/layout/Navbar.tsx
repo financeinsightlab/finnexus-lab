@@ -273,9 +273,9 @@ export default function Navbar() {
                           <span className="flex-1">Dashboard</span>
                           <span className="text-gray-600 group-hover/item:text-teal-500 transition-colors text-xs">→</span>
                         </Link>
-                        {(session.user as { role?: string })?.role === 'ADMIN' && (
+                        {['ADMIN', 'ANALYST'].includes((session.user as { role?: string })?.role || '') && (
                           <Link
-                            href="/admin/users"
+                            href={(session.user as {role?: string})?.role === 'ADMIN' ? "/admin" : "/admin/cms"}
                             onClick={() => setUserOpen(false)}
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors group/item text-gray-300 hover:bg-white/5 hover:text-white"
                           >
@@ -437,8 +437,12 @@ export default function Navbar() {
                     <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-2 py-2.5 border border-teal-500/40 text-teal-400 rounded-xl text-sm font-medium hover:bg-teal-500/10 transition-all">
                       Dashboard
                     </Link>
-                    {(session.user as { role?: string })?.role === 'ADMIN' && (
-                      <Link href="/admin/users" onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity">
+                    {['ADMIN', 'ANALYST'].includes((session.user as { role?: string })?.role || '') && (
+                      <Link 
+                        href={(session.user as {role?: string})?.role === 'ADMIN' ? "/admin" : "/admin/cms"} 
+                        onClick={() => setMobileOpen(false)} 
+                        className="flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                      >
                         Admin
                       </Link>
                     )}
