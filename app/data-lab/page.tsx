@@ -1,4 +1,4 @@
-// FILE: app/data-lab/page.tsx
+﻿// FILE: app/data-lab/page.tsx
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllDataLab } from '@/lib/content';
@@ -7,8 +7,8 @@ import CTAButton from '@/components/ui/CTAButton';
 import SectionHeader from '@/components/ui/SectionHeader';
 
 export const metadata: Metadata = {
-  title: 'Data Lab | FinNexus Lab',
-  description: 'Power BI dashboards, Python analyses, and Excel financial models that power FinNexus Lab research.',
+  title: 'Data Lab | Kunwar Analytics',
+  description: 'Power BI dashboards, Python analyses, and Excel financial models that power Kunwar Analytics research.',
 };
 
 export default function DataLabPage() {
@@ -32,7 +32,7 @@ export default function DataLabPage() {
               Analytics Projects & Dashboards
             </h1>
             <p className="text-xl text-gray-300 mb-10">
-              The quantitative engine behind FinNexus Lab research —
+              The quantitative engine behind Kunwar Analytics research —
               Power BI dashboards, Python analyses, and Excel financial models.
             </p>
             

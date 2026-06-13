@@ -1,4 +1,4 @@
-# FinNexus Lab Corporate Design System
+﻿# Kunwar Analytics Corporate Design System
 
 ## Overview
 Unified design system for a professional financial services platform with corporate aesthetics.

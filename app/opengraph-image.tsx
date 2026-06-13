@@ -1,7 +1,7 @@
 import { ImageResponse } from 'next/og';
 
 export const runtime = 'edge';
-export const alt = 'FinNexus Lab — Financial Intelligence Platform';
+export const alt = 'Kunwar Analytics — Financial Intelligence Platform';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -73,8 +73,8 @@ export default async function Image() {
             lineHeight: '1.1',
           }}
         >
-          FinNexus{' '}
-          <span style={{ color: '#38BDF8' }}>Lab</span>
+          Kunwar{' '}
+          <span style={{ color: '#38BDF8' }}>Analytics</span>
         </h1>
 
         <p

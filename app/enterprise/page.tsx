@@ -1,9 +1,9 @@
-// FILE: app/enterprise/page.tsx
+﻿// FILE: app/enterprise/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Enterprise & B2B Solutions | FinNexus Lab',
+  title: 'Enterprise & B2B Solutions | Kunwar Analytics',
   description: 'Research intelligence for organizations. Enterprise licenses, team plans, and B2B solutions with dedicated support and custom research capabilities.',
 };
 

@@ -1,7 +1,7 @@
 // FILE: app/robots.ts
 import { MetadataRoute } from 'next';
 
-const BASE = 'https://finnexuslab.com'; // ⚠ REPLACE with your real domain
+const BASE = 'https://kunwaranalytics.in'; // ⚠ REPLACE with your real domain
 
 export default function robots(): MetadataRoute.Robots {
   return {

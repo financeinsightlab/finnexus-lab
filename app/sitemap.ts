@@ -2,7 +2,7 @@
 import { MetadataRoute } from 'next';
 import { getAllResearch, getAllInsights } from '@/lib/content';
 
-const BASE = 'https://finnexuslab.com'; // ⚠ REPLACE with your real domain
+const BASE = 'https://kunwaranalytics.in'; // ⚠ REPLACE with your real domain
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const safeDate = (value: unknown) => {

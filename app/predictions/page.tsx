@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import { getAllPredictions } from '@/lib/predictions';
 import { auth } from '@/auth';
 import PredictionsClient from './PredictionsClient';
 
 export const metadata: Metadata = {
-  title: 'Predictions Board | FinNexus Lab',
+  title: 'Predictions Board | Kunwar Analytics',
   description:
-    'Every prediction made by FinNexus Lab analysts — tracked, timestamped, and resolved publicly. Full accountability in financial intelligence.',
+    'Every prediction made by Kunwar Analytics analysts — tracked, timestamped, and resolved publicly. Full accountability in financial intelligence.',
 };
 
 export const dynamic = 'force-dynamic';

@@ -1,10 +1,10 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import { getAllSectorConsensus } from '@/lib/sentimentEngine';
 import ConsensusRadar from '@/components/ui/ConsensusRadar';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
-  title: 'Contrarian Signal Radar | FinNexus Lab',
+  title: 'Contrarian Signal Radar | Kunwar Analytics',
   description:
     'Live consensus-monitoring across Indian market sectors. Surface what the market is ignoring — the contrarian edge every analyst needs.',
 };

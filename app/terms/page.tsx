@@ -1,4 +1,4 @@
-import { FileText, Scale, Gavel, Shield } from 'lucide-react';
+﻿import { FileText, Scale, Gavel, Shield } from 'lucide-react';
 import Link from 'next/link';
 
 export default function TermsPage() {
@@ -19,7 +19,7 @@ export default function TermsPage() {
             <div className="prose prose-lg max-w-none">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Agreement to Terms</h2>
               <p className="text-gray-700 mb-6">
-                By accessing or using the FinNexus Lab platform, you agree to be bound by these Terms of Service.
+                By accessing or using the Kunwar Analytics platform, you agree to be bound by these Terms of Service.
                 If you disagree with any part of the terms, you may not access the platform.
               </p>
 
@@ -32,7 +32,7 @@ export default function TermsPage() {
               <h2 className="text-2xl font-bold text-gray-900 mb-6">3. Intellectual Property</h2>
               <p className="text-gray-700 mb-6">
                 All content, data, analytics, and research provided through the platform are proprietary
-                intellectual property of FinNexus Lab Corporation. Unauthorized reproduction, distribution,
+                intellectual property of Kunwar Analytics. Unauthorized reproduction, distribution,
                 or commercial use is strictly prohibited.
               </p>
 

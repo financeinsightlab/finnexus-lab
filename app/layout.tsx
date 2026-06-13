@@ -11,18 +11,18 @@ import { Suspense } from "react";
 
 export const metadata: Metadata = {
   title: {
-    default: 'FinNexus Lab — Financial Intelligence Platform',
-    template: '%s | FinNexus Lab'
+    default: 'Kunwar Analytics — Financial Intelligence Platform',
+    template: '%s | Kunwar Analytics'
   },
   description: 'Data-driven insights on markets, strategy and capital. Institutional-quality research.',
   keywords: ['financial analysis','market research','india quick commerce','fintech analysis','business analytics portfolio'],
-  authors: [{ name: 'FinNexus Lab' }],
-  creator: 'FinNexus Lab',
-  metadataBase: new URL('https://finnexuslab.com'),
+  authors: [{ name: 'Kunwar Analytics' }],
+  creator: 'Kunwar Analytics',
+  metadataBase: new URL('https://kunwaranalytics.in'),
   openGraph: {
     type: 'website',
     locale: 'en_IN',
-    title: 'FinNexus Lab — Financial Intelligence Platform',
+    title: 'Kunwar Analytics — Financial Intelligence Platform',
     description: 'Data-driven insights on markets, strategy and capital. Institutional-quality research.',
     images: [
       {
@@ -51,7 +51,7 @@ export const metadata: Metadata = {
   // ✅ Apple PWA support
   appleWebApp: {
     capable: true,
-    title: 'FinNexus Lab',
+    title: 'Kunwar Analytics',
     statusBarStyle: 'black-translucent',
   },
 };

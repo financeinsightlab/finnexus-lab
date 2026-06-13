@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import AlgoliaSearch from '@/components/research/AlgoliaSearch';
 import { prisma } from "@/lib/prisma"
 import Link from 'next/link';
@@ -6,7 +6,7 @@ import React from "react"
 import HeroBackground from '@/components/ui/HeroBackground';
 
 export const metadata: Metadata = {
-  title: 'Research | FinNexus Lab',
+  title: 'Research | Kunwar Analytics',
   description:
     'Search and explore in-depth research reports and strategic insights across Indian market sectors.',
 };
@@ -27,7 +27,7 @@ export default async function ResearchPage() {
     title: r.title,
     summary: r.excerpt,
     sector: 'Strategic Research',
-    author: 'FinNexus Admin',
+    author: 'Kunwar Analytics Admin',
     date: r.createdAt.toISOString(),
     featured: true,
   }));

@@ -183,7 +183,7 @@ export default function AlgoliaSearch() {
   }
 
   return (
-    <InstantSearch searchClient={searchClient} indexName="finnexus_content">
+    <InstantSearch searchClient={searchClient} indexName="kunwar_analytics_content">
       <div>
         <div className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
           <div className="wrap py-6">

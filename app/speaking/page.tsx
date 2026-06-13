@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+﻿import { Metadata } from 'next';
 import Link from 'next/link';
 import CopyButton from '@/components/ui/CopyButton';
 import HeroBackground from '@/components/ui/HeroBackground';
@@ -66,14 +66,14 @@ const EXPERTISE_AREAS = [
   },
   {
     title: 'Building a Financial Intelligence Platform',
-    desc: 'The technical and operational playbook for scaling FinNexus Lab.'
+    desc: 'The technical and operational playbook for scaling Kunwar Analytics.'
   }
 ];
 
 const BIOS = {
-  short: 'The founder of FinNexus Lab, an institutional-quality financial intelligence platform providing data-driven sector analysis, unit economics breakdowns, and strategic insights on Indian markets.',
-  medium: 'The founder of FinNexus Lab, a financial intelligence platform dedicated to democratising institutional-quality research. With deep expertise in Indian consumer tech, fintech, and quick commerce, FinNexus provides data-driven sector analytics, financial modelling tools, and strategic industry commentary for founders, analysts, and investors.',
-  long: 'As the founder of FinNexus Lab, they have built a premier financial intelligence platform that bridges the gap between raw market data and actionable strategic insight. FinNexus Lab publishes institutional-quality research on emerging Indian sectors like Quick Commerce, Fintech, and SaaS.\n\nPrior to FinNexus, they spent years dissecting unit economics, building complex financial models, and evaluating startup trajectories. Today, they leverage tools like Power BI, advanced financial modeling, and proprietary scraping to generate unique proprietary datasets. They frequently speak on topics regarding market research methodologies, data analytics in finance, and the future of consumer tech profitability in India.'
+  short: 'The founder of Kunwar Analytics, an institutional-quality financial intelligence platform providing data-driven sector analysis, unit economics breakdowns, and strategic insights on Indian markets.',
+  medium: 'The founder of Kunwar Analytics, a financial intelligence platform dedicated to democratising institutional-quality research. With deep expertise in Indian consumer tech, fintech, and quick commerce, Kunwar Analytics provides data-driven sector analytics, financial modelling tools, and strategic industry commentary for founders, analysts, and investors.',
+  long: 'As the founder of Kunwar Analytics, they have built a premier financial intelligence platform that bridges the gap between raw market data and actionable strategic insight. Kunwar Analytics publishes institutional-quality research on emerging Indian sectors like Quick Commerce, Fintech, and SaaS.\n\nPrior to Kunwar Analytics, they spent years dissecting unit economics, building complex financial models, and evaluating startup trajectories. Today, they leverage tools like Power BI, advanced financial modeling, and proprietary scraping to generate unique proprietary datasets. They frequently speak on topics regarding market research methodologies, data analytics in finance, and the future of consumer tech profitability in India.'
 };
 
 function getBadgeColor(type: string) {

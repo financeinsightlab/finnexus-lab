@@ -4,9 +4,9 @@ import HeroBackground from '@/components/ui/HeroBackground';
 import ContactForm from './ContactForm';
 
 export const metadata: Metadata = {
-  title: 'Contact | FinNexus Lab',
+  title: 'Contact | Kunwar Analytics',
   description:
-    'Get in touch with FinNexus Lab for research inquiries, financial modeling projects, and custom analytics solutions.',
+    'Get in touch with Kunwar Analytics for research inquiries, financial modeling projects, and custom analytics solutions.',
 };
 
 export default function ContactPage() {
@@ -43,13 +43,13 @@ export default function ContactPage() {
               <h3 className="font-semibold text-brand-navy mb-4">Direct Contact</h3>
               <div className="space-y-3">
                 <a
-                  href="mailto:hello@finnexuslab.com"
+                  href="mailto:hello@kunwaranalytics.in"
                   className="block text-brand-teal hover:text-brand-navy"
                 >
-                  📧 hello@finnexuslab.com
+                  📧 hello@kunwaranalytics.in
                 </a>
                 <a
-                  href="https://linkedin.com/company/finnexuslab"
+                  href="https://linkedin.com/company/kunwaranalytics"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block text-brand-teal hover:text-brand-navy"

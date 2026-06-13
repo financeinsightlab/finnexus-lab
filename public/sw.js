@@ -1,10 +1,10 @@
-/**
- * FinNexus Lab — Service Worker
+﻿/**
+ * Kunwar Analytics — Service Worker
  * Minimal service worker that caches static assets for PWA installability.
  * Extend with background sync / offline pages as needed.
  */
 
-const CACHE_NAME = 'finnexus-v1';
+const CACHE_NAME = 'Kunwar Analytics-v1';
 
 // Assets to pre-cache on install
 const PRE_CACHE = ['/', '/manifest.json', '/icons/icon-192.png', '/icons/icon-512.png'];

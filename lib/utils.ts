@@ -39,3 +39,40 @@ export const CATEGORY_VARIANT: Record<string, 'teal' | 'navy' | 'gold' | 'green'
   'Company Note': 'gold',
   'Market Update': 'green',
 };
+
+/**
+ * Check if a user has premium subscription access
+ * A user is considered premium if:
+ * 1. They are an ADMIN, or
+ * 2. They have an ACTIVE subscription status AND a premium subscription plan
+ */
+export function hasPremiumAccess(user: {
+  role?: string;
+  subscriptionStatus?: string;
+  subscriptionPlan?: string | null;
+}): boolean {
+  // Admin users always have premium access
+  if (user.role === 'ADMIN') {
+    return true;
+  }
+
+  // Check if subscription is active
+  const isActive = user.subscriptionStatus === 'ACTIVE';
+  
+  // Check if they have a premium plan
+  const premiumPlans = ['PRO', 'ELITE', 'TEAM', 'PROFESSIONAL', 'ENTERPRISE', 'API_ONLY'];
+  const hasPremiumPlan = premiumPlans.includes(user.subscriptionPlan || '');
+  
+  return isActive && hasPremiumPlan;
+}
+
+/**
+ * Check if a user needs to upgrade (shows subscription prompts)
+ */
+export function needsUpgrade(user: {
+  role?: string;
+  subscriptionStatus?: string;
+  subscriptionPlan?: string | null;
+}): boolean {
+  return !hasPremiumAccess(user);
+}

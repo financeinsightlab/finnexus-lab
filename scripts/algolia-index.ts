@@ -57,7 +57,7 @@ async function runIndexing() {
     // ✅ Algolia v5 indexing
     // In algoliasearch v5, `initIndex()` isn't available; use `client.saveObjects`.
     await client.saveObjects({
-      indexName: 'finnexus_content',
+      indexName: 'kunwar_analytics_content',
       objects: records,
     });
 

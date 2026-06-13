@@ -28,7 +28,7 @@ import {
 import Link from "next/link"
 import React from "react"
 import { contentTemplates, applyTemplate } from "@/lib/templates"
-import { Block } from "@/lib/blocks/registry"
+import { Block, markdownToBlocks } from "@/lib/blocks/registry"
 import ContentRenderer from "@/components/ContentRenderer"
 
 const BlockEditor = dynamic(() => import('@/components/admin/block-editor/BlockEditor'), { ssr: false })
@@ -96,6 +96,18 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
     return tomorrow.toISOString().split('T')[0]
   })
   const [publishTime, setPublishTime] = useState("09:00")
+
+  // Convert markdown content to blocks when switching to block editor
+  const handleSwitchToBlocks = () => {
+    setContentType('BLOCKS')
+    // If blocks are empty but we have markdown content, convert it
+    if (blocks.length === 0 && content.trim()) {
+      const convertedBlocks = markdownToBlocks(content)
+      if (convertedBlocks.length > 0) {
+        setBlocks(convertedBlocks)
+      }
+    }
+  }
 
   const handleSave = async (isPublishing: boolean) => {
     setLoading(true)
@@ -308,7 +320,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
               <span className="hidden md:inline">Markdown</span>
             </button>
             <button
-              onClick={() => setContentType('BLOCKS')}
+              onClick={handleSwitchToBlocks}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'BLOCKS' ? 'bg-[#0D6E6E] text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
               title="Visual Block Builder"
             >

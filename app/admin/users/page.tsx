@@ -1,4 +1,4 @@
-import { prisma } from "@/lib/prisma"
+﻿import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import React from "react"
@@ -10,7 +10,7 @@ import Link from "next/link"
 
 export const metadata: Metadata = {
   title: "Manage Users | Admin Panel",
-  description: "User management and analytics for FinNexus Lab.",
+  description: "User management and analytics for Kunwar Analytics.",
 }
 
 export default async function AdminUsersPage({

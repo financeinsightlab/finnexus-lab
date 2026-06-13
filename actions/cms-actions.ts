@@ -50,7 +50,7 @@ export async function createPost(formData: PostFormData) {
     await prisma.user.create({
       data: {
         id: validAuthorId,
-        email: `dev-${validAuthorId}@finnexus.com`,
+        email: `dev-${validAuthorId}@kunwaranalytics.in`,
         name: 'Admin Developer',
         role: 'ADMIN'
       }

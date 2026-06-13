@@ -1,10 +1,10 @@
-// FILE: app/tracker/page.tsx
+﻿// FILE: app/tracker/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getSectorConsensus } from '@/lib/sentimentEngine';
 
 export const metadata: Metadata = {
-  title: 'Sector Intelligence Trackers | FinNexus Lab',
+  title: 'Sector Intelligence Trackers | Kunwar Analytics',
   description: 'Live data and insights across 8+ Indian market sectors. Updated quarterly with comprehensive market intelligence.',
 };
 

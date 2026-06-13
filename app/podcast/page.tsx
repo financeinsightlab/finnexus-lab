@@ -1,12 +1,12 @@
-// FILE: app/podcast/page.tsx (server component, Metadata)
+﻿// FILE: app/podcast/page.tsx (server component, Metadata)
 import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllPodcastEpisodes } from '@/lib/content';
 import HeroBackground from '@/components/ui/HeroBackground';
 
 export const metadata: Metadata = {
-  title: 'Podcast | FinNexus Lab',
-  description: 'Market intelligence in 30 minutes. The FinNexus Lab Podcast delivers sharp analysis on Indian startups, quick commerce, and financial markets.',
+  title: 'Podcast | Kunwar Analytics',
+  description: 'Market intelligence in 30 minutes. The Kunwar Analytics Podcast delivers sharp analysis on Indian startups, quick commerce, and financial markets.',
 };
 
 export default function PodcastPage() {
@@ -24,7 +24,7 @@ export default function PodcastPage() {
               <span className="section-label text-brand-teal">Podcast</span>
             </div>
             <h1 className="text-4xl md:text-6xl font-bold text-white mt-4 mb-6">
-              The FinNexus Lab Podcast
+              The Kunwar Analytics Podcast
             </h1>
             <p className="text-xl text-gray-300 mb-10">
               Market Intelligence in 30 Minutes

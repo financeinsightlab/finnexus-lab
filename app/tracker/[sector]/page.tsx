@@ -15,6 +15,15 @@ const SECTOR_META: Record<
     updatedAt:  string;
     publicMetrics: { label: string; value: string; unit: string; change: string; changeType: 'up' | 'down' | 'flat' }[];
     lockedMetrics: string[];
+    subSectors?: { name: string; share: string; growth: string; keyPlayers: string[] }[];
+    marketTrends?: { trend: string; impact: 'High' | 'Medium' | 'Low'; description: string }[];
+    regulatoryUpdates?: { update: string; date: string; status: 'Implemented' | 'Pending' | 'Planned' }[];
+    futureOutlook?: {
+      marketSize2027: string;
+      cagr: string;
+      keyDrivers: string[];
+      risks: string[];
+    };
   }
 > = {
   'quick-commerce': {
@@ -32,14 +41,49 @@ const SECTOR_META: Record<
   'fintech': {
     name:      'Fintech',
     icon:      '💳',
-    headline:  'Digital payments penetration reaches 80% with UPI dominance',
+    headline:  'Digital payments penetration reaches 80% with UPI dominance — $1.3T market by 2027',
     updatedAt: 'Q1 2026',
     publicMetrics: [
       { label: 'UPI Monthly Transactions', value: '18.4B', unit: 'transactions/month', change: '+48% YoY', changeType: 'up' },
       { label: 'Digital Payments Penetration', value: '80%', unit: 'of retail', change: '+15pp YoY', changeType: 'up' },
       { label: 'Fintech Funding', value: '$2.1B', unit: 'FY25 total', change: '-12% YoY', changeType: 'down' },
+      { label: 'Neobank Users', value: '45M', unit: 'active users', change: '+85% YoY', changeType: 'up' },
+      { label: 'Insurtech Premiums', value: '₹12,500 Cr', unit: 'annual', change: '+62% YoY', changeType: 'up' },
+      { label: 'Wealthtech AUM', value: '₹8,200 Cr', unit: 'assets under mgmt', change: '+110% YoY', changeType: 'up' },
     ],
-    lockedMetrics: ['Per-Transaction Revenue by Platform', 'BNPL Default Rates', 'Neobank CAC Trends'],
+    lockedMetrics: [
+      'Per-Transaction Revenue by Platform',
+      'BNPL Default Rates by Quarter',
+      'Neobank CAC vs LTV Trends',
+      'Payment Gateway Market Share',
+      'Lending Fintech NIM Analysis',
+      'Regulatory Compliance Costs',
+      'Customer Acquisition Channels ROI'
+    ],
+    subSectors: [
+      { name: 'Payments', share: '45%', growth: '+35% YoY', keyPlayers: ['PhonePe', 'Google Pay', 'Paytm', 'Razorpay'] },
+      { name: 'Lending', share: '28%', growth: '+22% YoY', keyPlayers: ['Lendingkart', 'Capital Float', 'KreditBee', 'ZestMoney'] },
+      { name: 'Insurtech', share: '12%', growth: '+62% YoY', keyPlayers: ['Policybazaar', 'Acko', 'Digit', 'Coverfox'] },
+      { name: 'Wealthtech', share: '8%', growth: '+110% YoY', keyPlayers: ['Zerodha', 'Groww', 'Upstox', 'Smallcase'] },
+      { name: 'Neobanking', share: '7%', growth: '+85% YoY', keyPlayers: ['Jupiter', 'Fi', 'Niyo', 'Open'] },
+    ],
+    marketTrends: [
+      { trend: 'UPI 2.0 Adoption', impact: 'High', description: 'Credit on UPI driving new revenue streams' },
+      { trend: 'Regulatory Sandbox Expansion', impact: 'Medium', description: 'RBI expanding testing frameworks' },
+      { trend: 'Consolidation in Lending', impact: 'High', description: 'M&A activity increasing as funding tightens' },
+      { trend: 'Cross-border Payments Growth', impact: 'Medium', description: 'International UPI gaining traction' },
+    ],
+    regulatoryUpdates: [
+      { update: 'RBI Digital Lending Guidelines', date: 'Dec 2025', status: 'Implemented' },
+      { update: 'DPDPA Compliance Deadline', date: 'Mar 2026', status: 'Pending' },
+      { update: 'CBDC Pilot Expansion', date: 'Q2 2026', status: 'Planned' },
+    ],
+    futureOutlook: {
+      marketSize2027: '$1.3T',
+      cagr: '22%',
+      keyDrivers: ['UPI innovation', 'Financial inclusion', 'API banking', 'AI-driven underwriting'],
+      risks: ['Regulatory changes', 'Cybersecurity threats', 'Funding winter', 'Profitability pressure'],
+    },
   },
   'ev': {
     name:      'Electric Vehicles',
@@ -151,9 +195,9 @@ interface Props {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { sector } = await params;
   const meta = SECTOR_META[sector];
-  if (!meta) return { title: 'Sector Tracker | FinNexus Lab' };
+  if (!meta) return { title: 'Sector Tracker | Kunwar Analytics' };
   return {
-    title: `${meta.name} Sector Tracker | FinNexus Lab`,
+    title: `${meta.name} Sector Tracker | Kunwar Analytics`,
     description: meta.headline,
   };
 }
@@ -247,6 +291,137 @@ export default async function SectorTrackerPage({ params }: Props) {
           </div>
         </div>
       </section>
+
+      {/* ─── Sub‑Sector Breakdown (Fintech‑specific) ─── */}
+      {meta.subSectors && (
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <p className="section-label mb-6">Sub‑Sector Breakdown</p>
+            <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
+              {meta.subSectors.map((sub, i) => (
+                <div key={i} className="card p-5 text-center">
+                  <h4 className="font-bold text-brand-navy mb-2">{sub.name}</h4>
+                  <p className="text-3xl font-extrabold text-brand-teal mb-1">{sub.share}</p>
+                  <p className="text-xs text-gray-500 mb-3">Market Share</p>
+                  <div className="text-sm text-gray-700 mb-3">
+                    <span className="font-semibold">Growth:</span> {sub.growth}
+                  </div>
+                  <div className="text-left">
+                    <p className="text-xs text-gray-500 mb-2">Key Players:</p>
+                    <ul className="text-xs text-gray-700 space-y-1">
+                      {sub.keyPlayers.slice(0, 3).map((player, idx) => (
+                        <li key={idx} className="truncate">• {player}</li>
+                      ))}
+                      {sub.keyPlayers.length > 3 && (
+                        <li className="text-gray-500">+{sub.keyPlayers.length - 3} more</li>
+                      )}
+                    </ul>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ─── Market Trends ─── */}
+      {meta.marketTrends && (
+        <section className="py-12">
+          <div className="max-w-6xl mx-auto px-6">
+            <p className="section-label mb-6">Market Trends</p>
+            <div className="grid gap-5 md:grid-cols-2">
+              {meta.marketTrends.map((trend, i) => (
+                <div key={i} className="card p-5">
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="font-bold text-brand-navy">{trend.trend}</h4>
+                    <span className={`text-xs font-bold px-2 py-1 rounded-full ${
+                      trend.impact === 'High' ? 'bg-red-100 text-red-800' :
+                      trend.impact === 'Medium' ? 'bg-amber-100 text-amber-800' :
+                      'bg-green-100 text-green-800'
+                    }`}>
+                      {trend.impact} Impact
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600">{trend.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ─── Regulatory Updates ─── */}
+      {meta.regulatoryUpdates && (
+        <section className="py-12 bg-gray-50">
+          <div className="max-w-6xl mx-auto px-6">
+            <p className="section-label mb-6">Regulatory Updates</p>
+            <div className="space-y-4">
+              {meta.regulatoryUpdates.map((update, i) => (
+                <div key={i} className="card p-5 flex items-center justify-between">
+                  <div>
+                    <h4 className="font-bold text-brand-navy mb-1">{update.update}</h4>
+                    <p className="text-sm text-gray-500">Expected: {update.date}</p>
+                  </div>
+                  <span className={`text-xs font-bold px-3 py-1 rounded-full ${
+                    update.status === 'Implemented' ? 'bg-green-100 text-green-800' :
+                    update.status === 'Pending' ? 'bg-amber-100 text-amber-800' :
+                    'bg-blue-100 text-blue-800'
+                  }`}>
+                    {update.status}
+                  </span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* ─── Future Outlook ─── */}
+      {meta.futureOutlook && (
+        <section className="py-12">
+          <div className="max-w-6xl mx-auto px-6">
+            <p className="section-label mb-6">Future Outlook (2027)</p>
+            <div className="card p-8">
+              <div className="grid md:grid-cols-2 gap-8">
+                <div>
+                  <h4 className="font-bold text-brand-navy mb-4">Projections</h4>
+                  <div className="space-y-4">
+                    <div className="flex justify-between items-center pb-3 border-b">
+                      <span className="text-gray-600">Market Size</span>
+                      <span className="font-bold text-2xl text-brand-teal">{meta.futureOutlook.marketSize2027}</span>
+                    </div>
+                    <div className="flex justify-between items-center pb-3 border-b">
+                      <span className="text-gray-600">CAGR (2024‑27)</span>
+                      <span className="font-bold text-xl text-green-600">{meta.futureOutlook.cagr}</span>
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <h4 className="font-bold text-brand-navy mb-4">Key Drivers & Risks</h4>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <p className="text-sm font-semibold text-green-700 mb-2">Drivers</p>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        {meta.futureOutlook.keyDrivers.map((driver, i) => (
+                          <li key={i}>• {driver}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <p className="text-sm font-semibold text-red-700 mb-2">Risks</p>
+                      <ul className="text-sm text-gray-600 space-y-1">
+                        {meta.futureOutlook.risks.map((risk, i) => (
+                          <li key={i}>• {risk}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* ─── Subscriber Gate ─── */}
       <section className="py-12">

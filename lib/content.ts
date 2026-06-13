@@ -1,4 +1,4 @@
-import fs from 'fs';
+﻿import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
@@ -25,7 +25,7 @@ function normalizeResearchPost(data: Record<string, unknown>, slug: string, cont
     tags: toStringArray(data.tags),
     summary: typeof data.summary === 'string' ? data.summary : '',
     pageCount: typeof data.pageCount === 'number' ? data.pageCount : 0,
-    author: typeof data.author === 'string' ? data.author : 'FinNexus Lab',
+    author: typeof data.author === 'string' ? data.author : 'Kunwar Analytics',
     featured: Boolean(data.featured),
     coverImage: typeof data.coverImage === 'string' ? data.coverImage : undefined,
     content,
@@ -41,7 +41,7 @@ function normalizeInsightPost(data: Record<string, unknown>, slug: string, conte
     category: (typeof data.category === 'string' ? data.category : 'Market Update') as InsightPost['category'],
     readingTime: typeof data.readingTime === 'number' ? data.readingTime : 5,
     thesis: typeof data.thesis === 'string' ? data.thesis : '',
-    author: typeof data.author === 'string' ? data.author : 'FinNexus Lab',
+    author: typeof data.author === 'string' ? data.author : 'Kunwar Analytics',
     featured: Boolean(data.featured),
     content,
   };

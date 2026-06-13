@@ -232,7 +232,7 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
           id="global-search-title"
           className="min-w-0 truncate text-sm font-bold tracking-wide text-white"
         >
-          Search FinNexus Lab
+          Search Kunwar Analytics
         </h2>
         <button
           type="button"
@@ -246,7 +246,7 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
         </button>
       </div>
 
-      <InstantSearch searchClient={searchClient!} indexName="finnexus_content">
+      <InstantSearch searchClient={searchClient!} indexName="kunwar_analytics_content">
         <div className="flex min-h-0 flex-1 flex-col">
           <Configure hitsPerPage={8} />
           <div className="min-w-0 shrink-0 border-b border-gray-100 p-3 sm:p-4">

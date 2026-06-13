@@ -1,9 +1,9 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 import SectionHeader from '@/components/ui/SectionHeader';
 
 export const metadata: Metadata = {
-  title: 'Home | FinNexus Lab',
+  title: 'Home | Kunwar Analytics',
   description: 'Data-driven insights on markets, strategy and capital. Institutional-quality research.',
 };
 
@@ -42,7 +42,7 @@ async function getHomePagePosts() {
       .map(p => ({
         slug: p.slug, title: p.title, date: p.publishedAt?.toISOString() ?? new Date().toISOString(),
         sector: 'General', tags: p.tags, summary: p.excerpt ?? '', pageCount: 0,
-        author: 'FinNexus Lab', featured: true,
+        author: 'Kunwar Analytics', featured: true,
       }));
   } else {
     research = getFeaturedResearch(3);
@@ -60,7 +60,7 @@ async function getHomePagePosts() {
       .map(p => ({
         slug: p.slug, title: p.title, date: p.publishedAt?.toISOString() ?? new Date().toISOString(),
         category: 'Sector Analysis' as InsightPost['category'],
-        readingTime: 5, thesis: p.excerpt ?? '', author: 'FinNexus Lab', featured: true,
+        readingTime: 5, thesis: p.excerpt ?? '', author: 'Kunwar Analytics', featured: true,
       }));
   } else {
     insights = getFeaturedInsights(3);
@@ -313,7 +313,7 @@ export default async function HomePage() {
         <div className="wrap">
           <ScrollReveal>
             <SectionHeader
-              label="FinNexus Podcast"
+              label="Kunwar Analytics Podcast"
               title="Market Intelligence in 30 Minutes"
               align="center"
             />

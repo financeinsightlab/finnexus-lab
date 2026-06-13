@@ -72,7 +72,7 @@ export default function SignInPage() {
     <div className="min-h-screen flex items-center justify-center bg-brand-silver px-4 py-10">
       <div className="bg-white rounded-2xl p-8 md:p-10 w-full max-w-md shadow-lg">
         <div className="text-center mb-8">
-          <div className="font-extrabold tracking-tight text-2xl text-brand-navy">FinNexusLab</div>
+          <div className="font-extrabold tracking-tight text-2xl text-brand-navy">Kunwar Analytics</div>
           <div className="text-sm text-brand-slate mt-1">Financial Intelligence Platform</div>
         </div>
 

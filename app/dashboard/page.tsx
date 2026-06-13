@@ -1,4 +1,4 @@
-import Link from 'next/link';
+﻿import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { PrismaClient } from '@prisma/client';
 import { auth } from '@/auth';
@@ -82,7 +82,7 @@ export default async function DashboardPage() {
   );
 
   const displayName =
-    session.user.name ?? session.user.email ?? 'FinNexus Member';
+    session.user.name ?? session.user.email ?? 'Kunwar Analytics Member';
 
   const role = roleLabel(session.user.role as string | undefined);
   const subscriptionStatus = session.user.subscriptionStatus as string | undefined;

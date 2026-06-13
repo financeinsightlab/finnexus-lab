@@ -20,9 +20,12 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   try {
     const dbPost = await prisma.post.findUnique({ where: { slug } })
     if (dbPost) {
-      return {
-        title: `${dbPost.title} | Case Study`,
-        description: dbPost.excerpt || '',
+      // Only return metadata for published posts
+      if (dbPost.published) {
+        return {
+          title: `${dbPost.title} | Case Study`,
+          description: dbPost.excerpt || '',
+        }
       }
     }
   } catch (e) {}
@@ -45,6 +48,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   } catch (e) {}
 
   if (dbPost && dbPost.type === 'CASE_STUDY') {
+    // Check if post is published - if not, show 404
+    if (!dbPost.published) {
+      notFound();
+    }
     return (
       <div className="min-h-screen bg-[#0B1C2C] text-slate-200">
         <header className="relative overflow-hidden bg-brand-navy py-16 md:py-20 text-white">
@@ -61,7 +68,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <p className="text-xl text-slate-400 leading-relaxed max-w-3xl italic border-l-4 border-slate-700 pl-6">{dbPost.excerpt}</p>
               <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-slate-400 border-t border-white/5">
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" /> <span className="font-medium text-slate-300">{dbPost.author?.name || 'FinNexus Admin'}</span>
+                  <User className="w-4 h-4" /> <span className="font-medium text-slate-300">{dbPost.author?.name || 'Kunwar Analytics Admin'}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <Calendar className="w-4 h-4" /> <span>{new Date(dbPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>

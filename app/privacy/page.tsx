@@ -48,7 +48,7 @@ export default function PrivacyPage() {
             <div className="bg-white rounded-2xl p-8 border border-gray-200">
               <h2 className="text-2xl font-bold text-gray-900 mb-6">1. Introduction</h2>
               <p className="text-gray-700 mb-6">
-                FinNexus Lab Corporation is committed to protecting your privacy.
+                Kunwar Analytics is committed to protecting your privacy.
                 This Privacy Policy explains how we collect, use, disclose, and safeguard your information
                 when you use our corporate intelligence platform and related services.
               </p>
@@ -94,14 +94,14 @@ export default function PrivacyPage() {
               <p className="text-gray-700 mb-6">
                 Depending on your jurisdiction, you may have rights to access, correct, 
                 delete, or restrict processing of your personal data. To exercise these 
-                rights, contact our Data Protection Officer at dpo@finnexuslab.com.
+                rights, contact our Data Protection Officer at dpo@kunwaranalytics.in.
               </p>
 
               <h2 className="text-2xl font-bold text-gray-900 mb-6">6. Contact Information</h2>
               <div className="bg-gray-50 p-6 rounded-lg">
                 <p className="text-gray-700">
-                  <strong>Data Protection Officer:</strong> privacy@finnexuslab.com<br />
-                  <strong>Legal Department:</strong> legal@finnexuslab.com<br />
+                  <strong>Data Protection Officer:</strong> privacy@kunwaranalytics.in<br />
+                  <strong>Legal Department:</strong> legal@kunwaranalytics.in<br />
                   <strong>Corporate Address:</strong> 123 Connaught Place, New Delhi, Delhi 110001, India
                 </p>
               </div>

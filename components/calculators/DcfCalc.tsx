@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import {
@@ -240,7 +240,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
         
         {/* Header */}
         <div className="mb-6">
-          <p className="text-teal-600 font-medium mb-2 uppercase tracking-wider text-sm">FinNexus Advanced M&A Model</p>
+          <p className="text-teal-600 font-medium mb-2 uppercase tracking-wider text-sm">Kunwar Analytics Advanced M&A Model</p>
           <h1 className="text-3xl font-bold text-brand-navy">Fully Expanded Top-Down DCF</h1>
           <p className="text-brand-slate text-sm max-w-2xl mt-2">
             Calculate intrinsic business value using Wall Street's exact "Unlevered Free Cash Flow" methodology, mapping out fully explicit operating margins before establishing terminal valuation.

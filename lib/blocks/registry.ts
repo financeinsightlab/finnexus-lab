@@ -219,3 +219,160 @@ export const BLOCK_CATEGORIES = [
   { id: 'layout', label: 'Layout', icon: 'Layout' },
   { id: 'interactive', label: 'Interactive', icon: 'Zap' },
 ] as const
+
+/**
+ * Convert markdown or HTML text to an array of blocks
+ * Basic parsing: headings, paragraphs, lists, images, etc.
+ */
+export function markdownToBlocks(content: string): Block[] {
+  if (!content.trim()) return []
+  
+  // Check if content looks like HTML (contains tags)
+  const isHtml = /<[a-z][\s\S]*>/i.test(content)
+  
+  if (isHtml) {
+    return htmlToBlocks(content)
+  } else {
+    return markdownTextToBlocks(content)
+  }
+}
+
+/**
+ * Convert HTML content to blocks
+ */
+function htmlToBlocks(html: string): Block[] {
+  const blocks: Block[] = []
+  
+  // Very basic HTML parsing - in a real app you'd use a proper parser
+  // This is a simplified version that extracts common elements
+  
+  // Extract headings
+  const headingRegex = /<h([1-4])[^>]*>(.*?)<\/h\1>/gi
+  let match
+  while ((match = headingRegex.exec(html)) !== null) {
+    const level = parseInt(match[1]) as 1 | 2 | 3 | 4
+    const text = match[2].replace(/<[^>]*>/g, '').trim()
+    if (text) {
+      blocks.push(createBlock('heading', { text, level }))
+    }
+  }
+  
+  // Extract paragraphs (simplified - just take the whole content as one paragraph)
+  // For now, we'll create a single paragraph block with the HTML
+  // This preserves formatting but loses structure
+  const hasHeadings = blocks.length > 0
+  const remainingHtml = html.replace(/<h[1-4][^>]*>.*?<\/h[1-4]>/gi, '').trim()
+  
+  if (remainingHtml) {
+    // Check if it's just whitespace
+    if (remainingHtml.replace(/<\/?[^>]+(>|$)/g, '').trim()) {
+      blocks.push(createBlock('paragraph', { html: remainingHtml }))
+    }
+  } else if (!hasHeadings) {
+    // No headings found, use entire HTML as paragraph
+    blocks.push(createBlock('paragraph', { html }))
+  }
+  
+  // Assign order indices
+  return blocks.map((block, index) => ({
+    ...block,
+    order: index
+  }))
+}
+
+/**
+ * Convert markdown text to blocks (original implementation)
+ */
+function markdownTextToBlocks(markdown: string): Block[] {
+  if (!markdown.trim()) return []
+  
+  const lines = markdown.split('\n')
+  const blocks: Block[] = []
+  let currentParagraph: string[] = []
+  
+  const flushParagraph = () => {
+    if (currentParagraph.length > 0) {
+      const text = currentParagraph.join('\n').trim()
+      if (text) {
+        blocks.push(createBlock('paragraph', {
+          html: `<p>${text.replace(/\n/g, '<br/>')}</p>`
+        }))
+      }
+      currentParagraph = []
+    }
+  }
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trimEnd()
+    
+    // Empty line - paragraph break
+    if (!line) {
+      flushParagraph()
+      continue
+    }
+    
+    // Heading: # Heading
+    const headingMatch = line.match(/^(#{1,4})\s+(.+)$/)
+    if (headingMatch) {
+      flushParagraph()
+      const level = headingMatch[1].length as 1 | 2 | 3 | 4
+      const text = headingMatch[2]
+      blocks.push(createBlock('heading', { text, level }))
+      continue
+    }
+    
+    // Image: ![alt](src "caption")
+    const imageMatch = line.match(/!\[([^\]]*)\]\(([^)]+)(?:\s+"([^"]+)")?\)/)
+    if (imageMatch) {
+      flushParagraph()
+      const [, alt, src, caption] = imageMatch
+      blocks.push(createBlock('image', { src, alt, caption }))
+      continue
+    }
+    
+    // Blockquote: > quote
+    if (line.startsWith('> ')) {
+      flushParagraph()
+      const quote = line.substring(2)
+      blocks.push(createBlock('quote', { quote }))
+      continue
+    }
+    
+    // Horizontal rule: --- or ***
+    if (/^---$|^\*\*\*$/.test(line)) {
+      flushParagraph()
+      blocks.push(createBlock('divider', {}))
+      continue
+    }
+    
+    // List item: - item or * item or 1. item
+    if (/^\s*[-*+]\s+/.test(line) || /^\s*\d+\.\s+/.test(line)) {
+      flushParagraph()
+      // For simplicity, we'll collect list items and create a list block
+      // This is a simplified implementation - in reality you'd need to handle nested lists
+      const items: string[] = []
+      while (i < lines.length && (/^\s*[-*+]\s+/.test(lines[i]) || /^\s*\d+\.\s+/.test(lines[i]))) {
+        const item = lines[i].replace(/^\s*[-*+]\s+/, '').replace(/^\s*\d+\.\s+/, '')
+        items.push(item)
+        i++
+      }
+      i-- // adjust index
+      blocks.push(createBlock('list', {
+        items,
+        listStyle: /^\s*\d+\.\s+/.test(line) ? 'numbered' : 'bullet'
+      }))
+      continue
+    }
+    
+    // Regular text line
+    currentParagraph.push(line)
+  }
+  
+  flushParagraph()
+  
+  // Assign order indices
+  return blocks.map((block, index) => ({
+    ...block,
+    order: index
+  }))
+}

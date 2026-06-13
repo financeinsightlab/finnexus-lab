@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+﻿import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllCaseStudies } from '@/lib/content';
 import HeroBackground from '@/components/ui/HeroBackground';
@@ -8,7 +8,7 @@ import { prisma } from "@/lib/prisma";
 import React from "react";
 
 export const metadata: Metadata = {
-  title: 'Case Studies | FinNexus Lab',
+  title: 'Case Studies | Kunwar Analytics',
   description: 'Analytical work in practice: real‑world consulting engagements across startups, PE firms, and platform builders.',
 };
 

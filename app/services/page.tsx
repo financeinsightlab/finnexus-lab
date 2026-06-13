@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+﻿import { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
 
@@ -106,7 +106,7 @@ const PROCESS = [
 ];
 
 export const metadata: Metadata = {
-  title: 'Services | FinNexus Lab',
+  title: 'Services | Kunwar Analytics',
   description: 'Custom research, financial modeling, and analytics services for organizations that move on data.',
 };
 

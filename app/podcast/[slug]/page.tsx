@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 
   return {
-    title: `${episode.title} | FinNexus Lab Podcast`,
+    title: `${episode.title} | Kunwar Analytics Podcast`,
     description: episode.description,
   };
 }
@@ -176,7 +176,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
         <div className="wrap max-w-4xl text-center">
           <h2 className="text-2xl font-bold text-white mb-4">Never Miss an Episode</h2>
           <p className="text-gray-300 mb-8 max-w-2xl mx-auto">
-            Subscribe to the FinNexus Lab Podcast for weekly market intelligence, delivered in 30 minutes.
+            Subscribe to the Kunwar Analytics Podcast for weekly market intelligence, delivered in 30 minutes.
           </p>
           <div className="flex flex-wrap justify-center gap-4">
             <a

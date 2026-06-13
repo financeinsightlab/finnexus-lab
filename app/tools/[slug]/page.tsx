@@ -1,5 +1,6 @@
 import { notFound } from 'next/navigation';
 import { auth } from '@/auth';
+import { hasPremiumAccess } from '@/lib/utils';
 
 import SaaSCalc from '@/components/calculators/SaaSCalc';
 import AiRoiCalc from '@/components/calculators/AiRoiCalc';
@@ -20,9 +21,7 @@ export default async function CalculatorPage({ params }: PageProps) {
   const { slug } = await params;
   const session = await auth();
   
-  const isPremiumUser = 
-    session?.user?.role === 'ADMIN' || 
-    ['PRO', 'ELITE', 'TEAM', 'PROFESSIONAL', 'ENTERPRISE', 'API_ONLY'].includes(session?.user?.subscriptionPlan || '');
+  const isPremiumUser = hasPremiumAccess(session?.user || {});
 
   if (slug === 'saas-ltv-cac-model') return <SaaSCalc slug={slug} isPremiumUser={isPremiumUser} />;
   if (slug === 'ai-agent-roi-calculator') return <AiRoiCalc slug={slug} isPremiumUser={isPremiumUser} />;

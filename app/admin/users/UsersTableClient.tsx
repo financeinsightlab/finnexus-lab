@@ -48,8 +48,9 @@ export default function UsersTableClient({ initialUsers }: { initialUsers: UserD
       const newStatus = field === 'status' ? value : currentUser.subscriptionStatus;
 
       await updateUserAccess(userId, newRole, newStatus, newPlan);
-    } catch (e: any) {
-      alert(e.message || 'Error updating user.');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Error updating user.';
+      alert(errorMessage);
     } finally {
       setLoadingId(null);
     }
@@ -66,8 +67,9 @@ export default function UsersTableClient({ initialUsers }: { initialUsers: UserD
         newServices = [...currentServices, service];
       }
       await updatePurchasedServices(userId, newServices);
-    } catch (e: any) {
-      alert(e.message || 'Error updating services.');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Error updating services.';
+      alert(errorMessage);
     } finally {
       setLoadingId(null);
     }
@@ -78,8 +80,9 @@ export default function UsersTableClient({ initialUsers }: { initialUsers: UserD
     setLoadingId(userId);
     try {
       await deleteUser(userId);
-    } catch (e: any) {
-      alert(e.message || 'Error deleting user.');
+    } catch (e: unknown) {
+      const errorMessage = e instanceof Error ? e.message : 'Error deleting user.';
+      alert(errorMessage);
     } finally {
       setLoadingId(null);
     }
@@ -144,8 +147,10 @@ export default function UsersTableClient({ initialUsers }: { initialUsers: UserD
 
               {/* Tier Column */}
               <td className="px-8 py-6">
-                <div className="flex flex-col gap-2 w-40">
+                <div className="flex flex-col gap-3 w-48">
+                  {/* Subscription Plan Dropdown */}
                   <div className="relative group/select">
+                    <label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 block">Plan</label>
                     <select
                       value={user.subscriptionPlan || 'FREE'}
                       onChange={(e) => handleAccessChange(user.id, 'plan', e.target.value, user)}
@@ -153,14 +158,25 @@ export default function UsersTableClient({ initialUsers }: { initialUsers: UserD
                     >
                       {PLANS.map(p => <option key={p} value={p} className="bg-[#1A1F2E]">{p.replace('_', ' ')}</option>)}
                     </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-3 h-3 text-slate-600 pointer-events-none" />
+                    <ChevronDown className="absolute right-3 top-9 -translate-y-1/2 w-3 h-3 text-slate-600 pointer-events-none" />
                   </div>
 
-                  <div className="flex items-center gap-2 px-4">
-                    <div className={`w-1.5 h-1.5 rounded-full ${user.subscriptionStatus === 'ACTIVE' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-slate-700'}`} />
-                    <span className={`text-[9px] font-bold uppercase tracking-[0.1em] ${user.subscriptionStatus === 'ACTIVE' ? 'text-emerald-500' : 'text-slate-500'}`}>
-                      {user.subscriptionStatus}
-                    </span>
+                  {/* Subscription Status Dropdown */}
+                  <div className="relative group/select">
+                    <label className="text-[9px] font-bold uppercase tracking-[0.2em] text-slate-500 mb-1 block">Status</label>
+                    <select
+                      value={user.subscriptionStatus}
+                      onChange={(e) => handleAccessChange(user.id, 'status', e.target.value, user)}
+                      className="appearance-none w-full bg-white/5 border border-white/10 text-slate-300 rounded-xl px-4 py-2 text-[10px] font-bold uppercase tracking-wider outline-none focus:border-[#0D6E6E]/50 transition-all cursor-pointer"
+                    >
+                      {STATUSES.map(s => (
+                        <option key={s} value={s} className="bg-[#1A1F2E]">
+                          {s}
+                          {s === 'ACTIVE' ? ' ✅' : s === 'INACTIVE' ? ' ❌' : ''}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="absolute right-3 top-9 -translate-y-1/2 w-3 h-3 text-slate-600 pointer-events-none" />
                   </div>
                 </div>
               </td>

@@ -39,8 +39,8 @@ export async function POST(request: NextRequest) {
     `;
 
     await resendClient.emails.send({
-      from: 'contact@finnexuslab.com',
-      to: 'hello@finnexuslab.com',
+      from: 'contact@kunwaranalytics.in',
+      to: 'hello@kunwaranalytics.in',
       subject: `New Contact: ${subject}`,
       html: emailHtml,
     });

@@ -1,4 +1,4 @@
-import { Metadata } from 'next';
+﻿import { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
 
@@ -90,8 +90,8 @@ const METHODOLOGY: MethodologyStep[] = [
 ];
 
 export const metadata: Metadata = {
-  title: 'About | FinNexus Lab',
-  description: 'Learn about FinNexus Lab\'s mission to provide institutional-quality financial research and analysis free of charge.',
+  title: 'About | Kunwar Analytics',
+  description: 'Learn about Kunwar Analytics\'s mission to provide institutional-quality financial research and analysis free of charge.',
 };
 
 export default function AboutPage() {
@@ -103,7 +103,7 @@ export default function AboutPage() {
         <div className="wrap relative z-10">
           <p className="section-label text-teal-300 mb-5">About the Platform</p>
           <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
-            What is FinNexus Lab?
+            What is Kunwar Analytics?
           </h1>
           <p className="text-xl text-white/80 max-w-2xl">
             Institutional-quality financial research and analysis, made freely available to democratize access to professional-grade insights.
@@ -123,7 +123,7 @@ export default function AboutPage() {
             </h2>
             <div className="space-y-4 text-brand-slate">
               <p>
-                FinNexus Lab was founded on the belief that high-quality financial research should be accessible to everyone,
+                Kunwar Analytics was founded on the belief that high-quality financial research should be accessible to everyone,
                 not just large institutions with multi-million dollar research budgets.
               </p>
               <p>

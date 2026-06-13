@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'FinNexus Lab',
-    short_name: 'FinNexus',
+    name: 'Kunwar Analytics',
+    short_name: 'Kunwar Analytics',
     description:
       'Financial Intelligence Platform — Data-Driven Insights on Markets, Strategy & Capital',
     start_url: '/',

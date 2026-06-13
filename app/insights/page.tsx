@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import { getAllInsights } from '@/lib/content';
 import InsightsClient from '../../components/insights/InsightsClient';
 import { prisma } from "@/lib/prisma";
@@ -32,7 +32,7 @@ export default async function InsightsPage() {
       title: p.title,
       thesis: p.excerpt || 'New strategic commentary.',
       category: 'Sector Analysis' as const,
-      author: 'FinNexus Admin',
+      author: 'Kunwar Analytics Admin',
       date: p.createdAt.toISOString(),
       readingTime: 5,
       featured: true,

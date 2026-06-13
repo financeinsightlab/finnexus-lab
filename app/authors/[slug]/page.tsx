@@ -25,8 +25,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const user = await getUserBySlug(slug);
   if (!user) return { title: 'Analyst Not Found' };
   return {
-    title: `${user.name} | FinNexus Lab Analyst`,
-    description: `Track ${user.name}'s prediction accuracy, calibration score, and research on FinNexus Lab.`,
+    title: `${user.name} | Kunwar Analytics Analyst`,
+    description: `Track ${user.name}'s prediction accuracy, calibration score, and research on Kunwar Analytics.`,
   };
 }
 
@@ -88,7 +88,7 @@ export default async function AuthorProfilePage({ params }: Props) {
                 {user.name}
               </h1>
               <p className="text-gray-400 mt-1 text-sm">
-                Financial Analyst · FinNexus Lab
+                Financial Analyst · Kunwar Analytics
               </p>
               <p className="text-xs text-gray-500 mt-1">
                 Member since {new Date(user.createdAt).getFullYear()}

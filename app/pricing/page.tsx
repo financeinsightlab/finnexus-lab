@@ -1,10 +1,10 @@
-// FILE: app/pricing/page.tsx
+﻿// FILE: app/pricing/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
 
 export const metadata: Metadata = {
-  title: 'Pricing | FinNexus Lab',
+  title: 'Pricing | Kunwar Analytics',
   description: 'Simple, transparent pricing for financial intelligence. Start free and upgrade as you grow.',
 };
 

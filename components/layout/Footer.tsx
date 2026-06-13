@@ -83,8 +83,8 @@ export default function Footer() {
                 <Building2 className="w-8 h-8 text-brand-teal" />
                 <div>
                   <Link href="/" className="flex items-center space-x-1 font-bold text-2xl">
-                    <span className="text-brand-teal">FinNexus</span>
-                    <span className="text-brand-gold">Lab</span>
+                    <span className="text-brand-teal">Kunwar</span>
+                    <span className="text-brand-gold">Analytics</span>
                   </Link>
                   <p className="text-xs uppercase tracking-widest text-gray-400 mt-1">CORPORATE INTELLIGENCE PLATFORM</p>
                 </div>
@@ -116,7 +116,7 @@ export default function Footer() {
                 <h4 className="text-sm font-semibold mb-4">CORPORATE CONNECT</h4>
                 <div className="flex items-center gap-4">
                   <a 
-                    href="https://linkedin.com/company/finnexuslab" 
+                    href="https://linkedin.com/company/kunwaranalytics" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
@@ -125,7 +125,7 @@ export default function Footer() {
                     <Share2 className="w-5 h-5" />
                   </a>
                   <a 
-                    href="https://twitter.com/finnexuslab" 
+                    href="https://twitter.com/kunwaranalytics" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
@@ -134,7 +134,7 @@ export default function Footer() {
                     <MessageCircle className="w-5 h-5" />
                   </a>
                   <a 
-                    href="https://youtube.com/@finnexuslab" 
+                    href="https://youtube.com/@kunwaranalytics" 
                     target="_blank" 
                     rel="noopener noreferrer"
                     className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
@@ -143,7 +143,7 @@ export default function Footer() {
                     <Video className="w-5 h-5" />
                   </a>
                   <a 
-                    href="mailto:corporate@finnexuslab.com" 
+                    href="mailto:corporate@kunwaranalytics.in" 
                     className="p-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition-colors"
                     aria-label="Email"
                   >
@@ -276,7 +276,7 @@ export default function Footer() {
         <div className="wrap py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="text-sm text-gray-400">
-              © {currentYear} FinNexus Lab Corporation. All rights reserved. |
+              © {currentYear} Kunwar Analytics. All rights reserved. |
               <span className="mx-2">•</span>
               Registered in Delhi, India |
               <span className="mx-2">•</span>

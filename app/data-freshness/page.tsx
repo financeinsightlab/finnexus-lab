@@ -1,12 +1,12 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllResearch } from '@/lib/content';
 import { parseFreshStats, calculateReportFreshness, type ParsedFreshStat } from '@/lib/freshness';
 
 export const metadata: Metadata = {
-  title: 'Data Freshness Dashboard | FinNexus Lab',
+  title: 'Data Freshness Dashboard | Kunwar Analytics',
   description:
-    'Monitor the freshness of all statistics cited across FinNexus Lab research. Identify stale data before it misleads.',
+    'Monitor the freshness of all statistics cited across Kunwar Analytics research. Identify stale data before it misleads.',
 };
 
 // Only runs server-side — reads MDX files
@@ -63,7 +63,7 @@ export default async function DataFreshnessDashboard() {
       tags: [],
       summary: '',
       pageCount: 0,
-      author: p.author?.name || 'FinNexus',
+      author: p.author?.name || 'Kunwar Analytics',
       featured: false,
       content: p.content, // HTML from CMS
     }));

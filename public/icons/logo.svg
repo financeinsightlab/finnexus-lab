@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Background -->
+  <rect width="200" height="200" rx="36" fill="#0B1C2C"/>
+
+  <!-- Magnifying glass RING (teal, bold) -->
+  <circle cx="88" cy="88" r="52" fill="none" stroke="#0EA5E9" stroke-width="13"/>
+
+  <!-- Clip path: only show chart inside the circle -->
+  <defs>
+    <clipPath id="lensClip">
+      <circle cx="88" cy="88" r="46"/>
+    </clipPath>
+  </defs>
+
+  <!-- Rising chart line INSIDE the lens (white, bold) -->
+  <polyline
+    points="52,108  66,96  76,102  90,78  102,85  114,58  126,62"
+    fill="none"
+    stroke="white"
+    stroke-width="7"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    clip-path="url(#lensClip)"
+  />
+
+  <!-- Chart dot highlights -->
+  <circle cx="66" cy="96" r="4" fill="white" clip-path="url(#lensClip)"/>
+  <circle cx="90" cy="78" r="4" fill="white" clip-path="url(#lensClip)"/>
+  <circle cx="114" cy="58" r="4.5" fill="#0EA5E9" clip-path="url(#lensClip)"/>
+
+  <!-- Breakout arrow above the lens (white, the chart line escaping upward) -->
+  <line x1="114" y1="58" x2="126" y2="38" stroke="white" stroke-width="7" stroke-linecap="round"/>
+  <!-- Arrow head -->
+  <polyline points="115,36 126,36 126,47" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+
+  <!-- Magnifying glass HANDLE (teal, thick, rounded) -->
+  <line x1="128" y1="128" x2="158" y2="160" stroke="#0EA5E9" stroke-width="14" stroke-linecap="round"/>
+</svg>

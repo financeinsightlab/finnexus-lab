@@ -13,7 +13,7 @@ export default function ResumeActions() {
         </button>
 
         <a
-          href="/assets/finnexus-lab-cv.pdf"
+          href="/assets/resume.pdf"
           download
           className="btn btn-primary"
         >

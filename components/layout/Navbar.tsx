@@ -93,7 +93,7 @@ function Logo({ onClick }: { onClick?: () => void }) {
   return (
     <Link href="/" onClick={onClick} className="flex items-center group shrink-0">
       <span className="text-lg font-bold text-white group-hover:text-teal-300 transition-colors duration-200">
-        FinNexus<span className="text-teal-400">Lab</span>
+        Kunwar<span className="text-teal-400">Analytics</span>
       </span>
     </Link>
   );

@@ -1,6 +1,6 @@
 'use server';
 
-import { PrismaClient, UserRole } from '@prisma/client';
+import { PrismaClient, UserRole, SubscriptionStatus } from '@prisma/client';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
 
@@ -23,20 +23,28 @@ export async function updateUserAccess(
   await requireAdmin();
 
   try {
+    // Define premium plans
+    const premiumPlans = ['PRO', 'ELITE', 'TEAM', 'PROFESSIONAL', 'ENTERPRISE', 'API_ONLY'];
+    const isPremiumPlan = premiumPlans.includes(subscriptionPlan);
+    
+    // If user is given a premium plan, automatically set status to ACTIVE
+    const finalStatus = (isPremiumPlan ? 'ACTIVE' : subscriptionStatus) as SubscriptionStatus;
+
     await prisma.user.update({
       where: { id: userId },
       data: {
         role,
-        subscriptionStatus: subscriptionStatus as any,
+        subscriptionStatus: finalStatus,
         subscriptionPlan: subscriptionPlan === 'NULL' ? null : subscriptionPlan,
       },
     });
     
     revalidatePath('/admin/users');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update user access:', error);
-    return { success: false, error: error.message };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -53,9 +61,10 @@ export async function updatePurchasedServices(userId: string, services: string[]
 
     revalidatePath('/admin/users');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to update services:', error);
-    return { success: false, error: error.message };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return { success: false, error: errorMessage };
   }
 }
 
@@ -74,8 +83,9 @@ export async function deleteUser(userId: string) {
 
     revalidatePath('/admin/users');
     return { success: true };
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Failed to delete user:', error);
-    return { success: false, error: error.message };
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    return { success: false, error: errorMessage };
   }
 }
