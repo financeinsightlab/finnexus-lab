@@ -73,6 +73,7 @@ export default function CollapsibleSidebar({
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard, adminOnly: true },
     { label: "Content CMS", href: "/admin/cms", icon: FileText },
     { label: "Media Library", href: "/admin/media", icon: ImageIcon },
+    { label: "Lead Engine", href: "/admin/leads", icon: Users, adminOnly: true },
     { label: "Predictions", href: "/admin/predictions", icon: Target },
     { label: "User Management", href: "/admin/users", icon: Users, adminOnly: true },
     { label: "Analytics", href: "/admin/analytics", icon: BarChart3, adminOnly: true },
