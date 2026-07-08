@@ -39,11 +39,11 @@ const KNOWN_PATTERNS: Record<string, string[]> = {
 }
 
 export function parseCSV(content: string): ParsedCSV {
-  const result = Papa.parse(content, {
+  const result = Papa.parse<Record<string, string>>(content, {
     header: true,
     skipEmptyLines: true,
-    trimHeaders: true,
-    trimValues: true,
+    transformHeader: (h: string) => h.trim(),
+    transform: (v: string) => v.trim(),
   })
 
   const headers = result.meta.fields ?? []
