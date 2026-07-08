@@ -70,7 +70,6 @@ export async function checkDuplicate(
       const existing = await prisma.lead.findFirst({
         where: {
           emails: {
-            path: "$[*].email",
             string_contains: normalized,
           },
         },
@@ -98,7 +97,6 @@ export async function checkDuplicate(
       const existing = await prisma.lead.findFirst({
         where: {
           phones: {
-            path: "$[*].number",
             string_contains: normalized,
           },
         },
