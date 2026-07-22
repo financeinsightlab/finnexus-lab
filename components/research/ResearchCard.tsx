@@ -1,6 +1,7 @@
 // FILE: components/research/ResearchCard.tsx
 import Link from 'next/link';
 import Tag from '@/components/ui/Tag';
+import TiltCard from '@/components/ui/TiltCard';
 import { formatDate } from '@/lib/utils';
 import { calculateReportFreshness } from '@/lib/freshness';
 import type { ResearchPost } from '@/types';
@@ -34,7 +35,8 @@ export default function ResearchCard({ post }: ResearchCardProps) {
   const showFreshness = post.content !== undefined;
 
   return (
-    <article className="research-card p-6 flex flex-col h-full">
+    <TiltCard maxTilt={5} className="h-full">
+    <article className="research-card p-6 flex flex-col h-full depth-2 hover:depth-3 transition-shadow duration-300">
       <div className="flex justify-between gap-3 mb-3">
         <Tag text={post.sector} />
         <span className="text-[11px] text-gray-400 font-mono">
@@ -59,5 +61,6 @@ export default function ResearchCard({ post }: ResearchCardProps) {
         </Link>
       </div>
     </article>
+    </TiltCard>
   );
 }

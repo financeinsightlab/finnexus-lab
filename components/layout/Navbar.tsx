@@ -15,6 +15,7 @@ const mainLinks = [
   { label: 'Data Lab',  href: '/data-lab',     icon: '🔬' },
   { label: 'Trackers',  href: '/tracker',      icon: '📊' },
   { label: 'Tools',     href: '/tools',        icon: '🛠️' },
+  { label: 'Study',     href: '/study',        icon: '🎓' },
 ];
 
 const moreLinks = [
@@ -157,7 +158,7 @@ export default function Navbar() {
         Skip to content
       </a>
 
-      <header className="fixed top-0 inset-x-0 z-50 h-16 backdrop-blur-xl bg-black/75 border-b border-white/5 supports-[backdrop-filter]:bg-black/60">
+      <header className="fixed top-0 inset-x-0 z-50 h-16 glass-cinema border-b border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08),0_0_30px_rgba(59,130,246,0.05)]">
         <nav className="h-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
 
           {/* ── LOGO ── */}

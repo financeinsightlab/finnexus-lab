@@ -2,6 +2,7 @@
 import { NextResponse } from 'next/server';
 import bcryptjs from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
+import { z } from 'zod';
 
 declare global {
   var prisma: PrismaClient | undefined;
@@ -11,42 +12,28 @@ const prisma = globalThis.prisma ?? new PrismaClient();
 
 if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
 
-function isValidEmail(email: string) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+const registerSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  email: z.string().email('Please provide a valid email'),
+  password: z.string().min(8, 'Password must be at least 8 characters').max(128, 'Password too long'),
+});
 
 export async function POST(req: Request) {
   try {
-    const body = (await req.json()) as {
-      name?: string;
-      email?: string;
-      password?: string;
-    };
+    const body = await req.json();
 
-    const name = body?.name?.trim();
-    const email = body?.email?.trim().toLowerCase();
-    const password = body?.password;
-
-    if (!name || !email || !password) {
+    // Validate input with Zod
+    const parsed = registerSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { success: false, error: 'All fields are required.' },
+        { success: false, error: parsed.error.issues[0]?.message ?? 'Invalid input' },
         { status: 400 }
       );
     }
 
-    if (!isValidEmail(email)) {
-      return NextResponse.json(
-        { success: false, error: 'Please provide a valid email.' },
-        { status: 400 }
-      );
-    }
-
-    if (password.length < 8) {
-      return NextResponse.json(
-        { success: false, error: 'Password must be at least 8 characters.' },
-        { status: 400 }
-      );
-    }
+    const name = parsed.data.name.trim();
+    const email = parsed.data.email.trim().toLowerCase();
+    const password = parsed.data.password;
 
     const existing = await prisma.user.findUnique({
       where: { email },
@@ -78,4 +65,3 @@ export async function POST(req: Request) {
     );
   }
 }
-

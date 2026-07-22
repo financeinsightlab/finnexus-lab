@@ -2,7 +2,7 @@ import { NextRequest } from 'next/server'
 import { mediaStorage, UploadedFile, MediaFile } from './media'
 import { prisma } from './prisma'
 import { auth } from '@/auth'
-import type { Prisma } from '@prisma/client'
+import { Prisma } from '@prisma/client'
 
 // Media type matching Prisma schema
 export interface Media {
@@ -127,7 +127,7 @@ export async function saveMediaToDatabase(
       caption,
       description,
       uploadedBy: userId,
-      metadata: Object.keys(metadata).length > 0 ? metadata as any : undefined
+      metadata: Object.keys(metadata).length > 0 ? (metadata as Prisma.InputJsonValue) : Prisma.JsonNull
     }
   })
   
@@ -294,8 +294,21 @@ export async function updateMediaMetadata(
     })
     
     const returnedMedia: Media = {
-      ...updated,
-      metadata: updated.metadata as Record<string, unknown> | null || undefined
+      id: updated.id,
+      filename: updated.filename,
+      originalName: updated.originalName,
+      path: updated.path,
+      url: updated.url,
+      mimeType: updated.mimeType,
+      size: updated.size,
+      width: updated.width,
+      height: updated.height,
+      altText: updated.altText,
+      caption: updated.caption,
+      description: updated.description,
+      uploadedBy: updated.uploadedBy,
+      uploadedAt: updated.uploadedAt,
+      metadata: (updated.metadata as Record<string, unknown> | null) ?? undefined
     }
     
     return { success: true, media: returnedMedia }

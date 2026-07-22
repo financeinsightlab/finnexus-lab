@@ -1,0 +1,52 @@
+# Kunwar Analytics
+
+> Kunwar Analytics is a financial intelligence platform providing data-driven insights on markets, strategy, and capital. It offers institutional-quality research, business analytics, investment analysis, and educational study materials covering finance, data science, economics, and research methods.
+
+Kunwar Analytics is an independent financial research and analytics platform founded to deliver institutional-grade market intelligence. The platform combines quantitative analysis, sector research, and predictive modeling to help investors, analysts, and business leaders make informed decisions.
+
+## Core Offerings
+
+- **Research**: Deep-dive sector analysis and market research reports covering Indian and global markets
+- **Insights**: Actionable investment insights and thesis-driven analysis
+- **Study Material**: Educational resources covering finance, business analytics, research methods, data science, economics, and investment analysis — designed for beginners to advanced practitioners
+- **Placement Preparation**: A 60-day placement prep tracker for Finance + Business Analytics students targeting 15 LPA+ roles — includes a daily task tracker, learning material with concepts/formulas/Q&A, and a portfolio lab with project ideas for equity research, credit risk, and BFSI analytics
+- **Data Lab**: Interactive data projects and visualizations exploring real business questions
+- **Predictions**: Trackable market predictions with calibration scoring for transparency
+- **Trackers**: Real-time dashboards monitoring market sectors and trends
+- **Tools**: Financial calculators and analytical tools
+
+## Key Topics
+
+- Financial modeling and valuation (DCF, comparable analysis, precedent transactions)
+- Indian market analysis (quick commerce, fintech, consumer tech, infrastructure)
+- Business analytics and KPI frameworks
+- Quantitative research methods and statistical analysis
+- Machine learning applications in finance
+- Macroeconomic analysis and monetary policy
+- Portfolio theory and investment strategies
+- Data visualization and business intelligence
+
+## Audience
+
+The platform serves retail investors, financial analysts, business strategists, MBA students, and data science professionals seeking rigorous, data-backed financial intelligence.
+
+## Contact
+
+- Website: https://kunwaranalytics.in
+- Contact: https://kunwaranalytics.in/contact
+- Study Materials: https://kunwaranalytics.in/study
+- Placement Preparation: https://kunwaranalytics.in/study/placement-prep
+- Research: https://kunwaranalytics.in/research
+- Insights: https://kunwaranalytics.in/insights
+
+## Optional
+
+- [Research Reports](https://kunwaranalytics.in/research): In-depth sector and market analysis
+- [Investment Insights](https://kunwaranalytics.in/insights): Thesis-driven investment ideas
+- [Study Material](https://kunwaranalytics.in/study): Finance and analytics learning resources
+- [Placement Preparation](https://kunwaranalytics.in/study/placement-prep): 60-day placement prep tracker with finance & analytics learning material, Q&A, and portfolio project ideas
+- [Data Lab](https://kunwaranalytics.in/data-lab): Interactive data projects
+- [Predictions Board](https://kunwaranalytics.in/predictions): Trackable market predictions
+- [Case Studies](https://kunwaranalytics.in/case-studies): Real-world analytical case studies
+- [Podcast](https://kunwaranalytics.in/podcast): Discussions on markets and analytics
+- [Services](https://kunwaranalytics.in/services): Consulting and advisory services

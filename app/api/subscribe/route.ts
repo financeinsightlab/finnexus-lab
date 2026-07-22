@@ -1,26 +1,26 @@
 // FILE: app/api/subscribe/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const subscribeSchema = z.object({
+  email: z.string().email('Invalid email format'),
+  tag: z.string().max(50).optional(),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { email, tag } = await request.json();
+    const body = await request.json();
 
-    // Validate email
-    if (!email) {
+    // Validate input with Zod
+    const parsed = subscribeSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Email is required' },
+        { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
         { status: 400 }
       );
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
+    const { email, tag } = parsed.data;
 
     // ⚠ Uncomment this block and add CONVERTKIT_API_KEY and CONVERTKIT_FORM_ID to Vercel env vars
     /*

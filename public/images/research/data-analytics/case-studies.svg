@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" role="img" aria-label="Five case study before and after results">
+  <rect width="1000" height="560" fill="#0B1C2C"/>
+  <text x="500" y="46" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#ffffff" font-weight="bold">Real Transformations — Before & After Analytics</text>
+  <g font-family="Arial, sans-serif">
+    <!-- Case 1 -->
+    <g transform="translate(40,80)">
+      <rect width="290" height="210" rx="12" fill="#0F2335" stroke="#0D6E6E"/>
+      <text x="20" y="32" font-size="15" fill="#0F9E9E" font-weight="bold">Pharma Distributor · Delhi</text>
+      <text x="20" y="62" font-size="12" fill="#c9774f">BEFORE: margin 9% ↓</text>
+      <text x="20" y="84" font-size="12" fill="#0F9E9E">AFTER: margin 13.5% ↑</text>
+      <line x1="20" y1="100" x2="270" y2="100" stroke="#1f3a4d"/>
+      <text x="20" y="124" font-size="13" fill="#ffffff">₹60L recovered</text>
+      <text x="20" y="148" font-size="12" fill="#7fa8a8">Credit terms renegotiated</text>
+      <text x="20" y="168" font-size="12" fill="#7fa8a8">SKU rationalization</text>
+      <text x="20" y="188" font-size="12" fill="#7fa8a8">Returns issue fixed</text>
+    </g>
+    <!-- Case 2 -->
+    <g transform="translate(355,80)">
+      <rect width="290" height="210" rx="12" fill="#0F2335" stroke="#0D6E6E"/>
+      <text x="20" y="32" font-size="15" fill="#0F9E9E" font-weight="bold">Retail Chain · Bangalore</text>
+      <text x="20" y="62" font-size="12" fill="#c9774f">BEFORE: flat profits</text>
+      <text x="20" y="84" font-size="12" fill="#0F9E9E">AFTER: +28% profit ↑</text>
+      <line x1="20" y1="100" x2="270" y2="100" stroke="#1f3a4d"/>
+      <text x="20" y="124" font-size="13" fill="#ffffff">No new stores, no debt</text>
+      <text x="20" y="148" font-size="12" fill="#7fa8a8">Staffing rescheduled</text>
+      <text x="20" y="168" font-size="12" fill="#7fa8a8">Promo spend redirected</text>
+      <text x="20" y="188" font-size="12" fill="#7fa8a8">Top customers retained</text>
+    </g>
+    <!-- Case 3 -->
+    <g transform="translate(670,80)">
+      <rect width="290" height="210" rx="12" fill="#0F2335" stroke="#0D6E6E"/>
+      <text x="20" y="32" font-size="15" fill="#0F9E9E" font-weight="bold">Auto Components · Pune</text>
+      <text x="20" y="62" font-size="12" fill="#c9774f">BEFORE: losing bids</text>
+      <text x="20" y="84" font-size="12" fill="#0F9E9E">AFTER: ₹45L cost cut ↑</text>
+      <line x1="20" y1="100" x2="270" y2="100" stroke="#1f3a4d"/>
+      <text x="20" y="124" font-size="13" fill="#ffffff">Rejection -68%</text>
+      <text x="20" y="148" font-size="12" fill="#7fa8a8">Line rebalancing +15%</text>
+      <text x="20" y="168" font-size="12" fill="#7fa8a8">Overtime -₹18L</text>
+      <text x="20" y="188" font-size="12" fill="#7fa8a8">Energy tariff shifting</text>
+    </g>
+    <!-- Case 4 -->
+    <g transform="translate(40,310)">
+      <rect width="290" height="210" rx="12" fill="#0F2335" stroke="#0D6E6E"/>
+      <text x="20" y="32" font-size="15" fill="#0F9E9E" font-weight="bold">Logistics · Chennai</text>
+      <text x="20" y="62" font-size="12" fill="#c9774f">BEFORE: fuel "a tax"</text>
+      <text x="20" y="84" font-size="12" fill="#0F9E9E">AFTER: ₹38L fuel saved ↑</text>
+      <line x1="20" y1="100" x2="270" y2="100" stroke="#1f3a4d"/>
+      <text x="20" y="124" font-size="13" fill="#ffffff">Zero new vehicles</text>
+      <text x="20" y="148" font-size="12" fill="#7fa8a8">Backhaul matching</text>
+      <text x="20" y="168" font-size="12" fill="#7fa8a8">Departure windows shifted</text>
+      <text x="20" y="188" font-size="12" fill="#7fa8a8">Dock-time SLA enforced</text>
+    </g>
+    <!-- Case 5 -->
+    <g transform="translate(355,310)">
+      <rect width="290" height="210" rx="12" fill="#0F2335" stroke="#0D6E6E"/>
+      <text x="20" y="32" font-size="15" fill="#0F9E9E" font-weight="bold">Hotel Chain · Jaipur</text>
+      <text x="20" y="62" font-size="12" fill="#c9774f">BEFORE: static pricing</text>
+      <text x="20" y="84" font-size="12" fill="#0F9E9E">AFTER: RevPAR +19% ↑</text>
+      <line x1="20" y1="100" x2="270" y2="100" stroke="#1f3a4d"/>
+      <text x="20" y="124" font-size="13" fill="#ffffff">₹54L revenue uplift</text>
+      <text x="20" y="148" font-size="12" fill="#7fa8a8">Dynamic rate rules</text>
+      <text x="20" y="168" font-size="12" fill="#7fa8a8">Event-calendar promos</text>
+      <text x="20" y="188" font-size="12" fill="#7fa8a8">No capex required</text>
+    </g>
+    <!-- summary -->
+    <g transform="translate(670,310)">
+      <rect width="290" height="210" rx="12" fill="#0D6E6E" fill-opacity="0.2" stroke="#0F9E9E"/>
+      <text x="145" y="40" text-anchor="middle" font-size="15" fill="#0F9E9E" font-weight="bold">Common Thread</text>
+      <line x1="20" y1="56" x2="270" y2="56" stroke="#0F9E9E" stroke-opacity="0.4"/>
+      <text x="20" y="84" font-size="13" fill="#ffffff">No expensive tech.</text>
+      <text x="20" y="108" font-size="13" fill="#ffffff">No data scientists hired.</text>
+      <text x="20" y="132" font-size="13" fill="#ffffff">No "perfect" data waited for.</text>
+      <text x="20" y="170" font-size="13" fill="#0F9E9E" font-weight="bold">Just better questions,</text>
+      <text x="20" y="190" font-size="13" fill="#0F9E9E" font-weight="bold">cleaned data, and action.</text>
+    </g>
+  </g>
+  <text x="500" y="544" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b7a8c">Five businesses. Five sectors. One discipline.</text>
+</svg>

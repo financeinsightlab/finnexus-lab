@@ -30,6 +30,7 @@ export default async function ResearchPage() {
     author: 'Kunwar Analytics Admin',
     date: r.createdAt.toISOString(),
     featured: true,
+    featuredImage: r.featuredImage || null,
   }));
 
   const featuredReports = allReports.filter((r) => r.featured);
@@ -69,23 +70,33 @@ export default async function ResearchPage() {
               <Link
                 key={report.slug}
                 href={`/research/${report.slug}`}
-                className="border border-gray-200 rounded-xl p-6 hover:shadow-md transition group"
+                className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition group flex flex-col"
               >
-                <p className="text-sm text-[#0D6E6E] font-medium">
-                  {report.sector}
-                </p>
+                {report.featuredImage && (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img
+                    src={report.featuredImage}
+                    alt={report.title}
+                    className="w-full h-44 object-cover object-center bg-[#0B1C2C]"
+                  />
+                )}
+                <div className="p-6 flex flex-col flex-1">
+                  <p className="text-sm text-[#0D6E6E] font-medium">
+                    {report.sector}
+                  </p>
 
-                <h3 className="mt-2 text-lg font-semibold text-[#1A2B3C] group-hover:text-teal-700 transition-colors">
-                  {report.title}
-                </h3>
+                  <h3 className="mt-2 text-lg font-semibold text-[#1A2B3C] group-hover:text-teal-700 transition-colors">
+                    {report.title}
+                  </h3>
 
-                <p className="mt-2 text-sm text-gray-600 line-clamp-3">
-                  {report.summary}
-                </p>
+                  <p className="mt-2 text-sm text-gray-600 line-clamp-3">
+                    {report.summary}
+                  </p>
 
-                <div className="mt-4 text-xs text-gray-500 flex justify-between">
-                  <span>{report.author}</span>
-                  <span>{new Date(report.date).toDateString()}</span>
+                  <div className="mt-4 text-xs text-gray-500 flex justify-between">
+                    <span>{report.author}</span>
+                    <span>{new Date(report.date).toDateString()}</span>
+                  </div>
                 </div>
               </Link>
             ))}

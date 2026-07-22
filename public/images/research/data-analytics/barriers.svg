@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 520" width="1000" height="520" role="img" aria-label="Five barriers to analytics adoption among Indian SMEs">
+  <rect width="1000" height="520" fill="#0B1C2C"/>
+  <text x="500" y="48" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#ffffff" font-weight="bold">Five Locked Gates on the Road to Growth</text>
+  <text x="500" y="76" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#7fa8a8">Why Indian SMEs stall before they ever analyze a single number</text>
+  <!-- road -->
+  <line x1="60" y1="300" x2="940" y2="300" stroke="#1f3a4d" stroke-width="14" stroke-linecap="round"/>
+  <!-- 5 gates -->
+  <g font-family="Arial, sans-serif">
+    <!-- gate 1 -->
+    <g transform="translate(110,180)">
+      <rect x="0" y="0" width="120" height="240" rx="12" fill="#0F2335" stroke="#c9774f" stroke-width="2"/>
+      <text x="60" y="40" text-anchor="middle" font-size="30">🧠</text>
+      <text x="60" y="120" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Expertise</text>
+      <text x="60" y="140" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Gap</text>
+      <text x="60" y="180" text-anchor="middle" font-size="11" fill="#7fa8a8">No one knows</text>
+      <text x="60" y="196" text-anchor="middle" font-size="11" fill="#7fa8a8">the tools</text>
+    </g>
+    <!-- gate 2 -->
+    <g transform="translate(280,180)">
+      <rect x="0" y="0" width="120" height="240" rx="12" fill="#0F2335" stroke="#c9774f" stroke-width="2"/>
+      <text x="60" y="40" text-anchor="middle" font-size="30">⏰</text>
+      <text x="60" y="120" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Time</text>
+      <text x="60" y="140" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Constraint</text>
+      <text x="60" y="180" text-anchor="middle" font-size="11" fill="#7fa8a8">Urgent crowds</text>
+      <text x="60" y="196" text-anchor="middle" font-size="11" fill="#7fa8a8">out important</text>
+    </g>
+    <!-- gate 3 -->
+    <g transform="translate(450,180)">
+      <rect x="0" y="0" width="120" height="240" rx="12" fill="#0F2335" stroke="#c9774f" stroke-width="2"/>
+      <text x="60" y="40" text-anchor="middle" font-size="30">🧩</text>
+      <text x="60" y="120" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Tool</text>
+      <text x="60" y="140" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Confusion</text>
+      <text x="60" y="180" text-anchor="middle" font-size="11" fill="#7fa8a8">Paradox of</text>
+      <text x="60" y="196" text-anchor="middle" font-size="11" fill="#7fa8a8">choice → inaction</text>
+    </g>
+    <!-- gate 4 -->
+    <g transform="translate(620,180)">
+      <rect x="0" y="0" width="120" height="240" rx="12" fill="#0F2335" stroke="#c9774f" stroke-width="2"/>
+      <text x="60" y="40" text-anchor="middle" font-size="30">🏢</text>
+      <text x="60" y="120" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Mindset</text>
+      <text x="60" y="140" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Barrier</text>
+      <text x="60" y="180" text-anchor="middle" font-size="11" fill="#7fa8a8">"Analytics is</text>
+      <text x="60" y="196" text-anchor="middle" font-size="11" fill="#7fa8a8">for big firms"</text>
+    </g>
+    <!-- gate 5 -->
+    <g transform="translate(790,180)">
+      <rect x="0" y="0" width="120" height="240" rx="12" fill="#0F2335" stroke="#c9774f" stroke-width="2"/>
+      <text x="60" y="40" text-anchor="middle" font-size="30">❓</text>
+      <text x="60" y="120" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">ROI</text>
+      <text x="60" y="140" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Uncertainty</text>
+      <text x="60" y="180" text-anchor="middle" font-size="11" fill="#7fa8a8">Returns not</text>
+      <text x="60" y="196" text-anchor="middle" font-size="11" fill="#7fa8a8">obvious</text>
+    </g>
+  </g>
+  <!-- destination -->
+  <g transform="translate(900,270)">
+    <circle cx="0" cy="0" r="34" fill="#0D6E6E"/>
+    <text x="0" y="6" text-anchor="middle" font-family="Arial" font-size="12" fill="#ffffff" font-weight="bold">DATA</text>
+    <text x="0" y="22" text-anchor="middle" font-family="Arial" font-size="12" fill="#ffffff" font-weight="bold">VALUE</text>
+  </g>
+  <text x="500" y="490" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b7a8c">Each gate is real — and each one has a key.</text>
+</svg>

@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620" width="1000" height="620" role="img" aria-label="Sector by sector cost of data neglect">
+  <rect width="1000" height="620" fill="#0B1C2C"/>
+  <text x="500" y="46" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#ffffff" font-weight="bold">What Ignoring Data Costs — Sector by Sector</text>
+  <g font-family="Arial, sans-serif">
+    <!-- Manufacturing -->
+    <g transform="translate(40,90)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">🏭 Manufacturing</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Inventory hemorrhage</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">Carries 20–40% excess stock</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">₹1–2 Cr preventable cost</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: demand-pattern analysis</text>
+    </g>
+    <!-- Retail -->
+    <g transform="translate(360,90)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">🛒 Retail</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Margin erosion</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">8–15% profit evaporates</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">Stockouts + dead inventory</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: SKU + promo analytics</text>
+    </g>
+    <!-- Services -->
+    <g transform="translate(680,90)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">💼 Services</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Client churn blindspot</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">20% churn = ₹40L lost/yr</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">Discovered when client leaves</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: client-health monitoring</text>
+    </g>
+    <!-- Real Estate -->
+    <g transform="translate(40,260)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">🏠 Real Estate</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Pricing vacuum</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">Gut-based pricing</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">Slow sales, forced discounts</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: registration + trend data</text>
+    </g>
+    <!-- Healthcare -->
+    <g transform="translate(360,260)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">🏥 Healthcare</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Operational inefficiency</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">30% OT underutilization</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">25–35% no-show rate</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: capacity scheduling</text>
+    </g>
+    <!-- Logistics -->
+    <g transform="translate(680,260)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">🚚 Logistics</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Route inefficiency</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">12–18% fuel wasted</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">22% empty return trips</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: GPS + backhaul matching</text>
+    </g>
+    <!-- Agriculture -->
+    <g transform="translate(40,430)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">🌾 Agri-Trading</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Price discovery gap</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">Buys 8–12 days late</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">6% overpaid on procurement</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: mandi price dashboards</text>
+    </g>
+    <!-- Hospitality -->
+    <g transform="translate(360,430)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">🏨 Hospitality</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Occupancy puzzle</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">Static pricing, perishable rooms</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">14–22% RevPAR left behind</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: dynamic revenue mgmt</text>
+    </g>
+    <!-- Education -->
+    <g transform="translate(680,430)">
+      <rect width="280" height="150" rx="12" fill="#0F2335" stroke="#c9774f"/>
+      <text x="20" y="34" font-size="16" fill="#c9774f" font-weight="bold">🎓 Education</text>
+      <text x="20" y="62" font-size="13" fill="#ffffff">Cohort leakage</text>
+      <text x="20" y="84" font-size="12" fill="#7fa8a8">Churn discovered too late</text>
+      <text x="20" y="104" font-size="12" fill="#7fa8a8">5% retention = ₹40L</text>
+      <text x="20" y="130" font-size="13" fill="#0F9E9E" font-weight="bold">Fix: early-warning dashboards</text>
+    </g>
+  </g>
+  <text x="500" y="604" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b7a8c">Every sector leaks. The leak is specific, measurable, and recoverable.</text>
+</svg>

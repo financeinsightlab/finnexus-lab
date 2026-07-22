@@ -86,6 +86,16 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
             </div>
           </div>
         </header>
+        {dbPost.featuredImage && (
+          <div className="max-w-4xl mx-auto px-6 -mt-8 relative z-20">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={dbPost.featuredImage}
+              alt={dbPost.title}
+              className="w-full rounded-2xl shadow-2xl border border-white/10"
+            />
+          </div>
+        )}
         <article className="max-w-4xl mx-auto px-6 pt-12 pb-32">
           <div className="bg-gray-50 dark:bg-[#0F2335] rounded-3xl p-8 md:p-12 border border-gray-200 dark:border-white/5 shadow-lg dark:shadow-2xl">
             <ContentRenderer content={dbPost.content} contentType={dbPost.contentType} blocks={dbPost.blockContent} />

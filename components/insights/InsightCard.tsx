@@ -1,6 +1,7 @@
 // FILE: components/insights/InsightCard.tsx
 import Link from 'next/link';
 import Tag from '@/components/ui/Tag';
+import TiltCard from '@/components/ui/TiltCard';
 import { formatDate, CATEGORY_VARIANT } from '@/lib/utils';
 import type { InsightPost } from '@/types';
 
@@ -12,7 +13,8 @@ export default function InsightCard({ post }: InsightCardProps) {
   const variant = CATEGORY_VARIANT[post.category] ?? 'teal';
 
   return (
-    <article className="card p-5 flex flex-col h-full">
+    <TiltCard maxTilt={5} className="h-full">
+    <article className="card p-5 flex flex-col h-full depth-2 hover:depth-3 transition-shadow duration-300">
       <Tag text={post.category} variant={variant} className="mb-3" />
       <h3 className="text-base font-bold text-brand-navy leading-snug mb-2 line-clamp-2">
         {post.title}
@@ -29,5 +31,6 @@ export default function InsightCard({ post }: InsightCardProps) {
         </Link>
       </div>
     </article>
+    </TiltCard>
   );
 }

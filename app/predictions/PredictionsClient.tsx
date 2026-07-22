@@ -7,10 +7,18 @@ import type { PredictionWithAuthor } from '@/lib/predictions'
 import { createCommunityPrediction } from '@/actions/community-predictions'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 
+interface PredictionStats {
+  total: number
+  confirmed: number
+  incorrect: number
+  pending: number
+  partial: number
+}
+
 interface PredictionsClientProps {
   predictions: PredictionWithAuthor[]
   sectors: string[]
-  stats: any
+  stats: PredictionStats
   isLoggedIn: boolean
   isAdmin: boolean
 }

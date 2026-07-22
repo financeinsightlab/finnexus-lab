@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 560" width="1000" height="560" role="img" aria-label="Recommended analytics tool stack for Indian SMEs">
+  <rect width="1000" height="560" fill="#0B1C2C"/>
+  <text x="500" y="46" text-anchor="middle" font-family="Georgia, serif" font-size="24" fill="#ffffff" font-weight="bold">The SME Analytics Stack — Under ₹2,000 / month</text>
+  <g font-family="Arial, sans-serif">
+    <!-- Layer 3: Visualization (top) -->
+    <g transform="translate(120,90)">
+      <rect width="760" height="110" rx="14" fill="#0D6E6E" fill-opacity="0.18" stroke="#0D6E6E"/>
+      <text x="20" y="32" font-size="15" fill="#0F9E9E" font-weight="bold">③ VISUALIZATION LAYER — Dashboards & Reporting</text>
+      <g transform="translate(20,48)">
+        <rect width="170" height="48" rx="8" fill="#0F2335"/>
+        <text x="85" y="30" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Power BI</text>
+      </g>
+      <g transform="translate(200,48)">
+        <rect width="170" height="48" rx="8" fill="#0F2335"/>
+        <text x="85" y="30" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Zoho Analytics</text>
+      </g>
+      <g transform="translate(380,48)">
+        <rect width="170" height="48" rx="8" fill="#0F2335"/>
+        <text x="85" y="30" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Looker Studio</text>
+      </g>
+      <g transform="translate(560,48)">
+        <rect width="180" height="48" rx="8" fill="#0F2335"/>
+        <text x="90" y="30" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">GA4 + Search Console</text>
+      </g>
+    </g>
+    <!-- arrows up -->
+    <g stroke="#0F9E9E" stroke-width="2" fill="#0F9E9E">
+      <polygon points="500,210 494,200 506,200"/>
+      <polygon points="500,210 494,200 506,200" transform="translate(-200,0)"/>
+      <polygon points="500,210 494,200 506,200" transform="translate(200,0)"/>
+    </g>
+    <!-- Layer 2: Processing (middle) -->
+    <g transform="translate(120,220)">
+      <rect width="760" height="110" rx="14" fill="#c9a64f" fill-opacity="0.14" stroke="#c9a64f"/>
+      <text x="20" y="32" font-size="15" fill="#c9a64f" font-weight="bold">② PROCESSING LAYER — Cleaning & Modeling</text>
+      <g transform="translate(20,48)">
+        <rect width="230" height="48" rx="8" fill="#0F2335"/>
+        <text x="115" y="30" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Excel + Power Query</text>
+      </g>
+      <g transform="translate(260,48)">
+        <rect width="230" height="48" rx="8" fill="#0F2335"/>
+        <text x="115" y="30" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Google Sheets</text>
+      </g>
+      <g transform="translate(500,48)">
+        <rect width="240" height="48" rx="8" fill="#0F2335"/>
+        <text x="120" y="30" text-anchor="middle" font-size="13" fill="#ffffff" font-weight="bold">Tally → structured export</text>
+      </g>
+    </g>
+    <g stroke="#c9a64f" stroke-width="2" fill="#c9a64f">
+      <polygon points="500,340 494,330 506,330"/>
+      <polygon points="500,340 494,330 506,330" transform="translate(-200,0)"/>
+      <polygon points="500,340 494,330 506,330" transform="translate(200,0)"/>
+    </g>
+    <!-- Layer 1: Sources (bottom) -->
+    <g transform="translate(120,350)">
+      <rect width="760" height="110" rx="14" fill="#c9774f" fill-opacity="0.14" stroke="#c9774f"/>
+      <text x="20" y="32" font-size="15" fill="#c9774f" font-weight="bold">① DATA SOURCES — What You Already Capture</text>
+      <g transform="translate(20,48)">
+        <rect width="140" height="48" rx="8" fill="#0F2335"/>
+        <text x="70" y="30" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="bold">Billing / POS</text>
+      </g>
+      <g transform="translate(170,48)">
+        <rect width="140" height="48" rx="8" fill="#0F2335"/>
+        <text x="70" y="30" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="bold">Inventory / ERP</text>
+      </g>
+      <g transform="translate(320,48)">
+        <rect width="140" height="48" rx="8" fill="#0F2335"/>
+        <text x="70" y="30" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="bold">CRM / WhatsApp</text>
+      </g>
+      <g transform="translate(470,48)">
+        <rect width="140" height="48" rx="8" fill="#0F2335"/>
+        <text x="70" y="30" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="bold">Tally / Books</text>
+      </g>
+      <g transform="translate(620,48)">
+        <rect width="120" height="48" rx="8" fill="#0F2335"/>
+        <text x="60" y="30" text-anchor="middle" font-size="12" fill="#ffffff" font-weight="bold">External</text>
+      </g>
+    </g>
+  </g>
+  <text x="500" y="510" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" fill="#5b7a8c">Start at the bottom. Clean in the middle. See at the top.</text>
+  <text x="500" y="534" text-anchor="middle" font-family="Arial, sans-serif" font-size="12" fill="#0F9E9E">Answers 80% of the questions that matter to an SME owner.</text>
+</svg>

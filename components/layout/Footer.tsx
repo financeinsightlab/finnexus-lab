@@ -1,12 +1,13 @@
 import Link from 'next/link';
-import { 
-  Building2, 
-  Shield, 
-  Award, 
-  Globe, 
-  FileText, 
-  Users, 
-  BarChart3, 
+import FloatingElement from '@/components/ui/FloatingElement';
+import {
+  Building2,
+  Shield,
+  Award,
+  Globe,
+  FileText,
+  Users,
+  BarChart3,
   Cpu,
   Mail,
   Share2,
@@ -56,9 +57,19 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-gradient-to-b from-brand-navy to-gray-900 text-white border-t border-gray-800">
+    <footer className="relative bg-cinema-black text-white border-t border-white/5 overflow-hidden">
+      {/* Cinematic background layers */}
+      <div className="absolute inset-0 cinema-grid opacity-20" />
+      <div className="absolute inset-0 cinema-mesh opacity-30" />
+      <div className="absolute inset-0 cinema-noise" />
+      {/* Glow orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 rounded-full bg-cinema-glow-blue/10 blur-[120px]" />
+      <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-cinema-violet/10 blur-[120px]" />
+      {/* Animated wave divider at top */}
+      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-cinema-cyan/50 to-transparent" />
+      <div className="relative z-10">
       {/* Premium Banner */}
-      <div className="bg-gradient-to-r from-brand-teal/20 to-brand-gold/20 border-y border-gray-700">
+      <div className="bg-gradient-to-r from-cinema-glow-blue/10 to-cinema-violet/10 border-y border-white/5 glass-cinema">
         <div className="wrap py-6">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
@@ -79,6 +90,7 @@ export default function Footer() {
           {/* Corporate Branding Column */}
           <div className="lg:col-span-4">
             <div className="space-y-6">
+              <FloatingElement>
               <div className="flex items-center space-x-2">
                 <Building2 className="w-8 h-8 text-brand-teal" />
                 <div>
@@ -89,6 +101,7 @@ export default function Footer() {
                   <p className="text-xs uppercase tracking-widest text-gray-400 mt-1">CORPORATE INTELLIGENCE PLATFORM</p>
                 </div>
               </div>
+              </FloatingElement>
               
               <p className="text-gray-300 leading-relaxed">
                 A premier financial intelligence platform delivering data-driven insights, 
@@ -297,6 +310,7 @@ export default function Footer() {
             </p>
           </div>
         </div>
+      </div>
       </div>
     </footer>
   );

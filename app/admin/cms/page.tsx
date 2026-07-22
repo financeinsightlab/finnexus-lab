@@ -1,7 +1,7 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
-import { ArticleType, Post } from "@prisma/client"
+import { ArticleType, Post, Prisma } from "@prisma/client"
 import {
   Plus,
   Search,
@@ -36,7 +36,7 @@ export default async function CMSDashboard({
   const pageSize = 15
   const skip = (page - 1) * pageSize
 
-  const where: any = {
+  const where: Prisma.PostWhereInput = {
     AND: [
       type ? { type } : {},
       status === "published" ? { published: true } : status === "draft" ? { published: false } : {},
@@ -62,34 +62,8 @@ export default async function CMSDashboard({
         orderBy: { createdAt: "desc" },
         skip,
         take: pageSize,
-        select: {
-          id: true,
-          title: true,
-          slug: true,
-          excerpt: true,
-          content: true,
-          type: true,
-          published: true,
-          featuredImage: true,
-          authorId: true,
-          seoTitle: true,
-          metaDescription: true,
-          focusKeywords: true,
-          ogImage: true,
-          ogTitle: true,
-          tags: true,
-          difficulty: true,
-          targetAudience: true,
-          contentStatus: true,
-          estimatedReadingTime: true,
-          scheduledPublishAt: true,
-          viewCount: true,
-          publishedAt: true,
-          createdAt: true,
-          updatedAt: true,
-          blockContent: true,
-          contentType: true,
-          author: { select: { name: true } }
+        include: {
+          author: { select: { name: true } },
         },
       }),
       prisma.post.count({ where }),

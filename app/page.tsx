@@ -1,17 +1,31 @@
 ﻿import type { Metadata } from 'next';
 import Link from 'next/link';
 import SectionHeader from '@/components/ui/SectionHeader';
+import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'Home | Kunwar Analytics',
-  description: 'Data-driven insights on markets, strategy and capital. Institutional-quality research.',
+  description:
+    'Kunwar Analytics is a financial intelligence platform delivering data-driven insights on markets, strategy, and capital. Explore institutional-quality research, business analytics, investment analysis, and study materials on finance, data science, and economics.',
+  alternates: { canonical: '/' },
+  openGraph: {
+    title: 'Kunwar Analytics — Financial Intelligence Platform',
+    description:
+      'Data-driven insights on markets, strategy, and capital. Institutional-quality research, business analytics, and educational study materials.',
+    url: 'https://kunwaranalytics.in',
+    type: 'website',
+  },
 };
 
 import ResearchGrid from '@/components/research/ResearchGrid';
 import InsightGrid from '@/components/insights/InsightGrid';
 import NewsletterForm from '@/components/NewsletterForm';
 import ScrollReveal from '@/components/ui/ScrollReveal';
-import HeroBackground from '@/components/ui/HeroBackground';
+import GlassCard3D from '@/components/ui/GlassCard3D';
+import MagneticButton3D from '@/components/ui/MagneticButton3D';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
+import RevealText from '@/components/ui/RevealText';
+import CinematicHero from '@/components/home/CinematicHero';
 import { getFeaturedResearch, getFeaturedInsights } from '@/lib/content';
 import { prisma } from '@/lib/prisma';
 import type { ResearchPost, InsightPost } from '@/types';
@@ -30,7 +44,6 @@ async function getHomePagePosts() {
   let insights: InsightPost[];
 
   if (dbResearch.length > 0) {
-    // Use DB selections: match IDs to posts in DB, then supplement with MDX
     const dbPosts = await prisma.post.findMany({
       where: { id: { in: dbResearch.map(r => r.contentId) } },
       select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true, tags: true, viewCount: true },
@@ -72,291 +85,274 @@ async function getHomePagePosts() {
 export default async function HomePage() {
   const { research, insights, heroStats, trackers } = await getHomePagePosts();
 
+  // FAQ schema for GEO
+  const homeFaq = faqSchema([
+    {
+      question: 'What is Kunwar Analytics?',
+      answer:
+        'Kunwar Analytics is a financial intelligence platform that provides data-driven insights on markets, strategy, and capital. It offers institutional-quality research, business analytics, investment analysis, and educational study materials covering finance, data science, economics, and research methods.',
+    },
+    {
+      question: 'What topics does Kunwar Analytics cover?',
+      answer:
+        'Kunwar Analytics covers financial analysis, market research, business analytics, investment analysis, data science, economics, quantitative research methods, and portfolio management — with a focus on Indian and global markets.',
+    },
+    {
+      question: 'Is Kunwar Analytics free to use?',
+      answer:
+        'Yes, Kunwar Analytics provides free access to institutional-quality research, insights, and study materials. The platform also offers premium services and enterprise solutions for advanced analytics needs.',
+    },
+    {
+      question: 'What study materials are available on Kunwar Analytics?',
+      answer:
+        'The Study Material section offers educational resources across categories including Finance, Business Analytics, Research Methods, Data Science, Economics, and Investment Analysis. Materials range from beginner to advanced difficulty and include articles, courses, videos, PDFs, and notes.',
+    },
+    {
+      question: 'Who is Kunwar Analytics for?',
+      answer:
+        'Kunwar Analytics serves retail investors, financial analysts, business strategists, MBA students, and data science professionals seeking rigorous, data-backed financial intelligence and market analysis.',
+    },
+  ])
+
+  const pillars = [
+    { icon: '📊', title: 'Research Intelligence', desc: 'Deep-dive reports on market trends, competitive analysis, and strategic positioning.', href: '/research', glow: 'blue' as const },
+    { icon: '📈', title: 'Data Analytics', desc: 'Quantitative insights with proprietary models and financial metrics.', href: '/about', glow: 'cyan' as const },
+    { icon: '🧠', title: 'Strategic Insights', desc: 'Expert commentary on sector developments and investment opportunities.', href: '/insights', glow: 'violet' as const },
+    { icon: '🔧', title: 'Financial Tools', desc: 'Practical frameworks and calculators for financial analysis.', href: '/tools', glow: 'amber' as const },
+    { icon: '📊', title: 'Data Lab', desc: 'Analytics projects, Power BI dashboards, and Python data analyses.', href: '/data-lab', glow: 'aurora' as const },
+    { icon: '📁', title: 'Case Studies', desc: 'Consulting-quality engagements — Challenge to Outcome narratives.', href: '/case-studies', glow: 'blue' as const },
+    { icon: '🎓', title: 'Study Material', desc: 'Learn finance, business analytics, and research methods — from beginner to advanced.', href: '/study', glow: 'cyan' as const },
+  ]
+
+  const trackersData = [
+    { emoji: '🚀', sector: 'Quick Commerce', metric: 'GMV Growth: 42% YoY', href: '/tracker/quick-commerce', value: 42, suffix: '%', label: 'YoY Growth' },
+    { emoji: '💰', sector: 'Fintech', metric: 'Digital Payments: ₹12.4T', href: '/tracker/fintech', value: 12, prefix: '₹', suffix: 'T', label: 'Payment Volume' },
+    { emoji: '⚡', sector: 'EV', metric: 'EV Adoption: 8.5%', href: '/tracker/ev', value: 8, suffix: '%', label: 'Adoption Rate' },
+    { emoji: '🍔', sector: 'Food Delivery', metric: 'Order Volume: 18M/month', href: '/tracker/food-delivery', value: 18, suffix: 'M', label: 'Monthly Orders' },
+  ]
+
   return (
     <>
-      <section className="relative min-h-screen bg-brand-navy flex items-center overflow-hidden">
-        <HeroBackground />
-        <div className="wrap relative z-10 py-32 md:py-40">
-          <p className="section-label text-teal-300 mb-5 anim-fade">Financial Intelligence Platform</p>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6 anim-fade-up">
-            Smarter Decisions{' '}
-            <span className="bg-gradient-to-r from-[#0D9E9E] to-[#92620A] bg-clip-text text-transparent">
-              Start Here.
-            </span>
-          </h1>
-          <p className="text-xl md:text-2xl text-gray-300 max-w-2xl leading-relaxed mb-10 anim-fade-up delay-200">
-            Institutional-quality research on Indian markets — free. Sector analysis, unit economics,
-            and strategic intelligence for investors, analysts, and founders.
-          </p>
-          <div className="flex flex-wrap gap-4 anim-fade-up delay-300">
-            <Link href="/research" className="btn-white">
-              View Research →
-            </Link>
-            <Link href="/insights" className="btn-outline-white">
-              Explore Insights
-            </Link>
-          </div>
-          <div className="flex flex-wrap gap-4 mt-16 anim-fade delay-500">
-            <div className="stat-card min-w-[100px]">
-              <p className="text-2xl font-bold text-white mb-1">10+</p>
-              <p className="text-xs text-gray-400">Reports</p>
-            </div>
-            <div className="stat-card min-w-[100px]">
-              <p className="text-2xl font-bold text-white mb-1">₹1T+</p>
-              <p className="text-xs text-gray-400">Market Cap</p>
-            </div>
-            <div className="stat-card min-w-[100px]">
-              <p className="text-2xl font-bold text-white mb-1">5+</p>
-              <p className="text-xs text-gray-400">Sectors</p>
-            </div>
-            <div className="stat-card min-w-[100px]">
-              <p className="text-2xl font-bold text-white mb-1">Free</p>
-              <p className="text-xs text-gray-400">Always</p>
-            </div>
-          </div>
-        </div>
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center">
-          <span className="text-xs text-gray-400 mb-2">SCROLL</span>
-          <div className="w-px h-8 bg-gradient-to-b from-transparent via-gray-400 to-transparent" />
-        </div>
-      </section>
+      {/* SEO + GEO: FAQ structured data for AI/LLM engines */}
+      <JsonLd data={homeFaq} />
 
-      <section className="py-24 bg-white">
-        <ScrollReveal>
-          <SectionHeader
-            label="What We Do"
-            title="Platform Pillars of Financial Intelligence"
-            align="center"
-          />
-        </ScrollReveal>
-        <div className="wrap">
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-14">
-            {[
-              {
-                icon: '📊',
-                title: 'Research Intelligence',
-                desc: 'Deep-dive reports on market trends, competitive analysis, and strategic positioning.',
-                href: '/research',
-                bg: 'bg-blue-50',
-                delay: 0,
-              },
-              {
-                icon: '📈',
-                title: 'Data Analytics',
-                desc: 'Quantitative insights with proprietary models and financial metrics.',
-                href: '/about',
-                bg: 'bg-teal-50',
-                delay: 100,
-              },
-              {
-                icon: '🧠',
-                title: 'Strategic Insights',
-                desc: 'Expert commentary on sector developments and investment opportunities.',
-                href: '/insights',
-                bg: 'bg-amber-50',
-                delay: 200,
-              },
-              {
-                icon: '🔧',
-                title: 'Financial Tools',
-                desc: 'Practical frameworks and calculators for financial analysis.',
-                href: '/tools',
-                bg: 'bg-purple-50',
-                delay: 300,
-              },
-              {
-                icon: '📊',
-                title: 'Data Lab',
-                desc: 'Analytics projects, Power BI dashboards, and Python data analyses.',
-                href: '/data-lab',
-                bg: 'bg-emerald-50',
-                delay: 400,
-              },
-              {
-                icon: '📁',
-                title: 'Case Studies',
-                desc: 'Consulting-quality engagements — Challenge to Outcome narratives.',
-                href: '/case-studies',
-                bg: 'bg-rose-50',
-                delay: 500,
-              },
-            ].map((pillar) => (
-              <ScrollReveal key={pillar.title} delay={pillar.delay}>
-                <Link href={pillar.href} className="card p-6 flex flex-col h-full group cursor-pointer">
-                  <div className={`w-12 h-12 rounded-xl ${pillar.bg} flex items-center justify-center text-2xl mb-4`}>
-                    {pillar.icon}
-                  </div>
-                  <h3 className="font-bold text-brand-navy mb-2 group-hover:text-brand-teal transition-colors">
-                    {pillar.title}
-                  </h3>
-                  <p className="text-sm text-brand-slate leading-relaxed flex-1">
-                    {pillar.desc}
-                  </p>
-                  <span className="btn-ghost mt-4 text-xs">Explore →</span>
-                </Link>
+      {/* ===== CINEMATIC HERO ===== */}
+      <CinematicHero />
+
+      {/* ===== PLATFORM PILLARS ===== */}
+      <section className="relative py-28 bg-cinema-ink overflow-hidden">
+        <div className="absolute inset-0 cinema-grid opacity-30" />
+        <div className="absolute inset-0 cinema-noise" />
+        <div className="wrap relative z-10">
+          <ScrollReveal>
+            <SectionHeader
+              label="What We Do"
+              title="Platform Pillars of Financial Intelligence"
+              align="center"
+              light
+            />
+          </ScrollReveal>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 mt-16">
+            {pillars.map((pillar, i) => (
+              <ScrollReveal key={pillar.title} delay={i * 80}>
+                <GlassCard3D glow={pillar.glow} className="h-full">
+                  <Link href={pillar.href} className="block p-7 h-full group cursor-pointer">
+                    <div className="w-14 h-14 rounded-2xl glass-cinema-light flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition-transform duration-300">
+                      {pillar.icon}
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cinema-cyan transition-colors">
+                      {pillar.title}
+                    </h3>
+                    <p className="text-sm text-gray-400 leading-relaxed flex-1">
+                      {pillar.desc}
+                    </p>
+                    <span className="inline-flex items-center gap-1 mt-5 text-sm text-cinema-cyan group-hover:gap-2 transition-all">
+                      Explore →
+                    </span>
+                  </Link>
+                </GlassCard3D>
               </ScrollReveal>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Featured Research */}
-      <section className="py-20 bg-white">
-        <div className="wrap">
-          <SectionHeader
-            label="Research"
-            title="Featured Research"
-            subtitle="Deep dives into emerging trends and market dynamics"
-            align="center"
-          />
-          <ResearchGrid posts={research} />
+      {/* ===== FEATURED RESEARCH ===== */}
+      <section className="relative py-24 bg-cinema-black overflow-hidden">
+        <div className="absolute inset-0 cinema-mesh opacity-20" />
+        <div className="wrap relative z-10">
+          <ScrollReveal>
+            <SectionHeader
+              label="Research"
+              title="Featured Research"
+              subtitle="Deep dives into emerging trends and market dynamics"
+              align="center"
+              light
+            />
+          </ScrollReveal>
+          <div className="mt-14">
+            <ResearchGrid posts={research} />
+          </div>
         </div>
       </section>
 
-      {/* Sector Trackers */}
-      <section className="py-20 bg-white border-t border-gray-100">
-        <div className="wrap">
+      {/* ===== SECTOR INTELLIGENCE TRACKERS ===== */}
+      <section className="relative py-24 bg-cinema-ink overflow-hidden">
+        <div className="absolute inset-0 cinema-grid opacity-20" />
+        <div className="wrap relative z-10">
           <ScrollReveal>
             <SectionHeader
               label="Live Intelligence"
               title="Sector Intelligence Trackers"
               subtitle="Quarterly-updated data across 8 Indian market sectors"
               align="center"
+              light
             />
           </ScrollReveal>
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mt-10">
-            {[
-              {
-                emoji: '🚀',
-                sector: 'Quick Commerce',
-                metric: 'GMV Growth: 42% YoY',
-                href: '/tracker/quick-commerce',
-              },
-              {
-                emoji: '💰',
-                sector: 'Fintech',
-                metric: 'Digital Payments: ₹12.4T',
-                href: '/tracker/fintech',
-              },
-              {
-                emoji: '⚡',
-                sector: 'EV',
-                metric: 'EV Adoption: 8.5%',
-                href: '/tracker/ev',
-              },
-              {
-                emoji: '🍔',
-                sector: 'Food Delivery',
-                metric: 'Order Volume: 18M/month',
-                href: '/tracker/food-delivery',
-              },
-            ].map((tracker) => (
-              <Link
-                key={tracker.sector}
-                href={tracker.href}
-                className="card p-5 cursor-pointer hover:shadow-lg transition-shadow"
-              >
-                <div className="flex items-center gap-3 mb-3">
-                  <span className="text-2xl">{tracker.emoji}</span>
-                  <h3 className="font-bold text-brand-navy">{tracker.sector}</h3>
-                </div>
-                <p className="text-sm text-brand-slate mb-3">{tracker.metric}</p>
-                <div className="inline-flex items-center gap-1 px-2 py-1 bg-amber-50 text-amber-800 text-xs rounded-full">
-                  🔒 Full data: subscribers
-                </div>
-              </Link>
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-12">
+            {trackersData.map((tracker, i) => (
+              <ScrollReveal key={tracker.sector} delay={i * 80}>
+                <GlassCard3D glow="cyan" className="h-full">
+                  <Link href={tracker.href} className="block p-6 h-full cursor-pointer">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="text-3xl">{tracker.emoji}</span>
+                      <h3 className="font-bold text-white">{tracker.sector}</h3>
+                    </div>
+                    <p className="text-3xl font-bold cinema-text-gradient mb-2">
+                      <AnimatedCounter
+                        value={tracker.value}
+                        prefix={tracker.prefix ?? ''}
+                        suffix={tracker.suffix ?? ''}
+                        duration={2000}
+                      />
+                    </p>
+                    <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tracker.label}</p>
+                    <p className="text-sm text-gray-400 mb-4">{tracker.metric}</p>
+                    <div className="inline-flex items-center gap-1 px-3 py-1 glass-cinema-light text-amber-300 text-xs rounded-full">
+                      🔒 Full data: subscribers
+                    </div>
+                  </Link>
+                </GlassCard3D>
+              </ScrollReveal>
             ))}
           </div>
-          <div className="text-center mt-10">
-            <Link href="/tracker" className="btn-ghost text-sm">
+          <div className="text-center mt-12">
+            <MagneticButton3D href="/tracker" variant="outline" className="px-6 py-2.5 text-sm">
               View All Trackers →
-            </Link>
+            </MagneticButton3D>
           </div>
         </div>
       </section>
 
-      {/* Latest Insights */}
-      <section className="py-20 bg-brand-slate/5">
-        <div className="wrap">
-          <SectionHeader
-            label="Insights"
-            title="Latest Insights"
-            subtitle="Timely analysis and market intelligence"
-            align="center"
-          />
-          <InsightGrid posts={insights} />
+      {/* ===== LATEST INSIGHTS ===== */}
+      <section className="relative py-24 bg-cinema-black overflow-hidden">
+        <div className="absolute inset-0 cinema-mesh opacity-15" />
+        <div className="wrap relative z-10">
+          <ScrollReveal>
+            <SectionHeader
+              label="Insights"
+              title="Latest Insights"
+              subtitle="Timely analysis and market intelligence"
+              align="center"
+              light
+            />
+          </ScrollReveal>
+          <div className="mt-14">
+            <InsightGrid posts={insights} />
+          </div>
         </div>
       </section>
 
-      {/* Services CTA */}
-      <section className="py-20 bg-gradient-to-r from-brand-navy to-brand-slate text-white">
-        <div className="wrap text-center">
+      {/* ===== SERVICES CTA ===== */}
+      <section className="relative py-28 overflow-hidden bg-cinema-ink">
+        <div className="absolute inset-0 cinema-mesh opacity-50" />
+        <div className="absolute inset-0 cinema-noise" />
+        {/* Glow orbs */}
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 rounded-full bg-cinema-glow-blue/20 blur-[120px]" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 rounded-full bg-cinema-violet/20 blur-[120px]" />
+        <div className="wrap text-center relative z-10">
           <ScrollReveal>
-            <h2 className="text-4xl font-bold mb-6">Ready to Transform Your Financial Intelligence?</h2>
-            <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
+            <RevealText
+              as="h2"
+              className="text-4xl md:text-5xl font-bold text-white mb-6"
+              stagger={0.05}
+            >
+              Ready to Transform Your Financial Intelligence?
+            </RevealText>
+            <p className="text-xl mb-10 max-w-2xl mx-auto text-gray-300 leading-relaxed">
               Access our comprehensive suite of research tools, data analytics, and expert insights to stay ahead in the financial markets.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/services" className="btn-primary">
+              <MagneticButton3D href="/services" variant="solid" className="px-7 py-3 text-base">
                 Explore Services
-              </Link>
-              <Link href="/contact" className="btn-ghost">
+              </MagneticButton3D>
+              <MagneticButton3D href="/contact" variant="outline" className="px-7 py-3 text-base">
                 Get in Touch
-              </Link>
+              </MagneticButton3D>
             </div>
           </ScrollReveal>
         </div>
       </section>
 
-      {/* Podcast */}
-      <section className="py-20 bg-brand-slate/5">
-        <div className="wrap">
+      {/* ===== PODCAST ===== */}
+      <section className="relative py-24 bg-cinema-black overflow-hidden">
+        <div className="absolute inset-0 cinema-grid opacity-20" />
+        <div className="wrap relative z-10">
           <ScrollReveal>
             <SectionHeader
               label="Kunwar Analytics Podcast"
               title="Market Intelligence in 30 Minutes"
               align="center"
+              light
             />
           </ScrollReveal>
-          <div className="mt-10">
-            <div className="card p-8 flex flex-col md:flex-row gap-6 items-start">
-              <div className="flex-shrink-0">
-                <div className="text-5xl font-bold text-brand-teal">01</div>
-                <div className="mt-2 px-3 py-1 bg-teal-100 text-teal-800 text-xs font-medium rounded-full">
-                  Deep Dive
+          <div className="mt-12 max-w-4xl mx-auto">
+            <ScrollReveal delay={100}>
+              <GlassCard3D glow="aurora" className="h-full">
+                <div className="p-8 flex flex-col md:flex-row gap-6 items-start">
+                  <div className="flex-shrink-0">
+                    <div className="text-6xl font-bold cinema-text-glow">01</div>
+                    <div className="mt-3 px-3 py-1 glass-cinema-light text-cinema-aurora text-xs font-medium rounded-full inline-block">
+                      Deep Dive
+                    </div>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-2xl font-bold text-white mb-3">
+                      Episode 1: Blinkit EBITDA Breakdown
+                    </h3>
+                    <p className="text-gray-400 leading-relaxed mb-6">
+                      A detailed analysis of Blinkit's path to profitability, unit economics, and the broader quick‑commerce landscape in India. We break down the key drivers, competitive moats, and what it means for investors.
+                    </p>
+                    <div className="flex flex-wrap gap-4">
+                      <MagneticButton3D href="/podcast/ep001-blinkit-ebitda-breakdown" variant="outline" className="px-5 py-2 text-sm">
+                        Listen & Read Notes →
+                      </MagneticButton3D>
+                      <Link href="/podcast" className="text-sm text-cinema-cyan hover:underline self-center">
+                        All Episodes →
+                      </Link>
+                    </div>
+                  </div>
                 </div>
-              </div>
-              <div className="flex-1">
-                <h3 className="text-2xl font-bold text-brand-navy mb-3">
-                  Episode 1: Blinkit EBITDA Breakdown
-                </h3>
-                <p className="text-brand-slate leading-relaxed mb-6">
-                  A detailed analysis of Blinkit's path to profitability, unit economics, and the broader quick‑commerce landscape in India. We break down the key drivers, competitive moats, and what it means for investors.
-                </p>
-                <div className="flex flex-wrap gap-4">
-                  <Link href="/podcast/ep001-blinkit-ebitda-breakdown" className="btn-ghost text-sm">
-                    Listen & Read Notes →
-                  </Link>
-                  <Link href="/podcast" className="text-sm text-brand-teal hover:underline">
-                    All Episodes →
-                  </Link>
-                </div>
-              </div>
-            </div>
+              </GlassCard3D>
+            </ScrollReveal>
           </div>
         </div>
       </section>
 
-      {/* Newsletter */}
-      <section className="py-20 bg-white">
-        <div className="wrap">
+      {/* ===== NEWSLETTER ===== */}
+      <section className="relative py-24 bg-cinema-ink overflow-hidden">
+        <div className="absolute inset-0 cinema-mesh opacity-30" />
+        <div className="wrap relative z-10">
           <div className="max-w-2xl mx-auto text-center">
-            <SectionHeader
-              label="Stay Updated"
-              title="Subscribe to Our Newsletter"
-              subtitle="Get the latest research, insights, and market analysis delivered to your inbox"
-              align="center"
-            />
+            <ScrollReveal>
+              <SectionHeader
+                label="Stay Updated"
+                title="Subscribe to Our Newsletter"
+                subtitle="Get the latest research, insights, and market analysis delivered to your inbox"
+                align="center"
+                light
+              />
+            </ScrollReveal>
             <ScrollReveal delay={200}>
               <NewsletterForm />
             </ScrollReveal>

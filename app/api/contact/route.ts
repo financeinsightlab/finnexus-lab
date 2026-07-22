@@ -1,26 +1,29 @@
 // FILE: app/api/contact/route.ts
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+const contactSchema = z.object({
+  name: z.string().min(1, 'Name is required').max(100, 'Name too long'),
+  organisation: z.string().max(200).optional(),
+  email: z.string().email('Invalid email format'),
+  subject: z.string().min(1, 'Subject is required').max(200, 'Subject too long'),
+  message: z.string().min(1, 'Message is required').max(5000, 'Message too long'),
+});
 
 export async function POST(request: NextRequest) {
   try {
-    const { name, organisation, email, subject, message } = await request.json();
+    const body = await request.json();
 
-    // Validate required fields
-    if (!name || !email || !subject || !message) {
+    // Validate input with Zod
+    const parsed = contactSchema.safeParse(body);
+    if (!parsed.success) {
       return NextResponse.json(
-        { error: 'Missing required fields: name, email, subject, and message are required' },
+        { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
         { status: 400 }
       );
     }
 
-    // Basic email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
+    const { name, organisation, email, subject, message } = parsed.data;
 
     // ⚠ Uncomment this block and add RESEND_API_KEY to Vercel env vars
     /*
