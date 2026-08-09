@@ -1,0 +1,16 @@
+product_id,product_name,category,product_tier,list_price
+P-11,Earbuds,Electronics,Standard,999
+P-12,Smartwatch,Electronics,Standard,699
+P-13,Phone Stand,Electronics,Essential,399
+P-21,Desk Lamp,Home,Standard,1499
+P-22,Storage Box,Home,Premium,399
+P-23,Coffee Press,Home,Standard,399
+P-31,Tee,Fashion,Premium,1499
+P-32,Tote,Fashion,Essential,1499
+P-33,Cap,Fashion,Premium,1499
+P-41,Serum,Beauty,Essential,699
+P-42,Lotion,Beauty,Essential,399
+P-43,Hair Oil,Beauty,Essential,699
+P-51,Yoga Mat,Sports,Premium,399
+P-52,Bottle,Sports,Premium,1499
+P-53,Band,Sports,Premium,399

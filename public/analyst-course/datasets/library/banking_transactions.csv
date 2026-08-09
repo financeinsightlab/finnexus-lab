@@ -1,0 +1,4 @@
+transaction_id,transaction_date,customer_segment,transaction_type,amount,channel,country,risk_flag
+B-001,2026-05-01,Retail,Card Purchase,2500,Mobile,IN,No
+B-002,2026-05-01,SMB,Transfer,850000,Web,IN,Yes
+B-003,2026-05-01,Retail,ATM Withdrawal,10000,ATM,IN,No

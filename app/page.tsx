@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import SectionHeader from '@/components/ui/SectionHeader';
 import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
@@ -30,6 +30,7 @@ import { getFeaturedResearch, getFeaturedInsights } from '@/lib/content';
 import { prisma } from '@/lib/prisma';
 import type { ResearchPost, InsightPost } from '@/types';
 import { GlobalForecastingTicker } from '@/components/ui/GlobalForecastingTicker';
+import CoursesSection from '@/components/study/CoursesSection';
 
 async function getHomePagePosts() {
   // Try to get DB-driven featured selections first
@@ -176,6 +177,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* ===== COURSES ===== */}
+      <CoursesSection />
 
       {/* ===== FEATURED RESEARCH ===== */}
       <section className="relative py-24 bg-cinema-black overflow-hidden">

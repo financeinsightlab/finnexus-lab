@@ -1,0 +1,4 @@
+visit_id,visit_date,department,patient_type,scheduled_time,checkin_time,consult_time,discharge_time,status
+V-001,2026-05-01,Cardiology,Follow-up,09:00,09:05,09:42,10:20,Completed
+V-002,2026-05-01,Orthopedics,New,09:15,09:32,10:14,11:05,Completed
+V-003,2026-05-01,Cardiology,New,09:30,,, ,No Show

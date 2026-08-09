@@ -1,0 +1,828 @@
+# Builds PowerBI_Course_App_v3.html — bulletproof edition.
+# Navigation works with ZERO JavaScript (pure CSS :target); JS only enhances.
+import hashlib, html, json, os, re
+
+BASE = os.path.normpath(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".."))
+OUT = os.path.join(BASE, "PowerBI_Course_App_v3.html")
+
+SECTIONS = [
+    ("00_START_HERE_Roadmap.md", "roadmap", "00 · Start Here — Roadmap", "🚀", "12-week plan & setup"),
+    ("Module_01_Foundations.md", "m1", "01 · Foundations & First Report", "🏁", "Power BI tour + first report"),
+    ("Module_02_Power_Query.md", "m2", "02 · Power Query", "🧹", "Clean any messy data"),
+    ("Module_03_Data_Modeling.md", "m3", "03 · Data Modeling", "📐", "Star schemas that scale"),
+    ("Module_04_DAX_Fundamentals.md", "m4", "04 · DAX Fundamentals", "∑", "Measures & KPIs"),
+    ("Module_05_DAX_Advanced.md", "m5", "05 · DAX Mastery", "🔥", "CALCULATE & patterns"),
+    ("Module_06_Visualization_Design.md", "m6", "06 · Visualization & Design", "🎨", "Dashboards that wow"),
+    ("Module_07_Service_Sharing_Security.md", "m7", "07 · Service & Security", "☁️", "Publish, refresh, RLS"),
+    ("Module_08_Performance_Enterprise.md", "m8", "08 · Performance & Enterprise", "⚡", "Speed & enterprise"),
+    ("Module_09_Capstone_Projects.md", "m9", "09 · Capstone Projects", "🏆", "3 portfolio projects"),
+    ("DAX_Cheat_Sheet.md", "cheat", "★ · DAX Cheat Sheet", "📌", "DAX at your fingertips"),
+    ("Resources_Certification_Career.md", "res", "★ · Career & PL-300", "🎓", "Certification + interviews"),
+]
+
+QUIZZES = {
+"roadmap": [
+  {"q":"You have a Windows laptop and 8 hrs/week. What's the correct first step today?",
+   "o":["Buy a Power BI Pro license","Install Power BI Desktop free + sign up at app.powerbi.com","Learn SQL for 6 months first","Watch 40 hours of YouTube videos"],"a":1,
+   "w":"Desktop is 100% free for building; you only need Service licenses to SHARE. Learning starts with installing + Lab 1, not with spending."},
+  {"q":"The 30/70 rule of this course means:",
+   "o":["30% DAX, 70% Power Query","30% of modules are optional","30% learning, 70% building/practicing","Study 30 min, rest 70 min"],"a":2,
+   "w":"Watching videos never made anyone an expert — you become one by building. Every lab twice!"},
+  {"q":"Stuck on a problem for 30+ minutes — the 4-step rescue is:",
+   "o":["Give up → new career","Re-read error → tiny test page → simplify → ask with formula + model","Delete the file and restart","Ask AI to do the lab for you"],"a":1,
+   "w":"Debugging is a core analyst skill; the rescue ladder keeps you moving without shortcutting learning."}],
+"m1": [
+  {"q":"The 5-step Power BI workflow, in order:",
+   "o":["Visualize → Model → Share → Clean → Get Data","Get Data → Clean → Model → Visualize → Share","Model → Get Data → Share → Clean → Visualize","Get Data → Visualize → Clean → Share → Model"],"a":1,
+   "w":"Get → Clean (Power Query) → Model → Visualize → Share. This loop is every pro project ever."},
+  {"q":"A .pbix file contains…",
+   "o":["Only the report visuals","A link to the cloud","Data + model + report together (Import mode)","Only DAX measures"],"a":2,
+   "w":"The .pbix embeds a compressed copy of the data, the model, and the report pages — one portable file."},
+  {"q":"An 'implicit measure' is…",
+   "o":["A hidden calculated column","Power BI auto-aggregating a dragged numeric column (e.g., Sum)","A measure written in Excel","A visual filter"],"a":1,
+   "w":"Drag Quantity into a card → auto Sum. Pros replace these with explicit DAX measures for control & reuse."}],
+"m2": [
+  {"q":"Why are Applied Steps the heart of Power Query?",
+   "o":["They make queries faster","They re-run your whole cleaning recipe automatically on Refresh","They compress the data","They format visuals"],"a":1,
+   "w":"Clean once by hand → refresh forever. Recipes, not manual edits — that's the pro mindset."},
+  {"q":"Merge vs Append:",
+   "o":["Merge stacks rows, Append adds columns","Merge = JOIN side-by-side on keys; Append = UNION rows on top","They're identical","Merge is only for Excel"],"a":1,
+   "w":"Merge widens (join), Append stacks (rows). Confusing them is the #1 beginner error."},
+  {"q":"Errors appeared after a type change. Best first move?",
+   "o":["Delete the whole column","Investigate via column profile, fix the text, then Remove/Replace Errors deliberately","Ignore them","Close Power Query"],"a":1,
+   "w":"Keep-vs-drop bad data is a BUSINESS decision — look first (column quality %), fix the cause, then handle errors on purpose."}],
+"m3": [
+  {"q":"Fact vs dimension, choose correct:",
+   "o":["Facts describe people, dimensions hold numbers","Facts = measurable events to aggregate; Dimensions = who/what/where you filter by","Same thing","Dimensions are always bigger"],"a":1,
+   "w":"Filter/slice by dims, aggregate facts. Sales = fact; Customers/Products/Date = dims."},
+  {"q":"Default relationship settings you trust in a star schema:",
+   "o":["Many-to-many, Both directions","One-to-one","Many-to-one (fact→dim), Single direction","Active = false"],"a":2,
+   "w":"*:1 single-direction keeps filters unambiguous and fast; bidirectional is a deliberate, rare exception."},
+  {"q":"A valid Date table requires…",
+   "o":["At least 10,000 rows","Contiguous unique dates with no gaps, covering the range, marked as date table","A fiscal calendar only","Auto date/time enabled"],"a":1,
+   "w":"No proper date table → time intelligence silently wrong. Mark it, relate it, never trust hidden auto tables."}],
+"m4": [
+  {"q":"Why default to measures over calculated columns?",
+   "o":["Measures are easier to type","Measures compute at query time (no model bloat) AND respond to filter context","Columns can't aggregate","Measures use less RAM at refresh"],"a":1,
+   "w":"A column is frozen at refresh; a measure re-computes per visual per slicer click. 'If in doubt, measure.'"},
+  {"q":"CALCULATE([Total Sales], ALL(Products)) as a denominator gives…",
+   "o":["Only electronics sales","Zero","Total sales ignoring all product filters — perfect for % of total","An error"],"a":2,
+   "w":"CALCULATE rewrites the filter context; ALL removes product filters → grand total per cell."},
+  {"q": "'Cannot determine a single value for column' error means:",
+   "o":["The column is too long","You referenced a bare column inside a measure — wrap it in an aggregation","The data has duplicates","License expired"],"a":1,
+   "w":"Measures need one value per context: SUM(col), SELECTEDVALUE(col), etc. Bare [Column] = measure-land error."}],
+"m5": [
+  {"q":"KEEPFILTERS changes CALCULATE's behavior from ___ to ___:",
+   "o":["AND → OR","Replace existing filters → intersect with them","Import → DirectQuery","Row → column"],"a":1,
+   "w":"Default = replace (ignores slicers on that column). KEEPFILTERS = intersect (respects slicers)."},
+  {"q":"Context transition is:",
+   "o":["Switching report pages","CALCULATE converting the current row's values into filters during evaluation","Refreshing the model","Drilling through"],"a":1,
+   "w":"Row context + CALCULATE → filter context. It's also why measure references (hidden CALCULATE) 'see' each iterated row."},
+  {"q":"For ranking that adapts to the user's slicers, use:",
+   "o":["RANKX(ALL(...))","RANKX(ALLSELECTED(...))","COUNTROWS","TOPN only"],"a":1,
+   "w":"ALL ignores slicers AND visual filters; ALLSELECTED keeps the user's selection — ranks react to what's visible."}],
+"m6": [
+  {"q":"8 categories to compare — pick the visual:",
+   "o":["Pie chart","Gauge","Bar/column chart","3-D cone chart"],"a":2,
+   "w":"Humans compare lengths far better than angles. Pies beyond ~5 slices = unreadable mush."},
+  {"q":"Bookmark that only toggles visibility (collapsible panel) must UNcheck:",
+   "o":["Display","Current page","Data","Spotlight"],"a":2,
+   "w":"Unchecking 'Data' keeps the user's filters/slicers untouched — otherwise the bookmark traps old filter states."},
+  {"q":"The 5-second rule says a page must…",
+   "o":["Load in 5 seconds","Convey its main message within 5 seconds","Have exactly 5 visuals","Auto-refresh every 5 s"],"a":1,
+   "w":"Title = the answer, F-layout, KPI row on top. Executives decide in seconds whether to keep reading."}],
+"m7": [
+  {"q":"Dynamic RLS is powered by which DAX pattern?",
+   "o":["RANKX over Users","Security table filtered by USERPRINCIPALNAME()","TOTALYTD(VIEWERS)","Publish to web"],"a":1,
+   "w":"One role like [Email] = USERPRINCIPALNAME() + a mapping table = any user sees only their rows. Test with 'View as role'."},
+  {"q":"You need scheduled refresh from an on-prem SQL Server. You need…",
+   "o":["Nothing extra","A data gateway (standard/personal) with stored credentials","A bigger laptop","Power BI on Mac"],"a":1,
+   "w":"Gateway = the bridge services use to reach internal sources; cloud sources need only credentials."},
+  {"q":"Why 'one semantic model, many reports'?",
+   "o":["Saves disk space","Single source of truth: measures/RLS/refresh fixed once, consistent numbers org-wide","It's Microsoft policy","Reports can't have models"],"a":1,
+   "w":"Governed central models + Build permission = trusted self-service instead of 14 versions of 'sales'."}],
+"m8": [
+  {"q":"VertiPaq model size is driven mostly by:",
+   "o":["Number of visuals","Row count × column cardinality (unique values)","Theme colors","Number of workspaces"],"a":1,
+   "w":"High-cardinality columns (IDs, datetimes) are the fat — drop, split, or integer-ize them."},
+  {"q":"Auto date/time should be disabled because…",
+   "o":["It deletes old data","It creates hidden date tables per date column, bloating the model","It breaks DAX","It's a premium feature"],"a":1,
+   "w":"Hidden per-column date tables inflate size and fight your real, marked Date table."},
+  {"q":"The .pbip project format's superpower:",
+   "o":["It's smaller","Text-based model & report files → Git diffs, branches, PRs, TMDL editing","It runs on Mac","It skips refresh"],"a":1,
+   "w":".pbip + TMDL = real source control and code review for BI. Interviewers love this."}],
+"m9": [
+  {"q":"What makes a capstone project 'portfolio-ready'?",
+   "o":["At least 20 pages","Problem statement, clean star model, advanced DAX, interactive UX, screenshots, decision log","Only if you used real company data","Rainbow color palette"],"a":1,
+   "w":"Recruiters read the story: problem → approach → decisions → result. Screenshots + README + rubric ≥85."},
+  {"q":"The 60-minute rebuild drill tests for…",
+   "o":["Typing speed","Hireable muscle memory: model + 6 measures + 1 page from blank file","Memory of exact measures only","How fast you can Google"],"a":1,
+   "w":"Rebuild Project 1's core in <60 min monthly — that's fluency, and fluency is what interviews actually measure."},
+  {"q":"novypro.com is used in this course to…",
+   "o":["Buy licenses","Publish/an showcase your PBIX portfolio publicly","Download DAX Studio","Email managers"],"a":1,
+   "w":"GitHub (.pbip) + novypro demos + LinkedIn = the recruiter trifecta."}],
+"cheat": [
+  {"q":"Division in DAX should always use…",
+   "o":["/ operator","DIVIDE([A],[B]) — blank-safe, no div/0 crashes","AVERAGE","MOD"],"a":1,
+   "w":"DIVIDE handles zero/blank gracefully and reads cleaner. The slash is for daredevils."},
+  {"q":"The Two Laws: measures evaluate in ___; calculated columns/iterators in ___:",
+   "o":["row, filter","filter, row","table, query","import, direct"],"a":1,
+   "w":"Filter context vs row context. Internalize this and 80% of DAX confusion evaporates."},
+  {"q":"First move when a measure misbehaves:",
+   "o":["Rewrite the model","Table visual → return VARs one by one → DAX Studio timings","Add more filters","Restart Windows"],"a":1,
+   "w":"Debug ritual: isolate in a table, inspect intermediate VARs, then check SE vs FE split."}],
+"res": [
+  {"q":"PL-300 passing score and annual obligation:",
+   "o":["500/1000, lifetime cert","700/1000, free online renewal every year","1000/1000, never renew","No score, interview only"],"a":1,
+   "w":"700 to pass; associate certifications renew FREE online annually via Microsoft Learn."},
+  {"q":"The single fastest way to deepen mastery after the course:",
+   "o":["Rewatch all modules","Answer forum questions + explain concepts to others (teaching)","Buy more courses","Change careers"],"a":1,
+   "w":"Teaching exposes fuzzy knowledge instantly — the 60-day treadmill builds on this."},
+  {"q":"In interviews, 'row vs filter context' will…",
+   "o":["Rarely come up","Almost certainly be asked — answer aloud, precisely","Only be asked for Fabric roles","Be a trick question"],"a":1,
+   "w":"It's THE DAX interview gate. Practice your spoken answer until it's crisp."}],
+}
+
+KW = ("ADDCOLUMNS|ALL|ALLEXCEPT|ALLSELECTED|AVERAGE|AVERAGEX|BLANK|CALCULATE|CALCULATETABLE|CALENDAR|COALESCE|"
+      "CONCATENATEX|COUNT|COUNTROWS|COUNTX|CROSSFILTER|DATEADD|DATESBETWEEN|DATESINPERIOD|DISTINCT|DISTINCTCOUNT|"
+      "DIVIDE|EXCEPT|FILTER|FIRST|FORMAT|GENERATE|HASONEVALUE|IF|IGNORE|INTERSECT|ISBLANK|ISFILTERED|ISINSCOPE|KEEPFILTERS|"
+      "LAST|LASTDATE|LOOKUP|MAXX|MIN|MINX|MONTH|MOVINGAVERAGE|NEXT|NOT|PREVIOUS|PREVIOUSMONTH|QUARTER|RANKX|RANGE|"
+      "RELATED|RELATEDTABLE|REMOVEFILTERS|RETURN|ROW|RUNNINGSUM|SAMEPERIODLASTYEAR|SELECTEDMEASURE|SELECTEDVALUE|"
+      "SUM|SUMMARIZE|SUMMARIZECOLUMNS|SUMX|SWITCH|TOPN|TOTALMTD|TOTALQTD|TOTALYTD|TREATAS|USERELATIONSHIP|USERPRINCIPALNAME|"
+      "VALUES|VAR|WEEKDAY|YEAR|Let|In|Each|Table\.[A-Za-z]+|Text\.[A-Za-z]+|try|otherwise|true|false")
+
+def hl_code(code, lang):
+    esc = html.escape(code)
+    if lang.lower() in ("dax", "powerquery", "m", ""):
+        esc = re.sub(r"(&quot;[^&]*?&quot;)", r'<span class="st">\1</span>', esc)
+        esc = re.sub(r"(--[^\n]*)", r'<span class="cm">\1</span>', esc)
+        esc = re.sub(r"\b(" + KW + r")\b", r'<span class="kw">\1</span>', esc, flags=re.IGNORECASE)
+    return esc
+
+def slugify(t):
+    return re.sub(r"[^a-z0-9]+", "-", t.lower()).strip("-")[:40]
+
+def inline(text):
+    text = text.replace("\\*", "\x01")
+    codes = []
+    def stash(m):
+        codes.append(html.escape(m.group(1)))
+        return "\x00%d\x00" % (len(codes) - 1)
+    text = re.sub(r"`([^`]+)`", stash, text)
+    text = html.escape(text)
+    text = re.sub(r"\*\*([^*]+)\*\*", r"<strong>\1</strong>", text)
+    text = re.sub(r"(?<![\w*])\*([^*\n]+)\*(?!\w)", r"<em>\1</em>", text)
+    text = re.sub(r"\[([^\]]+)\]\((https?://[^)\s]+|[^)\s]+)\)",
+                  r'<a href="\2" target="_blank" rel="noopener">\1</a>', text)
+    text = re.sub(r"\x00(\d+)\x00", lambda m: "<code>" + codes[int(m.group(1))] + "</code>", text)
+    return text.replace("\x01", "*")
+
+def md_to_html(md, sid):
+    lines = md.split("\n")
+    out, i, stack, para, h2n = [], 0, [], [], 0
+    def flush_para():
+        if para:
+            out.append("<p>" + inline(" ".join(para)) + "</p>"); para.clear()
+    def flush_lists():
+        while stack: out.append("</%s>" % stack.pop()[1])
+    while i < len(lines):
+        line = lines[i]
+        if line.strip().startswith("```"):
+            flush_para(); flush_lists()
+            lang = line.strip()[3:].strip()
+            code = []; i += 1
+            while i < len(lines) and not lines[i].strip().startswith("```"):
+                code.append(lines[i]); i += 1
+            label = html.escape(lang) if lang else "code"
+            out.append('<div class="codewrap"><div class="codetop"><span class="dots"><i></i><i></i><i></i></span>'
+                       '<span class="clang">%s</span></div><pre><code>%s</code></pre></div>'
+                       % (label, hl_code("\n".join(code), lang)))
+            i += 1; continue
+        s = line.strip()
+        if not s:
+            flush_para(); flush_lists(); i += 1; continue
+        if s.startswith("|") and i + 1 < len(lines) and re.match(r"^\s*\|?[\s:\-|]+\|?\s*$", lines[i + 1]):
+            flush_para(); flush_lists()
+            def cells(r): return [c.strip() for c in r.strip().strip("|").split("|")]
+            header = cells(s); i += 2; rows = []
+            while i < len(lines) and lines[i].strip().startswith("|"):
+                rows.append(cells(lines[i])); i += 1
+            t = ['<div class="tbl"><table><thead><tr>' + "".join("<th>%s</th>" % inline(c) for c in header) + "</tr></thead><tbody>"]
+            for r in rows:
+                r = (r + [""] * len(header))[:len(header)]
+                t.append("<tr>" + "".join("<td>%s</td>" % inline(c) for c in r) + "</tr>")
+            t.append("</tbody></table></div>")
+            out.append("".join(t)); continue
+        m = re.match(r"^(#{1,4})\s+(.*)$", s)
+        if m:
+            flush_para(); flush_lists()
+            lvl = len(m.group(1)); txt = m.group(2)
+            if lvl == 2:
+                h2n += 1
+                out.append('<h2 id="%s-h%d">%s</h2>' % (sid, h2n, inline(txt)))
+            else:
+                out.append("<h%d>%s</h%d>" % (lvl, inline(txt), lvl))
+            i += 1; continue
+        if re.fullmatch(r"-{3,}", s):
+            flush_para(); flush_lists(); out.append("<hr>"); i += 1; continue
+        if s.startswith(">"):
+            flush_para(); flush_lists()
+            out.append("<blockquote>" + inline(s.lstrip("> ")) + "</blockquote>"); i += 1; continue
+        mc = re.match(r"^(\s*)[-+*]\s+\[ \]\s+(.*)$", line)
+        m = re.match(r"^(\s*)([-+*])\s+(.*)$", line)
+        m2 = None if (m or mc) else re.match(r"^(\s*)(\d+)[.)]\s+(.*)$", line)
+        if mc or m or m2:
+            flush_para()
+            g = mc or m or m2
+            indent = len(g.group(1)); tag = "ul" if not m2 else "ol"
+            if not stack or indent > stack[-1][0]:
+                out.append("<%s>" % tag); stack.append((indent, tag))
+            else:
+                while stack and indent < stack[-1][0]:
+                    out.append("</%s>" % stack.pop()[1])
+                if stack and stack[-1][1] != tag:
+                    out.append("</%s>" % stack.pop()[1]); out.append("<%s>" % tag); stack.append((indent, tag))
+                if not stack:
+                    out.append("<%s>" % tag); stack.append((indent, tag))
+            if mc:
+                key = sid + "-" + hashlib.md5(g.group(2).encode()).hexdigest()[:8]
+                out.append('<li class="chk"><label><input type="checkbox" data-ck="%s"><span></span> %s</label></li>'
+                           % (key, inline(g.group(2))))
+            else:
+                out.append("<li>" + inline((m or m2).group(3)) + "</li>")
+            i += 1; continue
+        para.append(s); i += 1
+    flush_para(); flush_lists()
+    return "\n".join(out)
+
+# ---------------- build ----------------
+parts, home_cards, nav_items = [], [], []
+for idx, (fname, sid, label, icon, desc) in enumerate(SECTIONS):
+    raw = open(os.path.join(BASE, fname), encoding="utf-8").read()
+    body = md_to_html(raw, sid)
+    words = len(re.sub(r"<[^>]+>", " ", body).split())
+    rt = max(4, round(words / 180))
+    quizzone = ('<div class="quizzone" data-qz="%s"></div>' % sid) if sid in QUIZZES else ""
+    # server-generated prev / next (no JS needed)
+    prev_id, prev_lbl = ("home", "🏠 Home") if idx == 0 else (SECTIONS[idx-1][1], SECTIONS[idx-1][2])
+    if idx < len(SECTIONS) - 1:
+        next_id, next_lbl = SECTIONS[idx+1][1], SECTIONS[idx+1][2]
+    else:
+        next_id, next_lbl = ("home", "🏠 Home")
+    pn = ('<nav class="pn"><a href="#%s">← %s</a><a href="#%s">%s →</a></nav>'
+          % (prev_id, html.escape(prev_lbl), next_id, html.escape(next_lbl)))
+    parts.append(
+        '<section class="lesson" id="%s" data-title="%s">'
+        '<div class="secmeta"><span class="chip">%s %s</span><span class="chip ghost">⏱ ~%d min read</span>'
+        '<button class="chipbtn notesb" data-notes="%s">📝 My notes</button></div>\n%s\n%s\n%s\n'
+        '<div class="lesson-foot"><button class="done-btn" data-id="%s"><span class="dbi">✔</span> Mark as complete</button></div>'
+        "</section>" % (sid, html.escape(label), icon, html.escape(label), rt, sid, body, quizzone, pn, sid))
+    home_cards.append(
+        '<a class="card" href="#%s" data-goto="%s"><span class="cicon">%s</span><b>%s</b><small>%s</small>'
+        '<span class="cdone" data-cdone="%s"></span></a>' % (sid, sid, icon, label, desc, sid))
+    nav_items.append(
+        '<li data-s="%s"><a href="#%s"><span class="ni">%s</span><span class="lbl">%s</span>'
+        '<span class="tick" data-tick="%s"></span></a></li>' % (sid, sid, icon, html.escape(label), sid))
+
+HOME = """
+<section class="lesson show" id="home">
+<div class="hero">
+ <div class="blob b1"></div><div class="blob b2"></div>
+ <div class="hero-in">
+  <div class="kicker">🎓 PERSONAL ACADEMY · SELF-PACED · OFFLINE</div>
+  <h1>Power BI<br><span>Zero → World-Class Expert</span></h1>
+  <p>9 hands-on modules · 36 auto-graded quiz questions · a 1,300-row Indian retail dataset ·
+  3 portfolio projects · PL-300 certification plan. Your progress, streaks and notes save automatically.</p>
+  <div class="hero-act">
+   <button class="cta" id="resumeBtn">▶ Continue learning</button>
+   <button class="cta ghost" onclick="location.hash='roadmap'">View roadmap</button>
+  </div>
+ </div>
+</div>
+<div class="stats">
+ <div class="stat"><b data-count="12">0</b><span>Sections</span></div>
+ <div class="stat"><b data-count="25">0</b><span>Hands-on labs</span></div>
+ <div class="stat"><b data-count="36">0</b><span>Quiz questions</span></div>
+ <div class="stat"><b data-count="1300">0</b><span>Practice rows</span></div>
+</div>
+<div class="dash">
+ <div class="panel ringpanel">
+  <svg viewBox="0 0 140 140" class="ring"><circle cx="70" cy="70" r="56" class="ringbg"/><circle cx="70" cy="70" r="56" class="ringfg" id="ringfg"/></svg>
+  <div class="ringtxt"><b id="ringpct">0%</b><span>course complete</span></div>
+ </div>
+ <div class="panel">
+   <h3>🔥 Study streak</h3><div class="bignum" id="streaknum">1</div><p class="mut">day(s) in a row — open the app daily to keep it alive</p>
+   <h3 style="margin-top:18px">🧠 Quiz mastery</h3><div class="bignum" id="quizavg">—</div><p class="mut">average best score across sections</p>
+ </div>
+ <div class="panel">
+   <h3>🎯 Up next</h3><p id="nextup" class="nextup">—</p>
+   <h3 style="margin-top:18px">🏅 Certificate</h3>
+   <p class="mut">Complete all 12 sections to unlock your graduation certificate.</p>
+   <button class="cta small" id="certBtn" disabled>🔒 Locked</button>
+ </div>
+</div>
+<h2 class="homeh">Your modules</h2>
+<div class="cards">CARDS_TOKEN</div>
+<h2 class="homeh">How to use this app</h2>
+<ul class="howto">
+<li><strong>⌨️ Shortcuts:</strong> <code>/</code> search · <code>←</code>/<code>→</code> previous/next section</li>
+<li><strong>📝 My notes</strong> button on every section — your journal, saved on this device.</li>
+<li><strong>☑️ Checklists</strong> inside modules are tappable and remembered.</li>
+<li><strong>🧪 Quizzes</strong> at section ends auto-grade instantly with explanations.</li>
+<li>Practice files live in the <code>datasets/</code> folder — open Power BI Desktop → Get Data → Text/CSV.</li>
+</ul>
+</section>
+"""
+
+CSS = """
+@{--bg:#080b12;--bg2:#0d1320;--panel:rgba(20,28,44,.72);--panel2:#131c2e;--ink:#eef2fa;--mut:#8f9bb3;
+--acc:#f2c811;--acc2:#22d3ee;--good:#34d399;--bad:#f87171;--line:#1e2a42;--r:16px;
+--glow:0 10px 40px rgba(0,0,0,.5);--font:"Segoe UI",system-ui,-apple-system,sans-serif;}
+body.lite{--bg:#eef1f8;--bg2:#ffffff;--panel:#ffffff;--panel2:#f4f6fc;--ink:#141d31;--mut:#5d6880;--line:#dfe6f3;--glow:0 12px 34px rgba(20,40,90,.10);}
+*:root@{} *{} 
+:root{}
+html{scroll-behavior:smooth}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 var(--font);overflow-x:hidden}
+body::before{content:"";position:fixed;inset:0;background:
+ radial-gradient(700px 380px at 12% -5%,rgba(242,200,17,.10),transparent 60%),
+ radial-gradient(800px 420px at 95% 10%,rgba(34,211,238,.09),transparent 60%),
+ radial-gradient(600px 500px at 50% 110%,rgba(168,85,247,.07),transparent 60%);pointer-events:none;z-index:0}
+#readbar{position:fixed;top:0;left:0;height:3px;width:0;background:linear-gradient(90deg,var(--acc),var(--acc2));z-index:99;transition:width .1s}
+header{position:fixed;top:0;left:0;right:0;height:60px;z-index:50;display:flex;align-items:center;gap:10px;padding:0 14px;
+ background:color-mix(in srgb,var(--bg2) 82%,transparent);backdrop-filter:blur(14px);border-bottom:1px solid var(--line)}
+.brand{font-weight:800;display:flex;align-items:center;gap:9px;white-space:nowrap;letter-spacing:.2px}
+.brand .dot{width:14px;height:14px;border-radius:4px;background:linear-gradient(135deg,var(--acc),#ff9f1a);box-shadow:0 0 14px rgba(242,200,17,.55)}
+#search{flex:1;max-width:400px;background:var(--panel2);border:1px solid var(--line);border-radius:10px;color:var(--ink);
+ padding:8px 12px 8px 32px;outline:none;background-image:linear-gradient(transparent,transparent);transition:border-color .2s,box-shadow .2s}
+#search:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(242,200,17,.15)}
+.swrap{position:relative;flex:1;max-width:400px}.swrap::before{content:"🔎";position:absolute;left:10px;top:8px;font-size:.8rem;opacity:.7}
+.swrap #search{width:100%}
+.hbtn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:7px 11px;cursor:pointer;transition:.2s}
+.hbtn:hover{border-color:var(--acc);transform:translateY(-1px)}
+.flame{display:flex;align-items:center;gap:4px;font-weight:800;color:#fb923c;padding:6px 10px;border:1px solid var(--line);border-radius:99px;background:var(--panel2)}
+.progwrap{margin-left:auto;display:flex;align-items:center;gap:10px;font-size:.82rem;color:var(--mut);white-space:nowrap}
+.prog{width:110px;height:7px;background:var(--panel2);border-radius:99px;overflow:hidden;border:1px solid var(--line)}
+.prog i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--acc),var(--acc2));transition:width .4s}
+#burger{display:none}
+aside{position:fixed;top:60px;bottom:0;left:0;width:288px;overflow-y:auto;padding:14px 10px 30px;
+ background:color-mix(in srgb,var(--bg2) 88%,transparent);backdrop-filter:blur(14px);border-right:1px solid var(--line);z-index:40}
+aside ul{padding:0;margin:0}
+aside li{list-style:none;margin:3px 0}
+aside a{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);padding:9px 10px;border-radius:11px;font-size:.9rem;
+ border:1px solid transparent;transition:.15s}
+aside a:hover{background:var(--panel2);border-color:var(--line)}
+aside a.active{background:var(--panel2);border-color:var(--line);box-shadow:inset 3px 0 0 var(--acc)}
+.ni{width:30px;height:30px;display:grid;place-items:center;background:var(--panel2);border:1px solid var(--line);border-radius:9px;font-size:.95rem;flex:none}
+.lbl{flex:1}
+.tick{font-style:normal;color:var(--good);font-weight:800}
+main{position:relative;z-index:1;margin:60px 0 0 288px;padding:30px clamp(16px,4vw,54px) 110px;min-height:100vh}
+.toc{position:fixed;right:0;top:60px;bottom:0;width:230px;padding:22px 18px 40px;overflow-y:auto;z-index:30;display:none}
+@media (min-width:1280px){.toc{display:block}main{margin-right:230px}}
+.toc b{font-size:.72rem;text-transform:uppercase;letter-spacing:.14em;color:var(--mut)}
+.toc a{display:block;color:var(--mut);text-decoration:none;font-size:.8rem;padding:6px 0 6px 12px;border-left:2px solid var(--line);transition:.15s}
+.toc a.on{color:var(--acc);border-color:var(--acc)}
+.toc a:hover{color:var(--ink)}
+/* ZERO-JS NAVIGATION: CSS :target drives everything. JS only enhances. */
+main > section.lesson{display:none}
+main > section.lesson:target{display:block;animation:fadein .35s cubic-bezier(.2,.7,.3,1)}
+main > section#home{display:block}
+main > section.lesson:target ~ section#home{display:none}
+@keyframes fadein{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+.secmeta{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--panel2);border:1px solid var(--line);border-radius:99px;padding:4px 12px;font-size:.75rem;font-weight:700}
+.chip.ghost{color:var(--mut);font-weight:600}
+.chipbtn{margin-left:auto;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:5px 12px;font-size:.78rem;cursor:pointer}
+.chipbtn:hover{border-color:var(--acc)}
+h1{font-size:clamp(1.5rem,3vw,2rem);line-height:1.25;margin:.4em 0 .8em}
+h1::after{content:"";display:block;height:3px;width:120px;border-radius:99px;margin-top:10px;background:linear-gradient(90deg,var(--acc),transparent)}
+h2{font-size:1.28rem;margin-top:2.3rem;scroll-margin-top:80px}
+h2::before{content:"";display:inline-block;width:9px;height:9px;border-radius:3px;background:var(--acc);margin-right:9px;box-shadow:0 0 10px rgba(242,200,17,.6)}
+h3{font-size:1.08rem;margin-top:1.7rem;color:var(--acc2);font-weight:700}
+h4{margin-top:1.2rem}
+a{color:var(--acc2)}
+p{color:var(--ink)}
+.mut{color:var(--mut)}
+code{background:var(--panel2);border:1px solid var(--line);padding:1px 6px;border-radius:6px;font-family:Consolas,"Cascadia Mono",monospace;font-size:.88em;color:#ffd76a}
+body.lite code{color:#b45309}
+.codewrap{background:#0a0f1a;border:1px solid var(--line);border-radius:14px;margin:16px 0;overflow:hidden;box-shadow:var(--glow)}
+body.lite .codewrap{background:#101828}
+.codetop{display:flex;align-items:center;gap:10px;padding:8px 12px;background:rgba(255,255,255,.03);border-bottom:1px solid var(--line)}
+.dots i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:6px}
+.dots i:nth-child(1){background:#ff5f57}.dots i:nth-child(2){background:#febc2e}.dots i:nth-child(3){background:#28c840}
+.clang{font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;color:var(--mut)}
+.codewrap pre{margin:0;padding:16px;overflow-x:auto;font:0.88rem/1.55 Consolas,"Cascadia Mono",monospace;color:#c9d7f2}
+.kw{color:#7dd3fc;font-weight:700}.st{color:#fbbf24}.cm{color:#64748b;font-style:italic}
+.copyb{margin-left:auto;background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:7px;font-size:.7rem;padding:3px 9px;cursor:pointer}
+.copyb:hover{border-color:var(--acc)}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:14px;margin:16px 0;box-shadow:var(--glow)}
+table{border-collapse:collapse;width:100%;font-size:.9rem}
+th,td{border-bottom:1px solid var(--line);padding:9px 12px;text-align:left;vertical-align:top}
+th{background:var(--panel2);font-size:.78rem;letter-spacing:.05em;text-transform:uppercase;color:var(--mut)}
+tr:last-child td{border-bottom:none}
+tbody tr{transition:background .12s}
+tbody tr:hover{background:rgba(242,200,17,.05)}
+blockquote{border-left:3px solid var(--acc2);margin:16px 0;padding:12px 16px;background:linear-gradient(90deg,rgba(34,211,238,.07),transparent);border-radius:0 12px 12px 0}
+hr{border:none;border-top:1px solid var(--line);margin:2.4rem 0;position:relative}
+ul,ol{padding-left:1.3rem}
+li{margin:5px 0}
+li::marker{color:var(--acc)}
+li.chk{list-style:none;margin-left:-1.3rem}
+li.chk label{display:flex;gap:10px;align-items:flex-start;background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:9px 12px;cursor:pointer;transition:.15s}
+li.chk label:hover{border-color:var(--acc)}
+li.chk input{display:none}
+li.chk span{flex:none;width:18px;height:18px;margin-top:3px;border:2px solid var(--mut);border-radius:6px;display:inline-block;position:relative;transition:.15s}
+li.chk input:checked+span{background:var(--good);border-color:var(--good)}
+li.chk input:checked+span::after{content:"✓";position:absolute;inset:0;display:grid;place-items:center;color:#04121f;font-weight:900;font-size:.8rem}
+li.chk input:checked~b,li.chk input:checked~*{} 
+li.chk input:checked{text-decoration:none}
+details.answers{margin:14px 0;background:var(--panel);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+details.answers summary{cursor:pointer;font-weight:700;color:var(--acc);padding:14px 18px;list-style:none;display:flex;align-items:center;gap:8px}
+details.answers summary::after{content:"+";margin-left:auto;font-size:1.2rem;transition:transform .2s}
+details.answers[open] summary::after{transform:rotate(45deg)}
+details.answers>summary::-webkit-details-marker{display:none}
+details.answers h2,details.answers h3{display:none}
+details.answers p,details.answers pre,details.answers .codewrap,details.answers ul,details.answers ol,details.answers .tbl{padding-left:18px;padding-right:18px}
+details.answers .tbl{margin:0 18px 14px}
+.lesson-foot{margin-top:2.6rem;display:flex;gap:12px;flex-wrap:wrap}
+.done-btn{background:linear-gradient(135deg,var(--panel2),var(--panel2));border:1px solid var(--line);color:var(--ink);border-radius:12px;padding:12px 20px;font-size:.95rem;font-weight:700;cursor:pointer;transition:.2s}
+.done-btn:hover{border-color:var(--good);transform:translateY(-2px)}
+.done-btn.done{border-color:var(--good);color:var(--good);box-shadow:0 0 18px rgba(52,211,153,.15)}
+.pn{display:flex;justify-content:space-between;gap:10px;margin-top:1.6rem}
+.pn a{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:12px 18px;text-decoration:none;color:var(--ink);font-weight:600;transition:.2s}
+.pn a:hover{border-color:var(--acc);transform:translateY(-2px)}
+/* quiz */
+.quizzone{margin-top:2.4rem;border:1px solid var(--line);border-radius:18px;overflow:hidden;box-shadow:var(--glow)}
+.qzhead{background:linear-gradient(90deg,rgba(242,200,17,.12),transparent);padding:16px 20px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--line)}
+.qzhead b{font-size:1.05rem}
+.qzscore{margin-left:auto;font-weight:800;color:var(--acc)}
+.qcard{padding:18px 20px;border-bottom:1px solid var(--line)}
+.qcard:last-child{border-bottom:none}
+.qq{font-weight:700;margin-bottom:10px}
+.qopts{display:grid;gap:8px}
+.qopt{display:flex;gap:10px;align-items:center;background:var(--panel2);border:1px solid var(--line);color:var(--ink);
+ border-radius:11px;padding:10px 12px;cursor:pointer;text-align:left;font-size:.92rem;transition:.15s;width:100%}
+.qopt:hover{border-color:var(--acc)}
+.qopt .k{flex:none;width:24px;height:24px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;font-size:.75rem;font-weight:800;color:var(--mut)}
+.qopt.right{border-color:var(--good);background:rgba(52,211,153,.10)}
+.qopt.right .k{background:var(--good);color:#052e1f;border-color:var(--good)}
+.qopt.wrong{border-color:var(--bad);background:rgba(248,113,113,.08);animation:shake .3s}
+@keyframes shake{25%{transform:translateX(-4px)}75%{transform:translateX(4px)}}
+.qwhy{display:none;margin-top:10px;font-size:.88rem;color:var(--mut);border-left:3px solid var(--good);padding:8px 12px;background:rgba(52,211,153,.06);border-radius:0 10px 10px 0}
+.qwhy.show{display:block}
+.qzretry{margin:14px 20px}
+.qzretry button{background:var(--panel2);border:1px solid var(--line);color:var(--ink);border-radius:10px;padding:8px 16px;cursor:pointer}
+/* home */
+.hero{position:relative;overflow:hidden;border:1px solid var(--line);border-radius:22px;padding:clamp(26px,5vw,52px);background:
+ linear-gradient(135deg,#0e1626,#0a0e18 60%);box-shadow:var(--glow)}
+body.lite .hero{background:linear-gradient(135deg,#ffffff,#eef3ff)}
+.blob{position:absolute;border-radius:50%;filter:blur(60px);opacity:.5;animation:float 9s ease-in-out infinite}
+.b1{width:280px;height:280px;background:rgba(242,200,17,.25);top:-90px;right:-40px}
+.b2{width:220px;height:220px;background:rgba(34,211,238,.22);bottom:-100px;left:30%}
+@keyframes float{50%{transform:translateY(-16px) rotate(8deg)}}
+.hero-in{position:relative;z-index:1;max-width:660px}
+.kicker{font-size:.72rem;letter-spacing:.18em;color:var(--acc);font-weight:800;margin-bottom:10px}
+.hero h1{font-size:clamp(2rem,5vw,3.1rem);margin:0 0 14px;line-height:1.1}
+.hero h1::after{display:none}
+.hero h1 span{background:linear-gradient(90deg,var(--acc),#ff9f1a,var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;
+ background-size:200% 100%;animation:shine 6s linear infinite}
+@keyframes shine{to{background-position:200% 0}}
+.hero p{color:var(--mut)}
+.hero-act{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px}
+.cta{background:linear-gradient(135deg,var(--acc),#ffb300);color:#1a1400;border:none;border-radius:12px;padding:13px 24px;font-weight:800;font-size:.98rem;cursor:pointer;
+ box-shadow:0 8px 24px rgba(242,200,17,.25);transition:.2s}
+.cta:hover{transform:translateY(-2px);box-shadow:0 12px 30px rgba(242,200,17,.35)}
+.cta.ghost{background:var(--panel2);color:var(--ink);border:1px solid var(--line);box-shadow:none}
+.cta.small{padding:9px 16px;font-size:.85rem}
+.cta:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:18px 0}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center;backdrop-filter:blur(8px)}
+.stat b{font-size:1.7rem;background:linear-gradient(135deg,var(--acc),var(--acc2));-webkit-background-clip:text;background-clip:text;color:transparent;display:block}
+.stat span{font-size:.78rem;color:var(--mut)}
+.dash{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:6px 0 8px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:18px;backdrop-filter:blur(8px)}
+.panel h3{margin:0 0 4px;color:var(--ink);font-size:.95rem}
+.bignum{font-size:2rem;font-weight:800;color:var(--acc)}
+.nextup{font-weight:700}
+.ringpanel{position:relative;display:grid;place-items:center;min-height:170px}
+.ring{width:130px;transform:rotate(-90deg)}
+.ringbg{fill:none;stroke:var(--line);stroke-width:12}
+.ringfg{fill:none;stroke:url(#gring);stroke-width:12;stroke-linecap:round;stroke-dasharray:352;stroke-dashoffset:352;transition:stroke-dashoffset .8s cubic-bezier(.2,.7,.3,1)}
+.ringfg{stroke:var(--acc)}
+.ringtxt{position:absolute;text-align:center}
+.ringtxt b{font-size:1.6rem;display:block}
+.ringtxt span{font-size:.72rem;color:var(--mut)}
+.homeh{margin-top:2rem}
+.cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:12px;margin-top:14px}
+.card{display:block;text-decoration:none;color:inherit;position:relative;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px;cursor:pointer;transition:.18s;overflow:hidden}
+.card::before{content:"";position:absolute;inset:0 0 auto 0;height:3px;background:linear-gradient(90deg,var(--acc),var(--acc2));opacity:0;transition:.2s}
+.card:hover{transform:translateY(-4px);border-color:rgba(242,200,17,.5);box-shadow:var(--glow)}
+.card:hover::before{opacity:1}
+.cicon{font-size:1.5rem}
+.card b{display:block;margin:8px 0 3px;font-size:.95rem}
+.card small{color:var(--mut);font-size:.8rem}
+.cdone{position:absolute;top:12px;right:12px;color:var(--good);font-weight:900}
+.howto li{margin:8px 0}
+/* notes drawer */
+#drawer{position:fixed;top:0;right:-400px;width:min(400px,92vw);height:100vh;background:var(--bg2);border-left:1px solid var(--line);
+ z-index:80;transition:right .3s cubic-bezier(.2,.7,.3,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.4)}
+#drawer.open{right:0}
+#drawer header2,.dhead{display:flex;align-items:center;gap:8px;padding:16px;border-bottom:1px solid var(--line);font-weight:800}
+#drawer textarea{flex:1;margin:16px;background:var(--panel2);color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:14px;
+ font:.95rem/1.6 var(--font);outline:none;resize:none}
+#drawer textarea:focus{border-color:var(--acc)}
+.dfoot{padding:0 16px 16px;font-size:.78rem;color:var(--mut)}
+/* certificate */
+#certWrap{display:none;position:fixed;inset:0;background:rgba(4,6,12,.85);backdrop-filter:blur(6px);z-index:90;padding:20px;overflow:auto}
+#certWrap.open{display:grid;place-items:center}
+.cert{background:#0e1424;color:#f4e9c8;width:min(760px,94vw);border:2px solid #d4af37;border-radius:8px;padding:44px 40px;text-align:center;
+ box-shadow:0 0 80px rgba(212,175,55,.25);position:relative}
+.cert::before{content:"";position:absolute;inset:10px;border:1px solid rgba(212,175,55,.5);border-radius:4px;pointer-events:none}
+.cert .seal{font-size:2.6rem}
+.cert h2{border:none;color:#ffd76a;font-size:1.9rem;margin:10px 0 4px}
+.cert .cname{font-size:2rem;font-weight:800;margin:16px 0;color:#fff;border-bottom:1px solid #d4af37;display:inline-block;padding:0 30px 8px}
+.cert p{color:#cbbd93}
+.cert .cdate{margin-top:18px;font-size:.85rem;letter-spacing:.1em}
+.certbtns{margin-top:22px;display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+#namebar{display:none;position:fixed;inset:0;background:rgba(4,6,12,.7);z-index:95;place-items:center}
+#namebar.open{display:grid}
+#namebar .nb{background:var(--bg2);border:1px solid var(--line);border-radius:16px;padding:24px;width:min(400px,92vw);text-align:center}
+#namebar input{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);background:var(--panel2);color:var(--ink);margin:12px 0;font-size:1rem}
+#confetti{position:fixed;inset:0;pointer-events:none;z-index:100}
+#top{position:fixed;right:18px;bottom:18px;z-index:60;display:none;box-shadow:var(--glow)}
+.flash{animation:fl 1.6s ease}
+@keyframes fl{0%{box-shadow:0 0 0 3px var(--acc)}100%{box-shadow:none}}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:99px}
+::-webkit-scrollbar-thumb:hover{background:var(--mut)}
+::selection{background:rgba(242,200,17,.3)}
+@media (max-width:900px){
+ aside{transform:translateX(-100%);transition:.25s;width:274px}
+ aside.open{transform:none;box-shadow:0 0 50px rgba(0,0,0,.55)}
+ main{margin-left:0}#burger{display:block}.progwrap .plabel{display:none}.flame .fnum{display:none}
+ .swrap{max-width:none}
+}
+@media print{
+ header,aside,.toc,.lesson-foot,.pn,#top,.quizzone,.secmeta .notesb{display:none!important}
+ body::before{display:none}
+ main{margin:0}
+ body.certonly *{visibility:hidden}
+ body.certonly #certWrap,body.certonly #certWrap *{visibility:visible}
+ #certWrap{position:fixed;inset:0;padding:0;background:#fff}
+ .cert{width:100%;box-shadow:none}
+}
+"""
+
+JS_HEAD = """
+var IDS=TOKEN_IDS,LBL=TOKEN_LBL,QZ=TOKEN_QZ;
+function $(s){return document.querySelector(s)}function $all(s){return Array.prototype.slice.call(document.querySelectorAll(s))}
+var MEM={};
+function ls(k,v){
+ try{
+  if(v===undefined){
+   var r=null;try{r=localStorage.getItem(k)}catch(e2){}
+   if(r!==null)return JSON.parse(r);
+   return (k in MEM)?MEM[k]:null;
+  }
+  MEM[k]=v;
+  try{localStorage.setItem(k,JSON.stringify(v))}catch(e3){}
+  return v;
+ }catch(e){if(v!==undefined){MEM[k]=v;return v}return (k in MEM)?MEM[k]:null}
+}
+var prog=ls('pbi2-progress')||[],quiz=ls('pbi2-quiz')||{},checks=ls('pbi2-checks')||{},last=ls('pbi2-last')||'roadmap';
+// ---------- copy code buttons ----------
+$all('.codewrap').forEach(function(w){
+ var top=w.querySelector('.codetop');if(!top)return;
+ var b=document.createElement('button');b.className='copyb';b.textContent='copy';
+ b.addEventListener('click',function(){
+  var txt=(w.querySelector('pre code')||{}).innerText||'';
+  try{navigator.clipboard.writeText(txt)}catch(e){
+   try{var ta=document.createElement('textarea');ta.value=txt;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove()}catch(e2){}
+  }
+  b.textContent='copied!';setTimeout(function(){b.textContent='copy'},1200)});
+ top.appendChild(b);
+});
+// ---------- streak ----------
+var sk=ls('pbi2-streak')||{count:0,last:''};
+var today=new Date().toDateString();
+if(sk.last!==today){var y=new Date(Date.now()-864e5).toDateString();sk.count=(sk.last===y)?sk.count+1:1;sk.last=today;ls('pbi2-streak',sk)}
+$('#streaknum').textContent=sk.count;$('#flamec').textContent=sk.count;
+// ---------- progress ----------
+function pctDone(){return Math.round(100*prog.length/IDS.length)}
+function paint(){
+ var done={};prog.forEach(function(x){done[x]=1});
+ $all('.tick').forEach(function(t){t.textContent=done[t.getAttribute('data-tick')]?'✓':''});
+ $all('.cdone').forEach(function(t){t.textContent=done[t.getAttribute('data-cdone')]?'✓':''});
+ $all('.done-btn').forEach(function(b){var d=done[b.getAttribute('data-id')];b.className='done-btn'+(d?' done':'');b.innerHTML='<span class="dbi">'+(d?'✔ Completed':'✔')+'</span>'+(d?' — tap to undo':' Mark as complete');});
+ var p=pctDone();$('#pfill').style.width=p+'%';$('#ptext').textContent=prog.length+'/'+IDS.length+' complete';
+ var ring=$('#ringfg');if(ring){ring.style.strokeDashoffset=352-352*p/100;$('#ringpct').textContent=p+'%';}
+ var qs=[];for(var k in quiz)qs.push(quiz[k]);
+ $('#quizavg').textContent=qs.length?Math.round(qs.reduce(function(a,b){return a+b},0)/qs.length)+'%':'—';
+ var nx=IDS.find(function(x){return!done[x]});
+ $('#nextup').innerHTML=nx?(LBL[nx]+'<br><a href="#'+nx+'">Open →</a>'):'🎉 Everything done. Go get certified!';
+ var cb=$('#certBtn');
+ if(p===100){cb.disabled=false;cb.textContent='🎓 Claim certificate'}else{cb.disabled=true;cb.textContent='🔒 '+p+'% — finish all sections'}
+ var rb=$('#resumeBtn');rb.textContent='▶ Continue: '+(LBL[last]||'Start'); 
+}
+// ---------- nav (CSS :target shows/hides; JS only enhances & never blocks) ----------
+function currentId(){var id=(location.hash||'').slice(1);return document.getElementById(id)?id:'home'}
+function go(id){
+ try{$all('aside a').forEach(function(a){a.classList.toggle('active',a.getAttribute('href')==='#'+id)});}catch(e){}
+ try{window.scrollTo({top:0})}catch(e){}
+ try{document.querySelector('aside').classList.remove('open')}catch(e){}
+ try{if(id!=='home'){last=id;ls('pbi2-last',id);buildToc(id)}else{$('#tocbox').innerHTML=''}}catch(e){}
+ try{paint()}catch(e){}
+ return id;
+}
+window.addEventListener('hashchange',function(){go(currentId())});
+$('#resumeBtn').addEventListener('click',function(){location.hash=last});
+$all('.done-btn').forEach(function(b){b.addEventListener('click',function(){
+ var id=b.getAttribute('data-id');
+ if(prog.indexOf(id)>=0){prog=prog.filter(function(x){return x!==id})}else{prog.push(id)}
+ ls('pbi2-progress',prog);paint();confetti();})});
+// ---------- toc ----------
+function buildToc(id){var box=$('#tocbox');var hs=$all('#'+id+' h2');
+ box.innerHTML='<b>ON THIS PAGE</b>'+hs.map(function(h){return'<a href="javascript:void(0)" data-t="'+h.id+'">'+h.textContent.slice(0,42)+'</a>'}).join('');
+ $all('#tocbox a').forEach(function(a){a.addEventListener('click',function(){try{document.getElementById(a.getAttribute('data-t')).scrollIntoView({behavior:'smooth'})}catch(e){document.getElementById(a.getAttribute('data-t')).scrollIntoView()}})});}
+// ---------- scrollspy & readbar ----------
+var tick=false;
+window.addEventListener('scroll',function(){
+ if(tick)return;tick=true;requestAnimationFrame(function(){tick=false;
+  var h=document.documentElement;var pc=100*window.scrollY/Math.max(1,h.scrollHeight-innerHeight);$('#readbar').style.width=pc+'%';
+  $('#top').style.display=window.scrollY>600?'block':'none';
+  var cur=location.hash.slice(1);if(!cur||cur==='home')return;
+  var hs=$all('#'+cur+' h2');var act=null;
+  hs.forEach(function(x){if(x.getBoundingClientRect().top<120)act=x.id});
+  $all('#tocbox a').forEach(function(a){a.classList.toggle('on',a.getAttribute('data-t')===act)});
+ });});
+$('#top').addEventListener('click',function(){try{window.scrollTo({top:0,behavior:'smooth'})}catch(e){}});
+// ---------- checklists ----------
+$all('input[data-ck]').forEach(function(c){var k=c.getAttribute('data-ck');c.checked=!!checks[k];
+ c.addEventListener('change',function(){checks[k]=c.checked;ls('pbi2-checks',checks)})});
+// ---------- answers reveal ----------
+$all('section.lesson h2, section.lesson h3, section.lesson h4').forEach(function(h){
+ if(!/answers|✅ solutions|✅ selected/i.test(h.textContent))return;
+ var det=document.createElement('details');det.className='answers';
+ det.innerHTML='<summary>🔑 '+h.textContent.replace(/###/g,'')+' — reveal (try first!)</summary>';
+ var n=h.nextSibling;
+ while(n){if(n.nodeType===1&&/^(H1|H2|H3|H4|HR)$/.test(n.tagName))break;var nn=n.nextSibling;det.appendChild(n);n=nn;}
+ h.parentNode.replaceChild(det,h);});
+// ---------- quizzes ----------
+$all('.quizzone').forEach(function(zone){
+ var id=zone.getAttribute('data-qz');var data=QZ[id];if(!data)return;
+ var htmlQ='<div class="qzhead">🧪 <b>Quick check — '+data.length+' questions</b><span class="qzscore" data-qs></span></div>';
+ data.forEach(function(item,qi){
+  htmlQ+='<div class="qcard"><div class="qq">'+(qi+1)+'. '+item.q+'</div><div class="qopts">'
+   +item.o.map(function(o,oi){return'<button class="qopt" data-q="'+qi+'" data-o="'+oi+'"><span class="k">'+'ABCD'[oi]+'</span>'+o+'</button>'}).join('')
+   +'</div><div class="qwhy" data-w="'+qi+'">'+item.w+'</div></div>';});
+ htmlQ+='<div class="qzretry"><button data-retry>↺ Retry quiz</button></div>';
+ zone.innerHTML=htmlQ;
+ var answered=0,right=0,doneAll=false;
+ function saveScore(){var sc=Math.round(100*right/data.length);if(!quiz[id]||sc>quiz[id]){quiz[id]=sc;ls('pbi2-quiz',quiz)}
+  var best=quiz[id];zone.querySelector('[data-qs]').textContent='Best: '+best+'%';}
+ zone.querySelectorAll('.qopt').forEach(function(btn){btn.addEventListener('click',function(){
+  if(this.parentNode.dataset.done)return;
+  var card=this.parentNode;var qi=+this.dataset.q,oi=+this.dataset.o;card.dataset.done='1';
+  if(oi===data[qi].a){this.classList.add('right');right++}else{this.classList.add('wrong');
+   card.querySelector('[data-o="'+data[qi].a+'"]').classList.add('right');}
+  card.parentNode.querySelector('[data-w="'+qi+'"]').classList.add('show');
+  answered++;if(answered===data.length){saveScore();paint();confetti();}});});
+ zone.querySelector('[data-retry]').addEventListener('click',function(){
+  answered=0;right=0;
+  zone.querySelectorAll('.qopts').forEach(function(o){delete o.dataset.done});
+  zone.querySelectorAll('.qopt').forEach(function(o){o.classList.remove('right','wrong')});
+  zone.querySelectorAll('.qwhy').forEach(function(w){w.classList.remove('show')});});
+ var b=quiz[id];if(b)zone.querySelector('[data-qs]').textContent='Best: '+b+'%';
+});
+// ---------- notes ----------
+var curNotes=null;
+$all('.notesb').forEach(function(b){b.addEventListener('click',function(){
+ curNotes=b.getAttribute('data-notes');$('#dtitle').textContent='📝 Notes — '+LBL[curNotes];
+ $('#dtext').value=ls('pbi2-notes-'+curNotes)||'';$('#drawer').classList.add('open');$('#dtext').focus();})});
+$('#dclose').addEventListener('click',function(){$('#drawer').classList.remove('open')});
+$('#dtext').addEventListener('input',function(){ls('pbi2-notes-'+curNotes,this.value);$('#dsaved').textContent='saved ✓ '+new Date().toLocaleTimeString();
+ clearTimeout(window._dt);window._dt=setTimeout(function(){$('#dsaved').textContent='auto-saved on this device'},2000)});
+// ---------- search ----------
+$('#search').addEventListener('input',function(){var q=this.value.trim().toLowerCase();
+ $all('aside li[data-s]').forEach(function(li){var t=li.textContent.toLowerCase().indexOf(q)>=0;
+  var b2=!q?true:document.getElementById(li.getAttribute('data-s')).textContent.toLowerCase().indexOf(q)>=0;
+  li.style.display=(t||b2)?'':'none';});});
+$('#search').addEventListener('keydown',function(e){if(e.key!=='Enter')return;var q=this.value.trim().toLowerCase();if(!q)return;
+ for(var i=0;i<IDS.length;i++){var s=document.getElementById(IDS[i]);
+  if(s.textContent.toLowerCase().indexOf(q)>=0){location.hash=IDS[i];s.classList.add('flash');setTimeout(function(){s.classList.remove('flash')},1700);break;}}});
+// ---------- keyboard ----------
+document.addEventListener('keydown',function(e){
+ if(/input|textarea/i.test(document.activeElement.tagName))return;
+ if(e.key==='/'){e.preventDefault();$('#search').focus()}
+ if(e.key==='ArrowRight'||e.key==='ArrowLeft'){
+  var cur=location.hash.slice(1)||'home';var ix=IDS.indexOf(cur);
+  if(e.key==='ArrowRight'&&ix>=0&&ix<IDS.length-1)location.hash=IDS[ix+1];
+  if(e.key==='ArrowRight'&&cur==='home')location.hash=IDS[0];
+  if(e.key==='ArrowLeft'&&ix>0)location.hash=IDS[ix-1];
+  if(e.key==='ArrowLeft'&&ix===0)location.hash='home';}});
+// ---------- theme ----------
+$('#theme').addEventListener('click',function(){document.body.classList.toggle('lite');
+ ls('pbi2-theme',document.body.classList.contains('lite')?'lite':'dark')});
+if(ls('pbi2-theme')==='lite')document.body.classList.add('lite');
+// ---------- counters ----------
+var counted=false;
+function counters(){if(counted)return;counted=true;
+ $all('[data-count]').forEach(function(el){var T=+el.getAttribute('data-count'),t0=null;
+  function step(ts){if(!t0)t0=ts;var p=Math.min(1,(ts-t0)/1100);el.textContent=Math.round(T*(1-Math.pow(1-p,3))).toLocaleString();
+   if(p<1)requestAnimationFrame(step)}requestAnimationFrame(step)})}
+setTimeout(counters,400);
+// ---------- confetti ----------
+function confetti(){try{
+ var c=$('#confetti');if(!c||!c.getContext)return;
+ var x=c.getContext('2d');if(!x)return;
+ c.width=innerWidth;c.height=innerHeight;
+ var P=[],cols=['#f2c811','#22d3ee','#a78bfa','#34d399','#f87171','#ffffff'];
+ for(var i=0;i<130;i++)P.push({x:Math.random()*c.width,y:-20-Math.random()*c.height*.4,w:5+Math.random()*6,h:8+Math.random()*8,
+  c:cols[i%6],vy:2+Math.random()*3.4,vx:-1.4+Math.random()*2.8,r:Math.random()*3.14,vr:-.12+Math.random()*.24});
+ var frames=0;(function loop(){x.clearRect(0,0,c.width,c.height);frames++;var alive=false;
+  P.forEach(function(p){p.y+=p.vy;p.x+=p.vx;p.r+=p.vr;if(p.y<c.height+30)alive=true;
+   x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.w/2,-p.h/2,p.w,p.h);x.restore();});
+  if(alive&&frames<480)requestAnimationFrame(loop);else x.clearRect(0,0,c.width,c.height);})();
+}catch(e){}}
+// ---------- certificate ----------
+$('#certBtn').addEventListener('click',function(){$('#namebar').classList.add('open');$('#cname2').focus()});
+$('#mkcert').addEventListener('click',function(){var n=$('#cname2').value.trim()||'Power BI Expert';
+ $('#cname').textContent=n;$('#cdate').textContent='Awarded on '+new Date().toLocaleDateString(undefined,{year:'numeric',month:'long',day:'numeric'});
+ $('#namebar').classList.remove('open');$('#certWrap').classList.add('open');confetti();});
+$('#pclose').addEventListener('click',function(){$('#certWrap').classList.remove('open')});
+$('#pprint').addEventListener('click',function(){document.body.classList.add('certonly');window.print();setTimeout(function(){document.body.classList.remove('certonly')},500)});
+// ---------- init ----------
+IDS.forEach(function(id,ix){var s=document.getElementById(id);var f=document.createElement('div');f.className='pn';
+ var prev=ix>0?IDS[ix-1]:'home',next=ix<IDS.length-1?IDS[ix+1]:null;
+ f.innerHTML='<a href="#'+prev+'">← '+(LBL[prev]||'🏠 Home')+'</a>'+(next?'<a href="#'+next+'">'+LBL[next]+' →</a>':'<a href="#home">🏠 Home</a>');
+ s.appendChild(f);});
+try{go(currentId());paint();}catch(e){}
+/* safety net: if hash nav has no target, force home */
+try{if(!document.querySelector('main section:target')&&!location.hash)location.hash='';}catch(e){}
+"""
+
+labels_js = "{" + ",".join(json.dumps(s) + ":" + json.dumps(lbl) for _, s, lbl, _, _ in SECTIONS) + ",'home':'🏠 Home'}"
+ids_js = json.dumps([s for _, s, _, _, _ in SECTIONS])
+js_final = JS_HEAD.replace("TOKEN_IDS", ids_js).replace("TOKEN_LBL", labels_js).replace("TOKEN_QZ", json.dumps(QUIZZES))
+
+nav_html = "\n".join(nav_items)
+home_final = HOME.replace("CARDS_TOKEN", "\n".join(home_cards))
+sections_html = "\n".join(parts)
+# fix escaped @{} markers we used to avoid brace conflicts in CSS
+CSS = CSS.replace("@{", ":root{").replace("@}", "}")
+
+doc = """<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Power BI Zero → Expert · Interactive Academy</title>
+<style>""" + CSS + """</style></head>
+<body>
+<div id="readbar"></div>
+<header>
+ <button class="hbtn" id="burger">☰</button>
+ <div class="brand"><span class="dot"></span>Power BI Mastery</div>
+ <div class="swrap"><input id="search" placeholder="Search course… ( / )"></div>
+ <button class="hbtn" id="theme">◐</button>
+ <span class="flame">🔥<span class="fnum" id="flamec">0</span></span>
+ <div class="progwrap"><span class="plabel" id="ptext"></span><div class="prog"><i id="pfill"></i></div></div>
+</header>
+<aside><ul>
+ <li class="home-li"><a href="#home"><span class="ni">🏠</span><span class="lbl">Home</span></a></li>""" + nav_html + """
+</ul></aside>
+<div class="toc" id="tocbox"></div>
+<main>
+""" + sections_html + "\n" + home_final + """
+</main>
+<div id="drawer">
+ <div class="dhead"><span id="dtitle">📝 Notes</span><button class="hbtn" id="dclose" style="margin-left:auto">✕</button></div>
+ <textarea id="dtext" placeholder="Your thoughts, errors, aha-moments… (auto-saved on this device)"></textarea>
+ <div class="dfoot"><span id="dsaved">auto-saved on this device</span></div>
+</div>
+<div id="namebar"><div class="nb">
+ <h3 style="margin:0 0 6px">🎓 Certificate of Completion</h3>
+ <p class="mut" style="margin:0">Type your name as it should appear:</p>
+ <input id="cname2" placeholder="e.g., Aarav Sharma" maxlength="40">
+ <button class="cta" id="mkcert">Generate my certificate ✨</button>
+</div></div>
+<div id="certWrap"><div class="cert">
+ <div class="seal">🏅</div>
+ <h2>Certificate of Completion</h2>
+ <p>This certifies that</p>
+ <div class="cname" id="cname">—</div>
+ <p>has completed the full <b>Power BI: Zero → World-Class Expert</b> program —<br>
+ 12 sections covering Power Query, Data Modeling, DAX, Visualization, Power BI Service,<br>
+ Performance Engineering and 3 portfolio capstone projects.</p>
+ <div class="cdate" id="cdate">—</div>
+ <p style="margin-top:14px;font-size:.8rem">— Your Arena AI Tutor —</p>
+ <div class="certbtns"><button class="cta small" id="pprint">🖨 Print / Save PDF</button>
+ <button class="cta small ghost" id="pclose">Close</button></div>
+</div></div>
+<canvas id="confetti"></canvas>
+<button class="hbtn" id="top">↑</button>
+<script>""" + js_final + """</script>
+</body></html>"""
+
+with open(OUT, "w", encoding="utf-8") as f:
+    f.write(doc)
+print("Wrote", OUT, "-", round(os.path.getsize(OUT) / 1024), "KB")

@@ -57,11 +57,10 @@ export default function StudyCard({ material }: StudyCardProps) {
           />
         </div>
       ) : (
-        <div
-          className="relative h-40 flex items-center justify-center bg-gradient-to-br from-[#1A2B3C] to-[#0D6E6E]/20"
-        >
-          <BookOpen className="w-12 h-12 text-[#0D6E6E]/40" />
-          <span className="absolute top-3 left-3 text-2xl">{material.category.icon || '📚'}</span>
+        <div className="relative h-40 flex items-center justify-center bg-gradient-to-br from-[#1a1f2e] to-brand-teal/20 overflow-hidden">
+          <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
+          <BookOpen className="w-12 h-12 text-brand-teal/30 z-10" />
+          <span className="absolute top-3 left-3 text-2xl z-10 opacity-60">{material.category.icon || '📚'}</span>
         </div>
       )}
 

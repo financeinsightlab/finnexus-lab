@@ -1,6 +1,6 @@
-﻿// FILE: app/data-lab/page.tsx
 import { Metadata } from 'next';
 import Link from 'next/link';
+import CardImageBanner from '@/components/ui/CardImageBanner';
 import { getAllDataLab } from '@/lib/content';
 import Tag from '@/components/ui/Tag';
 import CTAButton from '@/components/ui/CTAButton';
@@ -61,8 +61,21 @@ export default function DataLabPage() {
           {projects.map((project) => (
             <div
               key={project.slug}
-              className="card p-6 flex flex-col border border-gray-200 rounded-xl hover:shadow-lg transition-shadow"
+              className="card flex flex-col border border-gray-200 dark:border-white/10 rounded-xl hover:shadow-lg transition-shadow overflow-hidden group bg-white dark:bg-[#111827]"
             >
+              {/* ── Image Banner ── */}
+              <div className="relative h-32 w-full border-b border-gray-200 dark:border-white/10">
+                <CardImageBanner
+                  src={`/card-${project.slug}.png`}
+                  alt={project.title}
+                  icon="📊"
+                  gradientFrom="from-brand-navy"
+                  gradientTo="to-brand-teal/20"
+                  overlayOpacity="opacity-50"
+                />
+              </div>
+
+              <div className="p-6 flex flex-col flex-1">
               {/* Tools badges */}
               <div className="flex flex-wrap gap-2 mb-4">
                 {project.tools.map((tool) => (
@@ -98,6 +111,7 @@ export default function DataLabPage() {
               >
                 View Project →
               </Link>
+              </div>
             </div>
           ))}
         </div>

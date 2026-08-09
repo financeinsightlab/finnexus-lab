@@ -1,0 +1,4 @@
+employee_id,department,tenure_months,monthly_salary,overtime,engagement_score,performance_rating,attrition
+E-001,Sales,8,48000,Yes,42,3,Yes
+E-002,Engineering,36,110000,No,78,4,No
+E-003,Support,15,52000,Yes,51,3,Yes

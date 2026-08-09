@@ -1,0 +1,121 @@
+account_id,signup_date,plan,acquisition_channel,is_test
+ACC-001,2026-02-02,Basic,Paid Search,false
+ACC-002,2026-03-02,Growth,Paid Search,false
+ACC-003,2026-02-05,Basic,Referral,false
+ACC-004,2026-02-19,Basic,Partner,false
+ACC-005,2026-03-02,Basic,Paid Search,false
+ACC-006,2026-01-26,Pro,Referral,false
+ACC-007,2026-04-01,Pro,Partner,true
+ACC-008,2026-03-15,Basic,Organic,false
+ACC-009,2026-01-16,Basic,Organic,false
+ACC-010,2026-02-01,Basic,Referral,false
+ACC-011,2026-02-19,Basic,Organic,false
+ACC-012,2026-02-25,Basic,Referral,false
+ACC-013,2026-03-09,Basic,Referral,false
+ACC-014,2026-03-03,Basic,Organic,false
+ACC-015,2026-01-12,Pro,Referral,false
+ACC-016,2026-02-03,Basic,Organic,false
+ACC-017,2026-03-27,Pro,Referral,false
+ACC-018,2026-01-14,Basic,Referral,false
+ACC-019,2026-01-03,Pro,Organic,false
+ACC-020,2026-01-19,Basic,Organic,false
+ACC-021,2026-01-14,Growth,Referral,false
+ACC-022,2026-02-21,Basic,Referral,false
+ACC-023,2026-02-11,Basic,Paid Search,false
+ACC-024,2026-03-03,Growth,Referral,false
+ACC-025,2026-01-11,Basic,Organic,false
+ACC-026,2026-03-31,Basic,Organic,false
+ACC-027,2026-03-17,Basic,Paid Search,false
+ACC-028,2026-01-08,Pro,Referral,false
+ACC-029,2026-01-01,Basic,Paid Search,false
+ACC-030,2026-01-10,Basic,Organic,false
+ACC-031,2026-03-23,Pro,Partner,false
+ACC-032,2026-01-12,Basic,Referral,false
+ACC-033,2026-01-27,Pro,Partner,false
+ACC-034,2026-02-25,Growth,Referral,false
+ACC-035,2026-01-13,Basic,Partner,false
+ACC-036,2026-01-25,Pro,Partner,false
+ACC-037,2026-02-14,Pro,Partner,false
+ACC-038,2026-03-31,Growth,Referral,false
+ACC-039,2026-02-07,Basic,Organic,false
+ACC-040,2026-02-24,Pro,Organic,false
+ACC-041,2026-01-22,Basic,Referral,false
+ACC-042,2026-02-06,Basic,Referral,false
+ACC-043,2026-01-10,Basic,Partner,false
+ACC-044,2026-02-15,Basic,Referral,false
+ACC-045,2026-02-07,Basic,Organic,false
+ACC-046,2026-01-23,Basic,Organic,false
+ACC-047,2026-03-23,Basic,Paid Search,false
+ACC-048,2026-01-14,Pro,Referral,false
+ACC-049,2026-03-04,Basic,Referral,false
+ACC-050,2026-03-07,Basic,Paid Search,false
+ACC-051,2026-03-26,Pro,Paid Search,false
+ACC-052,2026-02-08,Basic,Organic,false
+ACC-053,2026-02-01,Basic,Referral,false
+ACC-054,2026-01-13,Basic,Organic,false
+ACC-055,2026-03-06,Growth,Partner,false
+ACC-056,2026-01-04,Basic,Paid Search,false
+ACC-057,2026-03-28,Growth,Paid Search,false
+ACC-058,2026-02-12,Basic,Organic,false
+ACC-059,2026-03-05,Basic,Referral,false
+ACC-060,2026-01-05,Basic,Organic,false
+ACC-061,2026-02-24,Growth,Organic,false
+ACC-062,2026-01-24,Basic,Paid Search,false
+ACC-063,2026-03-30,Basic,Partner,false
+ACC-064,2026-02-26,Basic,Partner,false
+ACC-065,2026-03-29,Basic,Organic,false
+ACC-066,2026-04-01,Pro,Referral,false
+ACC-067,2026-01-14,Pro,Partner,false
+ACC-068,2026-02-20,Basic,Organic,false
+ACC-069,2026-01-15,Basic,Paid Search,false
+ACC-070,2026-01-12,Pro,Paid Search,false
+ACC-071,2026-01-04,Basic,Organic,false
+ACC-072,2026-01-15,Basic,Paid Search,false
+ACC-073,2026-01-22,Growth,Referral,false
+ACC-074,2026-01-09,Basic,Referral,false
+ACC-075,2026-03-09,Basic,Referral,false
+ACC-076,2026-02-28,Basic,Partner,false
+ACC-077,2026-02-09,Basic,Organic,false
+ACC-078,2026-02-25,Basic,Referral,false
+ACC-079,2026-02-06,Basic,Partner,false
+ACC-080,2026-03-30,Pro,Partner,false
+ACC-081,2026-03-02,Basic,Partner,false
+ACC-082,2026-03-14,Pro,Referral,false
+ACC-083,2026-03-13,Pro,Paid Search,false
+ACC-084,2026-02-21,Basic,Partner,false
+ACC-085,2026-02-18,Pro,Partner,false
+ACC-086,2026-02-28,Pro,Partner,false
+ACC-087,2026-03-17,Basic,Referral,false
+ACC-088,2026-01-07,Growth,Organic,false
+ACC-089,2026-03-01,Pro,Paid Search,false
+ACC-090,2026-02-17,Basic,Organic,false
+ACC-091,2026-02-21,Basic,Organic,false
+ACC-092,2026-01-28,Pro,Paid Search,false
+ACC-093,2026-01-03,Pro,Paid Search,false
+ACC-094,2026-03-24,Basic,Referral,false
+ACC-095,2026-01-05,Pro,Paid Search,false
+ACC-096,2026-03-14,Pro,Referral,false
+ACC-097,2026-03-09,Pro,Paid Search,false
+ACC-098,2026-02-15,Pro,Partner,true
+ACC-099,2026-01-15,Pro,Referral,false
+ACC-100,2026-01-06,Basic,Organic,false
+ACC-101,2026-01-31,Pro,Paid Search,false
+ACC-102,2026-03-09,Growth,Paid Search,false
+ACC-103,2026-03-05,Pro,Paid Search,false
+ACC-104,2026-02-14,Basic,Partner,false
+ACC-105,2026-02-17,Growth,Organic,false
+ACC-106,2026-03-22,Basic,Partner,false
+ACC-107,2026-01-10,Basic,Organic,false
+ACC-108,2026-01-23,Pro,Partner,false
+ACC-109,2026-03-23,Basic,Paid Search,false
+ACC-110,2026-02-02,Basic,Paid Search,false
+ACC-111,2026-03-01,Basic,Organic,false
+ACC-112,2026-02-12,Pro,Partner,false
+ACC-113,2026-03-09,Pro,Paid Search,false
+ACC-114,2026-01-17,Pro,Partner,false
+ACC-115,2026-03-15,Pro,Organic,false
+ACC-116,2026-03-18,Basic,Referral,false
+ACC-117,2026-01-23,Pro,Paid Search,false
+ACC-118,2026-02-24,Basic,Paid Search,false
+ACC-119,2026-02-27,Pro,Referral,false
+ACC-120,2026-03-22,Basic,Partner,false

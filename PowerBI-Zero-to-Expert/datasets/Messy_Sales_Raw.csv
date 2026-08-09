@@ -1,0 +1,149 @@
+OrderNo,Order Date,Product,Region,Qty,Price
+ORD-10018,25-10-2024,  laptop pro 14 ,East,2,"₹65,999"
+ORD-10140,2024-10-08,Air Fryer 4L,west,3,"₹7,499"
+ORD-10025,22-05-2024,Smartphone X5,South  ,6,21999
+ORD-10843,2025-11-04,  whiteboard 3x2 ft ,south,,1599
+ORD-10201,2024-05-08,A4 Paper Ream,East,3,₹449
+ORD-11076,2025-06-17,27-inch Monitor,East,1,14999
+ORD-10213,2025-06-21,  a4 paper ream ,west,6,449
+ORD-10914,2023-07-21,Air Fryer 4L,NORTH,8,7499
+ORD-10720,2025-04-27,  bookshelf 4-tier ,east,6,5499
+ORD-10450,2025-02-04,  microwave 20l ,east,8,"₹8,499"
+ORD-10581,2024-10-06,  meeting table 6-seat ,west,1,"₹24,999"
+ORD-10516,17-12-2025,Laptop Air 13,East ,4,"₹52,999"
+ORD-10396,2023-10-02,  usb-c docking station ,west,6,5999
+ORD-10070,2023-03-21,  notebook a5 (pack of 5) ,South  ,4,₹399
+ORD-10049,2024-06-27,Wireless Mouse,East ,5,₹799
+ORD-11269,2025-02-22,Bookshelf 4-Tier,East ,7,"₹5,499"
+ORD-10189,2023-11-08,  laptop air 13 ,East ,,"₹52,999"
+ORD-10117,16-09-2023,Coffee Maker 12-Cup,East,2,3999
+ORD-11217,2024-10-08,Whiteboard 3x2 ft, West,1,1599
+ORD-10445,10-09-2024,  air fryer 4l ,south,1,7499
+ORD-11228,2023-10-21,  smartphone lite ,North,,"11,999"
+ORD-10250,17-07-2025,  filing cabinet ,East ,,4699
+ORD-10246,2023-05-15,  usb-c docking station ,North,6,"₹5,999"
+ORD-10177,2024-09-28,Laptop Pro 14,WEST,7,65999
+ORD-11239,2024-09-29,  gaming chair ,North,8,"₹15,499"
+ORD-10267,2025-05-18,Desk Organizer,East ,8,₹599
+ORD-10770,2024-03-29,  noise-cancel headphones , West,4,6999
+ORD-11160,2023-11-08,27-inch Monitor,north,2,"₹14,999"
+ORD-10379,2023-02-28,  laptop air 13 ,SOUTH,5,52999
+ORD-10228,26-07-2024,  microwave 20l , West,6,"₹8,499"
+ORD-10378,2023-11-12,Coffee Maker 12-Cup,north,6,3999
+ORD-10519,2023-10-23,  microwave 20l ,north,N/A,8499
+ORD-10604,2025-12-30,27-inch Monitor,East ,7,"₹14,999"
+ORD-10957,2025-06-02,Filing Cabinet,east,6,4699
+ORD-10156,08-03-2023,Office Chair Ergo,south,5,10999
+ORD-10929,2025-01-15,  laptop pro 14 ,East ,4,65999
+ORD-10567,2025-05-23,Noise-Cancel Headphones,West,7,"₹6,999"
+ORD-10875,2023-01-27,  usb-c docking station ,East ,4,"₹5,999"
+ORD-10663,04-10-2025,Wireless Mouse,West,,799
+ORD-10528,02-07-2024,Bookshelf 4-Tier,North,3,5499
+ORD-10332,07-05-2024,Filing Cabinet,south,3,"4,699"
+ORD-10152,2025-05-28,A4 Paper Ream,West,1,449
+ORD-10568,2024-01-17,  coffee maker 12-cup ,WEST,7,3999
+ORD-10128,2024-05-17,  smartphone x5 ,West,5,"₹21,999"
+ORD-10784,2024-03-31,Whiteboard 3x2 ft,WEST,8,"₹1,599"
+ORD-10796,2023-04-29,Meeting Table 6-Seat,SOUTH,5,24999
+ORD-10682,2024-06-14,Smartphone X5,east,1,"₹21,999"
+ORD-10124,2025-11-02,Gaming Chair,west,1,15499
+ORD-10529,2024-10-10,Smartphone Lite, West,2,"₹11,999"
+ORD-10543,2024-10-18,Microwave 20L,North,4,8499
+ORD-10365,2024-09-06,Mechanical Keyboard,South  ,3,2999
+ORD-10903,2024-09-09,Smartphone X5,North,5,21999
+ORD-10143,09-01-2025,Office Chair Ergo,north,1,10999
+ORD-11008,19-01-2025,  notebook a5 (pack of 5) ,north,7,399
+ORD-10411,2024-05-11,A4 Paper Ream,WEST,2,449
+ORD-11250,2024-08-01,Standing Desk, North ,3,18999
+ORD-10805,04-04-2023,  office chair ergo ,west,8,10999
+ORD-10366,2025-11-07,Smartphone Lite,SOUTH,4,11999
+ORD-10223,2023-05-10,Meeting Table 6-Seat, West,5,"₹24,999"
+ORD-10295,2023-07-31,  gaming chair ,NORTH,2,"15,499"
+ORD-11108,13-11-2025,A4 Paper Ream,west,3,449
+ORD-10884,12-01-2024,Smartphone X5,EAST,3,"₹21,999"
+ORD-10448,2023-08-29,Office Chair Ergo,west,6,"₹10,999"
+ORD-11258,2023-07-19,Meeting Table 6-Seat, West,3,"₹24,999"
+ORD-10218,2025-03-24,  desk fan 12-inch ,SOUTH,6,"₹1,899"
+ORD-10905,2023-11-17,Noise-Cancel Headphones,WEST,3,"₹6,999"
+ORD-10531,2023-09-29,Mechanical Keyboard,South  ,7,"₹2,999"
+ORD-10212,2023-07-18,Stapler Heavy Duty,WEST,1,₹499
+ORD-10072,2023-02-18,27-inch Monitor,west,7,14999
+ORD-10150,2024-05-23,  whiteboard 3x2 ft ,West,7,1599
+ORD-10145,02-10-2025,Laptop Pro 14,WEST,,65999
+ORD-11171,27-03-2023,Air Fryer 4L,NORTH,,7499
+ORD-10514,2023-01-20,  mechanical keyboard ,WEST,2,"₹2,999"
+ORD-10039,2023-05-01,Bookshelf 4-Tier,North,1,"5,499"
+ORD-11020,2024-02-12,A4 Paper Ream,South,3,449
+ORD-10305,19-09-2023,Microwave 20L,WEST,2,"₹8,499"
+ORD-10002,2025-01-28,  27-inch monitor , West,5,"₹14,999"
+ORD-10078,2024-01-25,Laptop Air 13, North ,7,"₹52,999"
+ORD-10800,2023-03-19,27-inch Monitor, West,6,"14,999"
+ORD-10546,2025-02-09,Desk Fan 12-inch,north,7,1899
+ORD-10311,2024-01-06,Microwave 20L,West,3,8499
+ORD-10676,2024-05-23,  bookshelf 4-tier ,WEST,1,5499
+ORD-10802,2023-01-09,Air Fryer 4L,west,4,7499
+ORD-11177,24-11-2025,Wireless Mouse,WEST,8,₹799
+ORD-10008,2024-06-26,Noise-Cancel Headphones,North,5,"₹6,999"
+ORD-11056,2023-07-04,Laptop Pro 14, North ,8,65999
+ORD-11005,18-01-2023,  coffee maker 12-cup ,south,,3999
+ORD-10980,2025-03-20,A4 Paper Ream,EAST,4,449
+ORD-10894,2023-05-15,Coffee Maker 12-Cup, North ,4,3999
+ORD-10828,2025-01-02,Meeting Table 6-Seat,West,5,"₹24,999"
+ORD-10144,15-07-2024,  laptop air 13 ,west,5,"₹52,999"
+ORD-11107,2024-03-30,Gaming Chair,NORTH,,"₹15,499"
+ORD-10463,2025-02-05,  bookshelf 4-tier ,west,8,"₹5,499"
+ORD-10007,19-10-2025,Stapler Heavy Duty,EAST,8,499
+ORD-10788,2024-04-02,  office chair ergo ,EAST,7,10999
+ORD-10988,2023-02-26,  smartphone lite ,EAST,5,11999
+ORD-10249,2025-07-13,Noise-Cancel Headphones,West,7,6999
+ORD-11162,2024-04-20,Coffee Maker 12-Cup,South,1,3999
+ORD-11097,24-01-2024,  gel pen pack (12) ,North,4,₹299
+ORD-10736,2024-01-18,Laptop Air 13,WEST,5,"₹52,999"
+ORD-10683,2024-02-09,  stapler heavy duty ,west,8,₹499
+ORD-10621,20-12-2024,  27-inch monitor ,east,3,"14,999"
+ORD-10821,2023-01-06,  coffee maker 12-cup ,South,2,3999
+ORD-10114,17-06-2023,  laptop pro 14 ,East,1,65999
+ORD-11295,22-06-2023,  desk organizer ,North,3,599
+ORD-10186,2025-02-11,  gaming chair ,west,4,"15,499"
+ORD-10749,28-04-2025,Wireless Mouse,NORTH,2,₹799
+ORD-11095,25-05-2023,Office Chair Ergo,west,2,"₹10,999"
+ORD-10697,2023-07-25,Coffee Maker 12-Cup,south,4,3999
+ORD-10165,05-07-2024,Laptop Air 13,South,3,"₹52,999"
+ORD-10942,09-03-2024,Mechanical Keyboard, North ,3,2999
+ORD-10594,2023-05-02,Standing Desk,south,5,18999
+ORD-10416,2025-07-30,Whiteboard 3x2 ft,East ,6,1599
+ORD-10362,02-10-2025,  smartphone lite ,north,3,"11,999"
+ORD-11136,07-12-2025,USB-C Docking Station,North,8,"₹5,999"
+ORD-10081,13-09-2023,Office Chair Ergo,EAST,5,10999
+ORD-10787,18-11-2024,Smartphone X5, West,4,"₹21,999"
+ORD-10392,2024-09-23,Laptop Pro 14,EAST,2,65999
+ORD-10613,2023-07-06,  smartphone lite , West,1,11999
+ORD-10799,06-04-2025,Notebook A5 (Pack of 5),East,7,399
+ORD-10219,19-03-2025,USB-C Docking Station,south,2,5999
+ORD-11292,2023-11-06,  meeting table 6-seat , West,6,"₹24,999"
+ORD-10997,2023-08-07,Smartphone X5,WEST,8,21999
+ORD-10174,2025-06-24,Laptop Air 13, North ,4,52999
+ORD-11296,25-04-2025,Bookshelf 4-Tier,North,4,5499
+ORD-10897,2023-06-29,  laptop air 13 ,South,3,52999
+ORD-10389,2025-02-25,  desk organizer ,south,7,599
+ORD-10287,08-10-2025,Water Purifier UV,West,8,12499
+ORD-10074,2025-11-09,Coffee Maker 12-Cup,East ,6,3999
+ORD-10052,2024-03-12,  usb-c docking station ,EAST,3,5999
+ORD-11215,01-08-2025,Whiteboard 3x2 ft, West,6,"₹1,599"
+ORD-10489,2024-05-11,Desk Organizer, West,4,₹599
+ORD-11002,2025-12-12,Filing Cabinet,NORTH,8,"₹4,699"
+ORD-10797,2023-12-12,  water purifier uv ,South  ,3,"₹12,499"
+ORD-10130,2023-02-28,Gaming Chair,East ,3,15499
+ORD-10631,2023-09-28,A4 Paper Ream,East ,7,449
+ORD-11024,2025-04-08,Smartphone X5,SOUTH,2,"₹21,999"
+ORD-11094,30-04-2023,Desk Organizer,WEST,5,599
+ORD-10921,2025-09-09,Meeting Table 6-Seat, West,6,"₹24,999"
+ORD-10034,2024-05-24,27-inch Monitor,north,8,14999
+ORD-10250,17-07-2025,  filing cabinet ,East ,,4699
+ORD-10189,2023-11-08,  laptop air 13 ,East ,,"₹52,999"
+ORD-10800,2023-03-19,27-inch Monitor, West,6,"14,999"
+ORD-10228,26-07-2024,  microwave 20l , West,6,"₹8,499"
+ORD-11005,18-01-2023,  coffee maker 12-cup ,south,,3999
+ORD-10128,2024-05-17,  smartphone x5 ,West,5,"₹21,999"
+ORD-11076,2025-06-17,27-inch Monitor,East,1,14999
+ORD-11094,30-04-2023,Desk Organizer,WEST,5,599

@@ -1,0 +1,181 @@
+customer_id,signup_date,region,segment,age,email
+CUST-001,2025-03-26,West,Regular,59,customer1@example.com
+CUST-002,2025-04-17,North,Loyal,26,customer2@example.com
+CUST-003,2025-05-12,South,Loyal,27,customer3@example.com
+CUST-004,2025-11-20,North,At Risk,21,customer4@example.com
+CUST-005,2025-06-10,West,New,64,customer5@example.com
+CUST-006,2025-03-27,South,Loyal,62,customer6@example.com
+CUST-007,2025-02-04,North,New,62,customer7@example.com
+CUST-008,2025-01-17,East,New,53,customer8@example.com
+CUST-009,2025-07-08,South,Regular,47,customer9@example.com
+CUST-010,2025-03-09,West,At Risk,56,customer10@example.com
+CUST-011,2025-03-04,West,New,58,customer11@example.com
+CUST-012,2025-07-12,North,New,19,customer12@example.com
+CUST-013,2025-05-09,West,Loyal,26,customer13@example.com
+CUST-014,2025-11-03,South,Regular,32,customer14@example.com
+CUST-015,2025-08-31,East,New,65,customer15@example.com
+CUST-016,2025-04-13,South,New,32,customer16@example.com
+CUST-017,2025-05-24,South,Loyal,63,customer17@example.com
+CUST-018,2025-07-29,East,Loyal,48,customer18@example.com
+CUST-019,2025-09-08,South,Loyal,55,customer19@example.com
+CUST-020,2025-11-13,West,Loyal,31,customer20@example.com
+CUST-021,2025-07-25,East,New,28,customer21@example.com
+CUST-022,2025-05-04,East,Regular,55,customer22@example.com
+CUST-023,2025-08-02,South,Loyal,36,customer23@example.com
+CUST-024,2025-04-26,North,Loyal,35,customer24@example.com
+CUST-025,2025-11-27,East,Regular,28,customer25@example.com
+CUST-026,2025-10-13,West,At Risk,39,customer26@example.com
+CUST-027,2025-11-05,West,Loyal,58,customer27@example.com
+CUST-028,2025-09-21,South,New,45,customer28@example.com
+CUST-029,2025-05-29,East,Loyal,43,customer29@example.com
+CUST-030,2025-11-14,West,Regular,27,customer30@example.com
+CUST-031,2025-07-03,West,New,33,customer31@example.com
+CUST-032,2025-07-19,North,Loyal,42,customer32@example.com
+CUST-033,2025-10-25,East,Loyal,50,customer33@example.com
+CUST-034,2025-04-13,South,Loyal,39,customer34@example.com
+CUST-035,2025-04-01,South,Regular,44,customer35@example.com
+CUST-036,2025-04-15,West,At Risk,29,customer36@example.com
+CUST-037,2025-08-15,West,Loyal,,customer37@example.com
+CUST-038,2025-03-10,North,New,65,customer38@example.com
+CUST-039,2025-06-22,West,New,63,customer39@example.com
+CUST-040,2025-07-28,West,Regular,36,customer40@example.com
+CUST-041,2025-04-17,West,Loyal,30,customer41@example.com
+CUST-042,2025-02-23,East,At Risk,23,customer42@example.com
+CUST-043,2025-01-20,West,New,39,customer43@example.com
+CUST-044,2025-02-24,West,Regular,45,customer44@example.com
+CUST-045,2025-02-01,West,Regular,57,customer45@example.com
+CUST-046,2025-11-04,East,Regular,46,customer46@example.com
+CUST-047,2025-04-18,South,Regular,61,customer47@example.com
+CUST-048,2025-08-14,North,Loyal,64,customer48@example.com
+CUST-049,2025-09-15,East,Regular,62,customer49@example.com
+CUST-050,2025-04-03,East,Loyal,21,customer50@example.com
+CUST-051,2025-06-25,north ,New,64,customer51@example.com
+CUST-052,2025-02-17,South,Regular,55,customer52@example.com
+CUST-053,2025-08-13,South,Regular,57,customer53@example.com
+CUST-054,2025-11-07,North,Regular,23,customer54@example.com
+CUST-055,2025-01-12,South,Loyal,49,customer55@example.com
+CUST-056,2025-08-12,North,Regular,33,customer56@example.com
+CUST-057,2025-10-10,South,At Risk,59,customer57@example.com
+CUST-058,2025-07-15,North,Regular,21,customer58@example.com
+CUST-059,2025-06-26,West,New,63,customer59@example.com
+CUST-060,2025-05-20,West,New,42,customer60@example.com
+CUST-061,2025-10-13,East,Regular,40,customer61@example.com
+CUST-062,2025-01-16,East,Regular,67,customer62@example.com
+CUST-063,2025-01-02,South,Regular,59,customer63@example.com
+CUST-064,2025-08-27,East,At Risk,62,customer64@example.com
+CUST-065,2025-10-28,South,New,40,customer65@example.com
+CUST-066,2025-11-18,South,At Risk,33,customer66@example.com
+CUST-067,2025-10-28,West,Regular,64,customer67@example.com
+CUST-068,2025-08-31,North,New,28,customer68@example.com
+CUST-069,2025-04-09,North,Loyal,51,customer69@example.com
+CUST-070,2025-11-16,North,Regular,43,customer70@example.com
+CUST-071,2025-11-06,North,At Risk,26,customer71@example.com
+CUST-072,2025-09-12,East,At Risk,34,customer72@example.com
+CUST-073,2025-07-02,East,Regular,31,customer73@example.com
+CUST-074,2025-02-27,East,New,,customer74@example.com
+CUST-075,2025-01-30,South,Loyal,32,customer75@example.com
+CUST-076,2025-04-18,West,Regular,48,customer76@example.com
+CUST-077,2025-11-18,North,Regular,47,customer77@example.com
+CUST-078,2025-08-22,East,Regular,43,customer78@example.com
+CUST-079,2025-02-13,North,Regular,55,customer79@example.com
+CUST-080,2025-01-05,South,Regular,42,customer80@example.com
+CUST-081,2025-08-15,East,Loyal,38,customer81@example.com
+CUST-082,2025-04-13,North,New,41,customer82@example.com
+CUST-083,2025-11-11,South,At Risk,32,customer83@example.com
+CUST-084,2025-08-31,West,Loyal,45,customer84@example.com
+CUST-085,2025-08-13,South,Regular,36,customer85@example.com
+CUST-086,2025-05-06,North,New,37,customer86@example.com
+CUST-087,2025-11-24,South,New,63,customer87@example.com
+CUST-088,2025-01-05,East,At Risk,20,customer88@example.com
+CUST-089,2025-08-01,North,New,58,customer89@example.com
+CUST-090,2025-01-06,West,Regular,66,customer90@example.com
+CUST-091,2025-09-28,North,Loyal,37,customer91@example.com
+CUST-092,2025-01-30,West,Loyal,50,customer92@example.com
+CUST-093,2025-08-11,North,New,34,customer93@example.com
+CUST-094,2025-05-10,North,Regular,32,customer94@example.com
+CUST-095,2025-02-19,West,Regular,48,customer95@example.com
+CUST-096,2025-10-11,East,New,27,customer96@example.com
+CUST-097,2025-07-07,West,At Risk,44,customer97@example.com
+CUST-098,2025-07-25,North,Regular,46,customer98@example.com
+CUST-099,2025-10-06,East,Loyal,54,customer99@example.com
+CUST-100,2025-09-04,East,New,61,customer100@example.com
+CUST-101,2025-09-02,West,At Risk,23,customer101@example.com
+CUST-102,2025-11-25,north ,Loyal,21,customer102@example.com
+CUST-103,2025-02-25,North,At Risk,34,customer103@example.com
+CUST-104,2025-09-21,East,Loyal,42,customer104@example.com
+CUST-105,2025-03-02,North,New,40,customer105@example.com
+CUST-106,2025-09-20,East,Loyal,20,customer106@example.com
+CUST-107,2025-02-16,North,Regular,51,customer107@example.com
+CUST-108,2025-08-20,East,New,47,customer108@example.com
+CUST-109,2025-06-26,East,New,57,customer109@example.com
+CUST-110,2025-11-03,East,Loyal,19,customer110@example.com
+CUST-111,2025-01-25,North,Regular,,customer111@example.com
+CUST-112,2025-03-22,North,Regular,43,customer112@example.com
+CUST-113,2025-08-21,South,New,52,customer113@example.com
+CUST-114,2025-05-14,East,Regular,24,customer114@example.com
+CUST-115,2025-02-25,West,New,57,customer115@example.com
+CUST-116,2025-09-15,South,At Risk,52,customer116@example.com
+CUST-117,2025-03-18,East,Loyal,43,customer117@example.com
+CUST-118,2025-07-04,North,Loyal,65,customer118@example.com
+CUST-119,2025-11-15,East,Regular,23,customer119@example.com
+CUST-120,2025-07-27,East,Loyal,48,customer120@example.com
+CUST-121,2025-03-18,West,At Risk,41,customer121@example.com
+CUST-122,2025-01-03,East,Regular,57,customer122@example.com
+CUST-123,2025-10-30,East,Regular,43,customer123@example.com
+CUST-124,2025-07-21,East,New,29,customer124@example.com
+CUST-125,2025-05-16,East,New,49,customer125@example.com
+CUST-126,2025-01-29,East,Loyal,31,customer126@example.com
+CUST-127,2025-09-08,South,New,40,customer127@example.com
+CUST-128,2025-06-14,East,At Risk,29,customer128@example.com
+CUST-129,2025-07-05,South,Regular,26,customer129@example.com
+CUST-130,2025-01-28,East,Regular,27,customer130@example.com
+CUST-131,2025-01-18,South,At Risk,59,customer131@example.com
+CUST-132,2025-07-19,East,Regular,28,customer132@example.com
+CUST-133,2025-03-03,South,Regular,36,customer133@example.com
+CUST-134,2025-08-10,South,Regular,25,customer134@example.com
+CUST-135,2025-08-23,East,Regular,45,customer135@example.com
+CUST-136,2025-10-27,East,At Risk,31,customer136@example.com
+CUST-137,2025-10-16,South,New,49,customer137@example.com
+CUST-138,2025-07-01,West,Loyal,32,customer138@example.com
+CUST-139,2025-02-22,West,Loyal,59,customer139@example.com
+CUST-140,2025-01-19,West,New,41,customer140@example.com
+CUST-141,2025-01-23,North,New,29,customer141@example.com
+CUST-142,2025-04-05,West,Loyal,67,customer142@example.com
+CUST-143,2025-06-04,North,Regular,39,customer143@example.com
+CUST-144,2025-05-05,North,Regular,31,customer144@example.com
+CUST-145,2025-02-07,South,New,26,customer145@example.com
+CUST-146,2025-10-03,North,Loyal,48,customer146@example.com
+CUST-147,2025-10-11,South,New,40,customer147@example.com
+CUST-148,2025-07-29,East,Regular,,customer148@example.com
+CUST-149,2025-08-14,East,At Risk,35,customer149@example.com
+CUST-150,2025-07-28,East,Regular,50,customer150@example.com
+CUST-151,2025-03-12,North,Loyal,50,customer151@example.com
+CUST-152,2025-11-16,North,At Risk,67,customer152@example.com
+CUST-153,2025-02-16,west ,Regular,22,customer153@example.com
+CUST-154,2025-06-15,South,Regular,29,customer154@example.com
+CUST-155,2025-09-09,East,New,40,customer155@example.com
+CUST-156,2025-09-06,South,Regular,29,customer156@example.com
+CUST-157,2025-04-20,West,Regular,35,customer157@example.com
+CUST-158,2025-09-02,West,Loyal,57,customer158@example.com
+CUST-159,2025-09-13,North,Regular,24,customer159@example.com
+CUST-160,2025-01-21,West,New,21,customer160@example.com
+CUST-161,2025-06-17,South,Regular,29,customer161@example.com
+CUST-162,2025-05-30,West,Regular,57,customer162@example.com
+CUST-163,2025-03-15,West,At Risk,57,customer163@example.com
+CUST-164,2025-04-15,South,Loyal,23,customer164@example.com
+CUST-165,2025-06-29,East,Regular,63,customer165@example.com
+CUST-166,2025-07-17,West,Regular,24,customer166@example.com
+CUST-167,2025-06-19,East,Loyal,52,customer167@example.com
+CUST-168,2025-01-01,East,Loyal,22,customer168@example.com
+CUST-169,2025-09-07,North,Regular,61,customer169@example.com
+CUST-170,2025-07-26,South,Loyal,40,customer170@example.com
+CUST-171,2025-03-19,North,At Risk,20,customer171@example.com
+CUST-172,2025-08-29,North,Regular,37,customer172@example.com
+CUST-173,2025-05-16,North,New,42,customer173@example.com
+CUST-174,2025-06-30,East,Loyal,34,customer174@example.com
+CUST-175,2025-02-23,West,New,36,customer175@example.com
+CUST-176,2025-01-23,East,Loyal,38,customer176@example.com
+CUST-177,2025-07-02,North,Regular,46,customer177@example.com
+CUST-178,2025-05-03,East,At Risk,52,customer178@example.com
+CUST-179,2025-07-27,North,Loyal,42,customer179@example.com
+CUST-180,2025-10-17,North,Loyal,44,customer180@example.com

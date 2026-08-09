@@ -1,5 +1,6 @@
-﻿import { Metadata } from 'next';
+import { Metadata } from 'next';
 import Link from 'next/link';
+import CardImageBanner from '@/components/ui/CardImageBanner';
 import HeroBackground from '@/components/ui/HeroBackground';
 
 interface Service {
@@ -131,53 +132,66 @@ export default function ServicesPage() {
       <section className="wrap py-20">
         <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
           {SERVICES.map((service) => (
-            <div
-              key={service.title}
-              className={`card border p-7 flex flex-col ${service.color}`}
+            <div 
+              key={service.title} 
+              className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group"
             >
-              {/* Icon */}
-              <span className="text-4xl mb-4">{service.icon}</span>
-
-              {/* Title */}
-              <h3 className={`text-xl font-bold mb-3 ${service.accent}`}>
-                {service.title}
-              </h3>
-
-              {/* Price & Timeline */}
-              <div className="flex items-center justify-between mb-4">
-                <span className="font-semibold text-brand-navy">{service.price}</span>
-                <span className="text-sm text-brand-slate">{service.timeline}</span>
+              {/* Image Banner */}
+              <div className="relative h-40 w-full border-b border-gray-200">
+                <CardImageBanner
+                  src={`/card-${service.title.toLowerCase().replace(/\s+/g, '-')}.png`}
+                  alt={service.title}
+                  icon={service.icon}
+                  gradientFrom="from-[#1a1f2e]"
+                  gradientTo="to-[#2d3748]"
+                  overlayOpacity="opacity-20"
+                  blendMode="mix-blend-luminosity"
+                />
               </div>
 
-              {/* Description */}
-              {service.desc && (
-                <p className="text-sm text-brand-slate mb-4">{service.desc}</p>
-              )}
+              <div className={`p-8 flex-1 flex flex-col ${service.color}`}>
+                <div className="flex justify-between items-start mb-6">
+                  <span className="text-4xl">{service.icon}</span>
+                </div>
 
-              {/* Includes */}
-              <div className="mb-6 flex-1">
-                <p className="text-sm font-medium text-brand-navy mb-2">Includes:</p>
-                <ul className="text-sm text-brand-slate space-y-1">
-                  {service.includes.map((item, idx) => (
-                    <li key={idx} className="flex items-start">
-                      <span className="text-green-600 mr-2 mt-1">•</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {/* Title */}
+                <h3 className={`text-xl font-bold mb-3 ${service.accent}`}>
+                  {service.title}
+                </h3>
 
-              {/* Footer */}
-              <div className="border-t border-gray-200 pt-4 mt-auto">
-                <p className="text-xs text-brand-slate mb-3">
-                  Best for: {service.for}
-                </p>
-                <Link
-                  href={`/contact?service=${encodeURIComponent(service.title)}`}
-                  className="btn btn-primary w-full text-center"
-                >
-                  Inquire →
-                </Link>
+                {/* Price & Timeline */}
+                <div className="flex items-center justify-between mb-4">
+                  <span className="font-semibold text-brand-navy">{service.price}</span>
+                  <span className="text-sm text-brand-slate">{service.timeline}</span>
+                </div>
+
+                {/* Description */}
+                {service.desc && (
+                  <p className="text-sm text-brand-slate mb-4">{service.desc}</p>
+                )}
+
+                {/* Includes */}
+                <div className="mb-6 flex-1">
+                  <p className="text-sm font-medium text-brand-navy mb-2">Includes:</p>
+                  <ul className="text-sm text-brand-slate space-y-1">
+                    {service.includes.map((item, idx) => (
+                      <li key={idx} className="flex items-start">
+                        <span className="text-green-600 mr-2 mt-1">•</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                {/* Footer */}
+                <div className="mt-8 pt-6 border-t border-black/10 text-center">
+                  <Link
+                    href="/contact"
+                    className={`inline-block font-semibold ${service.accent} hover:opacity-70 transition-opacity`}
+                  >
+                    Request Proposal →
+                  </Link>
+                </div>
               </div>
             </div>
           ))}

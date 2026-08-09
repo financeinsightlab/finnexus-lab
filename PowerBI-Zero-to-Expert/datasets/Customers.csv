@@ -1,0 +1,31 @@
+CustomerID,CustomerName,Segment,City,State,Region,JoinDate
+1,Aarav Sharma,Consumer,Kochi,Kerala,South,2021-04-25
+2,Vihaan Verma,Consumer,Nagpur,Maharashtra,West,2021-10-09
+3,Ananya Patel,Home Office,Chennai,Tamil Nadu,South,2021-05-23
+4,Diya Gupta,Home Office,Mumbai,Maharashtra,West,2022-11-24
+5,Arjun Mehta,Consumer,Chandigarh,Punjab,North,2022-07-13
+6,Sara Iyer,Consumer,Lucknow,Uttar Pradesh,North,2022-03-09
+7,Ishaan Khan,Consumer,Delhi,Delhi,North,2021-04-06
+8,Myra Singh,Home Office,Chennai,Tamil Nadu,South,2022-06-02
+9,Kabir Das,Consumer,Delhi,Delhi,North,2022-07-29
+10,Anika Nair,Home Office,Nagpur,Maharashtra,West,2022-10-28
+11,Rohan Joshi,Consumer,Jaipur,Rajasthan,North,2022-03-06
+12,Priya Chopra,Corporate,Ahmedabad,Gujarat,West,2022-08-27
+13,Aditya Reddy,Consumer,Patna,Bihar,East,2023-06-10
+14,Meera Agarwal,Consumer,Patna,Bihar,East,2023-04-06
+15,Karan Malhotra,Corporate,Nagpur,Maharashtra,West,2022-03-09
+16,Nisha Menon,Consumer,Kolkata,West Bengal,East,2021-06-09
+17,Rahul Bose,Consumer,Patna,Bihar,East,2021-12-11
+18,Pooja Kulkarni,Consumer,Mumbai,Maharashtra,West,2022-01-25
+19,Sameer Desai,Corporate,Hyderabad,Telangana,South,2023-05-18
+20,Neha Kapoor,Consumer,Lucknow,Uttar Pradesh,North,2021-09-28
+21,Vikram Pillai,Home Office,Nagpur,Maharashtra,West,2022-04-16
+22,Ritu Rao,Corporate,Mumbai,Maharashtra,West,2023-09-24
+23,Farhan Sethi,Corporate,Mumbai,Maharashtra,West,2022-07-20
+24,Alia Jain,Home Office,Guwahati,Assam,East,2022-10-06
+25,Dev Mukherjee,Corporate,Chandigarh,Punjab,North,2023-06-02
+26,Tara Saxena,Home Office,Lucknow,Uttar Pradesh,North,2021-07-16
+27,Yash Bhatt,Home Office,Mumbai,Maharashtra,West,2021-02-16
+28,Kavya Chandra,Corporate,Chennai,Tamil Nadu,South,2023-03-03
+29,Nikhil Grover,Consumer,Mumbai,Maharashtra,West,2023-05-26
+30,Zoya Mirza,Corporate,Guwahati,Assam,East,2021-04-14

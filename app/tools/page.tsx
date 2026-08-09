@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
+import CardImageBanner from '@/components/ui/CardImageBanner';
 import HeroBackground from '@/components/ui/HeroBackground';
 // Simplified approach w/ direct routing to calculators
 
@@ -225,60 +226,77 @@ export default function ToolsPage() {
       <main className="wrap py-14">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((tool) => (
-            <div key={tool.id} className="card p-6 flex flex-col">
-              {/* Top Section */}
-              <div className="flex items-start justify-between mb-4">
-                <span className="text-3xl">{tool.icon}</span>
-                <div className="flex gap-2">
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                    tool.gated ? 'bg-gold-100 text-gold-800' : 'bg-green-100 text-green-800'
-                  }`}>
-                    {tool.gated ? 'Premium' : 'Free'}
-                  </span>
-                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${DIFF_CLS[tool.difficulty]}`}>
-                    {tool.difficulty}
-                  </span>
+            <div
+              key={tool.id}
+              onClick={() => router.push(`/tools/${tool.slug}`)}
+              className="card flex flex-col border border-gray-200 dark:border-white/10 rounded-xl hover:shadow-lg transition-all cursor-pointer overflow-hidden group bg-white dark:bg-[#111827]"
+            >
+              {/* ── Image Banner ── */}
+              <div className="relative h-32 w-full border-b border-gray-200 dark:border-white/10">
+                <CardImageBanner
+                  src={`/card-${tool.category.toLowerCase().replace(/\s+/g, '-')}.png`}
+                  alt={tool.title}
+                  icon={tool.icon}
+                  gradientFrom="from-[#1a1f2e]"
+                  gradientTo="to-[#2d3748]"
+                  overlayOpacity="opacity-50"
+                />
+              </div>
+
+              <div className="p-6 flex flex-col flex-1">
+                {/* Top Section */}
+                <div className="flex items-start justify-between mb-4">
+                  <span className="text-3xl">{tool.icon}</span>
+                  <div className="flex gap-2">
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                      tool.gated ? 'bg-gold-100 text-gold-800' : 'bg-green-100 text-green-800'
+                    }`}>
+                      {tool.gated ? 'Premium' : 'Free'}
+                    </span>
+                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${DIFF_CLS[tool.difficulty]}`}>
+                      {tool.difficulty}
+                    </span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Content */}
-              <h3 className="font-bold text-brand-navy mb-2">{tool.title}</h3>
-              <p className="text-sm text-brand-slate mb-4 flex-1">{tool.desc}</p>
+                {/* Content */}
+                <h3 className="font-bold text-brand-navy mb-2">{tool.title}</h3>
+                <p className="text-sm text-brand-slate mb-4 flex-1">{tool.desc}</p>
 
-              {/* Includes */}
-              <div className="mb-4">
-                <p className="text-xs font-medium text-brand-navy mb-2">Includes:</p>
-                <ul className="text-xs text-brand-slate space-y-1">
-                  {tool.includes.map((item, idx) => (
-                    <li key={idx} className="flex items-center">
-                      <span className="text-green-600 mr-2">✓</span>
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                {/* Includes */}
+                <div className="mb-4">
+                  <p className="text-xs font-medium text-brand-navy mb-2">Includes:</p>
+                  <ul className="text-xs text-brand-slate space-y-1">
+                    {tool.includes.map((item, idx) => (
+                      <li key={idx} className="flex items-center">
+                        <span className="text-green-600 mr-2">✓</span>
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
 
-              {/* Footer */}
-              <div className="border-t border-gray-100 pt-4 mt-auto">
-                <div className="flex items-center justify-between">
-                  <span className="font-mono text-xs text-gray-500">{tool.tool}</span>
-                  {done.has(tool.id) ? (
-                    <span className="text-sm font-medium text-green-600">✓ Link Sent!</span>
-                  ) : (
-                    <button
-                      onClick={() => handleDownload(tool)}
-                      className="text-sm font-medium text-brand-teal hover:text-brand-navy transition-colors"
-                    >
-                      Open Calculator →
-                    </button>
-                  )}
+                {/* Footer */}
+                <div className="border-t border-gray-100 pt-4 mt-auto">
+                  <div className="flex items-center justify-between">
+                    <span className="font-mono text-xs text-gray-500">{tool.tool}</span>
+                    {done.has(tool.id) ? (
+                      <span className="text-sm font-medium text-green-600">✓ Link Sent!</span>
+                    ) : (
+                      <button
+                        onClick={(e) => { e.stopPropagation(); handleDownload(tool); }}
+                        className="text-sm font-medium text-brand-teal hover:text-brand-navy transition-colors"
+                      >
+                        View Tool →
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           ))}
         </div>
       </main>
-
 
     </div>
   );

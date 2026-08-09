@@ -1,0 +1,4 @@
+order_id,order_date,warehouse,courier,route,stockout_flag,promised_date,delivery_date,delivery_cost,status
+D-001,2026-05-01,Delhi-A,Courier A,NCR,No,2026-05-03,2026-05-03,120,Delivered
+D-002,2026-05-01,Delhi-B,Courier B,NCR,Yes,2026-05-03,2026-05-06,155,Delivered
+D-003,2026-05-01,Mumbai-A,Courier A,West,No,2026-05-04,,140,In Transit

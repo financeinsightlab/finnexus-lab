@@ -1,5 +1,5 @@
-// FILE: components/research/ResearchCard.tsx
 import Link from 'next/link';
+import CardImageBanner from '@/components/ui/CardImageBanner';
 import Tag from '@/components/ui/Tag';
 import TiltCard from '@/components/ui/TiltCard';
 import { formatDate } from '@/lib/utils';
@@ -36,8 +36,21 @@ export default function ResearchCard({ post }: ResearchCardProps) {
 
   return (
     <TiltCard maxTilt={5} className="h-full">
-    <article className="research-card p-6 flex flex-col h-full depth-2 hover:depth-3 transition-shadow duration-300">
-      <div className="flex justify-between gap-3 mb-3">
+    <article className="research-card flex flex-col h-full depth-2 hover:depth-3 transition-shadow duration-300 overflow-hidden bg-white dark:bg-[#111827] border border-gray-200 dark:border-white/10 rounded-2xl group">
+      {/* ── Image Banner ── */}
+      <div className="relative h-32 w-full border-b border-gray-200 dark:border-white/10">
+        <CardImageBanner
+          src={`/card-${post.sector.toLowerCase().replace(/\s+/g, '-')}.png`}
+          alt={post.sector}
+          icon="📊"
+          gradientFrom="from-brand-navy"
+          gradientTo="to-brand-teal/20"
+          overlayOpacity="opacity-50"
+        />
+      </div>
+
+      <div className="p-6 flex flex-col flex-1">
+        <div className="flex justify-between gap-3 mb-3">
         <Tag text={post.sector} />
         <span className="text-[11px] text-gray-400 font-mono">
           {post.pageCount}p {post.readingTime && `· ${post.readingTime}`}
@@ -56,9 +69,10 @@ export default function ResearchCard({ post }: ResearchCardProps) {
       )}
       <div className="flex justify-between items-center pt-4 border-t border-gray-100">
         <span className="text-[11px] text-gray-400">{formatDate(post.date)}</span>
-        <Link href={`/research/${post.slug}`} className="text-sm font-semibold text-brand-teal hover:text-brand-navy">
+        <Link href={`/research/${post.slug}`} className="text-sm font-semibold text-brand-teal hover:text-brand-navy dark:hover:text-white transition-colors">
           Read Report →
         </Link>
+      </div>
       </div>
     </article>
     </TiltCard>

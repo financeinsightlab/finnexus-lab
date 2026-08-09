@@ -1,0 +1,4 @@
+campaign_id,date,channel,spend,impressions,clicks,leads,qualified_leads,revenue
+M-001,2026-05-01,Paid Search,42000,180000,7200,360,145,190000
+M-002,2026-05-01,Social,38000,310000,6200,190,65,74000
+M-003,2026-05-01,Email,8000,65000,5100,420,230,260000

@@ -1,6 +1,6 @@
-﻿// FILE: app/tracker/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import CardImageBanner from '@/components/ui/CardImageBanner';
 import { getSectorConsensus } from '@/lib/sentimentEngine';
 
 export const metadata: Metadata = {
@@ -95,8 +95,21 @@ export default function TrackerIndexPage() {
                 key={tracker.slug}
                 href={`/tracker/${tracker.slug}`}
                 id={`tracker-card-${tracker.slug}`}
-                className="card p-5 cursor-pointer hover:shadow-lg transition-shadow flex flex-col"
+                className="card cursor-pointer hover:shadow-lg transition-shadow flex flex-col rounded-xl overflow-hidden group border border-white/5 bg-[#111827]"
               >
+                {/* ── Image Banner ── */}
+                <div className="relative h-28 w-full border-b border-gray-200 dark:border-white/10">
+                  <CardImageBanner
+                    src={`/card-${tracker.slug}.png`}
+                    alt={tracker.name}
+                    icon={tracker.icon}
+                    gradientFrom="from-[#1a1f2e]"
+                    gradientTo="to-[#2d3748]"
+                    overlayOpacity="opacity-80"
+                  />
+                </div>
+
+                <div className="p-5 flex flex-col flex-1">
                 <div className="flex items-center justify-between mb-4">
                   <span className="text-2xl">{tracker.icon}</span>
                   <TrendArrow trend={tracker.trend} />
@@ -131,6 +144,7 @@ export default function TrackerIndexPage() {
                   <span className="text-xs bg-amber-50 text-amber-800 px-2 py-0.5 rounded">
                     🔒 Pro
                   </span>
+                </div>
                 </div>
               </Link>
             ))}

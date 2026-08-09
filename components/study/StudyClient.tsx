@@ -1,10 +1,9 @@
 "use client"
 
 import { useState, useMemo } from 'react'
-import Link from 'next/link'
-import { Search, X, SlidersHorizontal, ArrowRight, Target } from 'lucide-react'
+import { Search, X, SlidersHorizontal } from 'lucide-react'
 import StudyCard from './StudyCard'
-import SpotlightCard from '@/components/ui/SpotlightCard'
+import CoursesSection from './CoursesSection'
 
 interface StudyMaterial {
   id: string
@@ -165,38 +164,8 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
         </div>
       </section>
 
-      {/* ─── Placement Preparation Banner ─── */}
-      <section className="bg-gradient-to-r from-brand-navy via-[#0f1522] to-brand-slate border-b border-teal-500/20">
-        <div className="max-w-[1400px] mx-auto px-6 py-5">
-          <SpotlightCard color="teal" intensity={0.12} className="rounded-2xl depth-2 hover:depth-3 transition-shadow duration-300">
-          <Link
-            href="/study/placement-prep"
-            className="group flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl bg-white/[0.03] border border-teal-500/20 hover:border-teal-500/40 hover:bg-white/[0.05] transition-all"
-          >
-            <div className="flex items-start gap-4">
-              <div className="shrink-0 w-12 h-12 rounded-xl bg-teal-500/15 border border-teal-500/30 flex items-center justify-center text-teal-400">
-                <Target className="w-6 h-6" />
-              </div>
-              <div>
-                <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                  Placement Preparation Tracker
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-teal-400 bg-teal-500/10 border border-teal-500/20 px-2 py-0.5 rounded-full">
-                    60-Day Plan
-                  </span>
-                </h2>
-                <p className="text-sm text-slate-400 mt-1 max-w-2xl">
-                  A free 60-day placement prep plan for Finance + Business Analytics students targeting 15 LPA+ roles. Daily tracker, learning material with Q&A, and a portfolio lab with project ideas.
-                </p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 text-teal-400 font-semibold text-sm shrink-0 group-hover:gap-3 transition-all">
-              Start preparing
-              <ArrowRight className="w-4 h-4" />
-            </div>
-          </Link>
-          </SpotlightCard>
-        </div>
-      </section>
+      {/* ─── Featured Courses — 3D Cards ─── */}
+      <CoursesSection />
 
       {/* ─── Category Filter Chips ─── */}
       <section className="bg-[#0f1522] border-b border-white/5 py-4 sticky top-0 z-40">
