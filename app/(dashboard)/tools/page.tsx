@@ -234,7 +234,11 @@ export default function ToolsPage() {
               {/* ── Image Banner ── */}
               <div className="relative h-32 w-full border-b border-gray-200 dark:border-white/10">
                 <CardImageBanner
-                  src={`/card-${tool.category.toLowerCase().replace(/\s+/g, '-')}.png`}
+                  src={
+                    tool.category.includes('Web3') ? '/card-web3-3d.png' :
+                    tool.category.includes('SaaS') || tool.category.includes('AI') || tool.category.includes('Sector') || tool.category.includes('Growth') ? '/card-saas-3d.png' :
+                    '/card-valuation-3d.png'
+                  }
                   alt={tool.title}
                   icon={tool.icon}
                   gradientFrom="from-[#1a1f2e]"

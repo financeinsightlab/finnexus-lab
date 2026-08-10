@@ -478,11 +478,11 @@
   }
   body {
     color: var(--slate);
-    background: white;
+    background: #faf9f6;
     @apply antialiased;
   }
   .dark body {
-    background: #0F1117;
+    background: #0a1120;
     color: #CBD5E1;
   }
   ::selection {
@@ -629,7 +629,7 @@
 
 /* ── Body ── */
 .dark body {
-  background: #0F1117;
+  background: #0a1120;
   color: #CBD5E1;
 }
 

@@ -9,29 +9,13 @@ import { useSession, signOut } from 'next-auth/react';
 
 /* ─────────────────────── NAV DATA ─────────────────────── */
 
-const mainLinks = [
+const allLinks = [
   { label: 'Research',  href: '/research',     icon: '📚' },
   { label: 'Insights',  href: '/insights',     icon: '💡' },
   { label: 'Data Lab',  href: '/data-lab',     icon: '🔬' },
-  { label: 'Trackers',  href: '/tracker',      icon: '📊' },
-  { label: 'Tools',     href: '/tools',        icon: '🛠️' },
-  { label: 'Study',     href: '/study',        icon: '🎓' },
+  { label: 'About',     href: '/about',        icon: 'ℹ️' },
+  { label: 'Contact',   href: '/contact',      icon: '✉️' },
 ];
-
-const moreLinks = [
-  { label: 'Radar',        href: '/radar',          icon: '📡' },
-  { label: 'Predictions',  href: '/predictions',    icon: '🎯' },
-  { label: 'Data Freshness',href: '/data-freshness',icon: '🟢' },
-  { label: 'Services',     href: '/services',     icon: '🎯' },
-  { label: 'About',        href: '/about',        icon: 'ℹ️' },
-  { label: 'Podcast',      href: '/podcast',      icon: '🎙️' },
-  { label: 'Case Studies', href: '/case-studies', icon: '📋' },
-  { label: 'Pricing',      href: '/pricing',      icon: '💰' },
-  { label: 'Enterprise',   href: '/enterprise',   icon: '🏢' },
-  { label: 'Resume',       href: '/resume',       icon: '📄' },
-];
-
-const allLinks = [...mainLinks, ...moreLinks];
 
 /* ─────────────────────── ICONS ─────────────────────── */
 
@@ -165,8 +149,8 @@ export default function Navbar() {
           <Logo />
 
           {/* ── DESKTOP NAV ── (hidden below lg) */}
-          <div className="hidden lg:flex items-center gap-0.5 flex-1 justify-center">
-            {mainLinks.map(link => (
+          <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
+            {allLinks.map(link => (
               <Link key={link.href} href={link.href} className={navLinkClass(link.href)}>
                 <span className="text-sm opacity-75">{link.icon}</span>
                 {link.label}
@@ -175,47 +159,6 @@ export default function Navbar() {
                 )}
               </Link>
             ))}
-
-            {/* More dropdown */}
-            <div className="relative" data-more-dropdown>
-              <button
-                onClick={() => setMoreOpen(v => !v)}
-                className={`flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap ${
-                  moreLinks.some(l => isActive(l.href))
-                    ? 'text-teal-400 bg-teal-500/10'
-                    : 'text-gray-300 hover:text-white hover:bg-white/10'
-                }`}
-                aria-expanded={moreOpen}
-                aria-haspopup="true"
-              >
-                More
-                <ChevronDown open={moreOpen} />
-              </button>
-
-              {moreOpen && (
-                <div className="absolute top-[calc(100%+8px)] right-0 w-52 bg-gray-900/98 backdrop-blur-xl border border-gray-800 rounded-2xl shadow-2xl shadow-black/60 z-50 anim-fade flex flex-col" style={{ maxHeight: 'calc(100vh - 80px)' }}>
-                  <div className="px-4 pt-3 pb-1 shrink-0">
-                    <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest">More Pages</p>
-                  </div>
-                  <div className="px-2 pb-1 overflow-y-auto no-scrollbar">
-                    {moreLinks.map(link => (
-                      <Link
-                        key={link.href}
-                        href={link.href}
-                        onClick={() => setMoreOpen(false)}
-                        className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm transition-colors group/item ${
-                          isActive(link.href) ? 'bg-teal-500/10 text-teal-400' : 'text-gray-300 hover:bg-white/5 hover:text-white'
-                        }`}
-                      >
-                        <span className="text-sm opacity-70">{link.icon}</span>
-                        <span className="flex-1">{link.label}</span>
-                        <span className="text-gray-600 group-hover/item:text-teal-500 transition-colors text-xs">→</span>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
           </div>
 
           {/* ── RIGHT CONTROLS ── */}
@@ -374,30 +317,7 @@ export default function Navbar() {
             <div className="px-4 pb-2">
               <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest mb-2 px-1">Main</p>
               <div className="space-y-0.5">
-                {mainLinks.map(link => (
-                  <Link
-                    key={link.href}
-                    href={link.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
-                      isActive(link.href)
-                        ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20'
-                        : 'text-gray-300 hover:bg-white/5 hover:text-white border border-transparent'
-                    }`}
-                  >
-                    <span className="text-base w-6 text-center">{link.icon}</span>
-                    {link.label}
-                    {isActive(link.href) && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-teal-400" />}
-                  </Link>
-                ))}
-              </div>
-            </div>
-
-            {/* More links */}
-            <div className="px-4 pb-2 mt-4">
-              <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest mb-2 px-1">More</p>
-              <div className="space-y-0.5">
-                {moreLinks.map(link => (
+                {allLinks.map(link => (
                   <Link
                     key={link.href}
                     href={link.href}
