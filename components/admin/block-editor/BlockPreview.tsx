@@ -1,6 +1,6 @@
 'use client'
 
-import { Block } from '@/lib/blocks/registry'
+import { Block, MetricItem } from '@/lib/blocks/registry'
 
 interface BlockPreviewProps {
   block: Block
@@ -35,7 +35,6 @@ export default function BlockPreview({ block, isSelected }: BlockPreviewProps) {
         <div className={wrapCls}>
           {data.src ? (
             <div className={`flex ${data.alignment === 'center' ? 'justify-center' : data.alignment === 'right' ? 'justify-end' : 'justify-start'}`}>
-              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={data.src}
                 alt={data.alt || ''}
@@ -158,7 +157,7 @@ export default function BlockPreview({ block, isSelected }: BlockPreviewProps) {
               <thead>
                 <tr>
                   {rows[0].map((cell, i) => (
-                    <th key={i} className="px-4 py-2 font-bold border-b border-[#2D3748] bg-black/20 text-white">{cell}</th>
+                    <th key={i} className="px-4 py-2 font-bold border-b border-[#2D3748] bg-black/20 text-[#0D6E6E] uppercase text-xs">{cell}</th>
                   ))}
                 </tr>
               </thead>
@@ -167,12 +166,48 @@ export default function BlockPreview({ block, isSelected }: BlockPreviewProps) {
               {rows.slice(hasHeader && rows.length > 0 ? 1 : 0).map((row, i) => (
                 <tr key={i} className="hover:bg-white/5">
                   {row.map((cell, j) => (
-                    <td key={j} className="px-4 py-2 border-b border-[#2D3748] text-slate-300">{cell}</td>
+                    <td key={j} className="px-4 py-2 border-b border-[#2D3748] text-slate-300 font-mono text-xs">{cell}</td>
                   ))}
                 </tr>
               ))}
             </tbody>
           </table>
+        </div>
+      )
+    }
+    case 'diagram': {
+      const title = data.titleText || 'System Architecture Flow'
+      return (
+        <div className={wrapCls}>
+          <div className="rounded-xl border border-cinema-cyan/30 bg-[#080D1A] overflow-hidden">
+            <div className="px-4 py-2 bg-[#0E1528] border-b border-white/10 flex items-center justify-between">
+              <span className="text-xs font-mono font-bold text-cinema-cyan uppercase">{title}</span>
+              <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Architecture Flow</span>
+            </div>
+            <pre className="p-4 text-xs font-mono text-emerald-300 overflow-x-auto bg-transparent m-0">
+              <code>{data.code || '+--------------------------------+\n| Architecture Flow Blueprint    |\n+--------------------------------+'}</code>
+            </pre>
+          </div>
+        </div>
+      )
+    }
+    case 'metrics': {
+      const items = (data.metrics || []) as MetricItem[]
+      return (
+        <div className={wrapCls}>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {items.map((item, idx) => (
+              <div key={idx} className="bg-white/5 border border-white/10 rounded-xl p-3">
+                <p className="text-[10px] uppercase font-mono text-slate-400 truncate">{item.label}</p>
+                <p className="text-xl font-bold font-mono text-white mt-1">{item.value}</p>
+                {item.change && (
+                  <p className={`text-[10px] font-mono mt-1 ${item.trend === 'up' ? 'text-emerald-400' : item.trend === 'down' ? 'text-rose-400' : 'text-cyan-400'}`}>
+                    {item.trend === 'up' ? '▲' : item.trend === 'down' ? '▼' : '●'} {item.change}
+                  </p>
+                )}
+              </div>
+            ))}
+          </div>
         </div>
       )
     }

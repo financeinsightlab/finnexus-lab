@@ -22,6 +22,8 @@ export interface InsightPost {
   thesis: string;
   author: string;
   featured: boolean;
+  coverImage?: string;
+  tags?: string[];
   content?: string;
 }
 

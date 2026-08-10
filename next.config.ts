@@ -3,6 +3,9 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   pageExtensions: ['ts', 'tsx', 'mdx'],
 
+  // Allow preview iframe / proxy requests
+  allowedDevOrigins: ['*.e2b.app', 'localhost:3000', '127.0.0.1:3000'],
+
   // Remove console.* calls in production builds
   compiler: {
     removeConsole: process.env.NODE_ENV === 'production',

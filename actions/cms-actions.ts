@@ -43,7 +43,7 @@ export async function createPost(formData: PostFormData) {
     throw new Error("Unauthorized")
   }
 
-  let validAuthorId = session.user.id!;
+  const validAuthorId = session.user.id!;
   const existingUser = await prisma.user.findUnique({ where: { id: validAuthorId } });
   if (!existingUser) {
     console.warn("Cached session ID not found in database. Creating emergency dev user.");

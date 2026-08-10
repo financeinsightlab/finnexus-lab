@@ -43,12 +43,13 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
   const [previewMode, setPreviewMode] = useState(false)
 
   // Content mode: markdown (Tiptap) or blocks (Visual Builder)
-  const [contentType, setContentType] = useState<'MARKDOWN' | 'BLOCKS'>((post as any).contentType || 'MARKDOWN')
+  const [contentType, setContentType] = useState<'MARKDOWN' | 'BLOCKS'>((post as any).contentType || 'BLOCKS')
   const [blocks, setBlocks] = useState<Block[]>(() => {
     try {
       const bc = (post as any).blockContent
       if (bc && Array.isArray(bc)) return bc as Block[]
-      if (bc && typeof bc === 'object' && 'blocks' in bc) return (bc as any).blocks as Block[]
+      if (bc && typeof bc === 'object' && 'blocks' in bc && Array.isArray((bc as any).blocks)) return (bc as any).blocks as Block[]
+      if (post.content) return markdownToBlocks(post.content)
     } catch {}
     return []
   })
