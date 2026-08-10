@@ -31,6 +31,7 @@ import { prisma } from '@/lib/prisma';
 import type { ResearchPost, InsightPost } from '@/types';
 import { GlobalForecastingTicker } from '@/components/ui/GlobalForecastingTicker';
 import CoursesSection from '@/components/study/CoursesSection';
+import SectorVideo from '@/components/tracker/SectorVideo';
 
 async function getHomePagePosts() {
   // Try to get DB-driven featured selections first
@@ -130,6 +131,10 @@ export default async function HomePage() {
     { emoji: '💰', sector: 'Fintech', metric: 'Digital Payments: ₹12.4T', href: '/tracker/fintech', value: 12, prefix: '₹', suffix: 'T', label: 'Payment Volume' },
     { emoji: '⚡', sector: 'EV', metric: 'EV Adoption: 8.5%', href: '/tracker/ev', value: 8, suffix: '%', label: 'Adoption Rate' },
     { emoji: '🍔', sector: 'Food Delivery', metric: 'Order Volume: 18M/month', href: '/tracker/food-delivery', value: 18, suffix: 'M', label: 'Monthly Orders' },
+    { emoji: '☁️', sector: 'SaaS', metric: 'Revenue: $15B', href: '/tracker/saas', value: 15, prefix: '$', suffix: 'B', label: 'SaaS Revenue' },
+    { emoji: '🛍️', sector: 'D2C', metric: 'Market: ₹62,000 Cr', href: '/tracker/d2c', value: 62, prefix: '₹', suffix: 'K', label: 'Market Size (Cr)' },
+    { emoji: '🏥', sector: 'HealthTech', metric: 'Digital Users: 310M', href: '/tracker/healthcare', value: 310, suffix: 'M', label: 'Active Users' },
+    { emoji: '📚', sector: 'EdTech', metric: 'Learning Market: ₹53,000 Cr', href: '/tracker/edtech', value: 53, prefix: '₹', suffix: 'K', label: 'Market Size (Cr)' },
   ]
 
   return (
@@ -216,12 +221,17 @@ export default async function HomePage() {
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 mt-12">
             {trackersData.map((tracker, i) => (
               <ScrollReveal key={tracker.sector} delay={i * 80}>
-                <GlassCard3D glow="cyan" className="h-full">
-                  <Link href={tracker.href} className="block p-6 h-full cursor-pointer">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="text-3xl">{tracker.emoji}</span>
-                      <h3 className="font-bold text-white">{tracker.sector}</h3>
+                <GlassCard3D glow="cyan" className="h-full overflow-hidden">
+                  <Link href={tracker.href} className="block h-full cursor-pointer">
+                    <div className="relative h-44 w-full overflow-hidden bg-[#0b1623]">
+                      <SectorVideo slug={(tracker.href.split('/').pop() as string) ?? 'fintech'} priority={i < 2} />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
+                      <div className="pointer-events-none absolute bottom-3 left-4 flex items-center gap-2">
+                        <span className="text-xl">{tracker.emoji}</span>
+                        <span className="text-lg font-bold text-white drop-shadow">{tracker.sector}</span>
+                      </div>
                     </div>
+                    <div className="p-6">
                     <p className="text-3xl font-bold cinema-text-gradient mb-2">
                       <AnimatedCounter
                         value={tracker.value}
@@ -234,6 +244,7 @@ export default async function HomePage() {
                     <p className="text-sm text-gray-400 mb-4">{tracker.metric}</p>
                     <div className="inline-flex items-center gap-1 px-3 py-1 glass-cinema-light text-amber-300 text-xs rounded-full">
                       🔒 Full data: subscribers
+                    </div>
                     </div>
                   </Link>
                 </GlassCard3D>
