@@ -38,20 +38,12 @@ export default function CardImageBanner({
   blendMode = ''
 }: CardImageBannerProps) {
   const [error, setError] = useState(false);
-  
-  // Deterministic fallback based on the string length of the alt text
-  // so the same card always gets the same image
-  const fallbackIndex = alt.length % FALLBACK_IMAGES.length;
-  
-  const finalSrc = KNOWN_IMAGES.includes(src) 
-    ? src 
-    : FALLBACK_IMAGES[fallbackIndex];
 
   return (
     <div className={`relative h-full w-full overflow-hidden bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center`}>
       {!error && (
         <Image 
-          src={finalSrc} 
+          src={src} 
           alt={alt}
           fill
           className={`object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 ${blendMode}`}
