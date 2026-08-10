@@ -1,111 +1,79 @@
-﻿import type { Metadata } from 'next';
-import AlgoliaSearch from '@/components/research/AlgoliaSearch';
-import { prisma } from "@/lib/prisma"
-import Link from 'next/link';
-import React from "react"
-import HeroBackground from '@/components/ui/HeroBackground';
+import type { Metadata } from 'next';
+import { getAllResearch } from '@/lib/content';
+import { prisma } from '@/lib/prisma';
+import ResearchClient from '@/components/research/ResearchClient';
+import type { ResearchPost } from '@/types';
+import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Research | Kunwar Analytics',
+  title: 'Research Library | Kunwar Analytics — Institutional Market Reports',
   description:
-    'Search and explore in-depth research reports and strategic insights across Indian market sectors.',
+    'Institutional-grade macroeconomic, sector intelligence, fintech, and deep tech research papers with quantitative modeling and strategic frameworks.',
+  alternates: { canonical: '/research' },
+  openGraph: {
+    title: 'Research Library | Kunwar Analytics',
+    description:
+      'In-depth institutional research reports, financial modeling, and strategic market intelligence.',
+    url: 'https://kunwaranalytics.in/research',
+    type: 'website',
+  },
 };
 
 export default async function ResearchPage() {
-  let dbReports: any[] = []
+  const fileResearch = getAllResearch();
+
+  let dbReports: any[] = [];
   try {
     dbReports = await (prisma as any).post.findMany({
       where: { type: 'RESEARCH', published: true },
-      orderBy: { createdAt: 'desc' }
-    })
+      orderBy: { createdAt: 'desc' },
+    });
   } catch (e) {
-    console.error("CMS fetch failed:", e)
+    console.error('CMS fetch failed:', e);
   }
 
-  const allReports = dbReports.map(r => ({
+  const cmsResearch: ResearchPost[] = dbReports.map((r) => ({
     slug: r.slug,
     title: r.title,
-    summary: r.excerpt,
-    sector: 'Strategic Research',
-    author: 'Kunwar Analytics Admin',
-    date: r.createdAt.toISOString(),
+    summary: r.excerpt || '',
+    sector: r.sector || r.tags?.[0] || 'Strategic Research',
+    tags: r.tags || [],
+    author: r.author?.name || 'Kunwar Analytics Research Desk',
+    date: r.publishedAt?.toISOString() || r.createdAt?.toISOString() || new Date().toISOString(),
     featured: true,
-    featuredImage: r.featuredImage || null,
+    pageCount: r.pageCount || (r.estimatedReadingTime ? Math.ceil(r.estimatedReadingTime * 2.5) : 50),
+    coverImage: r.featuredImage || undefined,
   }));
 
-  const featuredReports = allReports.filter((r) => r.featured);
+  // Merge unique by slug (CMS overrides file if exists)
+  const slugSet = new Set(cmsResearch.map((p) => p.slug));
+  const mergedPosts: ResearchPost[] = [
+    ...cmsResearch,
+    ...fileResearch.filter((p) => !slugSet.has(p.slug)),
+  ];
+
+  const researchFaq = faqSchema([
+    {
+      question: 'What methodology does Kunwar Analytics use for research reports?',
+      answer:
+        'Kunwar Analytics employs quantitative valuation models, bottom-up unit economics, macroeconomic liquidity framework analysis, and primary supply chain verification.',
+    },
+    {
+      question: 'How frequently are research reports updated?',
+      answer:
+        'Sector reports and financial metrics are reviewed quarterly and updated whenever major structural regulatory or financial inflections occur.',
+    },
+    {
+      question: 'Can I cite Kunwar Analytics research for institutional analysis?',
+      answer:
+        'Yes, institutional investors, media, and academic researchers may cite our papers with proper attribution and link back to the research report.',
+    },
+  ]);
 
   return (
     <>
-      {/* HERO SECTION */}
-      <header className="relative overflow-hidden bg-[#1A2B3C] py-20">
-        <HeroBackground />
-        <div className="max-w-6xl mx-auto px-6 relative z-10">
-          <p className="text-[#0D6E6E] mb-5 text-sm font-semibold tracking-wide">
-            Research Library
-          </p>
-
-          <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
-            In-Depth Analysis
-          </h1>
-
-          <p className="text-xl text-white/80 max-w-2xl">
-            Comprehensive research reports on Indian market sectors, with detailed analysis,
-            data-driven insights, and strategic recommendations.
-          </p>
-        </div>
-      </header>
-
-      {/* FEATURED REPORTS */}
-      <section className="max-w-6xl mx-auto px-6 py-12">
-        <h2 className="text-2xl font-semibold text-[#1A2B3C] mb-6">
-          Featured Reports
-        </h2>
-
-        {featuredReports.length === 0 ? (
-          <p className="text-gray-500">No featured reports yet.</p>
-        ) : (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredReports.map((report: any) => (
-              <Link
-                key={report.slug}
-                href={`/research/${report.slug}`}
-                className="border border-gray-200 rounded-xl overflow-hidden hover:shadow-md transition group flex flex-col"
-              >
-                {report.featuredImage && (
-                  /* eslint-disable-next-line @next/next/no-img-element */
-                  <img
-                    src={report.featuredImage}
-                    alt={report.title}
-                    className="w-full h-44 object-cover object-center bg-[#0B1C2C]"
-                  />
-                )}
-                <div className="p-6 flex flex-col flex-1">
-                  <p className="text-sm text-[#0D6E6E] font-medium">
-                    {report.sector}
-                  </p>
-
-                  <h3 className="mt-2 text-lg font-semibold text-[#1A2B3C] group-hover:text-teal-700 transition-colors">
-                    {report.title}
-                  </h3>
-
-                  <p className="mt-2 text-sm text-gray-600 line-clamp-3">
-                    {report.summary}
-                  </p>
-
-                  <div className="mt-4 text-xs text-gray-500 flex justify-between">
-                    <span>{report.author}</span>
-                    <span>{new Date(report.date).toDateString()}</span>
-                  </div>
-                </div>
-              </Link>
-            ))}
-          </div>
-        )}
-      </section>
-
-      {/* SEARCH (ALGOLIA) */}
-      <AlgoliaSearch />
+      <JsonLd data={researchFaq} />
+      <ResearchClient posts={mergedPosts} />
     </>
   );
 }

@@ -1,4 +1,4 @@
-﻿import fs from 'fs';
+import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import readingTime from 'reading-time';
@@ -38,11 +38,13 @@ function normalizeInsightPost(data: Record<string, unknown>, slug: string, conte
     slug,
     title: typeof data.title === 'string' ? data.title : slug,
     date: typeof data.date === 'string' ? data.date : new Date().toISOString(),
-    category: (typeof data.category === 'string' ? data.category : 'Market Update') as InsightPost['category'],
-    readingTime: typeof data.readingTime === 'number' ? data.readingTime : 5,
+    category: (typeof data.category === 'string' ? data.category : 'Sector Analysis') as InsightPost['category'],
+    readingTime: typeof data.readingTime === 'number' ? data.readingTime : 7,
     thesis: typeof data.thesis === 'string' ? data.thesis : '',
     author: typeof data.author === 'string' ? data.author : 'Kunwar Analytics',
     featured: Boolean(data.featured),
+    coverImage: typeof data.coverImage === 'string' ? data.coverImage : undefined,
+    tags: toStringArray(data.tags),
     content,
   };
 }
