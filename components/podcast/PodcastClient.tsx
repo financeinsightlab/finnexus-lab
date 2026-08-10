@@ -2,23 +2,25 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Search, X, ChevronDown } from 'lucide-react';
+import { Search, X, ChevronDown, Radio } from 'lucide-react';
 import type { PodcastEpisode } from '@/types';
 import PodcastEpisodeCard from '@/components/podcast/PodcastEpisodeCard';
 
-const PAGE_SIZE = 5;
+const PAGE_SIZE = 6;
 const ALL_FORMATS = ['Solo Analysis', 'Expert Interview', 'Quarterly Tracker', 'Research Summary'] as const;
 
 interface PodcastClientProps {
   episodes: PodcastEpisode[];
+  initialFormat?: string;
 }
 
-export default function PodcastClient({ episodes }: PodcastClientProps) {
+export default function PodcastClient({ episodes, initialFormat = 'All' }: PodcastClientProps) {
   const [query, setQuery] = useState('');
-  const [format, setFormat] = useState<string>('All');
+  const [format, setFormat] = useState<string>(
+    ALL_FORMATS.includes(initialFormat as (typeof ALL_FORMATS)[number]) ? initialFormat : 'All'
+  );
   const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-  // Only show formats that actually exist in the content
   const availableFormats = useMemo(() => {
     const present = new Set(episodes.map((e) => e.format));
     return ['All', ...ALL_FORMATS.filter((f) => present.has(f))];
@@ -41,7 +43,6 @@ export default function PodcastClient({ episodes }: PodcastClientProps) {
       const matchQuery = !q || haystack.includes(q);
       return matchFormat && matchQuery;
     });
-    // Already sorted newest-first by getAllPodcastEpisodes; keep stable
     return matches;
   }, [episodes, query, format]);
 
@@ -55,38 +56,45 @@ export default function PodcastClient({ episodes }: PodcastClientProps) {
   };
 
   return (
-    <section className="wrap max-w-6xl py-14">
+    <section id="episodes" className="wrap max-w-6xl py-16 md:py-20 scroll-mt-24">
+      {/* Section header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
-        <h2 className="text-3xl font-bold text-brand-navy">Latest Episodes</h2>
-        <p className="text-sm text-gray-500">
-          {filtered.length} episode{filtered.length === 1 ? '' : 's'}
+        <div>
+          <span className="section-label text-cinema-cyan">The Library</span>
+          <h2 className="text-3xl md:text-4xl font-bold text-white mt-2">All Episodes</h2>
+        </div>
+        <div className="flex items-center gap-3 text-sm text-gray-400">
+          <Radio className="w-4 h-4 text-cinema-cyan" />
+          <span>
+            {filtered.length} episode{filtered.length === 1 ? '' : 's'}
+          </span>
           {hasActiveFilters && (
             <button
               onClick={clearAllFilters}
-              className="ml-3 inline-flex items-center gap-1 text-rose-600 hover:text-rose-700 font-semibold cursor-pointer"
+              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 font-semibold transition-colors cursor-pointer"
             >
               <X className="w-3.5 h-3.5" /> Reset
             </button>
           )}
-        </p>
+        </div>
       </div>
 
-      {/* Filter controls */}
-      <div className="flex flex-col sm:flex-row gap-3 mb-8">
+      {/* Controls */}
+      <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-10">
         {/* Search */}
-        <div className="relative w-full sm:w-96">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-teal" />
+        <div className="relative w-full lg:w-96">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-cinema-cyan" />
           <input
             type="text"
             placeholder="Search episodes, guests, topics…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-9 py-2.5 bg-white border border-gray-300 rounded-xl text-sm text-gray-800 placeholder:text-gray-400 focus:outline-none focus:border-brand-teal focus:ring-1 focus:ring-brand-teal transition-all"
+            className="w-full pl-10 pr-9 py-3 bg-cinema-charcoal border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-cinema-cyan/60 focus:ring-1 focus:ring-cinema-cyan/40 transition-all"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white cursor-pointer"
               title="Clear search"
             >
               <X className="w-4 h-4" />
@@ -103,10 +111,10 @@ export default function PodcastClient({ episodes }: PodcastClientProps) {
                 setFormat(f);
                 setVisibleCount(PAGE_SIZE);
               }}
-              className={`px-4 py-2 rounded-full text-xs font-semibold border transition-colors cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
                 format === f
-                  ? 'bg-brand-navy text-brand-teal border-brand-navy'
-                  : 'bg-white text-gray-600 border-gray-300 hover:border-brand-teal hover:text-brand-teal'
+                  ? 'bg-cinema-cyan text-cinema-black border-cinema-cyan shadow-glow-cyan'
+                  : 'bg-cinema-charcoal text-gray-300 border-white/10 hover:border-cinema-cyan/50 hover:text-white'
               }`}
             >
               {f}
@@ -116,7 +124,7 @@ export default function PodcastClient({ episodes }: PodcastClientProps) {
       </div>
 
       {/* Episode list */}
-      <div className="space-y-6">
+      <div className="space-y-5">
         {shown.map((episode) => (
           <PodcastEpisodeCard key={episode.slug} episode={episode} />
         ))}
@@ -127,23 +135,23 @@ export default function PodcastClient({ episodes }: PodcastClientProps) {
         <div className="text-center mt-10">
           <button
             onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-            className="btn-outline inline-flex items-center gap-2 cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cinema-charcoal border border-white/10 text-sm font-semibold text-white hover:border-cinema-cyan/50 hover:text-cinema-cyan transition-all cursor-pointer"
           >
             <ChevronDown className="w-4 h-4" />
-            Load more episodes ({filtered.length - visibleCount} remaining)
+            Load more ({filtered.length - visibleCount} remaining)
           </button>
         </div>
       )}
 
-      {/* Empty states */}
+      {/* Empty state */}
       {filtered.length === 0 && (
-        <div className="text-center py-16">
+        <div className="text-center py-16 glass-cinema rounded-2xl border border-white/10">
           <div className="text-5xl mb-4">🎙️</div>
-          <p className="text-lg font-semibold text-gray-700 mb-1">No episodes found</p>
-          <p className="text-gray-500">
+          <p className="text-lg font-semibold text-white mb-1">No episodes found</p>
+          <p className="text-gray-400">
             {hasActiveFilters
               ? 'Try adjusting your search or filters.'
-              : 'No podcast episodes published yet. Check back soon!'}
+              : 'New episodes drop every two weeks. Check back soon!'}
           </p>
         </div>
       )}
