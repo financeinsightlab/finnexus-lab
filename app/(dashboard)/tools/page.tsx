@@ -235,9 +235,9 @@ export default function ToolsPage() {
               <div className="relative h-32 w-full border-b border-gray-200 dark:border-white/10">
                 <CardImageBanner
                   src={
-                    tool.category.includes('Web3') ? '/card-web3-3d.png' :
-                    tool.category.includes('SaaS') || tool.category.includes('AI') || tool.category.includes('Sector') || tool.category.includes('Growth') ? '/card-saas-3d.png' :
-                    '/card-valuation-3d.png'
+                    tool.category.includes('Web3') ? '/cartoon-fintech.png' :
+                    tool.category.includes('SaaS') || tool.category.includes('AI') || tool.category.includes('Sector') || tool.category.includes('Growth') ? '/cartoon-saas.png' :
+                    '/cartoon-edtech.png'
                   }
                   alt={tool.title}
                   icon={tool.icon}

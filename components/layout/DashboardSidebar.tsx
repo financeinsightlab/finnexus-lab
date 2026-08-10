@@ -24,6 +24,14 @@ import {
 
 const sidebarGroups = [
   {
+    title: 'Research & Data',
+    links: [
+      { label: 'Research', href: '/research', icon: FileText },
+      { label: 'Insights', href: '/insights', icon: Activity },
+      { label: 'Data Lab', href: '/data-lab', icon: Target },
+    ]
+  },
+  {
     title: 'Ecosystem',
     links: [
       { label: 'Trackers', href: '/tracker', icon: BarChart3 },

@@ -46,7 +46,7 @@ export default function CardImageBanner({
           src={src} 
           alt={alt}
           fill
-          className={`object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 ${blendMode}`}
+          className={`object-cover transition-transform duration-700 group-hover:scale-105 opacity-90 ${blendMode}`}
           onError={() => setError(true)}
           unoptimized // Disable Next.js image optimization API to prevent server errors on missing files
         />
