@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
+import { auth } from '@/auth';
 import { getTrackerBySlug, getQuarter, getLatestQuarter, getQuarterByKey, temperatureColor, shortLabel, type Direction, type Impact, type Status } from '@/lib/trackerData';
 import { MetricTrendChart, SubSectorDonut, ProjectionChart, TemperatureGauge } from '@/components/tracker/TrackerCharts';
 import SectorVideo from '@/components/tracker/SectorVideo';
@@ -57,6 +58,9 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
   const { q: qParam } = await searchParams;
   const t = getTrackerBySlug(sector);
   if (!t) notFound();
+
+  const session = await auth();
+  const isPro = session?.user?.subscriptionPlan === 'PRO' || session?.user?.role === 'ADMIN';
 
   const quarterRef = getQuarterByKey(qParam);
   const quarterKey = quarterRef.key;
@@ -309,14 +313,16 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
                 </div>
               ))}
             </div>
-            <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white/70 dark:bg-[#0a1120]/70 backdrop-blur-md">
-              <div className="text-center px-6 py-8 max-w-md">
-                <div className="text-4xl mb-3">🔒</div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Unlock with Pro</h3>
-                <p className="text-sm text-slate-600 dark:text-slate-300 mb-5">Get the full deep-dive: {t.proMetrics.length}+ proprietary metrics, benchmark tables, quarterly trend database and forward scenarios for every sector.</p>
-                <div className="flex flex-wrap justify-center gap-3"><Link href="/pricing" className="btn-primary">Subscribe from ₹999/month →</Link><Link href="/contact" className="btn-outline">Talk to the research desk</Link></div>
+            {!isPro && (
+              <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white/70 dark:bg-[#0a1120]/70 backdrop-blur-md">
+                <div className="text-center px-6 py-8 max-w-md">
+                  <div className="text-4xl mb-3">🔒</div>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Unlock with Pro</h3>
+                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-5">Get the full deep-dive: {t.proMetrics.length}+ proprietary metrics, benchmark tables, quarterly trend database and forward scenarios for every sector.</p>
+                  <div className="flex flex-wrap justify-center gap-3"><Link href="/pricing" className="btn-primary">Subscribe from ₹999/month →</Link><Link href="/contact" className="btn-outline">Talk to the research desk</Link></div>
+                </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </section>
