@@ -1,32 +1,27 @@
+// FILE: app/case-studies/[slug]/page.tsx (server async)
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import HeroBackground from '@/components/ui/HeroBackground';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
-import Tag from '@/components/ui/Tag';
-import CTAButton from '@/components/ui/CTAButton';
+import { ChevronLeft, CalendarDays, Clock, Briefcase, Building2, ArrowRight, Award } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { getCaseStudyBySlug, getAllCaseStudies } from '@/lib/content';
-import { PrismaClient } from "@prisma/client"
-import ContentRenderer from "@/components/ContentRenderer"
-import { ChevronLeft, Calendar, User, Briefcase } from "lucide-react"
-import React from "react"
+import JsonLd from '@/components/seo/JsonLd';
+import { prisma } from '@/lib/prisma';
+import ContentRenderer from '@/components/ContentRenderer';
 
-const prisma = new PrismaClient()
+const BASE = 'https://kunwaranalytics.in';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  
+
   try {
-    const dbPost = await prisma.post.findUnique({ where: { slug } })
-    if (dbPost) {
-      // Only return metadata for published posts
-      if (dbPost.published) {
-        return {
-          title: `${dbPost.title} | Case Study`,
-          description: dbPost.excerpt || '',
-        }
-      }
+    const dbPost = await prisma.post.findUnique({ where: { slug } });
+    if (dbPost?.published) {
+      return {
+        title: `${dbPost.title} | Case Study`,
+        description: dbPost.excerpt || '',
+      };
     }
   } catch (e) {}
 
@@ -39,94 +34,202 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const { slug } = await params;
 
   // 1. New CMS
-  let dbPost = null
+  let dbPost = null;
   try {
     dbPost = await prisma.post.findUnique({
       where: { slug },
-      include: { author: { select: { name: true } } }
-    })
+      include: { author: { select: { name: true } } },
+    });
   } catch (e) {}
 
   if (dbPost && dbPost.type === 'CASE_STUDY') {
-    // Check if post is published - if not, show 404
-    if (!dbPost.published) {
-      notFound();
-    }
+    if (!dbPost.published) notFound();
+
     return (
-      <div className="min-h-screen bg-[#0B1C2C] text-slate-200">
-        <header className="relative overflow-hidden bg-brand-navy py-16 md:py-20 text-white">
-          <HeroBackground />
-          <div className="max-w-4xl mx-auto px-6 relative z-10">
-            <Link href="/case-studies" className="flex items-center gap-2 text-sm text-teal-400 hover:text-teal-300 transition-colors mb-10">
+      <div className="min-h-screen bg-cinema-black text-white">
+        <header className="relative aurora-bg overflow-hidden pt-10 pb-14">
+          <div className="absolute inset-0 opacity-[0.04] bg-grid pointer-events-none" />
+          <div className="wrap max-w-4xl relative z-10">
+            <Link href="/case-studies" className="inline-flex items-center gap-1.5 text-sm text-cinema-cyan hover:text-white transition-colors mb-8">
               <ChevronLeft className="w-4 h-4" /> All Case Studies
             </Link>
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                 <span className="px-3 py-1 bg-teal-500/10 text-teal-400 text-xs font-bold rounded-full uppercase tracking-widest border border-teal-500/20">Case Study</span>
-              </div>
-              <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">{dbPost.title}</h1>
-              <p className="text-xl text-slate-400 leading-relaxed max-w-3xl italic border-l-4 border-slate-700 pl-6">{dbPost.excerpt}</p>
-              <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-slate-400 border-t border-white/5">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4" /> <span className="font-medium text-slate-300">{dbPost.author?.name || 'Kunwar Analytics Admin'}</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4" /> <span>{new Date(dbPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
-                </div>
-                <div className="flex items-center gap-2 text-teal-400">
-                  <Briefcase className="w-4 h-4" /> <span>Enterprise Solution</span>
-                </div>
-              </div>
+            <span className="px-3 py-1 bg-cinema-cyan/10 text-cinema-cyan text-xs font-bold rounded-full uppercase tracking-widest border border-cinema-cyan/30">
+              Case Study
+            </span>
+            <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight tracking-tight mt-4">{dbPost.title}</h1>
+            <p className="text-lg text-gray-400 leading-relaxed max-w-3xl italic border-l-4 border-cinema-cyan/40 pl-6 mt-6">
+              {dbPost.excerpt}
+            </p>
+            <div className="flex flex-wrap items-center gap-6 pt-6 mt-6 text-sm text-gray-400 border-t border-white/10">
+              <span className="inline-flex items-center gap-2">
+                <Building2 className="w-4 h-4 text-cinema-cyan" /> {dbPost.author?.name || 'Kunwar Analytics'}
+              </span>
+              <span className="inline-flex items-center gap-2">
+                <CalendarDays className="w-4 h-4 text-cinema-cyan" /> {new Date(dbPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}
+              </span>
             </div>
           </div>
         </header>
-        <article className="max-w-4xl mx-auto px-6 pt-12 pb-32">
-          <div className="bg-[#0F2335] rounded-3xl p-8 md:p-12 border border-white/5 shadow-2xl">
+        <article className="wrap max-w-4xl pb-24">
+          <div className="bg-cinema-charcoal rounded-3xl p-6 md:p-12 border border-white/10 shadow-cinema-lg">
             <ContentRenderer content={dbPost.content} contentType={dbPost.contentType} blocks={dbPost.blockContent} />
           </div>
         </article>
       </div>
-    )
+    );
   }
 
-  // 2. Legacy
+  // 2. Legacy MDX
   const caseStudy = await getCaseStudyBySlug(slug);
   if (!caseStudy) notFound();
 
-  const sections = ['Challenge', 'Approach', 'Analysis', 'Findings', 'Recommendation', 'Outcome'];
+  const episodeSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    headline: caseStudy.title,
+    description: caseStudy.outcome,
+    datePublished: caseStudy.date,
+    url: `${BASE}/case-studies/${caseStudy.slug}`,
+    author: { '@type': 'Organization', name: 'Kunwar Analytics' },
+  };
 
   return (
-    <article className="pt-16 bg-gradient-to-b from-slate-50 to-white">
-      <header className="relative overflow-hidden bg-gradient-to-r from-brand-navy to-slate-900 py-16">
-        <HeroBackground />
-        <div className="wrap max-w-4xl relative z-10">
-          <nav className="text-sm text-gray-300 mb-6 font-medium tracking-wide">
-            <Link href="/" className="hover:text-white transition-colors">Home</Link> /{' '}
-            <Link href="/case-studies" className="hover:text-white transition-colors">Case Studies</Link> /{' '}
-            <span className="text-brand-teal">{caseStudy.clientType}</span>
+    <div className="min-h-screen bg-cinema-black text-white">
+      <JsonLd data={episodeSchema} />
+
+      {/* ═══════════ HEADER ═══════════ */}
+      <header className="relative aurora-bg overflow-hidden pt-10 pb-16">
+        <div className="absolute -top-24 right-1/4 w-[400px] h-[400px] rounded-full bg-cinema-cyan/10 blur-[120px] pointer-events-none" />
+        <div className="absolute inset-0 opacity-[0.04] bg-grid pointer-events-none" />
+
+        <div className="wrap max-w-6xl relative z-10">
+          <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
+            <Link href="/" className="hover:text-cinema-cyan transition-colors">Home</Link>
+            <span className="text-gray-600">/</span>
+            <Link href="/case-studies" className="hover:text-cinema-cyan transition-colors">Case Studies</Link>
+            <span className="text-gray-600">/</span>
+            <span className="text-cinema-cyan">{caseStudy.engagementType}</span>
           </nav>
-          <Tag variant="teal" text={caseStudy.engagementType} className="mb-6" />
-          <h1 className="text-3xl md:text-5xl font-bold text-white mb-8">{caseStudy.title}</h1>
-          <div className="flex flex-wrap gap-8 text-gray-300 mb-10">
-            <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Client</p><p className="text-sm text-white font-medium mt-1">{caseStudy.clientType}</p></div>
-            <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Date</p><p className="text-sm text-white font-medium mt-1">{formatDate(caseStudy.date)}</p></div>
-            <div><p className="text-[11px] uppercase tracking-wider text-gray-400 text-teal-400">Outcome</p><p className="text-sm text-white font-medium mt-1 max-w-md">{caseStudy.outcome}</p></div>
+
+          <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-10 items-center">
+            {/* Cover image */}
+            <div className="relative">
+              <div className="absolute -inset-4 bg-gradient-to-br from-cinema-cyan/25 to-cinema-violet/25 rounded-3xl blur-2xl opacity-60 pointer-events-none" />
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-cinema-lg aspect-[4/3]">
+                {caseStudy.coverImage ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={caseStudy.coverImage} alt={caseStudy.title} className="w-full h-full object-cover" />
+                ) : (
+                  <div className="w-full h-full bg-gradient-to-br from-cinema-mid-blue via-cinema-deep-blue to-cinema-black" />
+                )}
+                <div className="absolute inset-0 bg-gradient-to-t from-cinema-black/60 to-transparent" />
+                <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full border border-cinema-amber/40 bg-cinema-amber/20 text-cinema-amber backdrop-blur-sm">
+                    <Award className="w-3.5 h-3.5" /> Featured
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {/* Meta */}
+            <div>
+              <div className="flex flex-wrap items-center gap-2 mb-4">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-cinema-cyan/30 bg-cinema-cyan/10 text-cinema-cyan">
+                  <Briefcase className="w-3.5 h-3.5" /> {caseStudy.engagementType}
+                </span>
+                {caseStudy.industry && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-white/15 bg-white/5 text-gray-300">
+                    <Building2 className="w-3.5 h-3.5" /> {caseStudy.industry}
+                  </span>
+                )}
+              </div>
+
+              <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-5">
+                {caseStudy.title}
+              </h1>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
+                <div className="glass-cinema rounded-xl border border-white/10 p-4">
+                  <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Client</p>
+                  <p className="text-sm text-white font-semibold">{caseStudy.clientType}</p>
+                </div>
+                <div className="glass-cinema rounded-xl border border-white/10 p-4">
+                  <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Date</p>
+                  <p className="text-sm text-white font-semibold">{formatDate(caseStudy.date)}</p>
+                </div>
+                <div className="glass-cinema rounded-xl border border-white/10 p-4">
+                  <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Timeline</p>
+                  <p className="text-sm text-white font-semibold">{caseStudy.timeline ?? '—'}</p>
+                </div>
+              </div>
+
+              <p className="text-gray-300 leading-relaxed border-l-4 border-cinema-cyan/50 pl-4">
+                {caseStudy.outcome}
+              </p>
+
+              {caseStudy.tags && caseStudy.tags.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-5">
+                  {caseStudy.tags.map((tag) => (
+                    <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400">
+                      #{tag}
+                    </span>
+                  ))}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </header>
-      <div className="wrap max-w-6xl py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
-        <div className="lg:col-span-2">
-          {sections.map((section, index) => (
-            <section key={section} className="mb-16">
-              <div className="flex items-center gap-4 mb-6">
-                <div className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-teal text-white font-bold text-lg">{index + 1}</div>
-                <h2 className="text-2xl font-bold text-brand-navy">{section}</h2>
-              </div>
-              <div className="prose prose-lg max-w-none">{caseStudy.content && index === 0 && <MDXRemote source={caseStudy.content} />}</div>
-            </section>
-          ))}
+
+      {/* ═══════════ BODY ═══════════ */}
+      <div className="wrap max-w-4xl py-12 md:py-16">
+        <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-strong:text-white prose-em:text-gray-200 prose-li:text-gray-300 prose-hr:border-white/10 prose-blockquote:text-gray-400 prose-blockquote:border-cinema-cyan prose-table:text-gray-300 prose-th:text-white prose-thead:border-white/20 prose-td:border-white/10">
+          {caseStudy.content ? (
+            <MDXRemote source={caseStudy.content} />
+          ) : (
+            <p className="text-gray-500">Full case study content coming soon.</p>
+          )}
         </div>
       </div>
-    </article>
+
+      {/* ═══════════ MORE CASE STUDIES ═══════════ */}
+      <section className="border-t border-white/5 bg-cinema-ink/60">
+        <div className="wrap max-w-6xl py-14">
+          <div className="flex items-end justify-between mb-8">
+            <h2 className="text-2xl md:text-3xl font-bold text-white">More Case Studies</h2>
+            <Link href="/case-studies" className="inline-flex items-center gap-1.5 text-sm font-semibold text-cinema-cyan hover:gap-2.5 transition-all">
+              View all <ArrowRight className="w-4 h-4" />
+            </Link>
+          </div>
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {getAllCaseStudies()
+              .filter((s) => s.slug !== caseStudy.slug)
+              .slice(0, 3)
+              .map((s) => (
+                <Link
+                  key={s.slug}
+                  href={`/case-studies/${s.slug}`}
+                  className="group glass-cinema rounded-2xl border border-white/10 overflow-hidden hover:border-cinema-cyan/40 transition-all duration-300"
+                >
+                  <div className="h-36 overflow-hidden">
+                    {s.coverImage ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={s.coverImage} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    ) : (
+                      <div className="w-full h-full bg-gradient-to-br from-cinema-mid-blue via-cinema-deep-blue to-cinema-black" />
+                    )}
+                  </div>
+                  <div className="p-5">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-cinema-cyan">{s.engagementType}</span>
+                    <h3 className="font-bold text-white text-sm leading-snug mt-1.5 line-clamp-2 group-hover:text-cinema-cyan transition-colors">
+                      {s.title}
+                    </h3>
+                  </div>
+                </Link>
+              ))}
+          </div>
+        </div>
+      </section>
+    </div>
   );
 }

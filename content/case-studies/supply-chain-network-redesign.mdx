@@ -1,0 +1,72 @@
+---
+title: 'Network Redesign: Cutting Logistics Cost 18% for a Consumer Goods Company'
+slug: 'supply-chain-network-redesign'
+date: '2026-07-14'
+clientType: 'Consumer Goods Company (hypothetical)'
+engagementType: 'Supply Chain Optimization'
+industry: 'Consumer Goods'
+outcome: 'Redesigned the 27-warehouse network to 14 facilities, cutting logistics cost from 8.9% to 7.3% of revenue (₹87 crore saved annually) while improving service levels from 91% to 96.5%.'
+timeline: '12 weeks'
+tags: ['Supply Chain', 'Network Optimization', 'Logistics', 'Operations', 'Consumer Goods']
+featured: true
+coverImage: '/case-studies/cover-supply-chain.jpg'
+---
+
+## Challenge
+
+A ₹8,900 crore consumer goods company — personal care, home care, and foods — had grown through acquisition, and its distribution network showed it: 27 warehouses (some inherited, some duplicated), 41% of freight moving on inter-warehouse transfers (products shipped *in* only to ship *out* again), and logistics costs at 8.9% of revenue vs. a 6.8% best-in-class benchmark. Service levels had slipped to 91% as the network grew more complex.
+
+The COO's question: **"We added 9 warehouses in 3 years and service got worse. What's the right network — and can we get there without a supply disruption?"**
+
+## Approach
+
+We ran a 12-week network-optimisation engagement:
+
+1. **Data foundation (weeks 1–2).** We cleaned and triangulated 14 months of shipment-level data (SKU × origin × destination × cost × transit time) across 4,800 SKUs, 1,900 pin-codes, and 27 warehouses — reconciling ERP, TMS, and freight-invoice records that disagreed on 23% of line items.
+2. **Demand clustering (weeks 3–4).** We built a demand model at pin-code level with a 3-year growth overlay (by SKU family and channel: general trade, modern trade, e-commerce).
+3. **Network optimisation (weeks 5–8).** We modelled 12 network scenarios in a facility-location optimisation engine: 27→27 (baseline), 27→20, 27→14, 27→10, and hybrid "direct-to-store for e-commerce" variants, with constraints on service-time targets (metro ≤24h, Tier-2 ≤48h), capacity, and capital.
+4. **Transition planning (weeks 9–12).** We designed a 15-month migration: sequencing, inventory-buffer policy, 3PL contract renegotiation (single national partner vs. regional), and a KPI framework to protect service during the transition.
+
+## Analysis
+
+**The network was solving a problem that no longer existed.** The 27 warehouses had been built to serve 2006's channel structure. E-commerce (now 18% of revenue) needed *different* nodes (fulfilment centres near metro demand), not the same wholesale nodes. The inter-warehouse transfer rate of 41% was the smoking gun: ₹124 crore/year of freight was pure waste.
+
+**The optimisation model's answer was unambiguous:** the 14-facility scenario dominated on cost *and* service in 9 of 12 modelled variants.
+
+| Scenario | Facilities | Logistics cost (% rev) | Service level | Inter-warehouse transfers | Capex needed |
+|---|---|---|---|---|---|
+| Baseline | 27 | 8.9% | 91.0% | 41% | — |
+| Consolidate | 20 | 8.2% | 92.5% | 28% | ₹18 cr |
+| **Optimal mix** | **14** | **7.3%** | **96.5%** | **9%** | **₹42 cr** |
+| Aggressive | 10 | 7.1% | 94.0% | 4% | ₹68 cr |
+
+The 10-facility scenario had marginally lower cost but *worse* service — it violated metro next-day targets in 3 of 8 metros. The 14-node design hit the sweet spot: 4 mega-warehouses (metro demand + e-commerce fulfilment), 8 regional nodes, and 2 strategic buffers near ports.
+
+**The e-commerce dimension changed the answer.** Splitting fulfilment (e-commerce orders via 4 metro fulfilment centres with same-day/next-day capability) added ₹4 crore of cost but unlocked a 6-point service improvement on the fastest-growing channel — and enabled a 3.5% conversion lift in the client's own D2C channel.
+
+**3PL economics favoured a hybrid.** One national 3PL partner (vs. the current 14 regional vendors) reduced handling and line-haul cost by 11% but raised single-vendor risk; the optimal contract was a "national spine + 2 regional specialists" structure with penalty-backed SLAs.
+
+## Findings
+
+1. **The prize was ₹87 crore/year (1.6% of revenue)** from: transfer elimination (₹41 crore), consolidation economies (₹24 crore), 3PL renegotiation (₹13 crore), and e-commerce network efficiency (₹9 crore).
+2. **Service and cost were not in tension** — the current network was bad at both; fixing the structure improved both simultaneously.
+3. **Inventory would *rise* 8–10% during transition** (buffer policy) before settling 12% lower than baseline — a working-capital bridge of ₹35 crore needed CFO sign-off upfront.
+4. **The transition was the actual risk.** 60% of past failed network changes failed on execution (stockouts during migration), not design.
+
+## Recommendation
+
+We recommended the **14-facility "optimal mix" network** with a 15-month migration in three waves:
+
+- **Wave 1 (months 1–6) — Quick structural wins:** consolidate 7 warehouses with overlapping coverage; renegotiate the national 3PL contract; launch the 4 metro e-commerce fulfilment centres. Target: ₹38 crore annualised.
+- **Wave 2 (months 6–12) — Core migration:** open the 2 port-buffer nodes; migrate 5 regional nodes; retire 6 legacy warehouses; hold +10% safety stock during the moves.
+- **Wave 3 (months 12–15) — Optimise & embed:** SKU-to-node assignment rationalisation, dynamic rebalancing policy, and a network-review cadence (quarterly) so the network never drifts back to complexity.
+
+**Guardrails:** service-level SLOs with weekly monitoring during migration; a "no two waves in the same region simultaneously" rule; and customer-communication templates for any OTIF (on-time-in-full) dips.
+
+## Outcome
+
+Twenty months after launch, logistics cost stood at 7.3% of revenue (₹87 crore/year saved), service at 96.5% OTIF — a 5.5-point improvement — and inter-warehouse transfers at 9% vs. 41%. The e-commerce fulfilment centres carried 71% of D2C volume with same-day delivery in 6 metros, lifting D2C conversion 3.4%. The quarterly network-review cadence the team embedded now prevents the "accretion creep" that created the 27-warehouse problem in the first place.
+
+---
+
+*Case study reconstructed for illustration from typical engagement patterns. Client and figures are hypothetical.*

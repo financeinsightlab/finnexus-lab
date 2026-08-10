@@ -149,6 +149,12 @@ function normalizeCaseStudy(data: Record<string, unknown>, slug: string, content
     clientType: typeof data.clientType === 'string' ? data.clientType : '',
     engagementType: typeof data.engagementType === 'string' ? data.engagementType : '',
     outcome: typeof data.outcome === 'string' ? data.outcome : '',
+    industry: typeof data.industry === 'string' ? data.industry : undefined,
+    coverImage: typeof data.coverImage === 'string' ? data.coverImage : undefined,
+    tags: Array.isArray(data.tags)
+      ? data.tags.filter((t): t is string => typeof t === 'string')
+      : undefined,
+    timeline: typeof data.timeline === 'string' ? data.timeline : undefined,
     featured: Boolean(data.featured),
     content,
   };

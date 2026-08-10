@@ -75,6 +75,10 @@ export interface CaseStudy {
   clientType:     string  // e.g. 'Startup', 'PE Firm', 'Platform Builder'
   engagementType: string  // e.g. 'Market Research', 'Financial Modelling'
   outcome:        string  // 1-2 sentence summary of result
+  industry?:      string  // e.g. 'FMCG', 'Pharma', 'Financial Services'
+  coverImage?:    string
+  tags?:          string[]
+  timeline?:      string  // e.g. '12 weeks'
   featured:       boolean
   content?:       string
 }
