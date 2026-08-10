@@ -50,7 +50,7 @@ async function getHomePagePosts() {
   if (dbResearch.length > 0) {
     const dbPosts = await prisma.post.findMany({
       where: { id: { in: dbResearch.map(r => r.contentId) } },
-      select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true, tags: true, viewCount: true },
+      select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true, tags: true, viewCount: true, featuredImage: true },
     });
     const idToPost = Object.fromEntries(dbPosts.map(p => [p.id, p]));
     research = dbResearch
@@ -60,6 +60,7 @@ async function getHomePagePosts() {
         slug: p.slug, title: p.title, date: p.publishedAt?.toISOString() ?? new Date().toISOString(),
         sector: 'General', tags: p.tags, summary: p.excerpt ?? '', pageCount: 0,
         author: 'Kunwar Analytics', featured: true,
+        coverImage: p.featuredImage || undefined,
       }));
   } else {
     research = getFeaturedResearch(3);
@@ -68,7 +69,7 @@ async function getHomePagePosts() {
   if (dbInsights.length > 0) {
     const dbPosts = await prisma.post.findMany({
       where: { id: { in: dbInsights.map(r => r.contentId) } },
-      select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true },
+      select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true, featuredImage: true },
     });
     const idToPost = Object.fromEntries(dbPosts.map(p => [p.id, p]));
     insights = dbInsights
@@ -78,6 +79,7 @@ async function getHomePagePosts() {
         slug: p.slug, title: p.title, date: p.publishedAt?.toISOString() ?? new Date().toISOString(),
         category: 'Sector Analysis' as InsightPost['category'],
         readingTime: 5, thesis: p.excerpt ?? '', author: 'Kunwar Analytics', featured: true,
+        coverImage: p.featuredImage || undefined,
       }));
   } else {
     insights = getFeaturedInsights(3);
