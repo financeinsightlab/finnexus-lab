@@ -3,7 +3,7 @@
 
 import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Briefcase, CalendarDays, Clock, Building2 } from 'lucide-react';
+import { ArrowRight, Briefcase, CalendarDays, Clock, Building2, Layers } from 'lucide-react';
 import type { CaseStudy } from '@/types';
 
 const ENGAGEMENT_ACCENTS: Record<string, string> = {
@@ -116,6 +116,25 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
             <p className="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-3">
               {study.outcome}
             </p>
+
+            {/* Frameworks */}
+            {study.frameworks && study.frameworks.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 mb-3">
+                {study.frameworks.slice(0, 3).map((framework) => (
+                  <span
+                    key={framework}
+                    className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md border border-cinema-cyan/20 bg-cinema-cyan/5 text-cinema-cyan/90"
+                  >
+                    <Layers className="w-2.5 h-2.5" /> {framework}
+                  </span>
+                ))}
+                {study.frameworks.length > 3 && (
+                  <span className="text-[10px] px-2 py-0.5 rounded-md border border-white/10 bg-white/5 text-gray-500">
+                    +{study.frameworks.length - 3} more
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* Tags */}
             {study.tags && study.tags.length > 0 && (

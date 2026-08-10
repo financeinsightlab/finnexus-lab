@@ -78,6 +78,7 @@ export interface CaseStudy {
   industry?:      string  // e.g. 'FMCG', 'Pharma', 'Financial Services'
   coverImage?:    string
   tags?:          string[]
+  frameworks?:    string[]  // consulting frameworks/methods used, e.g. 'Zero-Based Budgeting'
   timeline?:      string  // e.g. '12 weeks'
   featured:       boolean
   content?:       string

@@ -154,6 +154,9 @@ function normalizeCaseStudy(data: Record<string, unknown>, slug: string, content
     tags: Array.isArray(data.tags)
       ? data.tags.filter((t): t is string => typeof t === 'string')
       : undefined,
+    frameworks: Array.isArray(data.frameworks)
+      ? data.frameworks.filter((f): f is string => typeof f === 'string')
+      : undefined,
     timeline: typeof data.timeline === 'string' ? data.timeline : undefined,
     featured: Boolean(data.featured),
     content,
