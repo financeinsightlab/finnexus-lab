@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getHeatMapData, temperatureColor, getQuarterByKey } from '@/lib/trackerData';
 import { Sparkline } from '@/components/tracker/TrackerCharts';
-import SectorVideo from '@/components/tracker/SectorVideo';
+import CartoonSectorScene from '@/components/tracker/CartoonSectorScene';
 import QuarterSelector from '@/components/tracker/QuarterSelector';
 import SectionHeader from '@/components/ui/SectionHeader';
 import ScrollReveal from '@/components/ui/ScrollReveal';
@@ -82,7 +82,7 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
                   <Link href={`/tracker/${h.slug}?q=${quarter.key}`} id={`tracker-card-${h.slug}`}
                     className="group flex flex-col h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300">
                     <div className="relative h-48 w-full overflow-hidden bg-[#0b1623]">
-                      <SectorVideo slug={h.slug} priority={i < 4} />
+                      <CartoonSectorScene slug={h.slug} />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
                       <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur bg-black/40">
                         <span className="w-1.5 h-1.5 rounded-full" style={{ background: color }} />{h.temperature}° · {h.label}

@@ -31,7 +31,7 @@ import { prisma } from '@/lib/prisma';
 import type { ResearchPost, InsightPost } from '@/types';
 import { GlobalForecastingTicker } from '@/components/ui/GlobalForecastingTicker';
 import CoursesSection from '@/components/study/CoursesSection';
-import SectorVideo from '@/components/tracker/SectorVideo';
+import CartoonSectorScene from '@/components/tracker/CartoonSectorScene';
 
 async function getHomePagePosts() {
   // Try to get DB-driven featured selections first
@@ -220,7 +220,7 @@ export default async function HomePage() {
                 <GlassCard3D glow="cyan" className="h-full overflow-hidden">
                   <Link href={tracker.href} className="block h-full cursor-pointer">
                     <div className="relative h-44 w-full overflow-hidden bg-[#0b1623]">
-                      <SectorVideo slug={(tracker.href.split('/').pop() as string) ?? 'fintech'} priority={i < 2} />
+                      <CartoonSectorScene slug={(tracker.href.split('/').pop() as string) ?? 'fintech'} />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
                       <div className="pointer-events-none absolute bottom-3 left-4 flex items-center gap-2">
                         <span className="text-xl">{tracker.emoji}</span>

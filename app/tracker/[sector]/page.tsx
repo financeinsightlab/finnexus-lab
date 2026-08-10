@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTrackerBySlug, getQuarter, getLatestQuarter, getQuarterByKey, temperatureColor, shortLabel, type Direction, type Impact, type Status } from '@/lib/trackerData';
 import { MetricTrendChart, SubSectorDonut, ProjectionChart, TemperatureGauge } from '@/components/tracker/TrackerCharts';
-import SectorVideo from '@/components/tracker/SectorVideo';
+import CartoonSectorScene from '@/components/tracker/CartoonSectorScene';
 import QuarterSelector from '@/components/tracker/QuarterSelector';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import SectionHeader from '@/components/ui/SectionHeader';
@@ -125,7 +125,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
                 <Link href="/radar" className="text-xs text-teal-400 hover:underline inline-block mt-4">View full radar →</Link>
               </div>
               <div className="relative rounded-2xl overflow-hidden border border-white/10 h-52 bg-[#0b1623]">
-                <SectorVideo slug={t.slug} priority />
+                <CartoonSectorScene slug={t.slug} />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <span className="pointer-events-none absolute bottom-3 left-4 text-[11px] font-bold uppercase tracking-widest text-white/90">▶ How {t.shortName} works</span>
               </div>
