@@ -1,0 +1,45 @@
+---
+title: 'Indian Fintech Lending Risk & Growth Model'
+slug: 'fintech-lending-risk-model'
+date: '2026-05-20'
+tools: ['Python', 'Pandas', 'Scikit-learn', 'Power BI']
+sector: 'Fintech'
+businessQuestion: 'How does portfolio growth, credit risk (GNPA), and unit economics interact for Indian digital lending platforms from FY21 to FY26?'
+duration: '4 weeks'
+featured: true
+image: '/images/data-lab/fintech-lending.jpg'
+summary: 'A dual-lens model linking digital-loan book growth with credit quality and unit economics — showing the growth-vs-risk tradeoff that separates sustainable lenders from credit-boom casualties.'
+kpis:
+  - { label: 'Loan Book CAGR', value: '34%', hint: 'FY21–FY26' }
+  - { label: 'Sector GNPA', value: '2.9%' }
+  - { label: 'AUM Modelled', value: '₹4.2T' }
+  - { label: 'Risk Factors', value: '18' }
+---
+
+## Business Question — what we set out to answer
+
+Indian digital lending has grown explosively, but credit risk has trailed close behind. This project models the relationship between loan-book growth, gross non-performing assets (GNPA), and cost-to-serve across fintech lenders, identifying which business models deliver growth without blowing up credit quality.
+
+## Data Sources — where the data came from
+
+- **RBI Financial Stability Reports**: Aggregate retail credit and GNPA series.
+- **Company disclosures & securitisation (PTC) data**: Originator-level disbursement and delinquency.
+- **TransUnion CIBIL industry reports**: Segment-wise delinquency benchmarks.
+
+## Methodology — how we modelled it
+
+- **Book build-up**: Top-down and bottom-up build of digital retail loan AUM by product (BNPL, personal, MSME, gold).
+- **Risk mapping**: Vintage-style GNPA curves fitted to portfolio age and origination cohort.
+- **Unit economics**: Cost-to-serve, acquisition cost, and net margin per loan by product line.
+- **Scenario stress**: Rate-rise and unemployment shocks flowing through the risk curves.
+
+## Key Insights
+
+- **Growth ≠ profitability**: The fastest-growing lenders often had the weakest unit economics after reserving for risk.
+- **Vintage discipline**: Lenders who tightened underwriting in FY22–23 now carry materially lower GNPA vintages.
+- **MSME opportunity vs risk**: MSME lending offers the highest spreads but the steepest risk curves.
+- **Securitisation valve**: PTC markets enabled off-balance-sheet growth but concentrated warehousing risk.
+
+## Limitations
+
+Public data understates true stress (restructured and sold portfolios move GNPA around). Vintage curves are sensitive to assumptions on collections quality and borrower-level data depth.

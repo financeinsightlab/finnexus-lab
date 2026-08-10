@@ -1,0 +1,45 @@
+---
+title: 'D2C Brand Unit Economics Model'
+slug: 'd2c-brand-unit-economics'
+date: '2026-07-05'
+tools: ['Excel', 'Python', 'Power BI']
+sector: 'D2C / E-Commerce'
+businessQuestion: 'At what repeat-purchase rate and contribution-margin profile does a direct-to-consumer (D2C) brand become sustainably profitable, and how do CAC and retention interact?'
+duration: '4 weeks'
+featured: true
+image: '/images/data-lab/d2c-unit-economics.jpg'
+summary: 'A full-funnel unit-economics model for D2C brands — CAC, AOV, repeat rates, and contribution margin — showing the path to profitability and the LTV:CAC threshold that separates winners from cash-burners.'
+kpis:
+  - { label: 'LTV:CAC Target', value: '> 3x' }
+  - { label: 'Repeat Purchase', value: '~35%' }
+  - { label: 'AOV', value: '₹1,250' }
+  - { label: 'Breakeven Contribution', value: '> 22%' }
+---
+
+## Business Question — what we set out to answer
+
+Many D2C brands grow revenue fast but bleed cash because acquisition costs outpace lifetime value. This model simulates the full unit-economics funnel — customer acquisition cost (CAC), average order value (AOV), repeat rate, and contribution margin — to identify the combination of retention and margin that makes a brand durably profitable.
+
+## Data Sources — where the data came from
+
+- **Public D2C disclosures & fundraising decks**: CAC, AOV, repeat-rate benchmarks across beauty, foods, and lifestyle.
+- **Platform data (Amazon/Flipkart/D2C storefront)**: Order-frequency and basket-size patterns.
+- **Redseer / industry reports**: Category-level unit-economics benchmarks.
+
+## Methodology — how we modelled it
+
+- **Funnel build**: Traffic → conversion → AOV → margin, with a CAC function tied to scale.
+- **Retention curves**: Repeat-purchase cohort curves fitted to order-frequency distributions.
+- **LTV calculation**: Contribution-margin-weighted lifetime value across 24 months.
+- **Sensitivity matrix**: Breakeven LTV:CAC vs. repeat rate and margin, as a heatmap.
+
+## Key Insights
+
+- **Retention beats acquisition**: Small gains in repeat rate move LTV more than equivalent CAC cuts.
+- **Category matters**: Consumables (food, personal care) hit LTV:CAC > 3 far faster than durables.
+- **Media efficiency ceiling**: CAC rises steeply past a scale threshold as paid channels saturate.
+- **Margin is the keystone**: Without contribution margin above ~22%, even strong retention cannot clear the CAC hurdle.
+
+## Limitations
+
+CAC and retention benchmarks vary widely by category and geography; self-serve D2C data can understate true blended CAC. Model outputs are scenario ranges, not point forecasts.

@@ -1,0 +1,45 @@
+---
+title: 'India EV Penetration Forecast Model'
+slug: 'india-ev-penetration-model'
+date: '2026-04-15'
+tools: ['Python', 'Pandas', 'SciPy', 'Matplotlib']
+sector: 'Electric Vehicles'
+businessQuestion: 'At what pace will electric two-wheelers and four-wheelers reach 10% and 30% of India vehicle sales, and which states lead adoption?'
+duration: '3 weeks'
+featured: true
+image: '/images/data-lab/ev-penetration.jpg'
+summary: 'A bottom-up S-curve penetration model projecting Indian EV adoption across segments and states to FY30, blending subsidy policy, charging infrastructure, and total-cost-of-ownership.'
+kpis:
+  - { label: 'E2W at 10%', value: 'FY25', hint: 'already crossed' }
+  - { label: 'E2W at 30%', value: 'FY28E' }
+  - { label: 'EV4W at 10%', value: 'FY30E' }
+  - { label: 'Lead States', value: '3' }
+---
+
+## Business Question — what we set out to answer
+
+India's EV transition is uneven across segments and states. This model projects penetration trajectories using an S-curve (Gompertz) framework calibrated on monthly FAME and VAHAN registrations, asking when two-wheelers and four-wheelers cross 10% and 30% of annual sales — and why states like Maharashtra, Karnataka, and Tamil Nadu lead while others lag.
+
+## Data Sources — where the data came from
+
+- **VAHAN Dashboard (MoRTH)**: Monthly segment-wise vehicle registrations by state, FY21–FY26.
+- **FAME II & PM E-DRIVE**: Subsidy disbursal and scheme claims data.
+- **Society of Indian Automobile Manufacturers (SIAM)**: Industry sales volumes.
+
+## Methodology — how we modelled it
+
+- **Segment split**: E2W (two-wheelers), E4W (passenger four-wheelers), E3W, and e-buses modelled independently.
+- **S-curve fit**: Gompertz curve fitted to monthly penetration rates using non-linear least squares (`scipy.optimize.curve_fit`).
+- **Scenario bands**: Base, Accelerated (faster infrastructure + subsidies), and Conservative scenarios.
+- **State scoring**: Weighted index of charging density, state EV policies, and TCO advantage.
+
+## Key Insights
+
+- **E2W leadership**: Two-wheelers are 5–7 years ahead of four-wheelers; they crossed 10% penetration in FY25.
+- **Price-point inflection**: When E2W TCO dropped below ICE on a 5-year basis, adoption bent sharply upward.
+- **Infrastructure premium**: States with higher charging density per capita show markedly steeper S-curves.
+- **Four-wheeler wait**: Passenger EV adoption is gated by fast-charging networks and new platform launches.
+
+## Limitations
+
+Model relies on registration data that can lag production; subsidy policy changes can shift the S-curve materially. Scenario bands should be read as ranges, not point forecasts.

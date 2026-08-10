@@ -131,6 +131,11 @@ function normalizeDataLabProject(data: Record<string, unknown>, slug: string, co
     businessQuestion: typeof data.businessQuestion === 'string' ? data.businessQuestion : '',
     duration: typeof data.duration === 'string' ? data.duration : '',
     featured: Boolean(data.featured),
+    image: typeof data.image === 'string' ? data.image : undefined,
+    summary: typeof data.summary === 'string' ? data.summary : undefined,
+    kpis: Array.isArray(data.kpis)
+      ? (data.kpis as { label: string; value: string; hint?: string }[])
+      : undefined,
     content,
   };
 }

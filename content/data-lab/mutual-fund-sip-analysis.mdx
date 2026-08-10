@@ -1,0 +1,45 @@
+---
+title: 'Indian Mutual Fund SIP Trends Analysis'
+slug: 'mutual-fund-sip-analysis'
+date: '2026-06-10'
+tools: ['Python', 'Pandas', 'Matplotlib', 'Excel']
+sector: 'Mutual Funds'
+businessQuestion: 'How have monthly SIP inflows and systematic investment behaviour evolved in India from FY20 to FY26, and what does it mean for the equity market?'
+duration: '2 weeks'
+featured: true
+image: '/images/data-lab/mutual-fund-sip.jpg'
+summary: 'A data-driven look at India’s booming SIP culture — tracking monthly contribution growth, scheme-wise allocation, and the retail-investor democratisation story from FY20 to FY26.'
+kpis:
+  - { label: 'Monthly SIP Inflow', value: '₹27T+', hint: 'annualised' }
+  - { label: 'SIP AUM', value: '₹13T' }
+  - { label: 'YoY Inflow Growth', value: '~38%' }
+  - { label: 'Avg Ticket Size', value: '₹4.1K' }
+---
+
+## Business Question — what we set out to answer
+
+India's retail investors have embraced systematic investment plans (SIPs) at an unprecedented scale. This analysis tracks how monthly SIP inflows, the number of SIP accounts, and average ticket sizes have evolved, and what the structural shift toward recurring retail flows means for market stability and fund-industry economics.
+
+## Data Sources — where the data came from
+
+- **AMFI (Association of Mutual Funds in India)**: Monthly SIP contribution, account, and AUM data.
+- **SEBI annual reports**: Industry structure, expense ratios, and distribution trends.
+- **RBI Financial Stability Reports**: Cross-referencing retail asset allocation.
+
+## Methodology — how we modelled it
+
+- **Trend decomposition**: Monthly SIP inflows decomposed into trend, seasonality, and one-off spikes.
+- **Cohort analysis**: SIP account additions vs. closure rates to estimate net sticky flows.
+- **Elasticity model**: Relationship between Nifty returns, inflation, and SIP inflow growth.
+- **Scenario projection**: Base, Accelerated, and Plateau scenarios for FY27–FY30.
+
+## Key Insights
+
+- **Structural stickiness**: SIP flows stayed resilient even through volatile equity markets, unlike lump-sum inflows.
+- **Democratisation**: The number of unique SIP accounts grew multi-fold, driven by tier-2/3 cities and digital distributors.
+- **Compounding engine**: Consistent monthly flows are becoming a meaningful marginal buyer of Indian equities.
+- **Concentration risk**: Growth is concentrated in a handful of AMCs and in equity-focused schemes.
+
+## Limitations
+
+AMFI aggregates can mask churn (new accounts vs. dormant ones). Inflow data reflects gross contributions, not net of redemptions, and does not capture direct-plan flows comprehensively.

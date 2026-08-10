@@ -1,131 +1,121 @@
 import { Metadata } from 'next';
-import Link from 'next/link';
-import CardImageBanner from '@/components/ui/CardImageBanner';
+import JsonLd from '@/components/seo/JsonLd';
+import DataLabHero from '@/components/data-lab/DataLabHero';
+import DataLabCapabilities from '@/components/data-lab/DataLabCapabilities';
+import DataLabHowItWorks from '@/components/data-lab/DataLabHowItWorks';
+import DataLabSpotlight from '@/components/data-lab/DataLabSpotlight';
+import DataLabExplorer from '@/components/data-lab/DataLabExplorer';
+import ScrollReveal from '@/components/ui/ScrollReveal';
 import { getAllDataLab } from '@/lib/content';
-import Tag from '@/components/ui/Tag';
-import CTAButton from '@/components/ui/CTAButton';
-import SectionHeader from '@/components/ui/SectionHeader';
+import Link from 'next/link';
+import { ArrowUpRight, Download, ChartSpline } from 'lucide-react';
 
 export const metadata: Metadata = {
   title: 'Data Lab | Kunwar Analytics',
-  description: 'Power BI dashboards, Python analyses, and Excel financial models that power Kunwar Analytics research.',
+  description:
+    'The quantitative engine behind Kunwar Analytics — interactive Power BI dashboards, Python analyses, and financial models with live charts, simulators, and downloadable datasets.',
 };
 
 export default function DataLabPage() {
   const projects = getAllDataLab();
-  
-  // Calculate stats
-  const totalProjects = projects.length;
-  const allTools = Array.from(new Set(projects.flatMap(p => p.tools)));
-  const totalTools = allTools.length;
-  const allSectors = Array.from(new Set(projects.map(p => p.sector)));
-  const totalSectors = allSectors.length;
+  const featured = projects.find(p => p.featured) ?? projects[0];
+
+  // Dataset / DataCatalog structured data for SEO + GEO
+  const catalogSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'DataCatalog',
+    name: 'Kunwar Analytics Data Lab',
+    description:
+      'Interactive financial intelligence projects — Python analyses, Power BI dashboards, and financial models with downloadable datasets.',
+    url: 'https://kunwaranalytics.in/data-lab',
+    dataset: projects.map(p => ({
+      '@type': 'Dataset',
+      name: p.title,
+      description: p.businessQuestion,
+      url: `https://kunwaranalytics.in/data-lab/${p.slug}`,
+      ...(p.image ? { image: `https://kunwaranalytics.in${p.image}` } : {}),
+      creator: { '@type': 'Organization', name: 'Kunwar Analytics' },
+      keywords: [...p.tools, p.sector].join(', '),
+    })),
+  };
 
   return (
-    <div className="min-h-screen">
-      {/* Page header */}
-      <section className="bg-gradient-to-br from-brand-navy to-slate-900 py-20">
-        <div className="wrap max-w-6xl">
-          <div className="max-w-3xl">
-            <span className="section-label text-brand-teal">Data Lab</span>
-            <h1 className="text-4xl md:text-6xl font-bold text-white mt-4 mb-6">
-              Analytics Projects & Dashboards
-            </h1>
-            <p className="text-xl text-gray-300 mb-10">
-              The quantitative engine behind Kunwar Analytics research —
-              Power BI dashboards, Python analyses, and Excel financial models.
-            </p>
-            
-            {/* Stats strip */}
-            <div className="flex flex-wrap gap-8 py-6 border-t border-gray-700">
+    <div className="min-h-screen bg-cinema-ink">
+      <JsonLd data={catalogSchema} />
+
+      {/* ===== 3D ANIMATED HERO ===== */}
+      <DataLabHero />
+
+      {/* ===== CAPABILITIES ===== */}
+      <DataLabCapabilities />
+
+      {/* ===== HOW IT WORKS ===== */}
+      <DataLabHowItWorks />
+
+      {/* ===== FEATURED SPOTLIGHT ===== */}
+      {featured && <DataLabSpotlight project={featured} />}
+
+      {/* ===== EXPLORER ===== */}
+      <section id="explorer" className="relative overflow-hidden bg-cinema-ink scroll-mt-24">
+        <div className="absolute inset-0 cinema-grid opacity-15" />
+        <div className="wrap relative z-10 max-w-6xl pb-24">
+          <ScrollReveal>
+            <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pt-24">
               <div>
-                <div className="text-3xl font-bold text-white">{totalProjects}</div>
-                <div className="text-sm text-gray-400">Projects</div>
+                <span className="text-cinema-cyan text-sm font-semibold uppercase tracking-widest">
+                  The Collection
+                </span>
+                <h2 className="mt-3 text-3xl md:text-4xl font-bold text-white">
+                  Explore Every Project
+                </h2>
+                <p className="mt-3 text-gray-400 max-w-2xl">
+                  Search, filter by tool or sector, and open any project to interact with its model, chart, and dataset.
+                </p>
               </div>
-              <div>
-                <div className="text-3xl font-bold text-white">{totalTools}</div>
-                <div className="text-sm text-gray-400">Tools</div>
-              </div>
-              <div>
-                <div className="text-3xl font-bold text-white">{totalSectors}</div>
-                <div className="text-sm text-gray-400">Sectors</div>
+              <div className="flex items-center gap-2 text-sm text-gray-400">
+                <Download className="w-4 h-4 text-cinema-aurora" />
+                Every project ships a downloadable CSV
               </div>
             </div>
-          </div>
+          </ScrollReveal>
+          <DataLabExplorer projects={projects} />
         </div>
       </section>
 
-      {/* Projects grid */}
-      <section className="wrap max-w-6xl py-16">
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-          {projects.map((project) => (
-            <div
-              key={project.slug}
-              className="card flex flex-col border border-gray-200 dark:border-white/10 rounded-xl hover:shadow-lg transition-shadow overflow-hidden group bg-white dark:bg-[#111827]"
+      {/* ===== REQUEST A PROJECT CTA ===== */}
+      <section id="interactive" className="relative overflow-hidden bg-cinema-black">
+        <div className="absolute inset-0 cinema-mesh opacity-40" />
+        <div className="absolute inset-0 cinema-noise" />
+        <div className="absolute top-0 left-1/3 w-96 h-96 rounded-full bg-cinema-glow-blue/20 blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-cinema-violet/20 blur-[120px]" />
+        <div className="wrap relative z-10 max-w-4xl py-24 text-center">
+          <span className="text-cinema-cyan text-sm font-semibold uppercase tracking-widest">
+            Have a question that needs data?
+          </span>
+          <h2 className="mt-4 text-3xl md:text-5xl font-bold text-white">
+            Request a <span className="cinema-text-glow">Data Lab</span> Project
+          </h2>
+          <p className="mt-5 text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+            We build rigorous, data-backed analyses for retail investors, analysts,
+            and enterprises. Tell us the question — we&apos;ll turn it into an interactive model.
+          </p>
+          <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+            <Link
+              href="/contact"
+              className="inline-flex items-center justify-center gap-2 rounded-xl bg-cinema-cyan px-7 py-3.5 text-base font-semibold text-cinema-ink hover:shadow-cinema-lg transition group"
             >
-              {/* ── Image Banner ── */}
-              <div className="relative h-32 w-full border-b border-gray-200 dark:border-white/10">
-                <CardImageBanner
-                  src={`/card-${project.slug}.png`}
-                  alt={project.title}
-                  icon="📊"
-                  gradientFrom="from-brand-navy"
-                  gradientTo="to-brand-teal/20"
-                  overlayOpacity="opacity-50"
-                />
-              </div>
-
-              <div className="p-6 flex flex-col flex-1">
-              {/* Tools badges */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                {project.tools.map((tool) => (
-                  <Tag key={tool} variant="silver" text={tool} className="text-sm" />
-                ))}
-              </div>
-              
-              {/* Sector tag */}
-              <Tag variant="teal" text={project.sector} className="self-start mb-4 text-sm" />
-              
-              {/* Title */}
-              <h3 className="font-bold text-brand-navy text-xl mb-2">
-                {project.title}
-              </h3>
-              
-              {/* Business question */}
-              <p className="text-sm text-brand-teal italic mb-3">
-                {project.businessQuestion}
-              </p>
-              
-              {/* Duration badge */}
-              <div className="text-xs text-gray-400 mb-6">
-                Duration: {project.duration}
-              </div>
-              
-              {/* Spacer */}
-              <div className="flex-grow" />
-              
-              {/* Footer */}
-              <Link
-                href={`/data-lab/${project.slug}`}
-                className="btn-ghost text-brand-navy hover:text-brand-teal inline-flex items-center gap-2 self-start"
-              >
-                View Project →
-              </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-        
-        {/* Empty state */}
-        {projects.length === 0 && (
-          <div className="text-center py-20">
-            <h3 className="text-2xl font-bold text-gray-700 mb-4">No Data Lab projects yet</h3>
-            <p className="text-gray-500 mb-8">Check back soon for analytical projects and dashboards.</p>
-            <CTAButton href="/contact" variant="primary">
-              Suggest a Project
-            </CTAButton>
+              Request a Project
+              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+            </Link>
+            <Link
+              href="/tools"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 px-7 py-3.5 text-base font-medium text-white hover:border-cinema-cyan/50 transition"
+            >
+              <ChartSpline className="w-4 h-4 text-cinema-cyan" />
+              Explore All Tools
+            </Link>
           </div>
-        )}
+        </div>
       </section>
     </div>
   );

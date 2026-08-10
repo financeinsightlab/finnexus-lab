@@ -65,6 +65,9 @@ export interface DataLabProject {
   businessQuestion: string
   duration:         string
   featured:         boolean
+  image?:           string
+  summary?:         string
+  kpis?:            { label: string; value: string; hint?: string }[]
   content?:         string
 }
 

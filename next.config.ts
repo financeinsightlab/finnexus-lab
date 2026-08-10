@@ -14,6 +14,8 @@ const nextConfig: NextConfig = {
   images: {
     // Serve modern image formats where supported
     formats: ['image/webp', 'image/avif'],
+    // Allowed next/image quality values
+    qualities: [75, 80, 85, 90],
     // Cache optimized images for at least 60 seconds (CDN/browser)
     minimumCacheTTL: 60,
     remotePatterns: [

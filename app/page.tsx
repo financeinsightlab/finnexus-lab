@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import Image from 'next/image';
 import SectionHeader from '@/components/ui/SectionHeader';
 import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
 
@@ -32,6 +33,7 @@ import type { ResearchPost, InsightPost } from '@/types';
 import { GlobalForecastingTicker } from '@/components/ui/GlobalForecastingTicker';
 import CoursesSection from '@/components/study/CoursesSection';
 import SectorVideo from '@/components/tracker/SectorVideo';
+import HomeDataLabSection from '@/components/data-lab/HomeDataLabSection';
 
 async function getHomePagePosts() {
   // Try to get DB-driven featured selections first
@@ -117,13 +119,13 @@ export default async function HomePage() {
   ])
 
   const pillars = [
-    { icon: '📊', title: 'Research Intelligence', desc: 'Deep-dive reports on market trends, competitive analysis, and strategic positioning.', href: '/research', glow: 'blue' as const },
-    { icon: '📈', title: 'Data Analytics', desc: 'Quantitative insights with proprietary models and financial metrics.', href: '/about', glow: 'cyan' as const },
-    { icon: '🧠', title: 'Strategic Insights', desc: 'Expert commentary on sector developments and investment opportunities.', href: '/insights', glow: 'violet' as const },
-    { icon: '🔧', title: 'Financial Tools', desc: 'Practical frameworks and calculators for financial analysis.', href: '/tools', glow: 'amber' as const },
-    { icon: '📊', title: 'Data Lab', desc: 'Analytics projects, Power BI dashboards, and Python data analyses.', href: '/data-lab', glow: 'aurora' as const },
-    { icon: '📁', title: 'Case Studies', desc: 'Consulting-quality engagements — Challenge to Outcome narratives.', href: '/case-studies', glow: 'blue' as const },
-    { icon: '🎓', title: 'Study Material', desc: 'Learn finance, business analytics, and research methods — from beginner to advanced.', href: '/study', glow: 'cyan' as const },
+    { icon: '📊', title: 'Research Intelligence', desc: 'Deep-dive reports on market trends, competitive analysis, and strategic positioning.', href: '/research', glow: 'blue' as const, image: '/images/pillars/research-intelligence-v2.jpg' },
+    { icon: '📈', title: 'Data Analytics', desc: 'Quantitative insights with proprietary models and financial metrics.', href: '/about', glow: 'cyan' as const, image: '/images/pillars/data-analytics-v2.jpg' },
+    { icon: '🧠', title: 'Strategic Insights', desc: 'Expert commentary on sector developments and investment opportunities.', href: '/insights', glow: 'violet' as const, image: '/images/pillars/strategic-insights-v2.jpg' },
+    { icon: '🔧', title: 'Financial Tools', desc: 'Practical frameworks and calculators for financial analysis.', href: '/tools', glow: 'amber' as const, image: '/images/pillars/financial-tools-v2.jpg' },
+    { icon: '📊', title: 'Data Lab', desc: 'Analytics projects, Power BI dashboards, and Python data analyses.', href: '/data-lab', glow: 'aurora' as const, image: '/images/pillars/data-lab-v2.jpg' },
+    { icon: '📁', title: 'Case Studies', desc: 'Consulting-quality engagements — Challenge to Outcome narratives.', href: '/case-studies', glow: 'blue' as const, image: '/images/pillars/case-studies-v2.jpg' },
+    { icon: '🎓', title: 'Study Material', desc: 'Learn finance, business analytics, and research methods — from beginner to advanced.', href: '/study', glow: 'cyan' as const, image: '/images/pillars/study-material-v2.jpg' },
   ]
 
   const trackersData = [
@@ -158,19 +160,40 @@ export default async function HomePage() {
             {pillars.map((pillar, i) => (
               <ScrollReveal key={pillar.title} delay={i * 80}>
                 <GlassCard3D glow={pillar.glow} className="h-full">
-                  <Link href={pillar.href} className="block p-7 h-full group cursor-pointer">
-                    <div className="w-14 h-14 rounded-2xl glass-cinema-light flex items-center justify-center text-3xl mb-5 group-hover:scale-110 transition-transform duration-300">
-                      {pillar.icon}
+                  <Link href={pillar.href} className="block h-full group cursor-pointer">
+                    {/* Cinematic 3D image header */}
+                    <div className="relative h-52 md:h-56 overflow-hidden">
+                      <Image
+                        src={pillar.image}
+                        alt={pillar.title}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        priority={i < 3}
+                        quality={90}
+                        className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
+                      />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#121419] via-[#121419]/30 to-transparent" />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-transparent via-transparent to-black/50" />
+                      {/* Glow vignette */}
+                      <div className="pointer-events-none absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+                        style={{ background: `radial-gradient(ellipse at 50% 110%, rgba(59,130,246,0.25), transparent 70%)` }}
+                      />
                     </div>
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cinema-cyan transition-colors">
-                      {pillar.title}
-                    </h3>
-                    <p className="text-sm text-gray-400 leading-relaxed flex-1">
-                      {pillar.desc}
-                    </p>
-                    <span className="inline-flex items-center gap-1 mt-5 text-sm text-cinema-cyan group-hover:gap-2 transition-all">
-                      Explore →
-                    </span>
+                    {/* Content */}
+                    <div className="p-7 pt-5">
+                      <div className="w-14 h-14 -mt-16 mb-5 rounded-2xl glass-cinema-light flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300 border border-white/10 shadow-lg shadow-black/40 relative">
+                        {pillar.icon}
+                      </div>
+                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cinema-cyan transition-colors">
+                        {pillar.title}
+                      </h3>
+                      <p className="text-sm text-gray-400 leading-relaxed flex-1">
+                        {pillar.desc}
+                      </p>
+                      <span className="inline-flex items-center gap-1 mt-5 text-sm text-cinema-cyan group-hover:gap-2 transition-all">
+                        Explore →
+                      </span>
+                    </div>
                   </Link>
                 </GlassCard3D>
               </ScrollReveal>
@@ -181,6 +204,9 @@ export default async function HomePage() {
 
       {/* ===== COURSES ===== */}
       <CoursesSection />
+
+      {/* ===== DATA LAB ===== */}
+      <HomeDataLabSection />
 
       {/* ===== FEATURED RESEARCH ===== */}
       <section className="relative py-24 bg-cinema-black overflow-hidden">
