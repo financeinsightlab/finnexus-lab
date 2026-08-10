@@ -61,8 +61,12 @@ function Particles({ reduced }: { reduced: boolean }) {
 
     // Update connections
     if (linesRef.current && !reduced) {
-      const posAttr = pointsRef.current.geometry.attributes.position as THREE.BufferAttribute
-      const linePos = linesRef.current.geometry.attributes.position as THREE.BufferAttribute
+      const geo = pointsRef.current.geometry
+      if (!geo?.attributes?.position) return // not mounted yet — avoid race crash
+      const posAttr = geo.attributes.position as THREE.BufferAttribute
+      const lineGeo = linesRef.current.geometry
+      const linePos = lineGeo?.attributes?.position as THREE.BufferAttribute | undefined
+      if (!linePos) return
       let lineIdx = 0
       const tempA = new THREE.Vector3()
       const tempB = new THREE.Vector3()
@@ -84,7 +88,7 @@ function Particles({ reduced }: { reduced: boolean }) {
         }
       }
       linePos.needsUpdate = true
-      linesRef.current.geometry.setDrawRange(0, lineIdx * 2)
+      lineGeo.setDrawRange(0, lineIdx * 2)
     }
   })
 

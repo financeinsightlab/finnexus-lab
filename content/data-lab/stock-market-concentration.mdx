@@ -1,0 +1,45 @@
+---
+title: 'Indian Stock Market Concentration Analysis'
+slug: 'stock-market-concentration'
+date: '2026-06-25'
+tools: ['Python', 'Pandas', 'Seaborn', 'Power BI']
+sector: 'Equity Markets'
+businessQuestion: 'How concentrated is the Indian equity market by market-cap and index weight, and how has this concentration evolved over the past decade?'
+duration: '3 weeks'
+featured: true
+image: '/images/data-lab/stock-market-concentration.jpg'
+summary: 'A top-down analysis of how a few large caps dominate Nifty weight and total market cap, and the implications for index investors, diversification, and active management.'
+kpis:
+  - { label: 'Top-10 Weight', value: '~57%', hint: 'of Nifty' }
+  - { label: 'Market Cap (Total)', value: '₹450T+' }
+  - { label: 'Top-50 Share', value: '~70%' }
+  - { label: 'Herfindahl Index', value: '0.11' }
+---
+
+## Business Question — what we set out to answer
+
+A handful of Indian large caps account for a disproportionate share of index returns and total market cap. This project quantifies concentration at the index and market level — using the Herfindahl–Hirschman Index (HHI), top-10 weight share, and cumulative market-cap curves — to understand how the risk profile of a broad Indian equity allocation has changed.
+
+## Data Sources — where the data came from
+
+- **NSE / Nifty index methodology files**: Constituent weights and reconstitution history.
+- **CME & NSE historical constituent data**: Free-float market cap by stock over a decade.
+- **BSE market-cap aggregates**: Whole-market concentration measures.
+
+## Methodology — how we modelled it
+
+- **Weight share build**: Reconstructed top-N weight share of Nifty over FY15–FY26.
+- **HHI computation**: Sum of squared free-float market-cap shares at index and market level.
+- **Cumulative concentration curve**: Lorenz-style curve of market cap vs. number of stocks.
+- **Sector attribution**: How much of concentration is driven by financials, IT, and energy.
+
+## Key Insights
+
+- **Narrow leadership**: A small cluster of stocks drives an outsized share of Nifty returns — passive investors are effectively making concentrated bets.
+- **Rising HHI**: Market-level concentration has trended up, reducing the effective breadth of a "broad" index.
+- **Sector skew**: Concentration is largely a financials + IT + energy phenomenon.
+- **Active opportunity**: Dispersion between the top and the rest creates potential for active managers in mid and small caps.
+
+## Limitations
+
+Free-float market-cap data has occasional methodology breaks on index rebalancing. Concentration measures are point-in-time and can shift sharply in corrections or new listings.
