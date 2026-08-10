@@ -3,8 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   pageExtensions: ['ts', 'tsx', 'mdx'],
 
-  // Allow the live-preview origin (e2b.app) to access dev resources.
-  allowedDevOrigins: ['*.e2b.app'],
+  // Allow preview iframe / proxy requests
+  allowedDevOrigins: ['*.e2b.app', 'localhost:3000', '127.0.0.1:3000'],
 
   // Remove console.* calls in production builds
   compiler: {

@@ -1,8 +1,8 @@
 'use client'
 
 import { useState } from 'react'
-import { Block, BlockData, BlockAttributes } from '@/lib/blocks/registry'
-import { X, Trash2, Palette, Settings } from 'lucide-react'
+import { Block, BlockData, BlockAttributes, MetricItem } from '@/lib/blocks/registry'
+import { X, Trash2, Palette, Settings, Plus } from 'lucide-react'
 import MediaLibraryModal from '@/components/admin/MediaLibraryModal'
 
 interface BlockSettingsPanelProps {
@@ -139,6 +139,93 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
             )}
           </>
         )
+      case 'diagram':
+        return section('Architecture Diagram Config', (
+          <>
+            {field('Diagram Title', <input className={inputCls} value={data.titleText || ''} onChange={e => onUpdate({ titleText: e.target.value })} placeholder="System Architecture & Flow" />)}
+            {field('Language', <input className={inputCls} value={data.language || 'text'} onChange={e => onUpdate({ language: e.target.value })} placeholder="text" />)}
+            {field('Flow / ASCII Code',
+              <textarea
+                rows={10}
+                className={`${textareaCls} font-mono text-xs text-emerald-400`}
+                value={data.code || ''}
+                onChange={e => onUpdate({ code: e.target.value })}
+                placeholder={'+-------------------------+\n| Architecture Flow Node  |\n+-------------------------+'}
+              />,
+              'Enter ASCII flowcharts, process boxes, or system diagrams'
+            )}
+          </>
+        ))
+      case 'metrics': {
+        const metrics = (data.metrics || []) as MetricItem[]
+        const handleAddMetric = () => {
+          const newItem: MetricItem = { label: 'New Metric', value: '100%', change: '+10%', trend: 'up' }
+          onUpdate({ metrics: [...metrics, newItem] })
+        }
+        const handleUpdateMetric = (index: number, updated: Partial<MetricItem>) => {
+          const next = [...metrics]
+          next[index] = { ...next[index], ...updated }
+          onUpdate({ metrics: next })
+        }
+        const handleRemoveMetric = (index: number) => {
+          onUpdate({ metrics: metrics.filter((_, i) => i !== index) })
+        }
+
+        return section('Metrics Grid Config', (
+          <>
+            <div className="flex justify-between items-center mb-2">
+              <span className="text-[10px] uppercase font-bold text-slate-400">KPI Cards ({metrics.length})</span>
+              <button
+                onClick={handleAddMetric}
+                className="px-2 py-1 bg-[#0D6E6E]/20 text-[#0D6E6E] rounded-lg text-xs font-bold flex items-center gap-1 border border-[#0D6E6E]/30 hover:bg-[#0D6E6E] hover:text-white transition-colors"
+              >
+                <Plus className="w-3 h-3" /> Add KPI
+              </button>
+            </div>
+            <div className="space-y-3">
+              {metrics.map((m, idx) => (
+                <div key={idx} className="p-3 bg-black/30 border border-[#2D3748] rounded-xl space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-mono text-[#0D6E6E] font-bold">KPI #{idx + 1}</span>
+                    <button onClick={() => handleRemoveMetric(idx)} className="text-red-400 hover:text-red-300 text-xs">
+                      <Trash2 className="w-3 h-3" />
+                    </button>
+                  </div>
+                  <input
+                    className={inputCls}
+                    value={m.label}
+                    onChange={e => handleUpdateMetric(idx, { label: e.target.value })}
+                    placeholder="Label (e.g. EBITDA Margin)"
+                  />
+                  <input
+                    className={inputCls}
+                    value={m.value}
+                    onChange={e => handleUpdateMetric(idx, { value: e.target.value })}
+                    placeholder="Value (e.g. +14.2%)"
+                  />
+                  <div className="grid grid-cols-2 gap-2">
+                    <input
+                      className={inputCls}
+                      value={m.change || ''}
+                      onChange={e => handleUpdateMetric(idx, { change: e.target.value })}
+                      placeholder="Change (e.g. +240 bps)"
+                    />
+                    <select
+                      className={inputCls}
+                      value={m.trend || 'up'}
+                      onChange={e => handleUpdateMetric(idx, { trend: e.target.value as any })}
+                    >
+                      <option value="up">▲ Up</option>
+                      <option value="down">▼ Down</option>
+                      <option value="neutral">● Neutral</option>
+                    </select>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ))
+      }
       case 'list':
         return section('List Details', (
           <>
