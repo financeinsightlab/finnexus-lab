@@ -60,13 +60,22 @@ function readDir(dir: string): { slug: string; filePath: string }[] {
     }));
 }
 
+function readMdx(filePath: string): { data: Record<string, unknown>; content: string } {
+  let raw = fs.readFileSync(filePath, 'utf8');
+  // Strip an optional leading "// FILE: ..." tool-comment line, which would
+  // otherwise prevent gray-matter from detecting the frontmatter block.
+  const stripped = raw.replace(/^\/\/ FILE:.*\r?\n/, '');
+  if (stripped !== raw) raw = stripped;
+  const { data, content } = matter(raw);
+  return { data: data as Record<string, unknown>, content };
+}
+
 export function getAllResearch(): ResearchPost[] {
   const researchDir = path.join(CONTENT, 'research');
   const files = readDir(researchDir);
   return files
     .map(({ slug, filePath }) => {
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data } = matter(fileContents);
+      const { data } = readMdx(filePath);
       return normalizeResearchPost(data as Record<string, unknown>, slug);
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -75,8 +84,7 @@ export function getAllResearch(): ResearchPost[] {
 export async function getResearchBySlug(slug: string): Promise<ResearchPost | null> {
   const filePath = path.join(CONTENT, 'research', `${slug}.mdx`);
   if (!fs.existsSync(filePath)) return null;
-  const fileContents = fs.readFileSync(filePath, 'utf8');
-  const { data, content } = matter(fileContents);
+  const { data, content } = readMdx(filePath);
   return normalizeResearchPost(data as Record<string, unknown>, slug, content);
 }
 
@@ -95,8 +103,7 @@ export function getAllInsights(): InsightPost[] {
   const files = readDir(insightsDir);
   return files
     .map(({ slug, filePath }) => {
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data } = matter(fileContents);
+      const { data } = readMdx(filePath);
       return normalizeInsightPost(data as Record<string, unknown>, slug);
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -105,8 +112,7 @@ export function getAllInsights(): InsightPost[] {
 export async function getInsightBySlug(slug: string): Promise<InsightPost | null> {
   const filePath = path.join(CONTENT, 'insights', `${slug}.mdx`);
   if (!fs.existsSync(filePath)) return null;
-  const fileContents = fs.readFileSync(filePath, 'utf8');
-  const { data, content } = matter(fileContents);
+  const { data, content } = readMdx(filePath);
   return normalizeInsightPost(data as Record<string, unknown>, slug, content);
 }
 
@@ -153,8 +159,7 @@ export function getAllDataLab(): DataLabProject[] {
   const files = readDir(dataLabDir);
   return files
     .map(({ slug, filePath }) => {
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data } = matter(fileContents);
+      const { data } = readMdx(filePath);
       return normalizeDataLabProject(data as Record<string, unknown>, slug);
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -163,8 +168,7 @@ export function getAllDataLab(): DataLabProject[] {
 export async function getDataLabBySlug(slug: string): Promise<DataLabProject | null> {
   const filePath = path.join(CONTENT, 'data-lab', `${slug}.mdx`);
   if (!fs.existsSync(filePath)) return null;
-  const fileContents = fs.readFileSync(filePath, 'utf8');
-  const { data, content } = matter(fileContents);
+  const { data, content } = readMdx(filePath);
   return normalizeDataLabProject(data as Record<string, unknown>, slug, content);
 }
 
@@ -177,8 +181,7 @@ export function getAllCaseStudies(): CaseStudy[] {
   const files = readDir(caseStudiesDir);
   return files
     .map(({ slug, filePath }) => {
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data } = matter(fileContents);
+      const { data } = readMdx(filePath);
       return normalizeCaseStudy(data as Record<string, unknown>, slug);
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -187,8 +190,7 @@ export function getAllCaseStudies(): CaseStudy[] {
 export async function getCaseStudyBySlug(slug: string): Promise<CaseStudy | null> {
   const filePath = path.join(CONTENT, 'case-studies', `${slug}.mdx`);
   if (!fs.existsSync(filePath)) return null;
-  const fileContents = fs.readFileSync(filePath, 'utf8');
-  const { data, content } = matter(fileContents);
+  const { data, content } = readMdx(filePath);
   return normalizeCaseStudy(data as Record<string, unknown>, slug, content);
 }
 
@@ -204,6 +206,14 @@ function normalizePodcastEpisode(data: Record<string, unknown>, slug: string, co
     guestRole: typeof data.guestRole === 'string' ? data.guestRole : undefined,
     description: typeof data.description === 'string' ? data.description : '',
     audioUrl: typeof data.audioUrl === 'string' ? data.audioUrl : undefined,
+    mp3Url: typeof data.mp3Url === 'string' ? data.mp3Url : undefined,
+    season: typeof data.season === 'number' ? data.season : undefined,
+    tags: Array.isArray(data.tags)
+      ? data.tags.filter((t): t is string => typeof t === 'string')
+      : typeof data.tags === 'string'
+        ? data.tags.split(',').map((t) => t.trim()).filter(Boolean)
+        : undefined,
+    coverImage: typeof data.coverImage === 'string' ? data.coverImage : undefined,
     featured: Boolean(data.featured),
     content,
   };
@@ -214,8 +224,7 @@ export function getAllPodcastEpisodes(): PodcastEpisode[] {
   const files = readDir(podcastDir);
   return files
     .map(({ slug, filePath }) => {
-      const fileContents = fs.readFileSync(filePath, 'utf8');
-      const { data } = matter(fileContents);
+      const { data } = readMdx(filePath);
       return normalizePodcastEpisode(data as Record<string, unknown>, slug);
     })
     .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
@@ -224,7 +233,6 @@ export function getAllPodcastEpisodes(): PodcastEpisode[] {
 export async function getPodcastEpisodeBySlug(slug: string): Promise<PodcastEpisode | null> {
   const filePath = path.join(CONTENT, 'podcast', `${slug}.mdx`);
   if (!fs.existsSync(filePath)) return null;
-  const fileContents = fs.readFileSync(filePath, 'utf8');
-  const { data, content } = matter(fileContents);
+  const { data, content } = readMdx(filePath);
   return normalizePodcastEpisode(data as Record<string, unknown>, slug, content);
 }

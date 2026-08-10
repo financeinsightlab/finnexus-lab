@@ -89,7 +89,11 @@ export interface PodcastEpisode {
   guestName?:   string
   guestRole?:   string
   description:  string  // 2-3 sentences
-  audioUrl?:    string  // Spotify/Apple Podcasts URL or direct MP3
+  audioUrl?:    string  // Spotify/Apple Podcasts page URL
+  mp3Url?:      string  // Direct MP3/audio file URL (plays in the on-page player + RSS enclosure)
+  season?:      number  // Podcast season number
+  tags?:        string[]
+  coverImage?:  string
   featured:     boolean
   content?:     string  // show notes + transcript
 }
