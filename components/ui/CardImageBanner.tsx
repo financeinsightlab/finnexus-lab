@@ -3,14 +3,19 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-// List of currently generated AI images. 
-// If an image is not in this list, we skip the Next.js <Image> component entirely
-// to prevent server-side 404 optimization errors and fall back gracefully.
+// Specific AI images generated for sectors
 const KNOWN_IMAGES = [
   '/card-quick-commerce.png',
   '/card-fintech.png',
   '/card-ev.png',
   '/card-food-delivery.png'
+];
+
+// Fallback images from the study page (premium 3D aesthetic)
+const FALLBACK_IMAGES = [
+  '/course-analyst-complete.png',
+  '/course-placement-prep.png',
+  '/course-skill-academy.png'
 ];
 
 interface CardImageBannerProps {
@@ -33,13 +38,20 @@ export default function CardImageBanner({
   blendMode = ''
 }: CardImageBannerProps) {
   const [error, setError] = useState(false);
-  const hasImage = KNOWN_IMAGES.includes(src);
+  
+  // Deterministic fallback based on the string length of the alt text
+  // so the same card always gets the same image
+  const fallbackIndex = alt.length % FALLBACK_IMAGES.length;
+  
+  const finalSrc = KNOWN_IMAGES.includes(src) 
+    ? src 
+    : FALLBACK_IMAGES[fallbackIndex];
 
   return (
     <div className={`relative h-full w-full overflow-hidden bg-gradient-to-br ${gradientFrom} ${gradientTo} flex items-center justify-center`}>
-      {hasImage && !error && (
+      {!error && (
         <Image 
-          src={src} 
+          src={finalSrc} 
           alt={alt}
           fill
           className={`object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 ${blendMode}`}
@@ -48,7 +60,9 @@ export default function CardImageBanner({
         />
       )}
       <div className={`absolute inset-0 bg-gradient-to-t from-black/${overlayOpacity.split('-')[1] || '50'} to-transparent pointer-events-none`} />
-      <div className="absolute text-5xl opacity-20 z-0">{icon}</div>
+      
+      {/* Only show icon watermark if image actually failed to load */}
+      {error && <div className="absolute text-5xl opacity-20 z-0">{icon}</div>}
     </div>
   );
 }
