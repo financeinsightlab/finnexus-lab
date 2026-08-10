@@ -131,6 +131,10 @@ export default async function HomePage() {
     { emoji: '💰', sector: 'Fintech', metric: 'Digital Payments: ₹12.4T', href: '/tracker/fintech', value: 12, prefix: '₹', suffix: 'T', label: 'Payment Volume' },
     { emoji: '⚡', sector: 'EV', metric: 'EV Adoption: 8.5%', href: '/tracker/ev', value: 8, suffix: '%', label: 'Adoption Rate' },
     { emoji: '🍔', sector: 'Food Delivery', metric: 'Order Volume: 18M/month', href: '/tracker/food-delivery', value: 18, suffix: 'M', label: 'Monthly Orders' },
+    { emoji: '☁️', sector: 'SaaS', metric: 'Revenue: $15B', href: '/tracker/saas', value: 15, prefix: '$', suffix: 'B', label: 'SaaS Revenue' },
+    { emoji: '🛍️', sector: 'D2C', metric: 'Market: ₹62,000 Cr', href: '/tracker/d2c', value: 62, prefix: '₹', suffix: 'K', label: 'Market Size (Cr)' },
+    { emoji: '🏥', sector: 'HealthTech', metric: 'Digital Users: 310M', href: '/tracker/healthcare', value: 310, suffix: 'M', label: 'Active Users' },
+    { emoji: '📚', sector: 'EdTech', metric: 'Learning Market: ₹53,000 Cr', href: '/tracker/edtech', value: 53, prefix: '₹', suffix: 'K', label: 'Market Size (Cr)' },
   ]
 
   return (
