@@ -126,7 +126,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
               </div>
               <div className="relative rounded-2xl overflow-hidden border border-white/10 h-52 bg-[#0b1623]">
                 <SectorVideo slug={t.slug} priority />
-                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
                 <span className="pointer-events-none absolute bottom-3 left-4 text-[11px] font-bold uppercase tracking-widest text-white/90">▶ How {t.shortName} works</span>
               </div>
             </div>

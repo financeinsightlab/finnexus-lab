@@ -221,7 +221,7 @@ export default async function HomePage() {
                   <Link href={tracker.href} className="block h-full cursor-pointer">
                     <div className="relative h-44 w-full overflow-hidden bg-[#0b1623]">
                       <SectorVideo slug={(tracker.href.split('/').pop() as string) ?? 'fintech'} priority={i < 2} />
-                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-transparent" />
                       <div className="pointer-events-none absolute bottom-3 left-4 flex items-center gap-2">
                         <span className="text-xl">{tracker.emoji}</span>
                         <span className="text-lg font-bold text-white drop-shadow">{tracker.sector}</span>
