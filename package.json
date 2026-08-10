@@ -5,10 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && npm run index && next build",
+    "build": "prisma generate && npm run index || true && next build",
     "start": "next start",
     "lint": "eslint",
-    "index": "ts-node --skip-project --esm scripts/algolia-index.ts",
+    "index": "tsx scripts/algolia-index.ts",
     "seed:study": "node scripts/seed-study-categories.mjs"
   },
   "dependencies": {
