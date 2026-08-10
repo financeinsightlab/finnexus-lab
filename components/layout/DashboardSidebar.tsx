@@ -64,7 +64,7 @@ export default function DashboardSidebar() {
       animate={{ width: collapsed ? 80 : 260 }}
       className="hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-white dark:bg-[#0a1120] border-r border-slate-200 dark:border-slate-800/50 z-40 transition-all duration-300"
     >
-      <div className="flex-1 overflow-y-auto py-6 px-3 sidebar-no-scrollbar">
+      <div className="flex-1 overflow-y-auto py-6 px-3 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         
         {/* Toggle Button */}
         <div className={`flex ${collapsed ? 'justify-center' : 'justify-end'} mb-6`}>

@@ -195,22 +195,22 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 relative">
+    <div className="min-h-screen py-10 relative">
       <div className="wrap max-w-7xl mx-auto">
         
         {/* Header */}
         <div className="mb-6">
            <p className="text-teal-600 font-medium mb-2">Premium Web Calculator</p>
-           <h1 className="text-3xl font-bold text-brand-navy">Web3 Tokenomics & Vesting Model</h1>
-           <p className="text-brand-slate">Simulate inflationary unlocking, Fully Diluted Valuation, and circulating token supply manipulation.</p>
+           <h1 className="text-3xl font-bold text-brand-navy dark:text-white">Web3 Tokenomics & Vesting Model</h1>
+           <p className="text-brand-slate dark:text-slate-300">Simulate inflationary unlocking, Fully Diluted Valuation, and circulating token supply manipulation.</p>
         </div>
 
         {/* About Tool Box */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
           <div className="text-3xl pt-1">💡</div>
           <div>
-            <h3 className="font-bold text-brand-navy mb-1">What this tool actually does</h3>
-            <p className="text-sm text-brand-slate leading-relaxed">
+            <h3 className="font-bold text-brand-navy dark:text-white mb-1">What this tool actually does</h3>
+            <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed">
               This dynamic Tokenomics model is designed for Web3 Founders and Crypto Investors. It visualizes exactly how heavily a token's total supply is diluted over time by mapping strict "Vesting Cliffs" and linear unlock schedules. By predicting exactly when Team Members and VC Investors dump their tokens into the Circulating Supply, users can analyze if the token structure is healthy or a "VC Rug-Pull."
             </p>
           </div>
@@ -219,25 +219,25 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
           {/* Inputs Sidebar */}
-          <div className="lg:col-span-1 space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20">
-            <h3 className="font-bold text-brand-navy border-b pb-4">Protocol Assumptions</h3>
+          <div className="lg:col-span-1 space-y-6 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20">
+            <h3 className="font-bold text-brand-navy dark:text-white border-b pb-4">Protocol Assumptions</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Total Fixed Supply</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Total Fixed Supply</label>
                 <input type="number" className="input w-full" value={totalSupply} onChange={e => setTotalSupply(Number(e.target.value))} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Initial Launch Price</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Initial Launch Price</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" step="0.01" value={tokenPrice} onChange={e => setTokenPrice(Number(e.target.value))} />
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-200">
-                <h4 className="font-bold text-brand-navy text-sm mb-3">Token Allocations</h4>
+              <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+                <h4 className="font-bold text-brand-navy dark:text-white text-sm mb-3">Token Allocations</h4>
                 <div className="space-y-3">
                   <div>
                     <label className="block text-xs font-medium text-gray-500 mb-1">Core Team %</label>
@@ -257,18 +257,18 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                 </div>
               </div>
 
-              <div className="pt-4 border-t border-gray-200">
-                <h4 className="font-bold text-brand-navy text-sm mb-3">Vesting Schedules</h4>
+              <div className="pt-4 border-t border-gray-200 dark:border-slate-700">
+                <h4 className="font-bold text-brand-navy dark:text-white text-sm mb-3">Vesting Schedules</h4>
                 <div className="space-y-3">
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-[10px] font-medium text-gray-500 mt-1 uppercase">Team Cliff</label>
-                      <input type="number" className="input w-full py-1 text-sm bg-gray-50 border border-gray-200" value={teamCliff} onChange={e => setTeamCliff(Number(e.target.value))} />
+                      <input type="number" className="input w-full py-1 text-sm bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white border border-gray-200 dark:border-slate-700" value={teamCliff} onChange={e => setTeamCliff(Number(e.target.value))} />
                       <span className="text-[10px] text-gray-400">Months</span>
                     </div>
                     <div>
                       <label className="block text-[10px] font-medium text-gray-500 mt-1 uppercase">Team Linear</label>
-                      <input type="number" className="input w-full py-1 text-sm bg-gray-50 border border-gray-200" value={teamLinear} onChange={e => setTeamLinear(Number(e.target.value))} />
+                      <input type="number" className="input w-full py-1 text-sm bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white border border-gray-200 dark:border-slate-700" value={teamLinear} onChange={e => setTeamLinear(Number(e.target.value))} />
                       <span className="text-[10px] text-gray-400">Months</span>
                     </div>
                   </div>
@@ -276,12 +276,12 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                   <div className="grid grid-cols-2 gap-2">
                     <div>
                       <label className="block text-[10px] font-medium text-gray-500 mt-1 uppercase">VC Cliff</label>
-                      <input type="number" className="input w-full py-1 text-sm bg-gray-50 border border-gray-200" value={investorCliff} onChange={e => setInvestorCliff(Number(e.target.value))} />
+                      <input type="number" className="input w-full py-1 text-sm bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white border border-gray-200 dark:border-slate-700" value={investorCliff} onChange={e => setInvestorCliff(Number(e.target.value))} />
                       <span className="text-[10px] text-gray-400">Months</span>
                     </div>
                     <div>
                       <label className="block text-[10px] font-medium text-gray-500 mt-1 uppercase">VC Linear</label>
-                      <input type="number" className="input w-full py-1 text-sm bg-gray-50 border border-gray-200" value={investorLinear} onChange={e => setInvestorLinear(Number(e.target.value))} />
+                      <input type="number" className="input w-full py-1 text-sm bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white border border-gray-200 dark:border-slate-700" value={investorLinear} onChange={e => setInvestorLinear(Number(e.target.value))} />
                       <span className="text-[10px] text-gray-400">Months</span>
                     </div>
                   </div>
@@ -296,39 +296,39 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
             
             {/* KPI Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
                 <div className="absolute -right-4 -top-4 w-24 h-24 bg-red-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                 <div className="relative z-10">
                   <p className="text-sm font-medium text-red-500 mb-1 uppercase tracking-widest">Fully Diluted Value</p>
-                  <h4 className="text-3xl font-bold text-brand-navy">${Math.round(calculations.fdv).toLocaleString()}</h4>
-                  <p className="text-xs text-brand-slate mt-2">Total network value if ALL tokens were unlocked today (FDV).</p>
+                  <h4 className="text-3xl font-bold text-brand-navy dark:text-white">${Math.round(calculations.fdv).toLocaleString()}</h4>
+                  <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Total network value if ALL tokens were unlocked today (FDV).</p>
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
                 <div className="absolute -right-4 -top-4 w-24 h-24 bg-green-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                 <div className="relative z-10">
                   <p className="text-sm font-medium text-green-600 mb-1 uppercase tracking-widest">Day 1 Market Cap</p>
-                  <h4 className="text-3xl font-bold text-brand-navy">${Math.round(calculations.day1MarketCap).toLocaleString()}</h4>
-                  <p className="text-xs text-brand-slate mt-2">Cash required to absorb actual unlocked Float at Token Generation Event.</p>
+                  <h4 className="text-3xl font-bold text-brand-navy dark:text-white">${Math.round(calculations.day1MarketCap).toLocaleString()}</h4>
+                  <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Cash required to absorb actual unlocked Float at Token Generation Event.</p>
                 </div>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
                 <div className="absolute -right-4 -top-4 w-24 h-24 bg-blue-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                 <div className="relative z-10">
                   <p className="text-sm font-medium text-blue-600 mb-1 uppercase tracking-widest">Initial Float Volume</p>
-                  <h4 className="text-3xl font-bold text-brand-navy">
+                  <h4 className="text-3xl font-bold text-brand-navy dark:text-white">
                     {calculations.day1Circulating >= 1_000_000 ? (calculations.day1Circulating/1_000_000).toFixed(1) + 'M' : calculations.day1Circulating.toLocaleString()} <span className="text-lg font-normal">Tokens</span>
                   </h4>
-                  <p className="text-xs text-brand-slate mt-2">Only {((calculations.day1Circulating / totalSupply) * 100).toFixed(1)}% of total supply is tradeable on Day 1.</p>
+                  <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Only {((calculations.day1Circulating / totalSupply) * 100).toFixed(1)}% of total supply is tradeable on Day 1.</p>
                 </div>
               </div>
             </div>
 
             {/* Chart */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative z-10">
-              <h3 className="font-bold text-brand-navy mb-6">48-Month Token Inflation & Unlock Schedule</h3>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative z-10">
+              <h3 className="font-bold text-brand-navy dark:text-white mb-6">48-Month Token Inflation & Unlock Schedule</h3>
               <div className="h-[400px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={calculations.chartData} margin={{ top: 10, right: 30, left: 10, bottom: 0 }}>
@@ -349,7 +349,7 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
             </div>
 
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
-            <div className={`bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
+            <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
               <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
@@ -358,9 +358,9 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                 <span>Token_Emission_Schedule_48M.xlsx</span>
               </div>
               
-              <div className="bg-white border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
+              <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
                 <span className="font-bold italic text-gray-400 select-none cursor-default px-1 hover:bg-gray-100 rounded">fx</span> 
-                <div className="bg-white border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
+                <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
                   =SUM(Team_Unlocked, Investor_Unlocked, Community_Unlocked)
                 </div>
               </div>
@@ -382,9 +382,9 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                     
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="1" />
-                      <td className="border border-gray-200 px-2 py-2 font-bold bg-white text-gray-700 pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Ecosystem / Community Unlocked</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-bold bg-white dark:bg-slate-900 text-gray-700 pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Ecosystem / Community Unlocked</td>
                       {calculations.rowCommunityTokens.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono text-gray-500`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-gray-500`}>
                           {val.toLocaleString()}
                         </td>
                       ))}
@@ -392,9 +392,9 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                     
                     <tr className="hover:bg-blue-50/30 group bg-purple-50/10">
                       <ExcelRowIndex i="2" />
-                      <td className="border border-gray-200 px-2 py-2 bg-purple-50/20 pl-3 text-purple-800 font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">VC / Private Investors Unlocked</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-purple-50/20 pl-3 text-purple-800 font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">VC / Private Investors Unlocked</td>
                       {calculations.rowInvestorTokens.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono text-purple-700`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-purple-700`}>
                           {val.toLocaleString()}
                         </td>
                       ))}
@@ -402,9 +402,9 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
 
                     <tr className="hover:bg-blue-50/30 group bg-red-50/10">
                       <ExcelRowIndex i="3" />
-                      <td className="border border-gray-200 px-2 py-2 bg-red-50/20 pl-3 text-red-800 font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Core Team Unlocked</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-red-50/20 pl-3 text-red-800 font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Core Team Unlocked</td>
                       {calculations.rowTeamTokens.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono text-red-700`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-red-700`}>
                           {val.toLocaleString()}
                         </td>
                       ))}
@@ -412,15 +412,15 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
 
                     <tr>
                       <ExcelRowIndex i="4" />
-                      <td colSpan={50} className="border border-gray-200 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
+                      <td colSpan={50} className="border border-gray-200 dark:border-slate-700 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
                     </tr>
 
                     <tr className="bg-[#eef3fb]">
                       <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Total Circulating Supply</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Total Circulating Supply</td>
                       {calculations.rowTotalCirculating.map((val, idx) => {
                         return (
-                          <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono font-extrabold text-[13px] text-[#0b5c96] shadow-inner`}>
+                          <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[13px] text-[#0b5c96] shadow-inner`}>
                             <span className="border-b-2 border-double border-current pb-0.5">
                               {val.toLocaleString()}
                             </span>
@@ -431,9 +431,9 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
 
                     <tr className="hover:bg-blue-50/30 group text-green-700 font-bold border-t-2 border-t-gray-400 border-b-2 border-b-gray-400">
                       <ExcelRowIndex i="6" />
-                      <td className="border border-gray-200 px-2 py-2 bg-green-50/30 pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-green-50/0">Implied Market Cap @ Entry Price</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-green-50/30 pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-green-50/0">Implied Market Cap @ Entry Price</td>
                       {calculations.rowMarketCap.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono`}>
                           ${val.toLocaleString()}
                         </td>
                       ))}
@@ -463,14 +463,14 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
           {/* Paywall Overlay */}
           {isLocked && (
             <div className="absolute inset-0 z-50 flex flex-col items-center justify-center pt-20">
-              <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
+              <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
                 <div className="w-16 h-16 bg-gold-100 text-gold-600 rounded-full flex items-center justify-center mb-6">
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-navy mb-3">Model Locked</h3>
-                <p className="text-brand-slate mb-8">
+                <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Model Locked</h3>
+                <p className="text-brand-slate dark:text-slate-300 mb-8">
                   You've reached your free evaluation limit for the Tokenomics Model. Subscribe/Buy now to unlock permanent access to this Web3 tool and all 10 premium financial calculators.
                 </p>
                 
@@ -503,29 +503,29 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
         </div>
 
         {/* Educational Glossary Section */}
-        <div className="mt-16 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6">Tokenomics & Vesting Glossary</h2>
-          <p className="text-brand-slate mb-8">Understanding the complex mechanics of Web3 network liquidity and inflation.</p>
+        <div className="mt-16 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">Tokenomics & Vesting Glossary</h2>
+          <p className="text-brand-slate dark:text-slate-300 mb-8">Understanding the complex mechanics of Web3 network liquidity and inflation.</p>
           
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🌍</span> Fully Diluted Valuation (FDV)</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The absolute maximum market cap of a project if every single token in existence were immediately unlocked and sold at the current price. An FDV heavily detached from the actual Circulating Market Cap is a massive red flag.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🌍</span> Fully Diluted Valuation (FDV)</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The absolute maximum market cap of a project if every single token in existence were immediately unlocked and sold at the current price. An FDV heavily detached from the actual Circulating Market Cap is a massive red flag.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">📉</span> Vesting Cliff</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> A specific multi-month waiting period immediately post-launch where Team members and Investors own zero tradeable tokens. A short cliff heavily incentivizes "Rug Pulls" and massive early token dumps by insiders.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">📉</span> Vesting Cliff</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> A specific multi-month waiting period immediately post-launch where Team members and Investors own zero tradeable tokens. A short cliff heavily incentivizes "Rug Pulls" and massive early token dumps by insiders.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">⏳</span> Linear Unlock</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> After the Cliff clears, tokens are slowly and systematically unlocked over a linear scale (usually 24 to 48 months). This ensures insiders can't dump their entire allocation on retail buyers on the exact same day.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">⏳</span> Linear Unlock</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> After the Cliff clears, tokens are slowly and systematically unlocked over a linear scale (usually 24 to 48 months). This ensures insiders can't dump their entire allocation on retail buyers on the exact same day.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🛑</span> Low Float Squeeze</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> When less than 10% of the token exists on the market at launch... meaning you only need a little bit of buying pressure to artificially pump the token price to absurd FDVs before insiders unlock and crash it.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🛑</span> Low Float Squeeze</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> When less than 10% of the token exists on the market at launch... meaning you only need a little bit of buying pressure to artificially pump the token price to absurd FDVs before insiders unlock and crash it.</p>
             </div>
           </div>
         </div>

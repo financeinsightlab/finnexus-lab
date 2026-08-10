@@ -173,22 +173,22 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 relative">
+    <div className="min-h-screen py-10 relative">
       <div className="wrap max-w-7xl mx-auto">
         
         {/* Header */}
         <div className="mb-6">
           <p className="text-teal-600 font-medium mb-2">Premium Web Calculator</p>
-          <h1 className="text-3xl font-bold text-brand-navy">B2B Enterprise Marketing ROI & Pipeline Model</h1>
-          <p className="text-brand-slate">Simulate ad-spend efficiency, sales funnel conversion drop-offs, and Blended CAC.</p>
+          <h1 className="text-3xl font-bold text-brand-navy dark:text-white">B2B Enterprise Marketing ROI & Pipeline Model</h1>
+          <p className="text-brand-slate dark:text-slate-300">Simulate ad-spend efficiency, sales funnel conversion drop-offs, and Blended CAC.</p>
         </div>
 
         {/* About Tool Box */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
           <div className="text-3xl pt-1">💡</div>
           <div>
-            <h3 className="font-bold text-brand-navy mb-1">What this tool actually does</h3>
-            <p className="text-sm text-brand-slate leading-relaxed">
+            <h3 className="font-bold text-brand-navy dark:text-white mb-1">What this tool actually does</h3>
+            <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed">
               This financial mapping tool diagnoses the health of your B2B sales engine. By tracking performance from the very top of the funnel (Advertising Spend & Raw Leads) down through the sales team's closing ability (SQLs and Win Rates), this dashboard calculates your true <strong>Marketing Pipeline ROI</strong> and pinpoints exactly where revenue is leaking in your organization.
             </p>
           </div>
@@ -197,12 +197,12 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
           {/* Inputs Sidebar */}
-          <div className="lg:col-span-1 space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20">
-            <h3 className="font-bold text-brand-navy border-b pb-4">Pipeline Inputs</h3>
+          <div className="lg:col-span-1 space-y-6 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20">
+            <h3 className="font-bold text-brand-navy dark:text-white border-b pb-4">Pipeline Inputs</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Monthly Marketing Spend</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Monthly Marketing Spend</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={marketingSpend} onChange={e => setMarketingSpend(Number(e.target.value))} />
@@ -210,12 +210,12 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Total Leads Generated (#)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Total Leads Generated (#)</label>
                 <input type="number" className="input w-full" value={totalLeads} onChange={e => setTotalLeads(Number(e.target.value))} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Sales Qualified Rate (SQLs)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Sales Qualified Rate (SQLs)</label>
                 <div className="relative">
                   <input type="number" className="input w-full pr-8" step="1" value={sqlRate} onChange={e => setSqlRate(Number(e.target.value))} />
                   <span className="absolute right-3 top-2.5 text-gray-400">%</span>
@@ -223,7 +223,7 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Sales Win Rate (%)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Sales Win Rate (%)</label>
                 <div className="relative">
                   <input type="number" className="input w-full pr-8" step="1" value={winRate} onChange={e => setWinRate(Number(e.target.value))} />
                   <span className="absolute right-3 top-2.5 text-gray-400">%</span>
@@ -231,7 +231,7 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
               </div>
 
               <div className="pt-4 border-t">
-                <label className="block text-sm font-medium text-brand-slate mb-1">Avg Contract Value (ACV)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Avg Contract Value (ACV)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={acv} onChange={e => setAcv(Number(e.target.value))} />
@@ -245,34 +245,34 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
             
             {/* KPI Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">New Monthly Revenue</p>
                 <h4 className={`text-3xl font-bold ${calculations.revenue >= marketingSpend ? 'text-green-600' : 'text-red-500'}`}>
                   ${Math.round(calculations.revenue).toLocaleString()}
                 </h4>
-                <p className="text-xs text-brand-slate mt-2">Gross revenue from closed-won deals.</p>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Gross revenue from closed-won deals.</p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">Blended CAC</p>
-                <h4 className="text-3xl font-bold text-brand-navy">
+                <h4 className="text-3xl font-bold text-brand-navy dark:text-white">
                   ${Math.round(calculations.blendedCac).toLocaleString()}
                 </h4>
-                <p className="text-xs text-brand-slate mt-2">Fully loaded cost to acquire one customer.</p>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Fully loaded cost to acquire one customer.</p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">Pipeline ROI</p>
-                <h4 className={`text-3xl font-bold ${calculations.roi > 0 ? 'text-brand-navy' : 'text-orange-500'}`}>
+                <h4 className={`text-3xl font-bold ${calculations.roi > 0 ? 'text-brand-navy dark:text-white' : 'text-orange-500'}`}>
                   {calculations.roi > 5000 ? '>5,000' : calculations.roi.toFixed(0)}%
                 </h4>
-                <p className="text-xs text-brand-slate mt-2">Gross marketing return on ad spend.</p>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Gross marketing return on ad spend.</p>
               </div>
             </div>
 
             {/* Funnel Chart */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative z-10">
-              <h3 className="font-bold text-brand-navy mb-6">Sales Funnel Diagnostics (Volume Drop-Off)</h3>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative z-10">
+              <h3 className="font-bold text-brand-navy dark:text-white mb-6">Sales Funnel Diagnostics (Volume Drop-Off)</h3>
               <div className="h-[300px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={calculations.chartData} layout="vertical" margin={{ top: 10, right: 30, left: 40, bottom: 0 }}>
@@ -299,7 +299,7 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
             </div>
 
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
-            <div className={`bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
+            <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
               <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
@@ -308,9 +308,9 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
                 <span>B2B_Pipeline_Conversion_Matrix.xlsx</span>
               </div>
               
-              <div className="bg-white border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
+              <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
                 <span className="font-bold italic text-gray-400 select-none cursor-default px-1 hover:bg-gray-100 rounded">fx</span> 
-                <div className="bg-white border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
+                <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
                   =(Volume_Count * ACV)
                 </div>
               </div>
@@ -332,9 +332,9 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
                     
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="1" />
-                      <td className="border border-gray-200 px-2 py-2 font-bold bg-white text-black pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Unit Volume</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-bold bg-white dark:bg-slate-900 text-black pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Unit Volume</td>
                       {calculations.rowVolume.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono ${idx===2 ? 'text-teal-700 bg-teal-50 font-bold' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono ${idx===2 ? 'text-teal-700 bg-teal-50 font-bold' : ''}`}>
                           {val.toLocaleString()}
                         </td>
                       ))}
@@ -342,9 +342,9 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
                     
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="2" />
-                      <td className="border border-gray-200 px-2 py-2 bg-white pl-3 text-gray-700 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Conversion % (from prev stage)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-white dark:bg-slate-900 pl-3 text-gray-700 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Conversion % (from prev stage)</td>
                       {calculations.rowConversion.map((val, idx) => (
-                        <td key={idx} className="border border-gray-200 px-2 py-2 text-right font-mono text-gray-500">
+                        <td key={idx} className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-gray-500">
                           {val}
                         </td>
                       ))}
@@ -352,14 +352,14 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
 
                     <tr>
                       <ExcelRowIndex i="3" />
-                      <td colSpan={4} className="border border-gray-200 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
+                      <td colSpan={4} className="border border-gray-200 dark:border-slate-700 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
                     </tr>
 
                     <tr className="hover:bg-blue-50/30 group text-red-700">
                       <ExcelRowIndex i="4" />
-                      <td className="border border-gray-200 px-2 py-2 bg-white pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">True Cost per Unit (CAC Build)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-white dark:bg-slate-900 pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">True Cost per Unit (CAC Build)</td>
                       {calculations.rowCpa.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono ${idx===2 ? 'font-bold' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono ${idx===2 ? 'font-bold' : ''}`}>
                           ${val.toLocaleString()}
                         </td>
                       ))}
@@ -367,9 +367,9 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
 
                     <tr className="bg-[#eef3fb]">
                       <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Total Pipeline Gross Value</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Total Pipeline Gross Value</td>
                       {calculations.rowPipelineGross.map((val, idx) => (
-                        <td key={idx} className="border border-gray-200 px-2 py-2 text-right font-mono font-extrabold text-[13px] text-[#0b5c96] shadow-inner">
+                        <td key={idx} className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[13px] text-[#0b5c96] shadow-inner">
                           {idx === 2 ? (
                             <span className="border-b-2 border-double border-[#0b5c96] pb-0.5">
                               ${val.toLocaleString()}
@@ -405,14 +405,14 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
           {/* Paywall Overlay */}
           {isLocked && (
             <div className="absolute inset-0 z-50 flex flex-col items-center justify-center pt-20">
-              <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
+              <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
                 <div className="w-16 h-16 bg-gold-100 text-gold-600 rounded-full flex items-center justify-center mb-6">
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-navy mb-3">Free Session Expired</h3>
-                <p className="text-brand-slate mb-8">
+                <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Free Session Expired</h3>
+                <p className="text-brand-slate dark:text-slate-300 mb-8">
                   You've used your free preview of the B2B Marketing Model. Subscribe/Buy now to unlock permanent access to this tool and all 10 premium financial calculators.
                 </p>
                 
@@ -445,29 +445,29 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
         </div>
 
         {/* Educational Glossary Section */}
-        <div className="mt-16 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6">Marketing & Sales Glossary</h2>
-          <p className="text-brand-slate mb-8">Understanding the complex mechanics of B2B enterprise pipeline conversion.</p>
+        <div className="mt-16 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">Marketing & Sales Glossary</h2>
+          <p className="text-brand-slate dark:text-slate-300 mb-8">Understanding the complex mechanics of B2B enterprise pipeline conversion.</p>
           
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🗑️</span> Sales Qualified Leads (SQLs)</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> Not every raw lead is actually a potential customer. SQLs are the subset of leads that the Sales team has manually vetted and agreed are worth dedicating human capital to chase. A low raw-to-SQL rate means Marketing is driving bad traffic.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🗑️</span> Sales Qualified Leads (SQLs)</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> Not every raw lead is actually a potential customer. SQLs are the subset of leads that the Sales team has manually vetted and agreed are worth dedicating human capital to chase. A low raw-to-SQL rate means Marketing is driving bad traffic.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🤝</span> Win Rate</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> Of the fully qualified leads (SQLs) that the sales team pitches, what percentage actually sign the contract? This measures the pure execution and closing ability of the sales representatives.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🤝</span> Win Rate</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> Of the fully qualified leads (SQLs) that the sales team pitches, what percentage actually sign the contract? This measures the pure execution and closing ability of the sales representatives.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">💸</span> Blended CAC</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The Total Marketing Spend divided simply by the Total Closed Won Deals. It's "blended" because it ignores source attribution and just looks at the raw macro efficiency of the entire go-to-market engine.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">💸</span> Blended CAC</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The Total Marketing Spend divided simply by the Total Closed Won Deals. It's "blended" because it ignores source attribution and just looks at the raw macro efficiency of the entire go-to-market engine.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">📈</span> Pipeline ROI</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> Pure marketing return. This measures exactly how much Gross Revenue your closed deals brought in compared strictly to what you spent on the marketing budget that quarter.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">📈</span> Pipeline ROI</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> Pure marketing return. This measures exactly how much Gross Revenue your closed deals brought in compared strictly to what you spent on the marketing budget that quarter.</p>
             </div>
           </div>
         </div>

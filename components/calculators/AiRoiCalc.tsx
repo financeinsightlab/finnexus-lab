@@ -180,22 +180,22 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 relative">
+    <div className="min-h-screen py-10 relative">
       <div className="wrap max-w-7xl mx-auto">
         
         {/* Header */}
         <div className="mb-6">
           <p className="text-teal-600 font-medium mb-2">Premium Web Calculator</p>
-          <h1 className="text-3xl font-bold text-brand-navy">Enterprise AI & Automation ROI Model</h1>
-          <p className="text-brand-slate">Simulate the cost-displacement and capital velocity of employing AI Agents versus Human Capital.</p>
+          <h1 className="text-3xl font-bold text-brand-navy dark:text-white">Enterprise AI & Automation ROI Model</h1>
+          <p className="text-brand-slate dark:text-slate-300">Simulate the cost-displacement and capital velocity of employing AI Agents versus Human Capital.</p>
         </div>
 
         {/* About Tool Box */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
           <div className="text-3xl pt-1">💡</div>
           <div>
-            <h3 className="font-bold text-brand-navy mb-1">What this tool actually does</h3>
-            <p className="text-sm text-brand-slate leading-relaxed">
+            <h3 className="font-bold text-brand-navy dark:text-white mb-1">What this tool actually does</h3>
+            <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed">
               This financial model helps CFOs and founders determine exactly how much capital they will save by deploying AI agents into their workforce. By comparing the <strong>"Human Status Quo"</strong> cost against the newly augmented <strong>"AI + Human"</strong> cost base, this tool reveals your true ROI, net cost displacement, and how quickly your upfront implementation costs (Capex) will be safely recovered.
             </p>
           </div>
@@ -204,12 +204,12 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
           {/* Inputs Sidebar */}
-          <div className="lg:col-span-1 space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20">
-            <h3 className="font-bold text-brand-navy border-b pb-4">Assumptions</h3>
+          <div className="lg:col-span-1 space-y-6 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20">
+            <h3 className="font-bold text-brand-navy dark:text-white border-b pb-4">Assumptions</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Human Salary (Loaded)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Human Salary (Loaded)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={humanSalary} onChange={e => setHumanSalary(Number(e.target.value))} />
@@ -217,12 +217,12 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Employees Affected (#)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Employees Affected (#)</label>
                 <input type="number" className="input w-full" value={teamSize} onChange={e => setTeamSize(Number(e.target.value))} />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Productivity Automation</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Productivity Automation</label>
                 <div className="relative">
                   <input type="number" className="input w-full pr-8" step="1" value={automationPercent} onChange={e => setAutomationPercent(Number(e.target.value))} />
                   <span className="absolute right-3 top-2.5 text-gray-400">%</span>
@@ -230,7 +230,7 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
               </div>
 
               <div className="pt-4 border-t">
-                <label className="block text-sm font-medium text-brand-slate mb-1">AI Agent Mthly Cost</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">AI Agent Mthly Cost</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={aiMonthlyCost} onChange={e => setAiMonthlyCost(Number(e.target.value))} />
@@ -238,7 +238,7 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Upfront Capex (Setup)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Upfront Capex (Setup)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={capex} onChange={e => setCapex(Number(e.target.value))} />
@@ -252,34 +252,34 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
             
             {/* KPI Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">Net Annual Savings</p>
                 <h4 className={`text-3xl font-bold ${calculations.netAnnualSavings > 0 ? 'text-green-600' : 'text-red-500'}`}>
                   ${Math.round(calculations.netAnnualSavings).toLocaleString()}
                 </h4>
-                <p className="text-xs text-brand-slate mt-2">Cash velocity generated per year.</p>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Cash velocity generated per year.</p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">Gross Return on CAPEX</p>
-                <h4 className={`text-3xl font-bold ${calculations.roi > 50 ? 'text-brand-navy' : 'text-orange-500'}`}>
+                <h4 className={`text-3xl font-bold ${calculations.roi > 50 ? 'text-brand-navy dark:text-white' : 'text-orange-500'}`}>
                   {calculations.roi > 5000 ? '>5,000' : calculations.roi.toFixed(0)}%
                 </h4>
-                <p className="text-xs text-brand-slate mt-2">Gross annual return on the initial implementation cost.</p>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Gross annual return on the initial implementation cost.</p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">Breakeven Timeline</p>
-                <h4 className="text-3xl font-bold text-brand-navy">
+                <h4 className="text-3xl font-bold text-brand-navy dark:text-white">
                   {calculations.paybackMonths > 120 ? 'Never' : calculations.paybackMonths.toFixed(1)} <span className="text-lg font-normal">months</span>
                 </h4>
-                <p className="text-xs text-brand-slate mt-2">Time to fully recover upfront investment.</p>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Time to fully recover upfront investment.</p>
               </div>
             </div>
 
             {/* Chart */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative z-10">
-              <h3 className="font-bold text-brand-navy mb-6">Cumulative Operations Cost: Human vs AI Augmented</h3>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative z-10">
+              <h3 className="font-bold text-brand-navy dark:text-white mb-6">Cumulative Operations Cost: Human vs AI Augmented</h3>
               <div className="h-[400px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={calculations.chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -312,7 +312,7 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
             </div>
 
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
-            <div className={`bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
+            <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
               <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
@@ -321,9 +321,9 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
                 <span>AI_Deployment_Capex_Amortization.xlsx</span>
               </div>
               
-              <div className="bg-white border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
+              <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
                 <span className="font-bold italic text-gray-400 select-none cursor-default px-1 hover:bg-gray-100 rounded">fx</span> 
-                <div className="bg-white border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
+                <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
                   =(Human_Status_Quo) - (Augmented_Payroll + API_Software_Cost)
                 </div>
               </div>
@@ -343,11 +343,11 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
                   </thead>
                   <tbody className="text-gray-800">
                     
-                    <tr className="hover:bg-gray-50/50 group bg-gray-50/50">
+                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50 group bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="1" />
-                      <td className="border border-gray-200 px-2 py-2 font-bold bg-white text-gray-700 pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-gray-50/0">Human Baseline (Status Quo)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-bold bg-white dark:bg-slate-900 text-gray-700 pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/0">Human Baseline (Status Quo)</td>
                       {calculations.rowHumanStatusQuo.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : 'text-gray-500'}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : 'text-gray-500'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -355,14 +355,14 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
 
                     <tr>
                       <ExcelRowIndex i="2" />
-                      <td colSpan={38} className="border border-gray-200 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
+                      <td colSpan={38} className="border border-gray-200 dark:border-slate-700 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
                     </tr>
                     
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="3" />
-                      <td className="border border-gray-200 px-2 py-2 bg-white pl-3 text-brand-navy font-bold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Augmented Human Payroll</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-white dark:bg-slate-900 pl-3 text-brand-navy dark:text-white font-bold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Augmented Human Payroll</td>
                       {calculations.rowAugmentedHumanPayroll.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -370,9 +370,9 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
 
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="4" />
-                      <td className="border border-gray-200 px-2 py-2 bg-white pl-3 text-teal-700 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">AI API Server Constraints</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-white dark:bg-slate-900 pl-3 text-teal-700 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">AI API Server Constraints</td>
                       {calculations.rowAiSoftwareCost.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -380,9 +380,9 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
 
                     <tr className="hover:bg-blue-50/30 group text-red-600">
                       <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 px-2 py-2 bg-white pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Capex Deployment (One-Time)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-white dark:bg-slate-900 pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Capex Deployment (One-Time)</td>
                       {calculations.rowMonthlyCapexAmortization.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : ''}`}>
                           {val === 0 ? '-' : val}
                         </td>
                       ))}
@@ -390,14 +390,14 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
 
                     <tr>
                       <ExcelRowIndex i="6" />
-                      <td colSpan={38} className="border border-gray-200 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
+                      <td colSpan={38} className="border border-gray-200 dark:border-slate-700 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
                     </tr>
 
                     <tr className="hover:bg-blue-50/30 group bg-yellow-50/20">
                       <ExcelRowIndex i="7" />
-                      <td className="border border-gray-200 px-2 py-2 bg-yellow-50/30 pl-3 font-semibold text-black sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0 border-t-2 border-t-gray-400">Net Monthly Savings Delta (-Loss / +Created)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-yellow-50/30 pl-3 font-semibold text-black sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0 border-t-2 border-t-gray-400">Net Monthly Savings Delta (-Loss / +Created)</td>
                       {calculations.rowNetMonthlyDelta.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono font-semibold ${val < 0 ? 'text-red-500' : 'text-green-600'} ${idx===0 ? 'text-blue-700 bg-yellow-50' : 'border-t-2 border-t-gray-400'}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-semibold ${val < 0 ? 'text-red-500' : 'text-green-600'} ${idx===0 ? 'text-blue-700 bg-yellow-50' : 'border-t-2 border-t-gray-400'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -405,11 +405,11 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
 
                     <tr className="bg-[#eef3fb]">
                       <ExcelRowIndex i="8" />
-                      <td className="border border-gray-200 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Cumulative ROI Position</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Cumulative ROI Position</td>
                       {calculations.rowCumulativeNetPosition.map((val, idx) => {
                         const isBreakeven = idx > 0 && calculations.rowCumulativeNetPosition[idx-1] < 0 && val >= 0;
                         return (
-                          <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono font-extrabold text-[13px] shadow-inner ${val < 0 ? 'text-red-500' : 'text-[#0b5c96]'} ${isBreakeven ? 'bg-green-100 border-2 border-green-500 text-green-700' : ''}`}>
+                          <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[13px] shadow-inner ${val < 0 ? 'text-red-500' : 'text-[#0b5c96]'} ${isBreakeven ? 'bg-green-100 border-2 border-green-500 text-green-700' : ''}`}>
                             <span className="border-b-2 border-double border-current pb-0.5">
                               {typeof val === 'number' ? Math.round(val).toLocaleString() : val}
                             </span>
@@ -442,14 +442,14 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
           {/* Paywall Overlay */}
           {isLocked && (
             <div className="absolute inset-0 z-50 flex flex-col items-center justify-center pt-20">
-              <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
+              <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
                 <div className="w-16 h-16 bg-gold-100 text-gold-600 rounded-full flex items-center justify-center mb-6">
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-navy mb-3">Free Session Expired</h3>
-                <p className="text-brand-slate mb-8">
+                <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Free Session Expired</h3>
+                <p className="text-brand-slate dark:text-slate-300 mb-8">
                   You've used your free preview of the AI Agent ROI Calculator. Subscribe/Buy now to unlock permanent access to this tool and all 10 premium financial models.
                 </p>
                 
@@ -482,30 +482,30 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
         </div>
 
         {/* Educational Glossary Section */}
-        <div className="mt-16 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6">Financial Glossary & Formulas</h2>
-          <p className="text-brand-slate mb-8">Understanding the enterprise math driving this AI displacement calculator.</p>
+        <div className="mt-16 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">Financial Glossary & Formulas</h2>
+          <p className="text-brand-slate dark:text-slate-300 mb-8">Understanding the enterprise math driving this AI displacement calculator.</p>
           
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">👷</span> Fully Loaded Cost</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> A worker costs far more than their base salary. Once you add health insurance, employment taxes, 401k matches, and software licenses, an employee's "fully loaded cost" is roughly 1.25x to 1.4x of their base pay.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">👷</span> Fully Loaded Cost</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> A worker costs far more than their base salary. Once you add health insurance, employment taxes, 401k matches, and software licenses, an employee's "fully loaded cost" is roughly 1.25x to 1.4x of their base pay.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">⚙️</span> Productivity Displacement</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> If an AI agent makes a 5-person team 40% faster, the company just acquired the productive output of 2 entire extra humans without hiring them. The financial value created is exactly 40% of the total human payroll offset by the software costs.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">⚙️</span> Productivity Displacement</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> If an AI agent makes a 5-person team 40% faster, the company just acquired the productive output of 2 entire extra humans without hiring them. The financial value created is exactly 40% of the total human payroll offset by the software costs.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🏗️</span> implementation Capex</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> Capital Expenditure. This is the massive, one-time upfront cost required to build, securely train, and implement AI pipelines inside your enterprise (often paying agencies or consulting firms to set it up).</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🏗️</span> implementation Capex</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> Capital Expenditure. This is the massive, one-time upfront cost required to build, securely train, and implement AI pipelines inside your enterprise (often paying agencies or consulting firms to set it up).</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🚀</span> Gross Return on CAPEX (ROI)</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The ultimate CFO metric. It measures how much pure cash your upfront Capital Expenditure generated in a single year.</p>
-              <p className="text-sm text-brand-slate leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100 font-mono">Formula: (Net Annual Savings / Capex) * 100</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🚀</span> Gross Return on CAPEX (ROI)</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The ultimate CFO metric. It measures how much pure cash your upfront Capital Expenditure generated in a single year.</p>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white p-3 rounded-lg border border-gray-100 font-mono">Formula: (Net Annual Savings / Capex) * 100</p>
             </div>
           </div>
         </div>

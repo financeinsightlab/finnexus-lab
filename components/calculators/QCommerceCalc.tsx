@@ -129,19 +129,19 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
   const fmt = (n: number, currency = '₹') => `${currency}${Math.abs(n) >= 1e6 ? (n/1e6).toFixed(2)+'M' : Math.abs(n) >= 1e3 ? (n/1e3).toFixed(0)+'K' : n}`;
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 relative">
+    <div className="min-h-screen py-10 relative">
       <div className="wrap max-w-7xl mx-auto">
         <div className="mb-6">
           <p className="text-teal-600 font-medium mb-2">Premium Web Calculator</p>
-          <h1 className="text-3xl font-bold text-brand-navy">Q-Commerce Unit Economics Model</h1>
-          <p className="text-brand-slate">Dark store P&L, Contribution Margin waterfall & breakeven engine for quick-commerce operators.</p>
+          <h1 className="text-3xl font-bold text-brand-navy dark:text-white">Q-Commerce Unit Economics Model</h1>
+          <p className="text-brand-slate dark:text-slate-300">Dark store P&L, Contribution Margin waterfall & breakeven engine for quick-commerce operators.</p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
           <div className="text-3xl pt-1">💡</div>
           <div>
-            <h3 className="font-bold text-brand-navy mb-1">What this tool actually does</h3>
-            <p className="text-sm text-brand-slate leading-relaxed">
+            <h3 className="font-bold text-brand-navy dark:text-white mb-1">What this tool actually does</h3>
+            <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed">
               Q-Commerce (Swiggy Instamart, Blinkit, Zepto) is one of the most economically complex business models in tech — for every ₹1 of Revenue, there are hidden costs at 5 different layers before a rupee of profit is visible. This model exposes each cost layer individually using the Contribution Margin methodology to find the exact daily order volume needed to break even.
             </p>
           </div>
@@ -149,8 +149,8 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
 
         <div className="grid lg:grid-cols-4 gap-8 relative">
           {/* Sidebar */}
-          <div className="lg:col-span-1 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20 space-y-4">
-            <h3 className="font-bold text-brand-navy border-b pb-4">Operating Assumptions</h3>
+          <div className="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20 space-y-4">
+            <h3 className="font-bold text-brand-navy dark:text-white border-b pb-4">Operating Assumptions</h3>
             <div className="bg-blue-50/50 -mx-6 px-6 py-4">
               <h4 className="font-bold text-blue-900 text-[11px] uppercase tracking-widest mb-3">Dark Store Volume</h4>
               <div className="space-y-3">
@@ -185,7 +185,7 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
                 <div key={label}>
                   <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>
                   <div className="relative">
-                    <input type="number" className="input w-full py-1 text-sm bg-gray-50" value={val} onChange={e => set(Number(e.target.value))} />
+                    <input type="number" className="input w-full py-1 text-sm bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={val} onChange={e => set(Number(e.target.value))} />
                     {suffix && <span className="absolute right-3 top-2 text-gray-400 text-sm">{suffix}</span>}
                   </div>
                 </div>
@@ -201,39 +201,39 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
                 { label: 'CM2 (after Delivery)', val: fmt(calculations.cm2), sub: `${calculations.cm2Margin.toFixed(1)}% CM2 margin`, color: 'green' },
                 { label: 'Net Store EBITDA', val: fmt(calculations.netStoreProfit), sub: `${calculations.netMargin.toFixed(1)}% net margin`, color: calculations.netStoreProfit >= 0 ? 'teal' : 'red' },
               ].map(({ label, val, sub, color }) => (
-                <div key={label} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
+                <div key={label} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden group">
                   <div className={`absolute -right-4 -top-4 w-24 h-24 rounded-full opacity-30 group-hover:scale-150 transition-transform bg-${color}-100`}></div>
                   <div className="relative z-10">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest mb-1">{label}</p>
-                    <h4 className={`text-3xl font-bold ${calculations.netStoreProfit < 0 && label.includes('EBITDA') ? 'text-red-500' : 'text-brand-navy'}`}>{val}</h4>
-                    <p className="text-xs text-brand-slate mt-1">{sub}</p>
+                    <h4 className={`text-3xl font-bold ${calculations.netStoreProfit < 0 && label.includes('EBITDA') ? 'text-red-500' : 'text-brand-navy dark:text-white'}`}>{val}</h4>
+                    <p className="text-xs text-brand-slate dark:text-slate-300 mt-1">{sub}</p>
                   </div>
                 </div>
               ))}
             </div>
 
             {/* Breakeven */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 grid md:grid-cols-3 gap-4">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 grid md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-yellow-50 rounded-xl">
                 <p className="text-xs font-semibold text-yellow-700 uppercase tracking-widest mb-1">Breakeven Orders/Mo</p>
-                <p className="text-3xl font-bold text-brand-navy">{Math.ceil(calculations.breakEvenOrders).toLocaleString()}</p>
+                <p className="text-3xl font-bold text-brand-navy dark:text-white">{Math.ceil(calculations.breakEvenOrders).toLocaleString()}</p>
                 <p className="text-xs text-gray-500 mt-1">≈ {Math.ceil(calculations.breakEvenOrders / 30)}/day needed</p>
               </div>
               <div className="text-center p-4 bg-sky-50 rounded-xl">
                 <p className="text-xs font-semibold text-sky-700 uppercase tracking-widest mb-1">Revenue per Order</p>
-                <p className="text-3xl font-bold text-brand-navy">₹{Math.round(calculations.revPerOrder)}</p>
+                <p className="text-3xl font-bold text-brand-navy dark:text-white">₹{Math.round(calculations.revPerOrder)}</p>
                 <p className="text-xs text-gray-500 mt-1">incl. delivery fee charged</p>
               </div>
               <div className="text-center p-4 bg-red-50 rounded-xl">
                 <p className="text-xs font-semibold text-red-700 uppercase tracking-widest mb-1">All-In Cost per Order</p>
-                <p className="text-3xl font-bold text-brand-navy">₹{Math.round(calculations.totalCostPerOrder)}</p>
+                <p className="text-3xl font-bold text-brand-navy dark:text-white">₹{Math.round(calculations.totalCostPerOrder)}</p>
                 <p className="text-xs text-gray-500 mt-1">COGS + delivery + fixed share</p>
               </div>
             </div>
 
             {/* Scale Scenarios Chart */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-brand-navy mb-6">Order Volume Scenarios — Store EBITDA (₹K/month)</h3>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-brand-navy dark:text-white mb-6">Order Volume Scenarios — Store EBITDA (₹K/month)</h3>
               <div className="h-[300px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={calculations.scenarios} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
@@ -251,14 +251,14 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
             </div>
 
             {/* Excel Matrix */}
-            <div className="bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden">
               <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/></svg>
                 <span>Q_Commerce_Dark_Store_Unit_Economics.xlsx</span>
               </div>
-              <div className="bg-white border-b border-gray-300 px-3 py-1.5 text-[11px] flex items-center gap-2">
+              <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] flex items-center gap-2">
                 <span className="font-bold italic text-gray-400 px-1">fx</span>
-                <div className="bg-white border border-blue-300 w-full px-2 py-0.5 h-5 flex items-center shadow-inner text-xs">
+                <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 h-5 flex items-center shadow-inner text-xs">
                   =CM2 - FixedCosts - Marketing = Store_EBITDA
                 </div>
               </div>
@@ -292,14 +292,14 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
                     ].map(row => (
                       <tr key={row.i} className={`hover:bg-blue-50/30 group ${row.highlight === 'navy' ? 'bg-[#eef3fb]' : row.highlight === 'green' ? 'bg-green-50/20' : row.highlight === 'teal' ? 'bg-teal-50/10' : row.highlight === 'blue' ? 'bg-sky-50/20' : ''}`}>
                         <td className="border border-gray-300 bg-gray-100 text-center font-bold text-gray-400 text-xs w-6 sticky left-0 z-20">{row.i}</td>
-                        <td className={`border border-gray-200 px-2 py-1.5 sticky left-6 z-20 ${row.bold ? 'font-bold text-gray-800' : 'text-gray-500 pl-8'} bg-white group-hover:bg-blue-50/0`}>{row.label}</td>
-                        <td className={`border border-gray-200 px-3 py-1.5 text-right font-mono ${row.highlight === 'navy' ? 'font-extrabold text-[#0b5c96] text-[13px]' : row.mo < 0 ? 'text-red-600' : 'text-gray-700'} ${row.bold ? 'font-bold' : ''}`}>
+                        <td className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 sticky left-6 z-20 ${row.bold ? 'font-bold text-gray-800' : 'text-gray-500 pl-8'} bg-white dark:bg-slate-900 group-hover:bg-blue-50/0`}>{row.label}</td>
+                        <td className={`border border-gray-200 dark:border-slate-700 px-3 py-1.5 text-right font-mono ${row.highlight === 'navy' ? 'font-extrabold text-[#0b5c96] text-[13px]' : row.mo < 0 ? 'text-red-600' : 'text-gray-700'} ${row.bold ? 'font-bold' : ''}`}>
                           {row.mo < 0 ? `(₹${Math.round(Math.abs(row.mo)).toLocaleString()})` : `₹${Math.round(row.mo).toLocaleString()}`}
                         </td>
-                        <td className={`border border-gray-200 px-3 py-1.5 text-right font-mono ${Math.round(row.por) < 0 ? 'text-red-600' : 'text-gray-700'} ${row.bold ? 'font-bold' : ''}`}>
+                        <td className={`border border-gray-200 dark:border-slate-700 px-3 py-1.5 text-right font-mono ${Math.round(row.por) < 0 ? 'text-red-600' : 'text-gray-700'} ${row.bold ? 'font-bold' : ''}`}>
                           {Math.round(row.por) < 0 ? `(₹${Math.abs(Math.round(row.por))})` : `₹${Math.round(row.por)}`}
                         </td>
-                        <td className={`border border-gray-200 px-3 py-1.5 text-right font-mono ${row.pct < 0 ? 'text-red-600' : 'text-gray-600'}`}>
+                        <td className={`border border-gray-200 dark:border-slate-700 px-3 py-1.5 text-right font-mono ${row.pct < 0 ? 'text-red-600' : 'text-gray-600'}`}>
                           {row.pct.toFixed(1)}%
                         </td>
                       </tr>
@@ -321,12 +321,12 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
 
           {isLocked && (
             <div className="absolute inset-0 z-50 flex items-center justify-center pt-20">
-              <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center">
+              <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center">
                 <div className="w-16 h-16 bg-brand-navy/10 rounded-full flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8 text-brand-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                  <svg className="w-8 h-8 text-brand-navy dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-navy mb-3">Model Locked</h3>
-                <p className="text-brand-slate mb-8">Unlock the Q-Commerce Unit Economics Model and all 10 premium calculators.</p>
+                <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Model Locked</h3>
+                <p className="text-brand-slate dark:text-slate-300 mb-8">Unlock the Q-Commerce Unit Economics Model and all 10 premium calculators.</p>
                 {!showEmailGate ? (
                   <button onClick={() => setShowEmailGate(true)} className="btn btn-primary w-full text-lg py-4 shadow-xl">Unlock Premium Access</button>
                 ) : (
@@ -341,8 +341,8 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
           )}
         </div>
 
-        <div className="mt-16 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6">Q-Commerce Economics Glossary</h2>
+        <div className="mt-16 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">Q-Commerce Economics Glossary</h2>
           <div className="grid md:grid-cols-2 gap-8">
             {[
               { icon: '🏪', title: 'Dark Store', body: 'A micro-warehouse (1,500–4,000 sq ft) located within a 2–3 km radius of residential demand clusters. Unlike a supermarket, it is closed to the public and optimized purely for picking speed. Rent, cooling, and staff cost are fixed overheads that must be covered by order volume.' },
@@ -351,8 +351,8 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
               { icon: '📦', title: 'Last-Mile Delivery Cost', body: 'The single largest variable cost in Q-Commerce. Rider wages, fuel, battery, and app infrastructure typically cost ₹25–₹60 per order in India. Since delivery fees charged to customers rarely cover this cost, the product margin must cross-subsidize every delivery.' },
             ].map(({ icon, title, body }) => (
               <div key={title} className="space-y-2">
-                <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">{icon}</span> {title}</h4>
-                <p className="text-sm text-brand-slate leading-relaxed">{body}</p>
+                <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">{icon}</span> {title}</h4>
+                <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed">{body}</p>
               </div>
             ))}
           </div>

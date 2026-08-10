@@ -159,22 +159,22 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 relative">
+    <div className="min-h-screen py-10 relative">
       <div className="wrap max-w-7xl mx-auto">
         
         {/* Header */}
         <div className="mb-6">
           <p className="text-teal-600 font-medium mb-2">Premium Web Calculator</p>
-          <h1 className="text-3xl font-bold text-brand-navy">SaaS LTV/CAC & Unit Economics Model</h1>
-          <p className="text-brand-slate">Simulate customer lifetime value, payback periods, and cohort profitability.</p>
+          <h1 className="text-3xl font-bold text-brand-navy dark:text-white">SaaS LTV/CAC & Unit Economics Model</h1>
+          <p className="text-brand-slate dark:text-slate-300">Simulate customer lifetime value, payback periods, and cohort profitability.</p>
         </div>
 
         {/* About Tool Box */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
           <div className="text-3xl pt-1">💡</div>
           <div>
-            <h3 className="font-bold text-brand-navy mb-1">What this tool actually does</h3>
-            <p className="text-sm text-brand-slate leading-relaxed">
+            <h3 className="font-bold text-brand-navy dark:text-white mb-1">What this tool actually does</h3>
+            <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed">
               This calculator projects the fundamental unit economics of a subscription business. By modeling the relationship between how much a customer costs to acquire <strong>(CAC)</strong> and how much profit they generate over their lifetime <strong>(LTV)</strong> before canceling, this tool helps founders and investors answer a single critical question: <em>"Is it financially safe to scale my marketing spend right now?"</em>
             </p>
           </div>
@@ -183,12 +183,12 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
           {/* Inputs Sidebar */}
-          <div className="lg:col-span-1 space-y-6 bg-white p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24">
-            <h3 className="font-bold text-brand-navy border-b pb-4">Assumptions</h3>
+          <div className="lg:col-span-1 space-y-6 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24">
+            <h3 className="font-bold text-brand-navy dark:text-white border-b pb-4">Assumptions</h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">ARPU (Monthly Avg Revenue)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">ARPU (Monthly Avg Revenue)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={arpu} onChange={e => setArpu(Number(e.target.value))} />
@@ -196,7 +196,7 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Gross Margin (%)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Gross Margin (%)</label>
                 <div className="relative">
                   <input type="number" className="input w-full pr-8" value={margin} onChange={e => setMargin(Number(e.target.value))} />
                   <span className="absolute right-3 top-2.5 text-gray-400">%</span>
@@ -204,7 +204,7 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">Monthly Churn Rate (%)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Monthly Churn Rate (%)</label>
                 <div className="relative">
                   <input type="number" className="input w-full pr-8" step="0.1" value={churn} onChange={e => setChurn(Number(e.target.value))} />
                   <span className="absolute right-3 top-2.5 text-gray-400">%</span>
@@ -212,7 +212,7 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-brand-slate mb-1">CAC (Acquisition Cost)</label>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">CAC (Acquisition Cost)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={cac} onChange={e => setCac(Number(e.target.value))} />
@@ -226,30 +226,30 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
             
             {/* KPI Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">Lifetime Value (LTV)</p>
-                <h4 className="text-3xl font-bold text-brand-navy">${calculations.ltv.toLocaleString(undefined, { maximumFractionDigits: 0 })}</h4>
-                <p className="text-xs text-brand-slate mt-2">Expected total gross profit per customer.</p>
+                <h4 className="text-3xl font-bold text-brand-navy dark:text-white">${calculations.ltv.toLocaleString(undefined, { maximumFractionDigits: 0 })}</h4>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Expected total gross profit per customer.</p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">LTV : CAC Ratio</p>
                 <h4 className={`text-3xl font-bold ${calculations.ltvCac >= 3 ? 'text-green-600' : 'text-red-500'}`}>
                   {calculations.ltvCac.toFixed(1)}x
                 </h4>
-                <p className="text-xs text-brand-slate mt-2">Target &gt; 3.0x for healthy SaaS.</p>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Target &gt; 3.0x for healthy SaaS.</p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-sm font-medium text-gray-500 mb-1">CAC Payback Period</p>
-                <h4 className="text-3xl font-bold text-brand-navy">{calculations.payback.toFixed(1)} <span className="text-lg font-normal">months</span></h4>
-                <p className="text-xs text-brand-slate mt-2">Time required to recover acquisition cost.</p>
+                <h4 className="text-3xl font-bold text-brand-navy dark:text-white">{calculations.payback.toFixed(1)} <span className="text-lg font-normal">months</span></h4>
+                <p className="text-xs text-brand-slate dark:text-slate-300 mt-2">Time required to recover acquisition cost.</p>
               </div>
             </div>
 
             {/* Chart */}
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-brand-navy mb-6">Cumulative Profit per Customer (36 Mo. Cohort)</h3>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-brand-navy dark:text-white mb-6">Cumulative Profit per Customer (36 Mo. Cohort)</h3>
               <div className="h-[400px] w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <AreaChart data={calculations.chartData} margin={{ top: 10, right: 30, left: 0, bottom: 0 }}>
@@ -283,7 +283,7 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
             </div>
 
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
-            <div className={`bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
+            <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
               <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
@@ -292,9 +292,9 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
                 <span>SaaS_Cohort_LTV_Amortization_Schedule.xlsx</span>
               </div>
               
-              <div className="bg-white border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
+              <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
                 <span className="font-bold italic text-gray-400 select-none cursor-default px-1 hover:bg-gray-100 rounded">fx</span> 
-                <div className="bg-white border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
+                <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
                   =SUM(Expected_Monthly_Profit) - CAC
                 </div>
               </div>
@@ -316,9 +316,9 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
                     
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="1" />
-                      <td className="border border-gray-200 px-2 py-2 font-bold bg-white text-black pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Active Cohort Target</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-bold bg-white dark:bg-slate-900 text-black pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Active Cohort Target</td>
                       {calculations.rowActiveCohort.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : 'text-gray-500'}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : 'text-gray-500'}`}>
                           {val}
                         </td>
                       ))}
@@ -326,19 +326,19 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
                     
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="2" />
-                      <td className="border border-gray-200 px-2 py-2 bg-white pl-3 text-gray-700 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Risk-Adjusted Expected Revenue</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-white dark:bg-slate-900 pl-3 text-gray-700 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Risk-Adjusted Expected Revenue</td>
                       {calculations.rowMonthlyRev.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
                     </tr>
 
-                    <tr className="hover:bg-blue-50/30 group bg-gray-50/50">
+                    <tr className="hover:bg-blue-50/30 group bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="3" />
-                      <td className="border border-gray-200 px-2 py-2 bg-gray-50 pl-3 font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Expected Monthly Gross Profit</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white pl-3 font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Expected Monthly Gross Profit</td>
                       {calculations.rowGrossProfit.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono font-semibold text-black ${idx===0 ? 'text-blue-700 bg-yellow-50' : 'border-t border-t-gray-400'}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-semibold text-black ${idx===0 ? 'text-blue-700 bg-yellow-50' : 'border-t border-t-gray-400'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -346,16 +346,16 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
 
                     <tr>
                       <ExcelRowIndex i="4" />
-                      <td colSpan={38} className="border border-gray-200 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
+                      <td colSpan={38} className="border border-gray-200 dark:border-slate-700 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
                     </tr>
 
                     <tr className="bg-[#eef3fb]">
                       <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Cumulative Net Profit (CAC Recovery)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Cumulative Net Profit (CAC Recovery)</td>
                       {calculations.rowCumProfit.map((val, idx) => {
                         const isBreakeven = idx > 0 && calculations.rowCumProfit[idx-1] < 0 && val >= 0;
                         return (
-                          <td key={idx} className={`border border-gray-200 px-2 py-2 text-right font-mono font-extrabold text-[13px] shadow-inner ${val < 0 ? 'text-red-500' : 'text-[#0b5c96]'} ${isBreakeven ? 'bg-green-100 border-2 border-green-500' : ''}`}>
+                          <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[13px] shadow-inner ${val < 0 ? 'text-red-500' : 'text-[#0b5c96]'} ${isBreakeven ? 'bg-green-100 border-2 border-green-500' : ''}`}>
                             <span className="border-b-2 border-double border-current pb-0.5">
                               {typeof val === 'number' ? Math.round(val).toLocaleString() : val}
                             </span>
@@ -388,14 +388,14 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
           {/* Paywall Overlay */}
           {isLocked && (
             <div className="absolute inset-0 z-10 flex flex-col items-center justify-center pt-20">
-              <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center">
+              <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center">
                 <div className="w-16 h-16 bg-gold-100 text-gold-600 rounded-full flex items-center justify-center mb-6">
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-navy mb-3">Free Session Expired</h3>
-                <p className="text-brand-slate mb-8">
+                <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Free Session Expired</h3>
+                <p className="text-brand-slate dark:text-slate-300 mb-8">
                   You've used your free preview of the SaaS LTV/CAC Model. Subscribe now for permanent access to all 10 premium financial calculators and models.
                 </p>
                 
@@ -428,33 +428,33 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
         </div>
 
         {/* Educational Section - How to calculate terms */}
-        <div className="mt-16 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6">Financial Glossary & Formulas</h2>
-          <p className="text-brand-slate mb-8">Not from a finance background? No problem. Here is exactly what these assumptions mean and how to calculate them from your own business data before entering them into the tool.</p>
+        <div className="mt-16 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">Financial Glossary & Formulas</h2>
+          <p className="text-brand-slate dark:text-slate-300 mb-8">Not from a finance background? No problem. Here is exactly what these assumptions mean and how to calculate them from your own business data before entering them into the tool.</p>
           
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">💰</span> Average Revenue Per User (ARPU)</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The average amount of money a single active customer pays you every month.</p>
-              <p className="text-sm text-brand-slate leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100 font-mono">Formula: Total Monthly Recurring Revenue (MRR) / Total Active Customers</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">💰</span> Average Revenue Per User (ARPU)</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The average amount of money a single active customer pays you every month.</p>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white p-3 rounded-lg border border-gray-100 font-mono">Formula: Total Monthly Recurring Revenue (MRR) / Total Active Customers</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">📉</span> Monthly Churn Rate</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The percentage of your customers who cancel their subscription every month. A high churn rate acts like a hole in a bucket, destroying your long-term profits.</p>
-              <p className="text-sm text-brand-slate leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100 font-mono">Formula: (Customers Lost This Month / Customers at Start of Month) * 100</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">📉</span> Monthly Churn Rate</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The percentage of your customers who cancel their subscription every month. A high churn rate acts like a hole in a bucket, destroying your long-term profits.</p>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white p-3 rounded-lg border border-gray-100 font-mono">Formula: (Customers Lost This Month / Customers at Start of Month) * 100</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">📊</span> Gross Margin %</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The percentage of revenue left over after subtracting the direct costs of delivering your software (like AWS server hosting and direct support logic).</p>
-              <p className="text-sm text-brand-slate leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100 font-mono">Formula: ((Total Revenue - Cost of Goods Sold) / Total Revenue) * 100</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">📊</span> Gross Margin %</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The percentage of revenue left over after subtracting the direct costs of delivering your software (like AWS server hosting and direct support logic).</p>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white p-3 rounded-lg border border-gray-100 font-mono">Formula: ((Total Revenue - Cost of Goods Sold) / Total Revenue) * 100</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🎯</span> Customer Acquisition Cost (CAC)</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The total amount of money you spend on sales and marketing to acquire exactly one new paying customer.</p>
-              <p className="text-sm text-brand-slate leading-relaxed bg-gray-50 p-3 rounded-lg border border-gray-100 font-mono">Formula: Total Sales & Marketing Spend / Number of New Customers Acquired</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🎯</span> Customer Acquisition Cost (CAC)</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The total amount of money you spend on sales and marketing to acquire exactly one new paying customer.</p>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white p-3 rounded-lg border border-gray-100 font-mono">Formula: Total Sales & Marketing Spend / Number of New Customers Acquired</p>
             </div>
           </div>
         </div>

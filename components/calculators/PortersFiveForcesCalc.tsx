@@ -215,27 +215,27 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
   const attractivenessColors = ['', 'bg-red-100 text-red-800', 'bg-orange-100 text-orange-800', 'bg-yellow-100 text-yellow-800', 'bg-green-100 text-green-800'];
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 relative">
+    <div className="min-h-screen py-10 relative">
       <div className="wrap max-w-7xl mx-auto">
         <div className="mb-6">
           <p className="text-teal-600 font-medium mb-2">Premium Web Calculator</p>
-          <h1 className="text-3xl font-bold text-brand-navy">Porter's Five Forces Analysis</h1>
-          <p className="text-brand-slate">Michael Porter's framework for competitive industry attractiveness scoring and strategic positioning.</p>
+          <h1 className="text-3xl font-bold text-brand-navy dark:text-white">Porter's Five Forces Analysis</h1>
+          <p className="text-brand-slate dark:text-slate-300">Michael Porter's framework for competitive industry attractiveness scoring and strategic positioning.</p>
         </div>
 
-        <div className="bg-white p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border-l-4 border-l-brand-teal border border-gray-100 mb-8 flex gap-4 max-w-4xl">
           <div className="text-3xl pt-1">💡</div>
           <div>
-            <h3 className="font-bold text-brand-navy mb-1">What this tool actually does</h3>
-            <p className="text-sm text-brand-slate leading-relaxed">
+            <h3 className="font-bold text-brand-navy dark:text-white mb-1">What this tool actually does</h3>
+            <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed">
               Developed at Harvard Business School, Porter's Five Forces is the gold-standard strategic analysis tool for evaluating whether an industry is structurally attractive or hostile. By quantifying the power dynamics between competitors, buyers, suppliers, substitutes, and potential entrants, this model generates an objective "Competitive Intensity Score" for any industry.
             </p>
           </div>
         </div>
 
         {/* Company Setup */}
-        <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 max-w-2xl">
-          <h3 className="font-bold text-brand-navy mb-4">Analysis Setup</h3>
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 mb-6 max-w-2xl">
+          <h3 className="font-bold text-brand-navy dark:text-white mb-4">Analysis Setup</h3>
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Company / Brand Name</label>
@@ -252,22 +252,22 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
           {/* Competitive Forces Scoring */}
           <div className="space-y-4 mb-8">
             {FORCE_DEFINITIONS.map(force => (
-              <div key={force.id} className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div key={force.id} className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <div className="flex items-start justify-between flex-wrap gap-4">
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-3 mb-1">
                       <span className="text-2xl">{force.icon}</span>
-                      <h3 className="font-bold text-brand-navy text-lg">{force.name}</h3>
+                      <h3 className="font-bold text-brand-navy dark:text-white text-lg">{force.name}</h3>
                       <span className={`px-2 py-0.5 rounded-full text-xs font-bold ${INTENSITY_COLORS[ratings[force.id as ForceId]]}`}>
                         {INTENSITY_LABELS[ratings[force.id as ForceId]]} ({ratings[force.id as ForceId]}/5)
                       </span>
                     </div>
-                    <p className="text-sm text-brand-slate mb-3">{force.description}</p>
+                    <p className="text-sm text-brand-slate dark:text-slate-300 mb-3">{force.description}</p>
                     <div className="flex flex-wrap gap-2 mb-3">
                       {force.factors.map(f => <span key={f} className="text-[10px] bg-gray-100 text-gray-600 px-2 py-1 rounded-full font-medium">{f}</span>)}
                     </div>
                     <textarea
-                      className="w-full text-sm border border-gray-200 rounded-lg p-3 text-gray-600 resize-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal outline-none"
+                      className="w-full text-sm border border-gray-200 dark:border-slate-700 rounded-lg p-3 text-gray-600 resize-none focus:ring-1 focus:ring-brand-teal focus:border-brand-teal outline-none"
                       rows={2}
                       placeholder={`Describe your specific ${force.name.toLowerCase()} context...`}
                       value={notes[force.id as ForceId]
@@ -300,8 +300,8 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
 
           {/* Results Dashboard */}
           <div className="grid md:grid-cols-2 gap-8 mb-8">
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-              <h3 className="font-bold text-brand-navy mb-6">Five Forces Radar Analysis</h3>
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
+              <h3 className="font-bold text-brand-navy dark:text-white mb-6">Five Forces Radar Analysis</h3>
               <div className="h-[320px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <RadarChart data={calculations.radarData}>
@@ -314,11 +314,11 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
                 </ResponsiveContainer>
               </div>
             </div>
-            <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col justify-between">
               <div>
-                <h3 className="font-bold text-brand-navy mb-4">Industry Attractiveness Score</h3>
+                <h3 className="font-bold text-brand-navy dark:text-white mb-4">Industry Attractiveness Score</h3>
                 <div className="text-center py-6">
-                  <div className="text-6xl font-extrabold text-brand-navy mb-2">{calculations.average.toFixed(1)}<span className="text-2xl text-gray-400">/5</span></div>
+                  <div className="text-6xl font-extrabold text-brand-navy dark:text-white mb-2">{calculations.average.toFixed(1)}<span className="text-2xl text-gray-400">/5</span></div>
                   <div className={`inline-block px-4 py-1.5 rounded-full text-sm font-bold mt-2 ${attractivenessColors[calculations.attractivenessScore]}`}>
                     {calculations.attractiveness} Industry
                   </div>
@@ -342,14 +342,14 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
           </div>
 
           {/* Excel Summary Table */}
-          <div className="bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden mb-8">
+          <div className="bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden mb-8">
             <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2">
               <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/></svg>
               <span>Porters_Five_Forces_{companyName.replace(/\s+/g,'_')}_{industry.replace(/\s+/g,'_')}.xlsx</span>
             </div>
-            <div className="bg-white border-b border-gray-300 px-3 py-1.5 text-[11px] flex items-center gap-2">
+            <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] flex items-center gap-2">
               <span className="font-bold italic text-gray-400 px-1">fx</span>
-              <div className="bg-white border border-blue-300 w-full px-2 py-0.5 h-5 flex items-center shadow-inner text-xs">=AVERAGE(Rivalry, NewEntrants, Substitutes, BuyerPower, SupplierPower)</div>
+              <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 h-5 flex items-center shadow-inner text-xs">=AVERAGE(Rivalry, NewEntrants, Substitutes, BuyerPower, SupplierPower)</div>
             </div>
             <div className="overflow-x-auto w-full">
               <table className="w-full text-[11px] whitespace-nowrap border-collapse select-text">
@@ -370,11 +370,11 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
                     return (
                       <tr key={f.id} className="hover:bg-blue-50/30 group">
                         <td className="border border-gray-300 bg-gray-100 text-center font-bold text-gray-400 text-xs w-6 sticky left-0 z-20">{idx + 1}</td>
-                        <td className="border border-gray-200 px-3 py-2 font-bold sticky left-6 z-20 bg-white">{f.icon} {f.name}</td>
-                        <td className={`border border-gray-200 px-3 py-2 text-center font-mono font-extrabold text-[14px] ${score >= 4 ? 'text-red-600 bg-red-50' : score === 3 ? 'text-yellow-600 bg-yellow-50' : 'text-green-600 bg-green-50'}`}>{score}.0x</td>
-                        <td className={`border border-gray-200 px-3 py-2 text-center font-bold text-xs`}>{INTENSITY_LABELS[score]}</td>
-                        <td className="border border-gray-200 px-3 py-2 text-center text-xs">{impact}</td>
-                        <td className="border border-gray-200 px-4 py-2 text-gray-600 text-[10px] leading-relaxed max-w-[350px] whitespace-normal">
+                        <td className="border border-gray-200 dark:border-slate-700 px-3 py-2 font-bold sticky left-6 z-20 bg-white dark:bg-slate-900">{f.icon} {f.name}</td>
+                        <td className={`border border-gray-200 dark:border-slate-700 px-3 py-2 text-center font-mono font-extrabold text-[14px] ${score >= 4 ? 'text-red-600 bg-red-50' : score === 3 ? 'text-yellow-600 bg-yellow-50' : 'text-green-600 bg-green-50'}`}>{score}.0x</td>
+                        <td className={`border border-gray-200 dark:border-slate-700 px-3 py-2 text-center font-bold text-xs`}>{INTENSITY_LABELS[score]}</td>
+                        <td className="border border-gray-200 dark:border-slate-700 px-3 py-2 text-center text-xs">{impact}</td>
+                        <td className="border border-gray-200 dark:border-slate-700 px-4 py-2 text-gray-600 text-[10px] leading-relaxed max-w-[350px] whitespace-normal">
                           {notes[f.id as ForceId]
                             .replace(/{{COMPANY}}/g, companyName || 'your company')
                             .replace(/{{INDUSTRY}}/g, industry || 'this sector')}
@@ -384,10 +384,10 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
                   })}
                   <tr className="bg-[#eef3fb]">
                     <td className="border border-gray-300 bg-gray-100 text-center font-bold text-gray-400 text-xs w-6 sticky left-0 z-20">Σ</td>
-                    <td className="border border-gray-200 px-3 py-2 font-extrabold text-[#0b5c96] uppercase sticky left-6 z-20 bg-[#eef3fb]">COMPOSITE SCORE (AVERAGE)</td>
-                    <td className={`border border-gray-200 px-3 py-2 text-center font-extrabold text-[16px] ${attractivenessColors[calculations.attractivenessScore]}`}>{calculations.average.toFixed(2)}</td>
-                    <td className="border border-gray-200 px-3 py-2 text-center font-bold">{calculations.attractiveness}</td>
-                    <td colSpan={2} className="border border-gray-200 px-4 py-2 text-xs italic text-gray-500">Composite rating across all 5 forces for {industry}</td>
+                    <td className="border border-gray-200 dark:border-slate-700 px-3 py-2 font-extrabold text-[#0b5c96] uppercase sticky left-6 z-20 bg-[#eef3fb]">COMPOSITE SCORE (AVERAGE)</td>
+                    <td className={`border border-gray-200 dark:border-slate-700 px-3 py-2 text-center font-extrabold text-[16px] ${attractivenessColors[calculations.attractivenessScore]}`}>{calculations.average.toFixed(2)}</td>
+                    <td className="border border-gray-200 dark:border-slate-700 px-3 py-2 text-center font-bold">{calculations.attractiveness}</td>
+                    <td colSpan={2} className="border border-gray-200 dark:border-slate-700 px-4 py-2 text-xs italic text-gray-500">Composite rating across all 5 forces for {industry}</td>
                   </tr>
                 </tbody>
               </table>
@@ -406,12 +406,12 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
 
         {isLocked && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/20 backdrop-blur-sm">
-            <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center">
+            <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center">
               <div className="w-16 h-16 bg-brand-navy/10 rounded-full flex items-center justify-center mb-6">
-                <svg className="w-8 h-8 text-brand-navy" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
+                <svg className="w-8 h-8 text-brand-navy dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
               </div>
-              <h3 className="text-2xl font-bold text-brand-navy mb-3">Model Locked</h3>
-              <p className="text-brand-slate mb-8">Unlock Porter's Five Forces Analyzer and all 10 premium calculators.</p>
+              <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Model Locked</h3>
+              <p className="text-brand-slate dark:text-slate-300 mb-8">Unlock Porter's Five Forces Analyzer and all 10 premium calculators.</p>
               {!showEmailGate ? (
                 <button onClick={() => setShowEmailGate(true)} className="btn btn-primary w-full text-lg py-4 shadow-xl">Unlock Premium Access</button>
               ) : (
@@ -425,13 +425,13 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
           </div>
         )}
 
-        <div className="mt-16 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6">Porter's Five Forces Glossary</h2>
+        <div className="mt-16 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">Porter's Five Forces Glossary</h2>
           <div className="grid md:grid-cols-2 gap-8">
             {FORCE_DEFINITIONS.map(f => (
               <div key={f.id} className="space-y-2">
-                <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">{f.icon}</span> {f.name}</h4>
-                <p className="text-sm text-brand-slate leading-relaxed"><strong>Key Factors:</strong> {f.factors.join(', ')}. {f.description}</p>
+                <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">{f.icon}</span> {f.name}</h4>
+                <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>Key Factors:</strong> {f.factors.join(', ')}. {f.description}</p>
               </div>
             ))}
           </div>

@@ -235,14 +235,14 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
   );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-10 relative">
+    <div className="min-h-screen py-10 relative">
       <div className="wrap max-w-[1400px] mx-auto space-y-8 px-4">
         
         {/* Header */}
         <div className="mb-6">
           <p className="text-teal-600 font-medium mb-2 uppercase tracking-wider text-sm">Kunwar Analytics Advanced M&A Model</p>
-          <h1 className="text-3xl font-bold text-brand-navy">Fully Expanded Top-Down DCF</h1>
-          <p className="text-brand-slate text-sm max-w-2xl mt-2">
+          <h1 className="text-3xl font-bold text-brand-navy dark:text-white">Fully Expanded Top-Down DCF</h1>
+          <p className="text-brand-slate dark:text-slate-300 text-sm max-w-2xl mt-2">
             Calculate intrinsic business value using Wall Street's exact "Unlevered Free Cash Flow" methodology, mapping out fully explicit operating margins before establishing terminal valuation.
           </p>
         </div>
@@ -251,15 +251,15 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
           {/* Inputs Sidebar */}
-          <div className="lg:col-span-1 space-y-6 bg-white p-6 rounded-xl shadow-sm border border-gray-200 h-fit sticky top-24 z-20">
-            <h3 className="font-bold text-brand-navy border-b pb-3 uppercase tracking-wider text-sm">Operating Assumptions</h3>
+          <div className="lg:col-span-1 space-y-6 bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 h-fit sticky top-24 z-20">
+            <h3 className="font-bold text-brand-navy dark:text-white border-b pb-3 uppercase tracking-wider text-sm">Operating Assumptions</h3>
             
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Topline Revenue (Yr 0)</label>
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400 font-bold">$</span>
-                  <input type="number" className="input w-full pl-8 bg-gray-50" value={revenue} onChange={e => setRevenue(e.target.value)} />
+                  <input type="number" className="input w-full pl-8 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={revenue} onChange={e => setRevenue(e.target.value)} />
                 </div>
               </div>
 
@@ -267,14 +267,14 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Rev Growth</label>
                   <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-gray-50" step="0.1" value={revGrowth} onChange={e => setRevGrowth(e.target.value)} />
+                    <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={revGrowth} onChange={e => setRevGrowth(e.target.value)} />
                     <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                   </div>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">EBITDA Mgn</label>
                   <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-gray-50" step="0.1" value={ebitdaMargin} onChange={e => setEbitdaMargin(e.target.value)} />
+                    <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={ebitdaMargin} onChange={e => setEbitdaMargin(e.target.value)} />
                     <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                   </div>
                 </div>
@@ -284,7 +284,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider" title="Effective Corporate Tax Rate">Tax Rate</label>
                   <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-gray-50" step="0.1" value={taxRate} onChange={e => setTaxRate(e.target.value)} />
+                    <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={taxRate} onChange={e => setTaxRate(e.target.value)} />
                     <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                   </div>
                 </div>
@@ -292,13 +292,13 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider" title="Capital Expenditures & Net Working Capital (% of Rev)">Capex+NWC</label>
                   <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-gray-50" step="0.1" value={capexNwcRate} onChange={e => setCapexNwcRate(e.target.value)} />
+                    <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={capexNwcRate} onChange={e => setCapexNwcRate(e.target.value)} />
                     <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                   </div>
                 </div>
               </div>
 
-              <h3 className="font-bold text-brand-navy border-b pb-2 pt-4 uppercase tracking-wider text-sm">Valuation Parameters</h3>
+              <h3 className="font-bold text-brand-navy dark:text-white border-b pb-2 pt-4 uppercase tracking-wider text-sm">Valuation Parameters</h3>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -317,7 +317,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 </div>
               </div>
 
-              <h3 className="font-bold text-brand-navy border-b pb-2 pt-4 uppercase tracking-wider text-sm">Balance Sheet Bridge</h3>
+              <h3 className="font-bold text-brand-navy dark:text-white border-b pb-2 pt-4 uppercase tracking-wider text-sm">Balance Sheet Bridge</h3>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
@@ -338,7 +338,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
 
               <div className="pt-2">
                 <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Shares Outstanding (#)</label>
-                <input type="number" className="input w-full text-center tracking-widest bg-gray-50" value={shares} onChange={e => setShares(e.target.value)} />
+                <input type="number" className="input w-full text-center tracking-widest bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={shares} onChange={e => setShares(e.target.value)} />
               </div>
 
             </div>
@@ -349,36 +349,36 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
             
             {/* KPI Cards */}
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1 relative z-10">Target Equity Value</p>
-                <h4 className={`text-4xl tracking-tighter font-bold relative z-10 ${calculations.modelError ? 'text-red-500' : 'text-brand-navy'}`}>
+                <h4 className={`text-4xl tracking-tighter font-bold relative z-10 ${calculations.modelError ? 'text-red-500' : 'text-brand-navy dark:text-white'}`}>
                   {calculations.modelError ? 'Error (Check WACC)' : `$${(calculations.equityValue / 1000000).toFixed(2)}M`}
                 </h4>
-                <p className="text-[11px] uppercase tracking-wider text-brand-slate mt-2 relative z-10">Market Cap (EV + Cash - Debt)</p>
+                <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2 relative z-10">Market Cap (EV + Cash - Debt)</p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-green-100 ring-2 ring-green-500/10 relative overflow-hidden">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-green-100 ring-2 ring-green-500/10 relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Implied Share Price</p>
                 <h4 className={`text-4xl tracking-tighter font-bold ${calculations.modelError ? 'text-red-500' : 'text-green-600'}`}>
                   {calculations.modelError ? 'N/A' : `$${calculations.sharePrice.toFixed(2)}`}
                 </h4>
-                <p className="text-[11px] uppercase tracking-wider text-brand-slate mt-2">Target Common Stock Price</p>
+                <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2">Target Common Stock Price</p>
               </div>
 
-              <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Total Enterprise Value</p>
                 <h4 className="text-3xl tracking-tighter font-bold text-gray-700">
                   {calculations.modelError ? 'N/A' : `$${(calculations.enterpriseValue / 1000000).toFixed(2)}M`}
                 </h4>
-                <p className="text-[11px] uppercase tracking-wider text-brand-slate mt-2 mt-3">Sum of All Present Values (PV)</p>
+                <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2 mt-3">Sum of All Present Values (PV)</p>
               </div>
             </div>
 
             {/* The Original 6-Bar Composed Chart showing PV Composition */}
-            <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 relative z-10 w-full">
-              <h3 className="font-bold text-brand-navy mb-1 leading-tight uppercase tracking-wider text-sm flex items-center justify-between">
+            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 relative z-10 w-full">
+              <h3 className="font-bold text-brand-navy dark:text-white mb-1 leading-tight uppercase tracking-wider text-sm flex items-center justify-between">
                 <span>Component Breakdown of Present Value (PV)</span>
                 <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100">Discounted Matrix</span>
               </h3>
@@ -409,7 +409,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
             </div>
 
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
-            <div className={`bg-white border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
+            <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
               <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
@@ -418,9 +418,9 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 <span>DCF_Full_Operating_Model_v7.xlsx</span>
               </div>
               
-              <div className="bg-white border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
+              <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
                 <span className="font-bold italic text-gray-400 select-none cursor-default px-1 hover:bg-gray-100 rounded">fx</span> 
-                <div className="bg-white border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
+                <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
                   =SUM(PV_Explicit) + PV_Terminal
                 </div>
               </div>
@@ -445,9 +445,9 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     {/* Operating Metrics */}
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="1" />
-                      <td className="border border-gray-200 px-2 py-1 font-bold bg-white text-black pl-3 group-hover:bg-blue-50/0">Topline Revenue</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-white dark:bg-slate-900 text-black pl-3 group-hover:bg-blue-50/0">Topline Revenue</td>
                       {calculations.rowRev.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -455,9 +455,9 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     
                     <tr className="hover:bg-blue-50/30 group">
                       <ExcelRowIndex i="2" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white pl-3 text-gray-700 group-hover:bg-blue-50/0">EBITDA</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-gray-700 group-hover:bg-blue-50/0">EBITDA</td>
                       {calculations.rowEbitda.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-1 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -465,19 +465,19 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
 
                     <tr className="hover:bg-blue-50/30 group text-red-600">
                       <ExcelRowIndex i="3" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white pl-3 group-hover:bg-blue-50/0">Less: Operating Cash Taxes</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 group-hover:bg-blue-50/0">Less: Operating Cash Taxes</td>
                       {calculations.rowTax.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
                           {typeof val === 'number' ? `(${Math.abs(val).toLocaleString()})` : val}
                         </td>
                       ))}
                     </tr>
 
-                    <tr className="hover:bg-blue-50/30 group bg-gray-50/50">
+                    <tr className="hover:bg-blue-50/30 group bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="4" />
-                      <td className="border border-gray-200 px-2 py-1 bg-gray-50 pl-3 font-semibold group-hover:bg-blue-50/0">Net Operating Profit (NOPAT)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white pl-3 font-semibold group-hover:bg-blue-50/0">Net Operating Profit (NOPAT)</td>
                       {calculations.rowNopat.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-1 text-right font-mono font-semibold text-black ${idx===0 ? 'text-blue-700 bg-yellow-50' : 'border-t border-t-gray-400'}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-semibold text-black ${idx===0 ? 'text-blue-700 bg-yellow-50' : 'border-t border-t-gray-400'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -485,9 +485,9 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
 
                     <tr className="hover:bg-blue-50/30 group text-red-600">
                       <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white pl-3 group-hover:bg-blue-50/0">Less: Reinvestment (Capex/NWC)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 group-hover:bg-blue-50/0">Less: Reinvestment (Capex/NWC)</td>
                       {calculations.rowCapex.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
                           {typeof val === 'number' ? `(${Math.abs(val).toLocaleString()})` : val}
                         </td>
                       ))}
@@ -496,9 +496,9 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     {/* UFCF */}
                     <tr className="bg-blue-50/20 group">
                       <ExcelRowIndex i="6" />
-                      <td className="border border-gray-200 px-2 py-1 font-bold bg-blue-50/30 text-brand-navy pl-3 uppercase tracking-wider text-[10px]">Unlevered Free Cash Flow</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-blue-50/30 text-brand-navy dark:text-white pl-3 uppercase tracking-wider text-[10px]">Unlevered Free Cash Flow</td>
                       {calculations.rowFcf.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-1 text-right font-mono font-bold text-brand-navy bg-blue-50/30 ${idx===0 ? 'text-blue-700 bg-yellow-100' : 'border-t-2 border-t-gray-400'}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-brand-navy dark:text-white bg-blue-50/30 ${idx===0 ? 'text-blue-700 bg-yellow-100' : 'border-t-2 border-t-gray-400'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -507,9 +507,9 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     {/* Discounting */}
                     <tr>
                       <ExcelRowIndex i="7" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white pl-3 italic text-gray-500 text-[10px]">WACC Discount Factor</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 italic text-gray-500 text-[10px]">WACC Discount Factor</td>
                       {calculations.rowDf.map((val, idx) => (
-                        <td key={idx} className="border border-gray-200 px-2 py-1 text-right font-mono italic text-gray-400">
+                        <td key={idx} className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono italic text-gray-400">
                           {val}
                         </td>
                       ))}
@@ -517,9 +517,9 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
 
                     <tr className="bg-yellow-50/30 group">
                       <ExcelRowIndex i="8" />
-                      <td className="border border-gray-200 px-2 py-1 font-bold bg-yellow-50/50 text-black pl-3 shadow-inner">Present Value (PV)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-yellow-50/50 text-black pl-3 shadow-inner">Present Value (PV)</td>
                       {calculations.rowPv.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 px-2 py-1 text-right font-mono font-bold text-black border-t border-t-gray-300 ${idx===7 ? 'bg-teal-50 text-teal-900 border-2 border-teal-500 shadow-md transform scale-105 z-10 relative' : ''} ${idx===0 ? 'bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-black border-t border-t-gray-300 ${idx===7 ? 'bg-teal-50 text-teal-900 border-2 border-teal-500 shadow-md transform scale-105 z-10 relative' : ''} ${idx===0 ? 'bg-yellow-50' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -528,73 +528,73 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     {/* Spacer Line */}
                     <tr>
                       <ExcelRowIndex i="9" />
-                      <td colSpan={8} className="border border-gray-200 bg-gray-100/50 py-1"></td>
+                      <td colSpan={8} className="border border-gray-200 dark:border-slate-700 bg-gray-100/50 py-1"></td>
                     </tr>
 
                     {/* Valuation Bridge */}
-                    <tr className="hover:bg-gray-50/50">
+                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="10" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white font-semibold pl-3 tracking-tight">Sum of P.V. Explicit (Years 1-5)</td>
-                      <td className="border border-gray-200 px-2 py-1 text-right font-mono text-black">{calculations.modelError ? 'Error' : Math.round(calculations.sumPvFcf).toLocaleString()}</td>
-                      <td colSpan={6} className="bg-white border border-transparent"></td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 font-semibold pl-3 tracking-tight">Sum of P.V. Explicit (Years 1-5)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-black">{calculations.modelError ? 'Error' : Math.round(calculations.sumPvFcf).toLocaleString()}</td>
+                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
-                    <tr className="hover:bg-gray-50/50">
+                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="11" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white font-semibold pl-3 tracking-tight">Present Value of Terminal (Yr 6+)</td>
-                      <td className="border border-gray-200 px-2 py-1 text-right font-mono text-black border-b border-b-gray-400">{calculations.modelError ? 'Error' : Math.round(calculations.pvTerminalValue).toLocaleString()}</td>
-                      <td colSpan={6} className="bg-white border border-transparent"></td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 font-semibold pl-3 tracking-tight">Present Value of Terminal (Yr 6+)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-black border-b border-b-gray-400">{calculations.modelError ? 'Error' : Math.round(calculations.pvTerminalValue).toLocaleString()}</td>
+                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
                     
-                    <tr className="bg-gray-50/50">
+                    <tr className="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="12" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white font-extrabold uppercase pl-3 text-[10px] tracking-widest text-brand-navy">Enterprise Value</td>
-                      <td className="border border-gray-200 px-2 py-1 text-right font-mono font-bold text-[12px] text-brand-navy">
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 font-extrabold uppercase pl-3 text-[10px] tracking-widest text-brand-navy dark:text-white">Enterprise Value</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-[12px] text-brand-navy dark:text-white">
                         {calculations.modelError ? 'Error' : Math.round(calculations.enterpriseValue).toLocaleString()}
                       </td>
-                      <td colSpan={6} className="bg-white border border-transparent"></td>
+                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
 
-                    <tr className="hover:bg-gray-50/50">
+                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="13" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white pl-3 text-green-700">Plus: Cash & Equivalents</td>
-                      <td className="border border-gray-200 px-2 py-1 text-right font-mono text-blue-700 bg-yellow-50">{Math.round(num(cashEq)).toLocaleString()}</td>
-                      <td colSpan={6} className="bg-white border border-transparent"></td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-green-700">Plus: Cash & Equivalents</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 bg-yellow-50">{Math.round(num(cashEq)).toLocaleString()}</td>
+                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
 
-                    <tr className="hover:bg-gray-50/50">
+                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="14" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white pl-3 text-red-600">Less: Total Outstanding Debt</td>
-                      <td className="border border-gray-200 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-yellow-50">({Math.round(num(totalDebt)).toLocaleString()})</td>
-                      <td colSpan={6} className="bg-white border border-transparent"></td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-red-600">Less: Total Outstanding Debt</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-yellow-50">({Math.round(num(totalDebt)).toLocaleString()})</td>
+                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
 
                     <tr className="bg-[#e2f1e8]">
                       <ExcelRowIndex i="15" />
-                      <td className="border border-gray-200 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0f5c2e]">Implied Equity Value</td>
-                      <td className="border border-gray-200 px-2 py-2 text-right font-mono font-bold text-[14px] text-[#0f5c2e]">
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0f5c2e]">Implied Equity Value</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-bold text-[14px] text-[#0f5c2e]">
                         <span className="border-b-2 border-double border-[#0f5c2e] pb-0.5">
                           {calculations.modelError ? 'Error' : Math.round(calculations.equityValue).toLocaleString()}
                         </span>
                       </td>
-                      <td colSpan={6} className="bg-white border border-transparent"></td>
+                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
 
-                    <tr className="hover:bg-gray-50/50 border-t-2 border-t-white">
+                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50 border-t-2 border-t-white">
                       <ExcelRowIndex i="16" />
-                      <td className="border border-gray-200 px-2 py-1 bg-white pl-3 italic text-gray-500">Divided By: Fully Diluted Shares</td>
-                      <td className="border border-gray-200 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-yellow-50">{Math.round(num(shares)).toLocaleString()}</td>
-                      <td colSpan={6} className="bg-white border border-transparent border-t border-t-gray-200"></td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 italic text-gray-500">Divided By: Fully Diluted Shares</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-yellow-50">{Math.round(num(shares)).toLocaleString()}</td>
+                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent border-t border-t-gray-200"></td>
                     </tr>
 
                     <tr className="bg-[#eef3fb]">
                       <ExcelRowIndex i="17" />
-                      <td className="border border-gray-200 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-blue-800 shadow-inner">Target Share Price</td>
-                      <td className="border border-gray-200 px-2 py-2 text-right font-mono font-extrabold text-[15px] text-blue-900 shadow-inner">
-                        <span className="border-b-4 border-double border-blue-900 pb-0.5 px-2 bg-white rounded-sm shadow border">
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-blue-800 shadow-inner">Target Share Price</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[15px] text-blue-900 shadow-inner">
+                        <span className="border-b-4 border-double border-blue-900 pb-0.5 px-2 bg-white dark:bg-slate-900 rounded-sm shadow border">
                           {calculations.modelError ? 'Error' : `$${calculations.sharePrice.toFixed(2)}`}
                         </span>
                       </td>
-                      <td colSpan={6} className="bg-white border border-transparent shadow-inner"></td>
+                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent shadow-inner"></td>
                     </tr>
 
                     <tr>
@@ -625,14 +625,14 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
           {/* Paywall Overlay */}
           {isLocked && (
             <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center pt-20 bg-gray-900/10 backdrop-blur-sm -m-6 rounded-3xl">
-              <div className="bg-white p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
+              <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
                 <div className="w-16 h-16 bg-gold-100 text-gold-600 rounded-full flex items-center justify-center mb-6">
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
                 </div>
-                <h3 className="text-2xl font-bold text-brand-navy mb-3">Model Locked</h3>
-                <p className="text-brand-slate mb-8">
+                <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Model Locked</h3>
+                <p className="text-brand-slate dark:text-slate-300 mb-8">
                   You've used your 1 free evaluation run of the complex M&A DCF Model. Subscribe/Buy now to unlock permanent access to this professional tool and all 10 financial calculators.
                 </p>
                 
@@ -665,39 +665,39 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
         </div>
 
         {/* Educational Glossary Section */}
-        <div className="mt-16 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-brand-navy mb-6">M&A Valuation Glossary</h2>
-          <p className="text-brand-slate mb-8">Understanding the complex mechanics of Discounted Cash Flow math.</p>
+        <div className="mt-16 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
+          <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">M&A Valuation Glossary</h2>
+          <p className="text-brand-slate dark:text-slate-300 mb-8">Understanding the complex mechanics of Discounted Cash Flow math.</p>
           
           <div className="grid md:grid-cols-2 gap-8">
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">💰</span> Free Cash Flow (FCF)</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The actual cash a company generates after subtracting the money required to maintain its asset base. This is the pure cash that can be paid out to investors or used for acquisitions.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">💰</span> Free Cash Flow (FCF)</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The actual cash a company generates after subtracting the money required to maintain its asset base. This is the pure cash that can be paid out to investors or used for acquisitions.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">📉</span> Discount Rate (WACC)</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> Expected return for investors. Because $100 today is worth more than $100 in five years (due to inflation and risk), we use this percentage to "discount" future cash back to its Present Value.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">📉</span> Discount Rate (WACC)</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> Expected return for investors. Because $100 today is worth more than $100 in five years (due to inflation and risk), we use this percentage to "discount" future cash back to its Present Value.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🏁</span> Terminal Value</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> It is impossible to manually forecast every single year until the end of time. The Terminal Value is a massive mathematical assumption representing the entire value of the business from Year 6 into infinity.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🏁</span> Terminal Value</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> It is impossible to manually forecast every single year until the end of time. The Terminal Value is a massive mathematical assumption representing the entire value of the business from Year 6 into infinity.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">⚖️</span> Margin of Safety</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The buffer against your own optimism. If a stock is theoretically worth $100, legendary investors like Warren Buffett will only buy it for $70, demanding a 30% margin of safety in case their growth assumptions were wrong.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">⚖️</span> Margin of Safety</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The buffer against your own optimism. If a stock is theoretically worth $100, legendary investors like Warren Buffett will only buy it for $70, demanding a 30% margin of safety in case their growth assumptions were wrong.</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">⚡</span> Net Working Capital (NWC)</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> The difference between your Current Assets and Current Liabilities. In a DCF, we subtract the "Change in NWC" because growing businesses often have cash tied up in inventory or unpaid customer invoices (receivables).</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">⚡</span> Net Working Capital (NWC)</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The difference between your Current Assets and Current Liabilities. In a DCF, we subtract the "Change in NWC" because growing businesses often have cash tied up in inventory or unpaid customer invoices (receivables).</p>
             </div>
 
             <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy text-lg flex items-center gap-2"><span className="text-2xl">🏦</span> Enterprise Value vs Equity Value</h4>
-              <p className="text-sm text-brand-slate leading-relaxed"><strong>What it is:</strong> Enterprise Value is the value of the entire business operations. Equity Value is what is left for shareholders after you pay off all the debt. Think of it like a house: House Value (Enterprise) - Mortgage (Debt) = Your Equity.</p>
+              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🏦</span> Enterprise Value vs Equity Value</h4>
+              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> Enterprise Value is the value of the entire business operations. Equity Value is what is left for shareholders after you pay off all the debt. Think of it like a house: House Value (Enterprise) - Mortgage (Debt) = Your Equity.</p>
             </div>
           </div>
         </div>
