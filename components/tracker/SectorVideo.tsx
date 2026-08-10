@@ -1,14 +1,28 @@
 'use client';
 
-// Clean static display of the professional sector cartoon artwork.
-// (User preference: no animation — just the beautiful illustration, shown
-// cleanly with a subtle hover zoom.)
+// Animated cartoon sector video player — plays the looping wide MP4 for a sector.
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 
 export default function SectorVideo({ slug, className = '', priority = false }: { slug: string; className?: string; priority?: boolean }) {
-  const [err, setErr] = useState(false);
-  const src = err ? `/3d-${slug}.png` : `/cartoon-${slug}.png`;
-  // eslint-disable-next-line @next/next/no-img-element
-  return <img src={src} alt={`${slug} sector illustration`} loading={priority ? 'eager' : 'lazy'} onError={() => setErr(true)} className={`h-full w-full object-cover ${className}`} />;
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [failed, setFailed] = useState(false);
+
+  if (failed) {
+    // eslint-disable-next-line @next/next/no-img-element
+    return <img src={`/cartoon-${slug}.png`} alt={`${slug} sector`} className={`h-full w-full object-cover ${className}`} />;
+  }
+
+  return (
+    <video
+      ref={videoRef}
+      className={`h-full w-full object-cover ${className}`}
+      src={`/videos/${slug}.mp4`}
+      poster={`/cartoon-${slug}.png`}
+      autoPlay loop muted playsInline
+      preload={priority ? 'auto' : 'metadata'}
+      onError={() => setFailed(true)}
+      aria-label={`Animated ${slug} sector video`}
+    />
+  );
 }

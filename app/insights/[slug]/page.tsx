@@ -1,300 +1,130 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import HeroBackground from '@/components/ui/HeroBackground';
+import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
+import Tag from '@/components/ui/Tag';
 import SaveButton from '@/components/ui/SaveButton';
-import { formatDate } from '@/lib/utils';
+import { formatDate, CATEGORY_VARIANT } from '@/lib/utils';
 import { getInsightBySlug, getAllInsights } from '@/lib/content';
-import { prisma } from '@/lib/prisma';
-import { renderBlocks } from '@/lib/blocks/renderer';
-import { markdownToBlocks } from '@/lib/blocks/registry';
-import { ChevronLeft, Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, Sparkles, ShieldCheck } from 'lucide-react';
-import React from 'react';
-import { CommentSection } from '@/components/ui/CommentSection';
-import JsonLd, { articleSchema } from '@/components/seo/JsonLd';
+import InsightCard from '@/components/insights/InsightCard';
+import { PrismaClient } from "@prisma/client"
+import ContentRenderer from "@/components/ContentRenderer"
+import { ChevronLeft, Calendar, User, BookOpen } from "lucide-react"
+import React from "react"
+
+const prisma = new PrismaClient()
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
 
   try {
-    const dbPost = await (prisma as any).post.findUnique({ where: { slug } });
-    if (dbPost && dbPost.published) {
-      return {
-        title: `${dbPost.title} | Kunwar Analytics Insights`,
-        description: dbPost.excerpt || 'Strategic commentary and executive market intelligence.',
-        alternates: { canonical: `/insights/${slug}` },
-        openGraph: {
+    const dbPost = await prisma.post.findUnique({ where: { slug } })
+    if (dbPost) {
+      // Only return metadata for published posts
+      if (dbPost.published) {
+        return {
           title: dbPost.title,
           description: dbPost.excerpt || '',
-          url: `https://kunwaranalytics.in/insights/${slug}`,
-          type: 'article',
-          images: dbPost.featuredImage ? [{ url: dbPost.featuredImage }] : [],
-        },
-      };
+        }
+      }
     }
   } catch (e) {}
 
   const post = await getInsightBySlug(slug);
-  if (!post) return { title: 'Insight Not Found | Kunwar Analytics' };
-
-  return {
-    title: `${post.title} | Kunwar Analytics Insights`,
-    description: post.thesis,
-    alternates: { canonical: `/insights/${slug}` },
-    openGraph: {
-      title: post.title,
-      description: post.thesis,
-      url: `https://kunwaranalytics.in/insights/${slug}`,
-      type: 'article',
-      publishedTime: post.date,
-      authors: [post.author],
-      images: post.coverImage ? [{ url: post.coverImage }] : [],
-    },
-  };
+  if (!post) return { title: 'Not Found' };
+  return { title: post.title, description: post.thesis };
 }
 
-export async function generateStaticParams() {
-  const allPosts = getAllInsights();
-  return allPosts.map((post) => ({
-    slug: post.slug,
-  }));
-}
-
-export default async function InsightDetailPage({ params }: { params: Promise<{ slug: string }> }) {
+export default async function InsightPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
 
-  // 1. Check CMS post first
-  let dbPost = null;
+  // 1. New CMS
+  let dbPost = null
   try {
-    dbPost = await (prisma as any).post.findUnique({
+    dbPost = await prisma.post.findUnique({
       where: { slug },
-      include: { author: { select: { name: true } } },
-    });
+      include: { author: { select: { name: true } } }
+    })
   } catch (e) {}
 
-  // 2. Fallback to Local MDX Insight
-  const localPost = await getInsightBySlug(slug);
-
-  if (!dbPost && !localPost) {
-    notFound();
-  }
-
-  // Unified metadata resolution
-  const title = dbPost?.title || localPost?.title || 'Executive Strategic Insight';
-  const thesis = dbPost?.excerpt || localPost?.thesis || '';
-  const category = (dbPost?.category || dbPost?.sector || localPost?.category || 'Sector Analysis') as string;
-  const coverImage = dbPost?.featuredImage || localPost?.coverImage || undefined;
-  const authorName = dbPost?.author?.name || localPost?.author || 'Kunwar Strategic Desk';
-  const dateObj = dbPost?.publishedAt || dbPost?.createdAt || localPost?.date || new Date();
-  const publishedDateStr = dateObj instanceof Date ? dateObj.toISOString() : String(dateObj);
-  const readingTime = dbPost?.estimatedReadingTime || localPost?.readingTime || 7;
-  const tags: string[] = Array.isArray(dbPost?.tags) && dbPost.tags.length > 0
-    ? dbPost.tags
-    : (localPost?.tags || []);
-
-  // Render content via Server-side Block Engine
-  let renderedHtml = '';
-  if (dbPost?.blockContent?.blocks && Array.isArray(dbPost.blockContent.blocks) && dbPost.blockContent.blocks.length > 0) {
-    renderedHtml = renderBlocks(dbPost.blockContent.blocks);
-  } else if (dbPost?.content) {
-    renderedHtml = renderBlocks(markdownToBlocks(dbPost.content));
-  } else if (localPost?.content) {
-    renderedHtml = renderBlocks(markdownToBlocks(localPost.content));
-  }
-
-  // Related insights
-  const allInsights = getAllInsights();
-  const related = allInsights.filter((item) => item.slug !== slug).slice(0, 3);
-
-  const postSchema = articleSchema({
-    title,
-    description: thesis,
-    datePublished: publishedDateStr,
-    url: `https://kunwaranalytics.in/insights/${slug}`,
-    authorName,
-    image: coverImage,
-    keywords: tags,
-  });
-
-  return (
-    <>
-      <JsonLd data={postSchema} />
-      <div className="min-h-screen bg-cinema-black text-gray-100">
-        {/* ── HEADER HERO ── */}
-        <header className="relative overflow-hidden bg-cinema-ink py-14 md:py-20 border-b border-white/5">
+  if (dbPost && dbPost.type === 'INSIGHT') {
+    // Check if post is published - if not, show 404
+    if (!dbPost.published) {
+      notFound();
+    }
+    return (
+      <div className="min-h-screen bg-white dark:bg-[#0B1C2C] text-gray-800 dark:text-slate-200">
+        <header className="relative overflow-hidden bg-brand-navy py-16 md:py-20 text-white">
           <HeroBackground />
-          <div className="wrap max-w-5xl relative z-10">
-            <div className="flex items-center justify-between gap-4 mb-8">
-              <Link
-                href="/insights"
-                className="inline-flex items-center gap-2 text-sm text-cinema-cyan hover:text-white transition-colors group"
-              >
-                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-                Back to All Insights
-              </Link>
+          <div className="max-w-4xl mx-auto px-6 relative z-10">
+            <Link href="/insights" className="flex items-center gap-2 text-sm text-teal-400 hover:text-teal-300 transition-colors mb-10">
+              <ChevronLeft className="w-4 h-4" /> All Insights
+            </Link>
+            <div className="space-y-6">
               <div className="flex items-center gap-3">
-                <SaveButton slug={slug} type="insight" />
+                 <span className="px-3 py-1 bg-teal-500/10 text-teal-400 text-xs font-bold rounded-full uppercase tracking-widest border border-teal-500/20">Market Insight</span>
               </div>
-            </div>
-
-            <div className="space-y-5">
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="px-3 py-1 bg-cinema-cyan/15 text-cinema-cyan text-xs font-bold font-mono rounded-full uppercase tracking-wider border border-cinema-cyan/30">
-                  {category}
-                </span>
-                <span className="text-xs text-gray-400 font-mono flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-cinema-cyan" /> {readingTime} min read
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3" /> Executive Brief
-                </span>
-              </div>
-
-              <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
-                {title}
-              </h1>
-
-              {thesis && (
-                <div className="p-5 rounded-2xl bg-[#090E18] border-l-4 border-cinema-cyan border-r border-y border-white/10 shadow-xl">
-                  <p className="text-sm uppercase tracking-wider font-bold text-cinema-cyan mb-1 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Executive Thesis
-                  </p>
-                  <p className="text-base md:text-lg text-gray-200 leading-relaxed italic">
-                    &quot;{thesis}&quot;
-                  </p>
-                </div>
-              )}
-
-              <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-gray-400 border-t border-white/10">
+              <h1 className="text-4xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">{dbPost.title}</h1>
+              <p className="text-xl text-slate-300 leading-relaxed max-w-3xl italic border-l-4 border-slate-700 pl-6">{dbPost.excerpt}</p>
+              <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-slate-400 border-t border-white/10">
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-cinema-cyan" />
-                  <span className="font-medium text-gray-200">{authorName}</span>
+                  <User className="w-4 h-4" /> <span className="font-medium text-slate-200">{dbPost.author?.name || 'Kunwar Analytics Admin'}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-cinema-cyan" />
-                  <span>{formatDate(publishedDateStr)}</span>
+                  <Calendar className="w-4 h-4" /> <span>{new Date(dbPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}</span>
                 </div>
               </div>
             </div>
           </div>
         </header>
+        <article className="max-w-4xl mx-auto px-6 pt-12 pb-32">
+          <div className="bg-gray-50 dark:bg-[#0F2335] rounded-3xl p-8 md:p-12 border border-gray-200 dark:border-white/5 shadow-lg dark:shadow-2xl">
+            <ContentRenderer content={dbPost.content} contentType={dbPost.contentType} blocks={dbPost.blockContent} />
+          </div>
+        </article>
+      </div>
+    )
+  }
 
-        {/* ── 3D COVER IMAGE HERO BANNER ── */}
-        {coverImage && (
-          <div className="wrap max-w-5xl -mt-8 relative z-20">
-            <div className="overflow-hidden rounded-3xl shadow-2xl border border-white/15 bg-[#080D1A]">
-              <img
-                src={coverImage}
-                alt={title}
-                className="w-full h-64 md:h-[400px] object-cover object-center"
-              />
+  // 2. Legacy
+  const post = await getInsightBySlug(slug);
+  if (!post) notFound();
+
+  const tagVariant = CATEGORY_VARIANT[post.category] ?? 'teal';
+  const related = getAllInsights().filter((item) => item.slug !== post.slug && item.category === post.category).slice(0, 3);
+
+  return (
+    <article className="pt-24 pb-24 bg-gradient-to-b from-slate-50 to-white">
+      <header className="relative overflow-hidden bg-gradient-to-r from-brand-navy via-slate-900 to-brand-slate py-16 mb-12">
+        <HeroBackground />
+        <div className="wrap max-w-5xl relative z-10">
+          <div className="text-xs text-gray-300 mb-5 font-medium tracking-wide">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link> /{' '}
+            <Link href="/insights" className="hover:text-white transition-colors">Insights</Link> /{' '}
+            <span>{post.category}</span>
+          </div>
+          <Tag text={post.category} variant={tagVariant} />
+          <h1 className="text-3xl md:text-5xl font-bold text-white leading-tight mt-4 mb-6 max-w-4xl">{post.title}</h1>
+          <blockquote className="border-l-4 border-brand-teal pl-5 py-3 bg-white/10 rounded-r-lg mb-7 max-w-4xl"><p className="italic text-white/90 text-lg">{post.thesis}</p></blockquote>
+          <div className="rounded-2xl border border-white/15 bg-white/5 p-5 backdrop-blur-sm">
+            <div className="grid gap-4 sm:grid-cols-3">
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Published</p><p className="text-sm text-white font-medium mt-1">{formatDate(post.date)}</p></div>
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Reading Time</p><p className="text-sm text-white font-medium mt-1">{post.readingTime} min</p></div>
+              <div><p className="text-[11px] uppercase tracking-wider text-gray-400">Author</p><p className="text-sm text-white font-medium mt-1">{post.author}</p></div>
             </div>
           </div>
-        )}
-
-        {/* ── MAIN CONTENT & SIDEBAR ── */}
-        <main className="wrap max-w-5xl py-12 md:py-16">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
-            {/* Main Article Prose / Blocks */}
-            <article className="glass-cinema rounded-3xl p-6 md:p-12 border border-white/10 shadow-2xl overflow-hidden min-w-0">
-              <div
-                className="block-editor-content text-gray-200 text-sm md:text-base leading-relaxed space-y-2"
-                dangerouslySetInnerHTML={{ __html: renderedHtml }}
-              />
-
-              {/* Tags */}
-              {tags.length > 0 && (
-                <div className="mt-14 pt-8 border-t border-white/10 flex flex-wrap gap-2 items-center">
-                  <span className="text-xs uppercase tracking-wider text-gray-400 mr-2 flex items-center gap-1">
-                    <TagIcon className="w-3.5 h-3.5 text-cinema-cyan" /> Topics:
-                  </span>
-                  {tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-gray-300 font-mono transition-colors"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-              )}
-
-              {/* Comments Section */}
-              <div className="mt-14 pt-10 border-t border-white/10">
-                <CommentSection
-                  postId={dbPost?.id}
-                  currentPath={`/insights/${slug}`}
-                />
-              </div>
-            </article>
-
-            {/* Sidebar */}
-            <aside className="space-y-6">
-              {/* Insight Metadata Card */}
-              <div className="glass-cinema rounded-2xl p-6 border border-white/10 space-y-4">
-                <h3 className="text-xs uppercase tracking-wider font-bold text-cinema-cyan flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" /> Insight Metadata
-                </h3>
-                <div className="space-y-3 text-xs text-gray-400">
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Format:</span>
-                    <span className="text-emerald-400 font-semibold">Strategic Brief</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Category:</span>
-                    <span className="text-gray-200 font-semibold">{category}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Reading Time:</span>
-                    <span className="text-gray-200 font-semibold">{readingTime} Minutes</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Target Audience:</span>
-                    <span className="text-gray-200 font-semibold">CXOs & Board Members</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Framework:</span>
-                    <span className="text-gray-200 font-semibold">Quantitative & Policy</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Related Insights */}
-              {related.length > 0 && (
-                <div className="glass-cinema rounded-2xl p-6 border border-white/10 space-y-4">
-                  <h3 className="text-xs uppercase tracking-wider font-bold text-cinema-cyan flex items-center gap-2">
-                    <Share2 className="w-4 h-4" /> Related Notes
-                  </h3>
-                  <div className="space-y-3">
-                    {related.map((rel) => (
-                      <Link
-                        key={rel.slug}
-                        href={`/insights/${rel.slug}`}
-                        className="block group p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all border border-white/5 hover:border-cinema-cyan/30"
-                      >
-                        {rel.coverImage && (
-                          <div className="h-16 w-full mb-2 rounded-lg overflow-hidden border border-white/10 bg-black/40">
-                            <img
-                              src={rel.coverImage}
-                              alt={rel.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              loading="lazy"
-                            />
-                          </div>
-                        )}
-                        <p className="text-[10px] text-cinema-cyan font-mono mb-1">{rel.category}</p>
-                        <h4 className="text-xs font-semibold text-white group-hover:text-cinema-cyan transition-colors line-clamp-2 leading-snug">
-                          {rel.title}
-                        </h4>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </aside>
+        </div>
+      </header>
+      <div className="wrap max-w-5xl">
+        <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_280px]">
+          <div className="rounded-2xl border border-gray-200 bg-white p-6 md:p-10 shadow-sm">
+            <div className="prose prose-lg max-w-none report-body">
+              {post.content ? <MDXRemote source={post.content} /> : <p className="text-center italic text-gray-500">Insight content not available.</p>}
+            </div>
           </div>
-        </main>
+        </div>
       </div>
-    </>
+    </article>
   );
 }

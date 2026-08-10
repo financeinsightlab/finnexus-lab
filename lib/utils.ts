@@ -1,13 +1,10 @@
 import { format, parseISO } from 'date-fns';
 
-export function formatDate(dateStr: string | Date | number | null | undefined): string {
-  if (!dateStr) return '';
+export function formatDate(dateStr: string): string {
   try {
-    const d = typeof dateStr === 'string' ? parseISO(dateStr) : new Date(dateStr);
-    if (isNaN(d.getTime())) return String(dateStr);
-    return format(d, 'MMM dd, yyyy');
+    return format(parseISO(dateStr), 'MMM dd, yyyy');
   } catch {
-    return typeof dateStr === 'object' && dateStr instanceof Date ? dateStr.toLocaleDateString() : String(dateStr);
+    return dateStr;
   }
 }
 

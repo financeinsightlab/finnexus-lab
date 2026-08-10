@@ -1,4 +1,4 @@
-import type { Metadata } from 'next';
+﻿import type { Metadata } from 'next';
 import { getAllPredictions } from '@/lib/predictions';
 import { auth } from '@/auth';
 import PredictionsClient from './PredictionsClient';
@@ -15,7 +15,7 @@ export default async function PredictionsBoardPage() {
   const predictions = await getAllPredictions();
 
   // Unique sectors for filter pills
-  const sectors = [...new Set(predictions.map((p) => p.sector))].sort() as string[];
+  const sectors = [...new Set(predictions.map((p) => p.sector))].sort();
 
   const stats = {
     total:     predictions.length,
