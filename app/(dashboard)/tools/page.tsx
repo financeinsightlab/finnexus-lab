@@ -151,7 +151,67 @@ const TOOLS: Tool[] = [
     desc: 'Full-funnel attribution and ROI tracking for enterprise B2B sales cycles.',
     includes: ['Lead-to-Close pipeline tracker', 'CAC by acquisition channel', 'Marketing spend ROI calculator', 'Sales quota modelling'],
     slug: 'b2b-enterprise-marketing-roi'
-  }
+  },
+  {
+    id: 12,
+    icon: '⚖️',
+    title: 'WACC Calculator — CAPM Build-Up',
+    category: 'PGDM Finance Lab',
+    tool: 'Interactive',
+    difficulty: 'Beginner',
+    gated: false,
+    desc: 'Full WACC build: CAPM cost of equity, after-tax cost of debt, market-value weights, with D/E sensitivity.',
+    includes: ['CAPM: Rf + β×MRP', 'Tax-adjusted debt cost', 'E/V · D/V weights', 'D/E sensitivity grid'],
+    slug: 'wacc-calculator'
+  },
+  {
+    id: 13,
+    icon: '⏳',
+    title: 'Time-Value Machine — PV · FV · EMI · Perpetuities',
+    category: 'PGDM Finance Lab',
+    tool: 'Interactive',
+    difficulty: 'Beginner',
+    gated: false,
+    desc: 'Every TVM pattern in one place: present/future value, loan EMI schedules, and Gordon growing perpetuities.',
+    includes: ['EMI + interest split', 'PV / FV compounding', 'Growing perpetuity (terminal value)', 'Annuity factors'],
+    slug: 'time-value-machine'
+  },
+  {
+    id: 14,
+    icon: '🧺',
+    title: 'Portfolio Risk & Return Lab — Two-Asset Frontier',
+    category: 'PGDM Finance Lab',
+    tool: 'Interactive',
+    difficulty: 'Intermediate',
+    gated: false,
+    desc: 'Markowitz two-asset engine: sweep weights, watch the diversification free lunch appear as ρ drops below 1.',
+    includes: ['E[Rp] & σp live math', 'Correlation slider', 'Weight sweep frontier', 'Diversification saving metric'],
+    slug: 'portfolio-risk-lab'
+  },
+  {
+    id: 15,
+    icon: '🕸️',
+    title: 'Critical Path Simulator — CPM/PERT Networks',
+    category: 'PGDM Lab',
+    tool: 'Interactive',
+    difficulty: 'Intermediate',
+    gated: false,
+    desc: 'AOA network engine: edit activity durations and watch ES/EF/LS/LF, floats and the critical path recompute.',
+    includes: ['Forward & backward pass', 'Total float per activity', 'Critical path highlight', 'Live duration editing'],
+    slug: 'critical-path-simulator'
+  },
+  {
+    id: 16,
+    icon: '📐',
+    title: 'Ratio Analyzer — 18 Ratios + DuPont',
+    category: 'PGDM Finance Lab',
+    tool: 'Interactive',
+    difficulty: 'Beginner',
+    gated: false,
+    desc: 'One P&L + one balance sheet in: liquidity, profitability, leverage, efficiency ratios and the DuPont decomposition of ROE, live.',
+    includes: ['Current/quick/cash', 'Margins · ROE · ROCE', 'Coverage & debt ratios', 'Cash conversion cycle', 'DuPont 3-factor ROE'],
+    slug: 'ratio-analyzer'
+  },
 ];
 
 const CATS = ['All', 'Valuation', 'Financial Model', 'Market Analysis', 'Sector Model', 'Strategy', 'SaaS & Tech', 'AI Strategy', 'Web3', 'Growth & Marketing'];

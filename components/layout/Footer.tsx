@@ -8,6 +8,7 @@ import {
   FileText,
   Users,
   BarChart3,
+  GraduationCap,
   Cpu,
   Mail,
   Share2,
@@ -32,6 +33,7 @@ export default function Footer() {
   const premiumResources = [
     { name: 'Research Library', href: '/research', icon: FileText },
     { name: 'Insights Hub', href: '/insights', icon: BarChart3 },
+    { name: 'PGDM Program', href: '/pgdm', icon: GraduationCap },
     { name: 'Analytical Tools', href: '/tools', icon: Cpu },
     { name: 'Case Studies', href: '/case-studies', icon: Users },
     { name: 'Data Lab', href: '/data-lab', icon: Cpu },

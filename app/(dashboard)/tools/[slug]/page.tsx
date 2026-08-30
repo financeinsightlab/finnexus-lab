@@ -13,6 +13,11 @@ import ThreeStatementCalc from '@/components/calculators/ThreeStatementCalc';
 import QCommerceCalc from '@/components/calculators/QCommerceCalc';
 import MarketSizingCalc from '@/components/calculators/MarketSizingCalc';
 import PortersFiveForcesCalc from '@/components/calculators/PortersFiveForcesCalc';
+import WaccCalc from '@/components/calculators/WaccCalc';
+import TimeValueCalc from '@/components/calculators/TimeValueCalc';
+import PortfolioRiskCalc from '@/components/calculators/PortfolioRiskCalc';
+import CpmCalc from '@/components/calculators/CpmCalc';
+import RatioAnalyzerCalc from '@/components/calculators/RatioAnalyzerCalc';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -40,6 +45,11 @@ export default async function CalculatorPage({ params }: PageProps) {
   else if (slug === 'q-commerce-model') Component = <QCommerceCalc slug={slug} isPremiumUser={isPremiumUser} />;
   else if (slug === 'market-sizing-framework') Component = <MarketSizingCalc slug={slug} isPremiumUser={isPremiumUser} />;
   else if (slug === 'porters-five-forces') Component = <PortersFiveForcesCalc slug={slug} isPremiumUser={isPremiumUser} />;
+  else if (slug === 'wacc-calculator') Component = <WaccCalc />;
+  else if (slug === 'time-value-machine') Component = <TimeValueCalc />;
+  else if (slug === 'portfolio-risk-lab') Component = <PortfolioRiskCalc />;
+  else if (slug === 'critical-path-simulator') Component = <CpmCalc />;
+  else if (slug === 'ratio-analyzer') Component = <RatioAnalyzerCalc />;
   else notFound();
 
   return (
