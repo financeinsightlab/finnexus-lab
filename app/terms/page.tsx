@@ -1,6 +1,16 @@
 ﻿import { FileText, Scale, Gavel, Shield } from 'lucide-react';
 import Link from 'next/link';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service | Kunwar Analytics',
+  description: 'Terms governing use of Kunwar Analytics: accounts, subscriptions, licences, intellectual property, disclaimers and limitation of liability.',
+  alternates: { canonical: '/terms' },
+};
+
+
+
 export default function TermsPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">

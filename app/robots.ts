@@ -53,6 +53,31 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
         disallow: ['/api/', '/_next/', '/admin/', '/auth/', '/dashboard'],
       },
+      {
+        userAgent: 'ClaudeBot',
+        allow: '/',
+        disallow: ['/api/', '/_next/', '/admin/', '/auth/', '/dashboard'],
+      },
+      {
+        userAgent: 'OAI-SearchBot',
+        allow: '/',
+        disallow: ['/api/', '/_next/', '/admin/', '/auth/', '/dashboard'],
+      },
+      {
+        userAgent: 'Perplexity-User',
+        allow: '/',
+        disallow: ['/api/', '/_next/', '/admin/', '/auth/', '/dashboard'],
+      },
+      {
+        userAgent: 'Applebot-Extended',
+        allow: '/',
+        disallow: ['/api/', '/_next/', '/admin/', '/auth/', '/dashboard'],
+      },
+      {
+        userAgent: 'Meta-ExternalAgent',
+        allow: '/',
+        disallow: ['/api/', '/_next/', '/admin/', '/auth/', '/dashboard'],
+      },
     ],
     sitemap: `${BASE}/sitemap.xml`,
     host: BASE,

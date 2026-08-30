@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { getSubject } from '@/lib/pgdm/curriculum';
 import PrintButton from '@/components/pgdm/PrintButton';
+import JsonLd from '@/components/seo/JsonLd';
 import type { Metadata } from 'next';
 
 interface PageProps {
@@ -13,13 +14,20 @@ export async function generateStaticParams() {
   return SUBJECTS.map((s) => ({ subject: s.slug }));
 }
 
+const titleCap = (parts: string, max = 62) => {
+  if (parts.length <= max) return parts;
+  const cut = parts.slice(0, max);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > max * 0.6 ? cut.slice(0, sp) : cut).replace(/[ —|:-]+$/, '');
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subject: slug } = await params;
   const subject = getSubject(slug);
   if (!subject) return {};
   return {
-    title: `${subject.code} Cheat Sheet — ${subject.name} | FinNexus Lab`,
-    description: `One-page exam cheat sheet for ${subject.code}: every formula and revision note from all ${subject.lectures.length} lectures.`,
+    title: { absolute: titleCap(`${subject.code} Cheat Sheet — Formulas & Revision`) },
+    description: `Every formula and exam revision note from ${subject.code} ${subject.name} on one page — print or save as PDF for revision.`.slice(0, 158),
   };
 }
 
@@ -30,8 +38,32 @@ export default async function CheatSheetPage({ params }: PageProps) {
 
   const lectures = subject.lectures.filter((l) => l.status === 'live');
 
+  const BASE = 'https://kunwaranalytics.in';
+  const schemas = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'LearningResource',
+      name: `${subject.code} Cheat Sheet — Formulas & Revision`,
+      description: `One-page exam cheat sheet for ${subject.code} ${subject.name}: all lecture formulas and revision notes.`,
+      url: `${BASE}/pgdm/${subject.slug}/cheatsheet`,
+      learningResourceType: 'Study guide',
+      isAccessibleForFree: true,
+      isPartOf: { '@type': 'Course', name: `${subject.code} — ${subject.name}`, url: `${BASE}/pgdm/${subject.slug}` },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'PGDM', item: `${BASE}/pgdm` },
+        { '@type': 'ListItem', position: 2, name: subject.name, item: `${BASE}/pgdm/${subject.slug}` },
+        { '@type': 'ListItem', position: 3, name: 'Cheat Sheet', item: `${BASE}/pgdm/${subject.slug}/cheatsheet` },
+      ],
+    },
+  ];
+
   return (
     <div className="min-h-screen bg-[#0a1120] text-slate-100">
+      <JsonLd data={schemas} />
       {/* print overrides: force light-on-white, full width */}
       <style>{`@media print {
         .cheat, .cheat * { color: #0f172a !important; background: #ffffff !important; border-color: #cbd5e1 !important; box-shadow: none !important; }

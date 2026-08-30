@@ -13,7 +13,7 @@ import { ArrowUpRight, Download, ChartSpline } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Data Lab | Kunwar Analytics',
   description:
-    'The quantitative engine behind Kunwar Analytics — interactive Power BI dashboards, Python analyses, and financial models with live charts, simulators, and downloadable datasets.',
+    'The quantitative engine behind Kunwar Analytics — interactive Power BI dashboards, Python analyses and financial models with live charts and downloadable datasets.',
 };
 
 export default function DataLabPage() {

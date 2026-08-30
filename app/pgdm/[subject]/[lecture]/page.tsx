@@ -6,6 +6,7 @@ import {
   Sigma, FileText, Briefcase, ClipboardCheck, HelpCircle, Wrench, Construction, ListChecks,
 } from 'lucide-react';
 import { SUBJECTS, getLecture } from '@/lib/pgdm/curriculum';
+import JsonLd from '@/components/seo/JsonLd';
 import { TRACK_META } from '@/lib/pgdm/types';
 
 interface PageProps {
@@ -18,13 +19,20 @@ export function generateStaticParams() {
   );
 }
 
+const titleCap = (parts: string, max = 62) => {
+  if (parts.length <= max) return parts;
+  const cut = parts.slice(0, max);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > max * 0.6 ? cut.slice(0, sp) : cut).replace(/[ —|:-]+$/, '');
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subject, lecture } = await params;
   const found = getLecture(subject, lecture);
   if (!found) return {};
   return {
-    title: `${found.lecture.title} · ${found.subject.code} | PGDM | Kunwar Analytics`,
-    description: found.lecture.summary.slice(0, 155),
+    title: { absolute: titleCap(`${found.lecture.title} — ${found.subject.code} Lecture`) },
+    description: found.lecture.summary.slice(0, 150),
   };
 }
 
@@ -64,8 +72,52 @@ export default async function LecturePage({ params }: PageProps) {
       : 'bg-cinema-violet/10 text-violet-300 border-cinema-violet/25';
   const num = accent === 'teal' ? 'from-teal-500 to-emerald-500' : 'from-violet-500 to-indigo-500';
 
+  const BASE = 'https://kunwaranalytics.in';
+  const lectureSchemas = [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'LearningResource',
+      name: lecture.title,
+      description: lecture.summary,
+      url: `${BASE}/pgdm/${subject.slug}/${lecture.slug}`,
+      learningResourceType: 'Lecture',
+      educationalLevel: 'Postgraduate (PGDM, Semester III)',
+      teaches: lecture.objectives,
+      timeRequired: `PT${lecture.minutes}M`,
+      isPartOf: {
+        '@type': 'Course',
+        name: `${subject.code} — ${subject.name}`,
+        url: `${BASE}/pgdm/${subject.slug}`,
+      },
+      provider: { '@type': 'Organization', name: 'Kunwar Analytics' },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'PGDM', item: `${BASE}/pgdm` },
+        { '@type': 'ListItem', position: 2, name: subject.name, item: `${BASE}/pgdm/${subject.slug}` },
+        { '@type': 'ListItem', position: 3, name: lecture.title, item: `${BASE}/pgdm/${subject.slug}/${lecture.slug}` },
+      ],
+    },
+    ...(lecture.practice.length >= 3
+      ? [
+          {
+            '@context': 'https://schema.org',
+            '@type': 'FAQPage',
+            mainEntity: lecture.practice.slice(0, 5).map((p) => ({
+              '@type': 'Question',
+              name: p.q,
+              acceptedAnswer: { '@type': 'Answer', text: p.a },
+            })),
+          },
+        ]
+      : []),
+  ];
+
   return (
     <div className="min-h-screen bg-cinema-black text-gray-100">
+      <JsonLd data={lectureSchemas} />
       {/* ── HEADER ── */}
       <header className="relative overflow-hidden bg-cinema-ink py-12 border-b border-white/5">
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl" />

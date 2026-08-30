@@ -5,9 +5,9 @@ import { SUBJECTS, getLiveLectureCount, getTotalLectureCount } from '@/lib/pgdm/
 import { TRACK_META } from '@/lib/pgdm/types';
 
 export const metadata: Metadata = {
-  title: 'PGDM Specialization Tracks | Kunwar Analytics — Finance Major × Business Analytics Minor',
+  title: { absolute: 'PGDM Curriculum — Finance Major & Business Analytics Minor' },
   description:
-    'Year II · Semester III specialization curriculum: PGDM F01–F06 Finance (major) and PGDM BA01–BA06 Business Analytics (minor) — full lectures, worked examples, case studies, diagrams and modeling tools.',
+    'The full PGDM Semester III curriculum: 14 subjects, 73 lectures, MCQ quizzes, cheat sheets and 16 calculators — Finance major and Business Analytics minor.',
   alternates: { canonical: '/pgdm' },
 };
 

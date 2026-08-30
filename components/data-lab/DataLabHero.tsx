@@ -50,9 +50,9 @@ export default function DataLabHero() {
           <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.06] mb-2 anim-fade-up">
             Where Data Becomes
           </h1>
-          <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.06] mb-6 cinema-text-glow anim-fade-up delay-200">
+          <span className="text-5xl md:text-6xl lg:text-7xl font-bold leading-[1.06] mb-6 cinema-text-glow anim-fade-up delay-200">
             Intelligence
-          </h1>
+          </span>
 
           <p className="text-xl md:text-2xl text-gray-300 max-w-2xl leading-relaxed mb-10 anim-fade-up delay-300">
             Interactive models, live simulators, and downloadable datasets —

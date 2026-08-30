@@ -6,11 +6,12 @@ import type { ResearchPost } from '@/types';
 import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Research Library | Kunwar Analytics — Institutional Market Reports',
+  title: { absolute: 'Research Library — Institutional Market Reports' },
   description:
     'Institutional-grade macroeconomic, sector intelligence, fintech, and deep tech research papers with quantitative modeling and strategic frameworks.',
   alternates: { canonical: '/research' },
   openGraph: {
+      images: ['/og/default.png'],
     title: 'Research Library | Kunwar Analytics',
     description:
       'In-depth institutional research reports, financial modeling, and strategic market intelligence.',

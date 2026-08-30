@@ -7,7 +7,7 @@ import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
 export const metadata: Metadata = {
   title: 'Home | Kunwar Analytics',
   description:
-    'Kunwar Analytics is a financial intelligence platform delivering data-driven insights on markets, strategy, and capital. Explore institutional-quality research, business analytics, investment analysis, and study materials on finance, data science, and economics.',
+    'Institutional-grade financial research, market insights and a full PGDM Finance & Analytics curriculum — 73 lectures, quizzes, 16 free calculators.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'Kunwar Analytics — Financial Intelligence Platform',

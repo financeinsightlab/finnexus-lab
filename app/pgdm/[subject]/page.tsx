@@ -10,6 +10,7 @@ import { SUBJECTS, getSubject } from '@/lib/pgdm/curriculum';
 import { QUIZZES } from '@/lib/pgdm/quizzes';
 import Quiz from '@/components/pgdm/Quiz';
 import { TRACK_META } from '@/lib/pgdm/types';
+import JsonLd from '@/components/seo/JsonLd';
 
 interface PageProps {
   params: Promise<{ subject: string }>;
@@ -19,12 +20,19 @@ export function generateStaticParams() {
   return SUBJECTS.map((s) => ({ subject: s.slug }));
 }
 
+const titleCap = (parts: string, max = 62) => {
+  if (parts.length <= max) return parts;
+  const cut = parts.slice(0, max);
+  const sp = cut.lastIndexOf(' ');
+  return (sp > max * 0.6 ? cut.slice(0, sp) : cut).replace(/[ —|:-]+$/, '');
+};
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { subject: slug } = await params;
   const subject = getSubject(slug);
   if (!subject) return {};
   return {
-    title: `${subject.code} ${subject.name} | PGDM Semester III | Kunwar Analytics`,
+    title: { absolute: titleCap(`${subject.code} — ${subject.name} | Lectures & Syllabus`) },
     description: subject.description.slice(0, 155),
   };
 }
@@ -68,7 +76,7 @@ export default async function SubjectPage({ params }: PageProps) {
           <>
             <Image
               src={subject.heroImage}
-              alt=""
+              alt={`${subject.name} — ${subject.code} course hero`}
               fill
               priority
               className="object-cover opacity-25 pointer-events-none"
@@ -117,6 +125,46 @@ export default async function SubjectPage({ params }: PageProps) {
           </div>
         </div>
       </header>
+
+      <JsonLd
+        data={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Course',
+            name: `${subject.code} — ${subject.name}`,
+            description: subject.description,
+            url: `https://kunwaranalytics.in/pgdm/${subject.slug}`,
+            educationalLevel: 'Postgraduate (PGDM, Semester III)',
+            provider: { '@type': 'Organization', name: 'Kunwar Analytics', url: 'https://kunwaranalytics.in' },
+            teaches: subject.outcomes,
+            numberOfCredits: subject.credits,
+            hasCourseInstance: {
+              '@type': 'CourseInstance',
+              courseMode: 'online',
+              courseWorkload: `PT${subject.hours}H`,
+            },
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'BreadcrumbList',
+            itemListElement: [
+              { '@type': 'ListItem', position: 1, name: 'PGDM', item: 'https://kunwaranalytics.in/pgdm' },
+              { '@type': 'ListItem', position: 2, name: subject.name, item: `https://kunwaranalytics.in/pgdm/${subject.slug}` },
+            ],
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'ItemList',
+            name: `${subject.code} lectures`,
+            itemListElement: subject.lectures.map((l, i) => ({
+              '@type': 'ListItem',
+              position: i + 1,
+              name: l.title,
+              url: `https://kunwaranalytics.in/pgdm/${subject.slug}/${l.slug}`,
+            })),
+          },
+        ]}
+      />
 
       <main className="max-w-[1000px] mx-auto px-6 py-10 space-y-10">
         {/* ── COURSE OUTCOMES ── */}

@@ -1,4 +1,7 @@
 import { notFound } from 'next/navigation';
+import type { Metadata } from 'next';
+import JsonLd from '@/components/seo/JsonLd';
+import { getTool } from '@/lib/tools-registry';
 import Image from 'next/image';
 import { auth } from '@/auth';
 import { hasPremiumAccess } from '@/lib/utils';
@@ -21,6 +24,24 @@ import RatioAnalyzerCalc from '@/components/calculators/RatioAnalyzerCalc';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const tool = getTool(slug);
+  if (!tool) return {};
+  const title = `${tool.title.replace(/ — .*$/, '')} | Kunwar Analytics`.slice(0, 70);
+  return {
+    title: { absolute: title },
+    description: tool.desc.slice(0, 158),
+    alternates: { canonical: `/tools/${slug}` },
+    openGraph: {
+      title,
+      description: tool.desc.slice(0, 158),
+      url: `https://kunwaranalytics.in/tools/${slug}`,
+      images: ['/og/default.png'],
+    },
+  };
 }
 
 export default async function CalculatorPage({ params }: PageProps) {
@@ -52,6 +73,30 @@ export default async function CalculatorPage({ params }: PageProps) {
   else if (slug === 'ratio-analyzer') Component = <RatioAnalyzerCalc />;
   else notFound();
 
+  const tool = getTool(slug);
+  const toolSchema = tool ? [
+    {
+      '@context': 'https://schema.org',
+      '@type': 'SoftwareApplication',
+      name: tool.title,
+      description: tool.desc,
+      applicationCategory: 'BusinessApplication',
+      operatingSystem: 'Web browser',
+      url: `https://kunwaranalytics.in/tools/${slug}`,
+      offers: { '@type': 'Offer', price: tool.gated ? '0' : '0', priceCurrency: 'INR' },
+      publisher: { '@type': 'Organization', name: 'Kunwar Analytics' },
+    },
+    {
+      '@context': 'https://schema.org',
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://kunwaranalytics.in' },
+        { '@type': 'ListItem', position: 2, name: 'Tools', item: 'https://kunwaranalytics.in/tools' },
+        { '@type': 'ListItem', position: 3, name: tool.title, item: `https://kunwaranalytics.in/tools/${slug}` },
+      ],
+    },
+  ] : [];
+
   return (
     <div className="w-full flex flex-col min-h-screen relative bg-[#faf9f6] dark:bg-[#0a1120]">
        {/* 3D Hero Banner */}
@@ -60,6 +105,8 @@ export default async function CalculatorPage({ params }: PageProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-[#faf9f6] dark:from-[#0a1120] to-transparent" />
        </div>
        
+       <JsonLd data={toolSchema} />
+
        {/* Calculator Component */}
        <div className="-mt-16 z-10 relative">
           {Component}

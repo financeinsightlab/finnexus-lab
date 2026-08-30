@@ -9,8 +9,7 @@ import type { CaseStudy } from '@/types';
 
 export const metadata: Metadata = {
   title: 'Case Studies | Kunwar Analytics',
-  description:
-    'Consulting-grade case studies across market entry, cost transformation, M&A due diligence, pricing, digital transformation, supply chain, and turnarounds — in the style of top strategy and Big 4 firms.',
+  description: 'Business and strategy case studies with data — how Indian companies price, scale and compete, with the numbers behind each decision.',
 };
 
 const BASE = 'https://kunwaranalytics.in';

@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     template: '%s | Kunwar Analytics'
   },
   description:
-    'Kunwar Analytics is a financial intelligence platform delivering data-driven insights on markets, strategy, and capital. Explore institutional-quality research, business analytics, investment analysis, and study materials covering finance, data science, economics, and research methods.',
+    'Financial intelligence platform: institutional-grade research, market insights, PGDM finance & analytics courses with 73 full lectures, and 16 free calculators.',
   keywords: [
     'financial analysis',
     'market research',

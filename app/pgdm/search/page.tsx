@@ -3,7 +3,8 @@ import { SUBJECTS } from '@/lib/pgdm/curriculum';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
-  title: 'Search the PGDM curriculum | FinNexus Lab',
+  title: { absolute: 'Search the PGDM curriculum' },
+  robots: { index: false, follow: true },
   description: 'Full-text search across every PGDM lecture — finance and analytics, all 14 subjects.',
 };
 
