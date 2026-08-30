@@ -2,9 +2,8 @@ import React from "react"
 import { prisma } from "@/lib/prisma"
 import { VerificationBadge } from "./VerificationBadge"
 
-export async function GlobalForecastingTicker() {
-  // Fetch latest 20 predictions globally
-  const predictions = await prisma.prediction.findMany({
+async function fetchTickerPredictions() {
+  return prisma.prediction.findMany({
     orderBy: { createdAt: "desc" },
     take: 20,
     include: {
@@ -13,6 +12,17 @@ export async function GlobalForecastingTicker() {
       }
     }
   })
+}
+
+export async function GlobalForecastingTicker() {
+  // Degrade to an empty feed when the database is unreachable
+  // (e.g. local dev without a DB running).
+  let predictions: Awaited<ReturnType<typeof fetchTickerPredictions>> = []
+  try {
+    predictions = await fetchTickerPredictions()
+  } catch {
+    predictions = []
+  }
 
   // Duplicate to ensure smooth continuous running marquee
   const tickerItems = [...predictions, ...predictions, ...predictions]

@@ -56,7 +56,7 @@ export default async function CalculatorPage({ params }: PageProps) {
     <div className="w-full flex flex-col min-h-screen relative bg-[#faf9f6] dark:bg-[#0a1120]">
        {/* 3D Hero Banner */}
        <div className="relative w-full h-48 md:h-64 border-b border-gray-200 dark:border-slate-800/50 overflow-hidden">
-          <Image src={heroImg} alt={slug} fill className="object-cover opacity-90 dark:opacity-70 dark:mix-blend-lighten mix-blend-multiply" />
+          <Image src={heroImg} alt={slug} fill priority loading="eager" className="object-cover opacity-90 dark:opacity-70 dark:mix-blend-lighten mix-blend-multiply" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#faf9f6] dark:from-[#0a1120] to-transparent" />
        </div>
        
