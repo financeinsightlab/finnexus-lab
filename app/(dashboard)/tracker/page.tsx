@@ -10,7 +10,7 @@ import JsonLd from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
   title: 'Sector Intelligence Trackers',
-  description: 'Live, quarter-updated market intelligence across 8+ Indian sectors — consensus temperature, KPIs, competitive landscape, regulatory timeline, SWOT and outlook by year & quarter.',
+  description: 'Live sector trackers: quick commerce, fintech, EV adoption and food delivery — the key Indian market metrics, updated and explained.',
 };
 
 interface Props { searchParams: Promise<{ q?: string }> }

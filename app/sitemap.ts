@@ -2,6 +2,8 @@
 import { MetadataRoute } from 'next';
 import { getAllResearch, getAllInsights, getAllDataLab, getAllCaseStudies, getAllPodcastEpisodes } from '@/lib/content';
 import { prisma } from '@/lib/prisma';
+import { SUBJECTS } from '@/lib/pgdm/curriculum';
+import { TOOLS } from '@/lib/tools-registry';
 
 const BASE = 'https://kunwaranalytics.in';
 
@@ -47,6 +49,29 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.6,
   }));
 
+  // ─── Static utility pages ───
+  const utilityPages: MetadataRoute.Sitemap = [
+    { url: `${BASE}/speaking`, changeFrequency: 'monthly', priority: 0.5 },
+  ];
+
+  // ─── PGDM curriculum (14 subjects · 73 lectures · 14 cheat sheets) ───
+  const pgdmPages: MetadataRoute.Sitemap = SUBJECTS.flatMap((subject) => [
+    { url: `${BASE}/pgdm/${subject.slug}`, changeFrequency: 'weekly' as const, priority: 0.8 },
+    ...subject.lectures.map((l) => ({
+      url: `${BASE}/pgdm/${subject.slug}/${l.slug}`,
+      changeFrequency: 'monthly' as const,
+      priority: 0.7,
+    })),
+    { url: `${BASE}/pgdm/${subject.slug}/cheatsheet`, changeFrequency: 'monthly' as const, priority: 0.6 },
+  ]);
+
+  // ─── Interactive tools ───
+  const toolPages: MetadataRoute.Sitemap = TOOLS.map((t) => ({
+    url: `${BASE}/tools/${t.slug}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   // ─── Database Content: Study Materials ───
   let studyMaterials: MetadataRoute.Sitemap = [];
   try {
@@ -70,6 +95,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 1.0 },
     { url: `${BASE}/research`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
     { url: `${BASE}/insights`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${BASE}/pgdm`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
     { url: `${BASE}/study`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
     { url: `${BASE}/study/placement-prep`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
     { url: `${BASE}/data-lab`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
@@ -88,5 +114,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/data-freshness`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.5 },
   ];
 
-  return [...statics, ...research, ...insights, ...dataLab, ...caseStudies, ...podcasts, ...studyMaterials];
+  return [...statics, ...utilityPages, ...research, ...insights, ...dataLab, ...caseStudies, ...podcasts, ...studyMaterials, ...pgdmPages, ...toolPages];
 }

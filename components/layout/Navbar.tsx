@@ -12,6 +12,7 @@ import { useSession, signOut } from 'next-auth/react';
 const allLinks = [
   { label: 'Research',  href: '/research',     icon: '📚' },
   { label: 'Insights',  href: '/insights',     icon: '💡' },
+  { label: 'PGDM',      href: '/pgdm',         icon: '🎓' },
   { label: 'Data Lab',  href: '/data-lab',     icon: '🔬' },
   { label: 'About',     href: '/about',        icon: 'ℹ️' },
   { label: 'Contact',   href: '/contact',      icon: '✉️' },

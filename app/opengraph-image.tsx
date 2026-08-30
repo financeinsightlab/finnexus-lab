@@ -34,6 +34,7 @@ export default async function Image() {
               linear-gradient(90deg, rgba(56, 189, 248, 0.04) 1px, transparent 1px)
             `,
             backgroundSize: '40px 40px',
+            display: 'flex',
           }}
         />
 
@@ -47,6 +48,7 @@ export default async function Image() {
             height: '200px',
             borderRadius: '50%',
             background: 'radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 70%)',
+            display: 'flex',
           }}
         />
 
@@ -97,7 +99,7 @@ export default async function Image() {
             marginTop: 'auto',
           }}
         >
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
             <div
               style={{
                 color: '#FFFFFF',
@@ -120,7 +122,7 @@ export default async function Image() {
             </div>
           </div>
 
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
             <div
               style={{
                 color: '#FFFFFF',
@@ -143,7 +145,7 @@ export default async function Image() {
             </div>
           </div>
 
-          <div style={{ textAlign: 'center' }}>
+          <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column' }}>
             <div
               style={{
                 color: '#FFFFFF',

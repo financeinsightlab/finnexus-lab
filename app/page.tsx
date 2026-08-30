@@ -7,7 +7,7 @@ import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
 export const metadata: Metadata = {
   title: 'Home | Kunwar Analytics',
   description:
-    'Kunwar Analytics is a financial intelligence platform delivering data-driven insights on markets, strategy, and capital. Explore institutional-quality research, business analytics, investment analysis, and study materials on finance, data science, and economics.',
+    'Institutional-grade financial research, market insights and a full PGDM Finance & Analytics curriculum — 73 lectures, quizzes, 16 free calculators.',
   alternates: { canonical: '/' },
   openGraph: {
     title: 'Kunwar Analytics — Financial Intelligence Platform',
@@ -36,56 +36,67 @@ import SectorVideo from '@/components/tracker/SectorVideo';
 import HomeDataLabSection from '@/components/data-lab/HomeDataLabSection';
 
 async function getHomePagePosts() {
-  // Try to get DB-driven featured selections first
-  const [dbResearch, dbInsights, dbHeroStats, dbTrackers] = await Promise.all([
-    prisma.featuredContent.findMany({ where: { section: 'RESEARCH' }, orderBy: { order: 'asc' } }),
-    prisma.featuredContent.findMany({ where: { section: 'INSIGHTS' }, orderBy: { order: 'asc' } }),
-    prisma.homePageItem.findMany({ where: { section: 'HERO_STATS', enabled: true }, orderBy: { order: 'asc' } }),
-    prisma.homePageItem.findMany({ where: { section: 'TRACKERS', enabled: true }, orderBy: { order: 'asc' } }),
-  ]);
+  // Try to get DB-driven featured selections first; fall back to static
+  // content when the database is unreachable (e.g. local dev without a DB).
+  try {
+    // Try to get DB-driven featured selections first
+    const [dbResearch, dbInsights, dbHeroStats, dbTrackers] = await Promise.all([
+      prisma.featuredContent.findMany({ where: { section: 'RESEARCH' }, orderBy: { order: 'asc' } }),
+      prisma.featuredContent.findMany({ where: { section: 'INSIGHTS' }, orderBy: { order: 'asc' } }),
+      prisma.homePageItem.findMany({ where: { section: 'HERO_STATS', enabled: true }, orderBy: { order: 'asc' } }),
+      prisma.homePageItem.findMany({ where: { section: 'TRACKERS', enabled: true }, orderBy: { order: 'asc' } }),
+    ]);
 
-  let research: ResearchPost[];
-  let insights: InsightPost[];
+    let research: ResearchPost[];
+    let insights: InsightPost[];
 
-  if (dbResearch.length > 0) {
-    const dbPosts = await prisma.post.findMany({
-      where: { id: { in: dbResearch.map(r => r.contentId) } },
-      select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true, tags: true, viewCount: true, featuredImage: true },
-    });
-    const idToPost = Object.fromEntries(dbPosts.map(p => [p.id, p]));
-    research = dbResearch
-      .map(r => idToPost[r.contentId])
-      .filter(Boolean)
-      .map(p => ({
-        slug: p.slug, title: p.title, date: p.publishedAt?.toISOString() ?? new Date().toISOString(),
-        sector: 'General', tags: p.tags, summary: p.excerpt ?? '', pageCount: 0,
-        author: 'Kunwar Analytics', featured: true,
-        coverImage: p.featuredImage || undefined,
-      }));
-  } else {
-    research = getFeaturedResearch(3);
+    if (dbResearch.length > 0) {
+      const dbPosts = await prisma.post.findMany({
+        where: { id: { in: dbResearch.map(r => r.contentId) } },
+        select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true, tags: true, viewCount: true, featuredImage: true },
+      });
+      const idToPost = Object.fromEntries(dbPosts.map(p => [p.id, p]));
+      research = dbResearch
+        .map(r => idToPost[r.contentId])
+        .filter(Boolean)
+        .map(p => ({
+          slug: p.slug, title: p.title, date: p.publishedAt?.toISOString() ?? new Date().toISOString(),
+          sector: 'General', tags: p.tags, summary: p.excerpt ?? '', pageCount: 0,
+          author: 'Kunwar Analytics', featured: true,
+          coverImage: p.featuredImage || undefined,
+        }));
+    } else {
+      research = getFeaturedResearch(3);
+    }
+
+    if (dbInsights.length > 0) {
+      const dbPosts = await prisma.post.findMany({
+        where: { id: { in: dbInsights.map(r => r.contentId) } },
+        select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true, featuredImage: true },
+      });
+      const idToPost = Object.fromEntries(dbPosts.map(p => [p.id, p]));
+      insights = dbInsights
+        .map(r => idToPost[r.contentId])
+        .filter(Boolean)
+        .map(p => ({
+          slug: p.slug, title: p.title, date: p.publishedAt?.toISOString() ?? new Date().toISOString(),
+          category: 'Sector Analysis' as InsightPost['category'],
+          readingTime: 5, thesis: p.excerpt ?? '', author: 'Kunwar Analytics', featured: true,
+          coverImage: p.featuredImage || undefined,
+        }));
+    } else {
+      insights = getFeaturedInsights(3);
+    }
+
+    return { research, insights, heroStats: dbHeroStats, trackers: dbTrackers };
+  } catch {
+    return {
+      research: getFeaturedResearch(3),
+      insights: getFeaturedInsights(3),
+      heroStats: [],
+      trackers: [],
+    };
   }
-
-  if (dbInsights.length > 0) {
-    const dbPosts = await prisma.post.findMany({
-      where: { id: { in: dbInsights.map(r => r.contentId) } },
-      select: { id: true, title: true, slug: true, excerpt: true, type: true, publishedAt: true, featuredImage: true },
-    });
-    const idToPost = Object.fromEntries(dbPosts.map(p => [p.id, p]));
-    insights = dbInsights
-      .map(r => idToPost[r.contentId])
-      .filter(Boolean)
-      .map(p => ({
-        slug: p.slug, title: p.title, date: p.publishedAt?.toISOString() ?? new Date().toISOString(),
-        category: 'Sector Analysis' as InsightPost['category'],
-        readingTime: 5, thesis: p.excerpt ?? '', author: 'Kunwar Analytics', featured: true,
-        coverImage: p.featuredImage || undefined,
-      }));
-  } else {
-    insights = getFeaturedInsights(3);
-  }
-
-  return { research, insights, heroStats: dbHeroStats, trackers: dbTrackers };
 }
 
 export default async function HomePage() {

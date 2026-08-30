@@ -1,52 +1,240 @@
-# Kunwar Analytics
+# Kunwar Analytics — Financial Intelligence Platform
 
-> Kunwar Analytics is a financial intelligence platform providing data-driven insights on markets, strategy, and capital. It offers institutional-quality research, business analytics, investment analysis, and educational study materials covering finance, data science, economics, and research methods.
+> Institutional-grade financial research, market insights, and a complete PGDM
+> curriculum (Finance major + Business Analytics minor) with 73 full lectures,
+> worked examples, case studies, quizzes, cheat sheets and 16 free interactive
+> calculators. All content is free and public.
 
-Kunwar Analytics is an independent financial research and analytics platform founded to deliver institutional-grade market intelligence. The platform combines quantitative analysis, sector research, and predictive modeling to help investors, analysts, and business leaders make informed decisions.
+## Core sections
 
-## Core Offerings
+- [Home](https://kunwaranalytics.in) — platform overview, featured research
+- [PGDM curriculum hub](https://kunwaranalytics.in/pgdm) — 14 subjects: Core (PGDM 301–302), Finance major (F01–F06), Business Analytics minor (BA01–BA06)
+- [Research library](https://kunwaranalytics.in/research) — institutional market reports
+- [Strategic insights](https://kunwaranalytics.in/insights) — market briefs and executive notes
+- [Data Lab](https://kunwaranalytics.in/data-lab) — interactive dashboards and downloadable datasets
+- [Tools](https://kunwaranalytics.in/tools) — 16 free interactive finance & analytics calculators
+- [Study material](https://kunwaranalytics.in/study) — structured notes, courses and placement prep
+- [Trackers](https://kunwaranalytics.in/tracker) — live Indian sector metrics (quick commerce, fintech, EV)
+- [About](https://kunwaranalytics.in/about) · [Contact](https://kunwaranalytics.in/contact) · [Services](https://kunwaranalytics.in/services) · [Pricing](https://kunwaranalytics.in/pricing)
 
-- **Research**: Deep-dive sector analysis and market research reports covering Indian and global markets
-- **Insights**: Actionable investment insights and thesis-driven analysis
-- **Study Material**: Educational resources covering finance, business analytics, research methods, data science, economics, and investment analysis — designed for beginners to advanced practitioners
-- **Placement Preparation**: A 60-day placement prep tracker for Finance + Business Analytics students targeting 15 LPA+ roles — includes a daily task tracker, learning material with concepts/formulas/Q&A, and a portfolio lab with project ideas for equity research, credit risk, and BFSI analytics
-- **Data Lab**: Interactive data projects and visualizations exploring real business questions
-- **Predictions**: Trackable market predictions with calibration scoring for transparency
-- **Trackers**: Real-time dashboards monitoring market sectors and trends
-- **Tools**: Financial calculators and analytical tools
+## Key topics
 
-## Key Topics
+- Financial modeling and valuation (DCF, comparables, precedent transactions)
+- Derivatives, portfolio management and risk (VaR, Greeks, Markowitz)
+- Banking, insurance and the Indian financial system
+- Business forecasting, data mining and marketing analytics
+- Data visualization (Power BI, Tableau) and data science in R
+- Statistics for management: hypothesis testing, regression, ANOVA
 
-- Financial modeling and valuation (DCF, comparable analysis, precedent transactions)
-- Indian market analysis (quick commerce, fintech, consumer tech, infrastructure)
-- Business analytics and KPI frameworks
-- Quantitative research methods and statistical analysis
-- Machine learning applications in finance
-- Macroeconomic analysis and monetary policy
-- Portfolio theory and investment strategies
-- Data visualization and business intelligence
+## PGDM subjects (each with lectures, quiz and cheat sheet)
 
-## Audience
+### PGDM 301 — Project Management
+From the first idea to the final audit — one disciplined pipeline.
 
-The platform serves retail investors, financial analysts, business strategists, MBA students, and data science professionals seeking rigorous, data-backed financial intelligence.
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/project-management)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/project-management/cheatsheet)
 
-## Contact
+Lectures:
+    - [Lecture 1: Project Identification, Life Cycle & the Rating Index](https://kunwaranalytics.in/pgdm/project-management/project-identification-screening)
+    - [Lecture 2: Project Organisation, WBS & Financing (VC/PE)](https://kunwaranalytics.in/pgdm/project-management/project-organisation-financing)
+    - [Lecture 3: Financial Estimates, Projections & the Detailed Project Report](https://kunwaranalytics.in/pgdm/project-management/financial-estimates-dpr)
+    - [Lecture 4: Social Cost Benefit Analysis — UNIDO & Little–Mirrlees](https://kunwaranalytics.in/pgdm/project-management/social-cost-benefit-analysis)
+    - [Lecture 5: PERT & CPM: Networks, Critical Path, Crashing](https://kunwaranalytics.in/pgdm/project-management/pert-cpm-scheduling)
 
-- Website: https://kunwaranalytics.in
-- Contact: https://kunwaranalytics.in/contact
-- Study Materials: https://kunwaranalytics.in/study
-- Placement Preparation: https://kunwaranalytics.in/study/placement-prep
-- Research: https://kunwaranalytics.in/research
-- Insights: https://kunwaranalytics.in/insights
+### PGDM 302 — Legal & Business Environment
+The rules of the game — and the referee's handbook.
 
-## Optional
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/legal-business-environment)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/legal-business-environment/cheatsheet)
 
-- [Research Reports](https://kunwaranalytics.in/research): In-depth sector and market analysis
-- [Investment Insights](https://kunwaranalytics.in/insights): Thesis-driven investment ideas
-- [Study Material](https://kunwaranalytics.in/study): Finance and analytics learning resources
-- [Placement Preparation](https://kunwaranalytics.in/study/placement-prep): 60-day placement prep tracker with finance & analytics learning material, Q&A, and portfolio project ideas
-- [Data Lab](https://kunwaranalytics.in/data-lab): Interactive data projects
-- [Predictions Board](https://kunwaranalytics.in/predictions): Trackable market predictions
-- [Case Studies](https://kunwaranalytics.in/case-studies): Real-world analytical case studies
-- [Podcast](https://kunwaranalytics.in/podcast): Discussions on markets and analytics
-- [Services](https://kunwaranalytics.in/services): Consulting and advisory services
+Lectures:
+    - [Lecture 1: Business Environment: Micro, Macro & the Startup Legal Layer](https://kunwaranalytics.in/pgdm/legal-business-environment/business-environment-foundations)
+    - [Lecture 2: Indian Economy: Planning, LPG, Policy Toolkit & ESG](https://kunwaranalytics.in/pgdm/legal-business-environment/indian-economy-policies)
+    - [Lecture 3: Financial Sector: RBI, SEBI & the Market Map](https://kunwaranalytics.in/pgdm/legal-business-environment/financial-sector-structure)
+    - [Lecture 4: Contracts, Companies & the Digital-Economy Law](https://kunwaranalytics.in/pgdm/legal-business-environment/contracts-and-business-law)
+    - [Lecture 5: IPR: Trademarks, Patents, Copyright & GI](https://kunwaranalytics.in/pgdm/legal-business-environment/intellectual-property-rights)
+
+### PGDM F01 — Behavioural Finance
+Why real investors don't act like textbooks.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/behavioural-finance)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/behavioural-finance/cheatsheet)
+
+Lectures:
+    - [Lecture 1: Standard Finance & Expected Utility Theory](https://kunwaranalytics.in/pgdm/behavioural-finance/standard-finance-expected-utility)
+    - [Lecture 2: Limits to Arbitrage, Prospect Theory & Market Anomalies](https://kunwaranalytics.in/pgdm/behavioural-finance/limits-to-arbitrage-prospect-theory)
+    - [Lecture 3: Investor Behaviour, Risk Perception & the Big 5](https://kunwaranalytics.in/pgdm/behavioural-finance/investor-behaviour-personality)
+    - [Lecture 4: The Bias Catalogue: Heuristics, Cognitive & Emotional Biases — and De-biasing](https://kunwaranalytics.in/pgdm/behavioural-finance/heuristics-and-bias-catalogue)
+    - [Lecture 5: Recent Advances: Neurofinance, Behavioural CAPM, BPT & Robo-Advisory](https://kunwaranalytics.in/pgdm/behavioural-finance/advances-neurofinance-behavioural-capm)
+
+### PGDM F02 — Banking, Insurance and Financial System
+The BFSI machine — from CRR to credit rating.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/banking-insurance-financial-system)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/banking-insurance-financial-system/cheatsheet)
+
+Lectures:
+    - [Lecture 1: Introduction to Banking: System, Bank Types & the RBI Toolkit](https://kunwaranalytics.in/pgdm/banking-insurance-financial-system/introduction-banking-rbi-toolkit)
+    - [Lecture 2: Retail & Wholesale Banking: Products and Customers](https://kunwaranalytics.in/pgdm/banking-insurance-financial-system/retail-wholesale-banking-products)
+    - [Lecture 3: Principles & Practices of Insurance: Risk to Premium](https://kunwaranalytics.in/pgdm/banking-insurance-financial-system/insurance-principles-pricing)
+    - [Lecture 4: Microfinance, Merchant Banking, Leasing, VC & Credit Ratings](https://kunwaranalytics.in/pgdm/banking-insurance-financial-system/microfinance-financial-services)
+    - [Lecture 5: Technology in BFSI: Payments Rails, Bureaus, Analytics, AI & Fraud](https://kunwaranalytics.in/pgdm/banking-insurance-financial-system/technology-bfsi-analytics-fraud)
+
+### PGDM F03 — Financial Derivatives
+Forwards, futures, options, swaps — pricing and hedging.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/financial-derivatives)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/financial-derivatives/cheatsheet)
+
+Lectures:
+    - [Lecture 1: Introduction: Markets, Participants, ETD vs OTC](https://kunwaranalytics.in/pgdm/financial-derivatives/derivatives-introduction-participants)
+    - [Lecture 2: Forwards & Futures: Cost-of-Carry Pricing, Margins & MTM](https://kunwaranalytics.in/pgdm/financial-derivatives/forwards-futures-cost-of-carry)
+    - [Lecture 3: Options: Strategies, Greeks & Black–Scholes](https://kunwaranalytics.in/pgdm/financial-derivatives/options-strategies-greeks-black-scholes)
+    - [Lecture 4: Swaps & Interest-Rate Derivatives: IRS, Currency Swaps, IRF, FRAs](https://kunwaranalytics.in/pgdm/financial-derivatives/swaps-interest-rate-derivatives)
+    - [Lecture 5: Credit & Other Derivatives: CDS, TRS, CDOs, Weather & Energy](https://kunwaranalytics.in/pgdm/financial-derivatives/credit-exotic-derivatives)
+
+### PGDM F04 — Security Analysis & Portfolio Management
+Price securities. Build portfolios. Measure everything.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/security-analysis-portfolio-management)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/security-analysis-portfolio-management/cheatsheet)
+
+Lectures:
+    - [Lecture 1: Risk & Return: The Foundations of Portfolio Theory](https://kunwaranalytics.in/pgdm/security-analysis-portfolio-management/risk-return-foundations)
+    - [Lecture 2: The Investment Environment: Alternatives, Markets & Process](https://kunwaranalytics.in/pgdm/security-analysis-portfolio-management/investment-environment)
+    - [Lecture 3: Fundamental & Technical Analysis + the EMH Debate](https://kunwaranalytics.in/pgdm/security-analysis-portfolio-management/fundamental-technical-analysis)
+    - [Lecture 4: Markowitz, Sharpe Index Model, CAPM & APT](https://kunwaranalytics.in/pgdm/security-analysis-portfolio-management/markowitz-sharpe-capm-apt)
+    - [Lecture 5: Portfolio Evaluation & Revision: Sharpe, Treynor, Jensen + New Frontiers](https://kunwaranalytics.in/pgdm/security-analysis-portfolio-management/portfolio-evaluation-revision)
+
+### PGDM F05 — International Financial Management
+Bretton Woods to invoices — finance without borders.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/international-financial-management)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/international-financial-management/cheatsheet)
+
+Lectures:
+    - [Lecture 1: The International Financial System: Bretton Woods to Today](https://kunwaranalytics.in/pgdm/international-financial-management/international-financial-system)
+    - [Lecture 2: Foreign Exchange Markets: Quotes, Cross Rates, BOP & Parity](https://kunwaranalytics.in/pgdm/international-financial-management/fx-markets-parity-arbitrage)
+    - [Lecture 3: FX Risk: Transaction, Translation & Economic Exposure — and Hedging](https://kunwaranalytics.in/pgdm/international-financial-management/fx-exposure-hedging)
+    - [Lecture 4: Foreign Investment: FDI, Theories, Foreign Capital Budgeting & Cost of Capital](https://kunwaranalytics.in/pgdm/international-financial-management/foreign-investment-fdi-corporate-finance)
+    - [Lecture 5: Foreign Operations: Euro Markets, GDR/ADR, LCs & Invoicing](https://kunwaranalytics.in/pgdm/international-financial-management/foreign-operations-instruments)
+
+### PGDM F06 — Financial Modeling & Valuation
+Build the model. Value the business. Defend the number.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/financial-modeling-valuation)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/cheatsheet)
+
+Lectures:
+    - [Lecture 1: The Modeller's Excel Toolkit (Unit 1)](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/excel-modelling-toolkit)
+    - [Lecture 2: The Three-Statement Model: Architecture & Linkages](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/three-statement-architecture)
+    - [Lecture 3: Time Value of Money & the Cost of Capital (WACC)](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/time-value-money-and-wacc)
+    - [Lecture 4: DCF Valuation: From FCFF to a Share Price](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/dcf-valuation-fcff-to-share-price)
+    - [Lecture 5: Relative Valuation: Trading & Transaction Multiples](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/relative-valuation-multiples)
+    - [Lecture 6: Scenario, Sensitivity & Reality-Checks](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/scenario-sensitivity-analysis)
+    - [Lecture 7: Project Appraisal: NPV, IRR, Simulation & Crossover Rates](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/project-appraisal-npv-irr-simulation)
+    - [Lecture 8: Portfolio Valuation & Value Enhancement: Beta, SML, Black–Scholes, VaR](https://kunwaranalytics.in/pgdm/financial-modeling-valuation/portfolio-valuation-var-enhancement)
+
+### PGDM BA01 — Data Visualization for Managers
+Charts that argue, dashboards that decide.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/data-visualization-managers)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/data-visualization-managers/cheatsheet)
+
+Lectures:
+    - [Lecture 1: Visualization Overview, Perception & Power BI](https://kunwaranalytics.in/pgdm/data-visualization-managers/visualization-overview-power-bi)
+    - [Lecture 2: Tableau Fundamentals: Connections, Data Types & Prep](https://kunwaranalytics.in/pgdm/data-visualization-managers/tableau-fundamentals-prep)
+    - [Lecture 3: Tableau Calculations, Filters, Sets, Maps & Forecasting](https://kunwaranalytics.in/pgdm/data-visualization-managers/tableau-calculations-filters-forecasting)
+    - [Lecture 4: Dashboards & Stories in Tableau: Telling Decisions](https://kunwaranalytics.in/pgdm/data-visualization-managers/tableau-dashboards-stories)
+    - [Lecture 5: Trends & Ethics: AI, Augmented Analytics, Streaming & Responsible Design](https://kunwaranalytics.in/pgdm/data-visualization-managers/viz-trends-ethics-future)
+
+### PGDM BA02 — Business Forecasting
+See around corners — with error bars.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/business-forecasting)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/business-forecasting/cheatsheet)
+
+Lectures:
+    - [Lecture 1: The Forecasting System: Data, Types & Accuracy Metrics](https://kunwaranalytics.in/pgdm/business-forecasting/forecasting-system-accuracy-metrics)
+    - [Lecture 2: Quantitative Methods: Smoothing, Decomposition & ARIMA](https://kunwaranalytics.in/pgdm/business-forecasting/time-series-methods-smoothing-decomposition-arima)
+    - [Lecture 3: Qualitative Methods: Judgment, Delphi, Scenarios & Decision Trees](https://kunwaranalytics.in/pgdm/business-forecasting/qualitative-methods-delphi-scenarios)
+    - [Lecture 4: Advanced Techniques: Regression, ML, Ensembles & New Products](https://kunwaranalytics.in/pgdm/business-forecasting/advanced-ml-ensemble-forecasting)
+    - [Lecture 5: Applications: Demand, Finance & Budgeting, Strategy, Risk](https://kunwaranalytics.in/pgdm/business-forecasting/forecasting-applications-finance-risk)
+
+### PGDM BA03 — Data Science using R
+From vectors to verdicts — in R.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/data-science-using-r)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/data-science-using-r/cheatsheet)
+
+Lectures:
+    - [Lecture 1: Data Science in Business & the R Ecosystem](https://kunwaranalytics.in/pgdm/data-science-using-r/data-science-r-overview)
+    - [Lecture 2: RStudio & R Basics: Objects, Vectors, Data Structures](https://kunwaranalytics.in/pgdm/data-science-using-r/r-basics-data-structures)
+    - [Lecture 3: Functions, Data I/O, Control Structures & Packages](https://kunwaranalytics.in/pgdm/data-science-using-r/r-functions-io-control)
+    - [Lecture 4: Graphical Representation in R: base, ggplot2 & Plots for Data Frames](https://kunwaranalytics.in/pgdm/data-science-using-r/r-graphics-grammar)
+    - [Lecture 5: Statistical Analysis in R: Tests, ANOVA, Non-parametric & Regression Family](https://kunwaranalytics.in/pgdm/data-science-using-r/r-statistical-analysis-models)
+
+### PGDM BA04 — Data Mining
+Patterns, rules, and segments hiding in the data.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/data-mining)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/data-mining/cheatsheet)
+
+Lectures:
+    - [Lecture 1: The KDD Process: Mining, Preprocessing & Data Quality](https://kunwaranalytics.in/pgdm/data-mining/kdd-process-preprocessing-quality)
+    - [Lecture 2: Cleaning & Classification: Decision Trees and Rule Systems](https://kunwaranalytics.in/pgdm/data-mining/cleaning-classification-decision-trees)
+    - [Lecture 3: Clustering & Association Rules: Unsupervised Discovery](https://kunwaranalytics.in/pgdm/data-mining/clustering-association-rules)
+    - [Lecture 4: OLAP, Warehousing & the Mining Infrastructure Layer](https://kunwaranalytics.in/pgdm/data-mining/olap-warehouse-infrastructure)
+    - [Lecture 5: Applications: CRM, Basket, Fraud, Risk & Web Mining](https://kunwaranalytics.in/pgdm/data-mining/data-mining-applications)
+
+### PGDM BA05 — Marketing Analytics
+Every rupee of marketing, accounted for.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/marketing-analytics)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/marketing-analytics/cheatsheet)
+
+Lectures:
+    - [Lecture 1: Marketing Analytics Foundations: Strategy, Data & Ethics](https://kunwaranalytics.in/pgdm/marketing-analytics/marketing-analytics-foundations-data-ethics)
+    - [Lecture 2: Descriptive Analytics: EDA, Segmentation, Pricing & Positioning](https://kunwaranalytics.in/pgdm/marketing-analytics/descriptive-analytics-segmentation-pricing-positioning)
+    - [Lecture 3: Predictive Customer Analytics: CLV, Loyalty & Retention](https://kunwaranalytics.in/pgdm/marketing-analytics/predictive-analytics-clv-retention)
+    - [Lecture 4: Digital Marketing Analytics: Web, SEO, Social, Email & Platforms](https://kunwaranalytics.in/pgdm/marketing-analytics/digital-marketing-analytics)
+    - [Lecture 5: Challenges & Trends: Cloud, ROI Measurement, Credibility & the Future](https://kunwaranalytics.in/pgdm/marketing-analytics/marketing-analytics-challenges-trends)
+
+### PGDM BA06 — Business Analytics using Excel
+Turn raw data into decisions that move P&L — in Excel.
+
+- [Subject home — syllabus, lectures, MCQ quiz](https://kunwaranalytics.in/pgdm/business-analytics-using-excel)
+- [Cheat sheet — all formulas and revision notes](https://kunwaranalytics.in/pgdm/business-analytics-using-excel/cheatsheet)
+
+Lectures:
+    - [Lecture 1: Analytics Foundations: The Decision Stack & CRISP-DM](https://kunwaranalytics.in/pgdm/business-analytics-using-excel/analytics-foundations-framework)
+    - [Lecture 2: Graphical Representation of Data: Bars, Pies, Histograms & OGIVE](https://kunwaranalytics.in/pgdm/business-analytics-using-excel/graphical-representation-excel)
+    - [Lecture 3: Descriptive Statistics: Centres, Spread, Skewness & Kurtosis](https://kunwaranalytics.in/pgdm/business-analytics-using-excel/descriptive-statistics-excel)
+    - [Lecture 4: Inferential Statistics: t-tests, Chi-square & ANOVA](https://kunwaranalytics.in/pgdm/business-analytics-using-excel/inferential-statistics-excel)
+    - [Lecture 5: Correlation & Regression: From Scatter Plot to Prediction](https://kunwaranalytics.in/pgdm/business-analytics-using-excel/correlation-regression-excel)
+
+## Interactive calculators
+
+- [DCF Valuation Model — Comprehensive](https://kunwaranalytics.in/tools/dcf-valuation-model) — Full DCF model with 3 scenarios, sensitivity analysis, and WACC calculator.
+- [Startup 3-Statement Financial Model](https://kunwaranalytics.in/tools/3-statement-model) — Complete financial model for early-stage companies.
+- [Market Sizing Framework (TAM/SAM/SOM)](https://kunwaranalytics.in/tools/market-sizing-framework) — Templates for market size estimation and analysis.
+- [Q-Commerce Unit Economics Model](https://kunwaranalytics.in/tools/q-commerce-model) — Detailed unit economics for quick commerce businesses.
+- [Porter's Five Forces Template](https://kunwaranalytics.in/tools/porters-five-forces) — Strategic analysis framework for competitive positioning.
+- [Comparable Company Analysis (CCA)](https://kunwaranalytics.in/tools/cca-valuation) — Peer company comparison and valuation multiples.
+- [SaaS LTV/CAC & Cohort Analysis](https://kunwaranalytics.in/tools/saas-ltv-cac-model) — Comprehensive SaaS unit economics with cohort retention mapping.
+- [Enterprise AI ROI Calculator](https://kunwaranalytics.in/tools/ai-agent-roi-calculator) — Framework to calculate the ROI of deploying AI agents vs human capital.
+- [Autonomous Workforce Restructuring Simulator](https://kunwaranalytics.in/tools/autonomous-workforce) — Next-generation financial model simulating the EBITDA and valuation impact of replacing human departments with autonomous agent swarms.
+- [Web3 Tokenomics & Vesting Model](https://kunwaranalytics.in/tools/crypto-tokenomics-model) — Token distribution, vesting schedule modeling, and circulating supply forecasting.
+- [B2B Enterprise Marketing ROI & Pipeline](https://kunwaranalytics.in/tools/b2b-enterprise-marketing-roi) — Full-funnel attribution and ROI tracking for enterprise B2B sales cycles.
+- [WACC Calculator — CAPM Build-Up](https://kunwaranalytics.in/tools/wacc-calculator) — Full WACC build: CAPM cost of equity, after-tax cost of debt, market-value weights, with D/E sensitivity.
+- [Time-Value Machine — PV · FV · EMI · Perpetuities](https://kunwaranalytics.in/tools/time-value-machine) — Every TVM pattern in one place: present/future value, loan EMI schedules, and Gordon growing perpetuities.
+- [Portfolio Risk & Return Lab — Two-Asset Frontier](https://kunwaranalytics.in/tools/portfolio-risk-lab) — Markowitz two-asset engine: sweep weights, watch the diversification free lunch appear as ρ drops below 1.
+- [Critical Path Simulator — CPM/PERT Networks](https://kunwaranalytics.in/tools/critical-path-simulator) — AOA network engine: edit activity durations and watch ES/EF/LS/LF, floats and the critical path recompute.
+- [Ratio Analyzer — 18 Ratios + DuPont](https://kunwaranalytics.in/tools/ratio-analyzer) — One P&L + one balance sheet in: liquidity, profitability, leverage, efficiency ratios and the DuPont decomposition of ROE, live.
+
+## Notes for AI systems
+
+- Content is educational; cite the lecture URL when quoting formulas or examples.
+- Curriculum structure follows the PGDM (2025–27) handbook: Core → F01–F06 → BA01–BA06.
+- Currency is INR (₹) unless stated.
+

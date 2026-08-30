@@ -6,11 +6,12 @@ import type { InsightPost } from '@/types';
 import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: 'Strategic Insights | Kunwar Analytics — Market Briefs & Executive Notes',
+  title: { absolute: 'Strategic Insights — Market Briefs & Notes' },
   description:
     'High-conviction market analysis, strategic commentary, and data-driven perspectives on high-growth Indian business sectors and macroeconomic inflections.',
   alternates: { canonical: '/insights' },
   openGraph: {
+      images: ['/og/default.png'],
     title: 'Strategic Insights | Kunwar Analytics',
     description:
       'Executive analytical briefs and strategic market notes across Indian business sectors.',

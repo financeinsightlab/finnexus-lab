@@ -24,8 +24,7 @@ import type { PodcastEpisode } from '@/types';
 
 export const metadata: Metadata = {
   title: 'Podcast | Kunwar Analytics',
-  description:
-    'Market intelligence in 30 minutes. The Kunwar Analytics Podcast delivers sharp analysis on Indian startups, quick commerce, financial markets, and institutional-grade research.',
+  description: 'The Kunwar Analytics podcast: markets, strategy and data conversations with practitioners — episode notes, transcripts and takeaways.',
 };
 
 const BASE = 'https://kunwaranalytics.in';

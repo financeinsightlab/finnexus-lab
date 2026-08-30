@@ -39,7 +39,13 @@ const STATUS_CONFIG = {
 
 export default async function AuthorProfilePage({ params }: Props) {
   const { slug } = await params;
-  const user = await getUserBySlug(slug);
+  let user;
+  try {
+    user = await getUserBySlug(slug);
+  } catch {
+    // DB unreachable — treat as unknown author rather than erroring
+    notFound();
+  }
   if (!user) notFound();
 
   const [predictions, score, posts] = await Promise.all([

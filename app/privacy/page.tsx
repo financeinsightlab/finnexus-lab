@@ -1,6 +1,16 @@
 import { Shield, Lock, Eye, FileText } from 'lucide-react';
 import Link from 'next/link';
 
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy | Kunwar Analytics',
+  description: 'How Kunwar Analytics collects, uses, protects and shares data — cookies, analytics, third-party services and your rights under the DPDP Act and GDPR.',
+  alternates: { canonical: '/privacy' },
+};
+
+
+
 export default function PrivacyPage() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">

@@ -41,7 +41,9 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ ok: true });
   } catch (err) {
-    console.error("Analytics track error:", err);
-    return NextResponse.json({ error: "Internal error" }, { status: 500 });
+    // Analytics is non-critical: never surface tracking failures to the client
+    // (e.g. local dev without a database running).
+    console.warn("Analytics track skipped:", err instanceof Error ? err.message : err);
+    return NextResponse.json({ ok: true });
   }
 }
