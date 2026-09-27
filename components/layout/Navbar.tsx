@@ -6,17 +6,7 @@ import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import GlobalSearch from '@/components/layout/GlobalSearch';
 import { useSession, signOut } from 'next-auth/react';
-
-/* ─────────────────────── NAV DATA ─────────────────────── */
-
-const allLinks = [
-  { label: 'Research',  href: '/research',     icon: '📚' },
-  { label: 'Insights',  href: '/insights',     icon: '💡' },
-  { label: 'PGDM',      href: '/pgdm',         icon: '🎓' },
-  { label: 'Data Lab',  href: '/data-lab',     icon: '🔬' },
-  { label: 'About',     href: '/about',        icon: 'ℹ️' },
-  { label: 'Contact',   href: '/contact',      icon: '✉️' },
-];
+import { NAV_CLUSTERS, NAV_CTA, type NavCluster } from '@/lib/navigation';
 
 /* ─────────────────────── ICONS ─────────────────────── */
 
@@ -90,22 +80,15 @@ function Logo({ onClick }: { onClick?: () => void }) {
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [moreOpen, setMoreOpen]     = useState(false);
-  const [userOpen, setUserOpen]     = useState(false);
+  const [openCluster, setOpenCluster] = useState<string | null>(null);
+  const [userOpen, setUserOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const { data: session }           = useSession();
+  const { data: session } = useSession();
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
-  /* Close more-dropdown on outside click */
-  useEffect(() => {
-    if (!moreOpen) return;
-    const close = (e: MouseEvent) => {
-      if (!(e.target as HTMLElement).closest('[data-more-dropdown]')) setMoreOpen(false);
-    };
-    document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
-  }, [moreOpen]);
+  const clusterActive = (cluster: NavCluster) =>
+    isActive(cluster.href) || cluster.items.some((item) => isActive(item.href));
 
   /* Close user-dropdown on outside click */
   useEffect(() => {
@@ -123,14 +106,13 @@ export default function Navbar() {
     return () => { document.body.style.overflow = ''; };
   }, [mobileOpen]);
 
-  /* Close mobile menu on route change */
-  useEffect(() => { setMobileOpen(false); }, [pathname]);
+  /* Close menus on route change */
+  useEffect(() => { setMobileOpen(false); setOpenCluster(null); }, [pathname]);
 
-  const navLinkClass = (href: string) =>
-    `relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap group ${
-      isActive(href)
-        ? 'text-teal-400 bg-teal-500/10'
-        : 'text-gray-300 hover:text-white hover:bg-white/10'
+  const clusterButtonClass = (cluster: NavCluster) =>
+    `relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap group ${clusterActive(cluster)
+      ? 'text-teal-400 bg-teal-500/10'
+      : 'text-gray-300 hover:text-white hover:bg-white/10'
     }`;
 
   return (
@@ -149,16 +131,77 @@ export default function Navbar() {
           {/* ── LOGO ── */}
           <Logo />
 
-          {/* ── DESKTOP NAV ── (hidden below lg) */}
+          {/* ── DESKTOP NAV — clustered hover dropdowns ── */}
           <div className="hidden lg:flex items-center gap-1 flex-1 justify-center">
-            {allLinks.map(link => (
-              <Link key={link.href} href={link.href} className={navLinkClass(link.href)}>
-                <span className="text-sm opacity-75">{link.icon}</span>
-                {link.label}
-                {!isActive(link.href) && (
+            {NAV_CLUSTERS.map((cluster) => (
+              <div
+                key={cluster.id}
+                className="relative"
+                onMouseEnter={() => setOpenCluster(cluster.id)}
+                onMouseLeave={() => setOpenCluster((cur) => (cur === cluster.id ? null : cur))}
+              >
+                <Link
+                  href={cluster.href}
+                  onFocus={() => setOpenCluster(cluster.id)}
+                  aria-expanded={openCluster === cluster.id}
+                  aria-haspopup="true"
+                  className={clusterButtonClass(cluster)}
+                >
+                  <span className="text-sm opacity-75">{cluster.icon}</span>
+                  {cluster.label}
+                  <ChevronDown open={openCluster === cluster.id} />
                   <span className="absolute inset-x-2 bottom-0.5 h-px bg-gradient-to-r from-teal-500/0 via-teal-500 to-teal-500/0 scale-x-0 group-hover:scale-x-100 transition-transform duration-300" />
+                </Link>
+
+                {openCluster === cluster.id && (
+                  <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
+                    <div className="anim-fade w-[580px] max-w-[92vw] rounded-2xl border border-white/10 bg-gray-900/98 backdrop-blur-xl p-4 shadow-2xl shadow-black/60">
+                      <div className="flex items-start gap-3 px-2 pb-3">
+                        <span className="text-2xl leading-none">{cluster.icon}</span>
+                        <div>
+                          <p className="text-sm font-semibold text-white">{cluster.label}</p>
+                          <p className="text-xs text-gray-400">{cluster.description}</p>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-1">
+                        {cluster.items.map((item) => (
+                          <Link
+                            key={`${cluster.id}-${item.href}`}
+                            href={item.href}
+                            onClick={() => setOpenCluster(null)}
+                            className={`flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors group/item ${isActive(item.href)
+                              ? 'bg-teal-500/10'
+                              : 'hover:bg-white/5'
+                              }`}
+                          >
+                            <span className="mt-0.5 text-base leading-none">{item.icon}</span>
+                            <span className="min-w-0">
+                              <span className={`block text-sm font-medium ${isActive(item.href) ? 'text-teal-400' : 'text-gray-200 group-hover/item:text-white'}`}>
+                                {item.label}
+                              </span>
+                              {item.description && (
+                                <span className="mt-0.5 block text-xs text-gray-500 group-hover/item:text-gray-400">
+                                  {item.description}
+                                </span>
+                              )}
+                            </span>
+                          </Link>
+                        ))}
+                      </div>
+                      <div className="mt-3 border-t border-white/5 px-3 pt-3">
+                        <Link
+                          href={cluster.href}
+                          onClick={() => setOpenCluster(null)}
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+                        >
+                          Open {cluster.label}
+                          <span className="transition-transform group-hover:translate-x-0.5">→</span>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                 )}
-              </Link>
+              </div>
             ))}
           </div>
 
@@ -220,7 +263,7 @@ export default function Navbar() {
                         </Link>
                         {['ADMIN', 'ANALYST'].includes((session.user as { role?: string })?.role || '') && (
                           <Link
-                            href={(session.user as {role?: string})?.role === 'ADMIN' ? "/admin" : "/admin/cms"}
+                            href={(session.user as { role?: string })?.role === 'ADMIN' ? "/admin" : "/admin/cms"}
                             onClick={() => setUserOpen(false)}
                             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors group/item text-gray-300 hover:bg-white/5 hover:text-white"
                           >
@@ -245,11 +288,11 @@ export default function Navbar() {
 
             {/* CTA — desktop only */}
             <Link
-              href="/contact"
+              href={NAV_CTA.href}
               className="hidden xl:flex items-center gap-2 ml-2 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-sm font-semibold shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-[1.02] transition-all duration-200 whitespace-nowrap"
             >
-              <span>🚀</span>
-              Work With Me
+              <span>{NAV_CTA.icon}</span>
+              {NAV_CTA.label}
             </Link>
 
             {/* Hamburger — visible below lg */}
@@ -281,7 +324,7 @@ export default function Navbar() {
 
         {/* Drawer panel */}
         <aside
-          className={`absolute right-0 top-0 h-full w-[320px] max-w-[90vw] bg-gray-950 border-l border-white/5 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`absolute right-0 top-0 h-full w-[340px] max-w-[92vw] bg-gray-950 border-l border-white/5 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
           aria-label="Mobile navigation"
         >
           {/* Drawer header */}
@@ -314,27 +357,38 @@ export default function Navbar() {
               </button>
             </div>
 
-            {/* Main nav */}
-            <div className="px-4 pb-2">
-              <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest mb-2 px-1">Main</p>
-              <div className="space-y-0.5">
-                {allLinks.map(link => (
+            {/* Clustered nav */}
+            <div className="px-4 pb-2 space-y-5">
+              {NAV_CLUSTERS.map((cluster) => (
+                <div key={cluster.id}>
                   <Link
-                    key={link.href}
-                    href={link.href}
+                    href={cluster.href}
                     onClick={() => setMobileOpen(false)}
-                    className={`flex items-center gap-3 px-3 py-3 rounded-xl text-sm font-medium transition-all ${
-                      isActive(link.href)
-                        ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20'
-                        : 'text-gray-300 hover:bg-white/5 hover:text-white border border-transparent'
-                    }`}
+                    className="flex items-center gap-2 px-1 mb-2"
                   >
-                    <span className="text-base w-6 text-center">{link.icon}</span>
-                    {link.label}
-                    {isActive(link.href) && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-teal-400" />}
+                    <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest">
+                      {cluster.icon} {cluster.label}
+                    </span>
                   </Link>
-                ))}
-              </div>
+                  <div className="space-y-0.5">
+                    {cluster.items.map((item) => (
+                      <Link
+                        key={`${cluster.id}-${item.href}`}
+                        href={item.href}
+                        onClick={() => setMobileOpen(false)}
+                        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive(item.href)
+                          ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20'
+                          : 'text-gray-300 hover:bg-white/5 hover:text-white border border-transparent'
+                          }`}
+                      >
+                        <span className="text-base w-6 text-center">{item.icon}</span>
+                        {item.label}
+                        {isActive(item.href) && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-teal-400" />}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
 
             {/* Account */}
@@ -360,9 +414,9 @@ export default function Navbar() {
                       Dashboard
                     </Link>
                     {['ADMIN', 'ANALYST'].includes((session.user as { role?: string })?.role || '') && (
-                      <Link 
-                        href={(session.user as {role?: string})?.role === 'ADMIN' ? "/admin" : "/admin/cms"} 
-                        onClick={() => setMobileOpen(false)} 
+                      <Link
+                        href={(session.user as { role?: string })?.role === 'ADMIN' ? "/admin" : "/admin/cms"}
+                        onClick={() => setMobileOpen(false)}
                         className="flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
                       >
                         Admin
@@ -382,12 +436,12 @@ export default function Navbar() {
             {/* CTA */}
             <div className="px-4 pb-6">
               <Link
-                href="/contact"
+                href={NAV_CTA.href}
                 onClick={() => setMobileOpen(false)}
                 className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-[1.01] transition-all"
               >
-                <span>🚀</span>
-                Work With Me
+                <span>{NAV_CTA.icon}</span>
+                {NAV_CTA.label}
               </Link>
             </div>
           </div>
