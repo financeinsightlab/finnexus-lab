@@ -1,17 +1,28 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
+import { parseJsonBody } from '@/lib/validation';
+import { logger } from '@/lib/logger';
 
-export async function GET(request: NextRequest) {
+const updateUserSchema = z
+  .object({
+    name: z.string().min(1).max(100).optional(),
+    email: z.string().email().max(254).optional(),
+  })
+  .refine((value) => value.name !== undefined || value.email !== undefined, {
+    message: 'Nothing to update',
+  });
+
+export async function GET() {
   try {
     const session = await auth();
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = session.user.id as string;
     const user = await prisma.user.findUnique({
-      where: { id: userId },
+      where: { id: session.user.id },
       select: {
         id: true,
         name: true,
@@ -29,7 +40,9 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json(user);
   } catch (error) {
-    console.error('Error fetching user:', error);
+    logger.error('Error fetching user', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
@@ -41,16 +54,14 @@ export async function PUT(request: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const userId = session.user.id as string;
-    const body = await request.json();
-    const { name, email } = body;
+    const parsed = await parseJsonBody(request, updateUserSchema);
+    if (!parsed.ok) return parsed.response;
+    const { name, email } = parsed.data;
+    const userId = session.user.id;
 
-    // Validate
     if (email) {
       // Check if email already taken by another user
-      const existing = await prisma.user.findUnique({
-        where: { email },
-      });
+      const existing = await prisma.user.findUnique({ where: { email } });
       if (existing && existing.id !== userId) {
         return NextResponse.json({ error: 'Email already in use' }, { status: 400 });
       }
@@ -74,7 +85,9 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json(updatedUser);
   } catch (error) {
-    console.error('Error updating user:', error);
+    logger.error('Error updating user', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

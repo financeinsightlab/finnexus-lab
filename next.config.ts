@@ -1,7 +1,17 @@
 import type { NextConfig } from "next";
+import { dirname } from "node:path";
+import { fileURLToPath } from "node:url";
 
 const nextConfig: NextConfig = {
   pageExtensions: ['ts', 'tsx', 'mdx'],
+
+  // Pin the workspace root. Without this, Turbopack walks up looking for
+  // lockfiles and (when a parent directory also has one) can pick a root far
+  // above the app — which makes it scan unrelated files and can exhaust memory
+  // during static generation.
+  turbopack: {
+    root: dirname(fileURLToPath(import.meta.url)),
+  },
 
   // Allow the live-preview origin (e2b.app) to access dev resources.
   allowedDevOrigins: ['*.e2b.app'],
@@ -25,6 +35,15 @@ const nextConfig: NextConfig = {
       '@react-three/drei',
       'katex',
     ],
+
+    // Static generation spawns one Node worker per CPU (7 here). Each worker
+    // owns its own V8 heap, so a large page set can exhaust memory across the
+    // pool ("Committing semi space failed"). Cap the fan-out to keep the total
+    // footprint well under the default heap limit on CI and local machines.
+    cpus: 2,
+
+    // Trade a little build time for a lower Webpack peak memory ceiling.
+    webpackMemoryOptimizations: true,
   },
 
   images: {

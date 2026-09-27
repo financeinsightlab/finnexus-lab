@@ -23,6 +23,17 @@
 # misc
 .DS_Store
 *.pem
+Thumbs.db
+
+# build / debug artifacts (do not commit)
+build-log*.txt
+build-output.txt
+errors.txt
+tsc-errors*.log
+typescript-errors.txt
+tmp_pages.txt
+*.zip
+*.tsbuildinfo
 
 # debug
 npm-debug.log*

@@ -4,12 +4,15 @@ import Credentials from "next-auth/providers/credentials"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import { type SubscriptionStatus, type UserRole } from "@prisma/client"
+import { logger } from "@/lib/logger"
 import bcryptjs from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
 
-  debug: process.env.NODE_ENV === 'development',
+  // Keep verbose NextAuth internals off even in dev — the auth debug output
+  // logs full session/token payloads (PII) and is extremely noisy.
+  debug: false,
 
   session: {
     strategy: "jwt",
@@ -94,11 +97,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
   events: {
     async signIn(message) {
-      console.log("SIGN IN EVENT:", message)
-      // Record every login event for analytics
+      // Record every login event for analytics. `loginEvent` is a first-class
+      // Prisma model — no `as any` needed; the earlier cast just hid drift.
       try {
         if (message.user?.id) {
-          await (prisma as any).loginEvent.create({
+          await prisma.loginEvent.create({
             data: {
               userId: message.user.id,
               provider: message.account?.provider ?? "credentials",
@@ -106,7 +109,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           })
         }
       } catch (e) {
-        console.error("Failed to record login event:", e)
+        logger.error("Failed to record login event", {
+          userId: message.user?.id,
+          error: e instanceof Error ? e.message : String(e),
+        })
       }
     },
   },

@@ -9,6 +9,31 @@ export type StudyMaterialWithCategory = Awaited<ReturnType<typeof getPublishedSt
 export type StudyMaterialWithDetails = Awaited<ReturnType<typeof getStudyMaterialBySlug>>;
 export type StudyCategoryWithCount = Awaited<ReturnType<typeof getStudyCategories>>[number];
 
+// ─── Client-safe serialized shapes ─────────────────────────────────────────────
+// Prisma returns `Date` objects; client components need serializable strings.
+// These explicit types replace the previous `as any` pass-through in the page.
+
+export type SerializedStudyMaterial = Omit<
+  StudyMaterialWithCategory,
+  'publishedAt' | 'createdAt' | 'updatedAt'
+> & {
+  publishedAt: string | null;
+};
+
+export type SerializedStudyCategory = StudyCategoryWithCount;
+
+export function serializeStudyMaterial(material: StudyMaterialWithCategory): SerializedStudyMaterial {
+  const { createdAt: _createdAt, updatedAt: _updatedAt, ...rest } = material;
+  return {
+    ...rest,
+    publishedAt: material.publishedAt ? material.publishedAt.toISOString() : null,
+  };
+}
+
+export function serializeStudyCategory(category: StudyCategoryWithCount): SerializedStudyCategory {
+  return category;
+}
+
 // ─── Read: Public ──────────────────────────────────────────────────────────────
 
 export async function getStudyCategories() {
@@ -52,25 +77,25 @@ export async function getPublishedStudyMaterials(options?: {
     ...(difficulty ? { difficulty } : {}),
     ...(search
       ? {
-          OR: [
-            { title: { contains: search, mode: 'insensitive' as const } },
-            { description: { contains: search, mode: 'insensitive' as const } },
-            { tags: { has: search } },
-          ],
-        }
+        OR: [
+          { title: { contains: search, mode: 'insensitive' as const } },
+          { description: { contains: search, mode: 'insensitive' as const } },
+          { tags: { has: search } },
+        ],
+      }
       : {}),
   };
 
-  const order = orderBy === 'popular'
-    ? { viewCount: 'desc' as const }
-    : orderBy === 'featured'
-    ? [{ featured: 'desc' as const }, { publishedAt: 'desc' as const }]
-    : { publishedAt: 'desc' as const };
+  const order: Prisma.StudyMaterialOrderByWithRelationInput | Prisma.StudyMaterialOrderByWithRelationInput[] =
+    orderBy === 'popular'
+      ? { viewCount: 'desc' }
+      : orderBy === 'featured'
+        ? [{ featured: 'desc' }, { publishedAt: 'desc' }]
+        : { publishedAt: 'desc' };
 
   return prisma.studyMaterial.findMany({
     where,
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    orderBy: order as any,
+    orderBy: order,
     take: limit,
     skip: offset,
     include: {
@@ -142,11 +167,11 @@ export async function getAllStudyMaterials(options?: {
       ...(published !== undefined ? { published } : {}),
       ...(search
         ? {
-            OR: [
-              { title: { contains: search, mode: 'insensitive' as const } },
-              { description: { contains: search, mode: 'insensitive' as const } },
-            ],
-          }
+          OR: [
+            { title: { contains: search, mode: 'insensitive' as const } },
+            { description: { contains: search, mode: 'insensitive' as const } },
+          ],
+        }
         : {}),
     },
     orderBy: { createdAt: 'desc' },

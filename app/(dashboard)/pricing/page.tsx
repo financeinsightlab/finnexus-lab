@@ -1,107 +1,49 @@
-﻿// FILE: app/pricing/page.tsx
+﻿// FILE: app/(dashboard)/pricing/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
+import {
+  PLAN_CATALOG,
+  getPlanDefinition,
+  getPlanPricing,
+  type PlanId,
+} from '@/lib/entitlements';
 
 export const metadata: Metadata = {
   title: 'Pricing | Kunwar Analytics',
   description: 'Simple, transparent pricing for financial intelligence. Start free and upgrade as you grow.',
 };
 
-const PLANS = [
-  {
-    name: 'Free',
-    price: '₹0',
-    period: '/month',
-    description: 'Perfect for getting started with financial intelligence',
-    color: 'bg-gray-50',
-    accent: 'text-gray-700',
-    cta: 'Get Started Free',
-    href: '/auth/signin',
-    features: [
-      'All public research reports',
-      'All public insights & analysis',
-      'Comments and community access',
-      'Save articles and reading history',
-      'Weekly newsletter subscription',
-    ],
-  },
-  {
-    name: 'Pro',
-    price: '₹999',
-    period: '/month',
-    description: 'For serious investors and professionals',
-    color: 'bg-teal-50',
-    accent: 'text-teal-800',
-    recommended: true,
-    cta: 'Start Pro',
-    href: '/checkout/pro',
-    features: [
-      'Everything in Free',
-      '48-hour early access to reports',
-      'Subscriber-exclusive reports',
-      'Full access to all tools',
-      'PDF downloads of all content',
-      'API access (100 requests/day)',
-    ],
-  },
-  {
-    name: 'Annual Pro',
-    price: '₹8,999',
-    period: '/year',
-    description: 'Best value for committed users',
-    color: 'bg-blue-50',
-    accent: 'text-blue-800',
-    badge: 'Best Value',
-    cta: 'Start Annual',
-    href: '/checkout/annual',
-    features: [
-      'Everything in Pro',
-      'Quarterly strategy consultation call',
-      '25% savings vs monthly billing',
-      'Priority customer support',
-      'Advanced analytics dashboard',
-      'Custom report alerts',
-    ],
-  },
-  {
-    name: 'Elite',
-    price: '₹1,999',
-    period: '/month',
-    description: 'For high-net-worth individuals and institutions',
-    color: 'bg-purple-50',
-    accent: 'text-purple-800',
-    cta: 'Become Elite',
-    href: '/checkout/elite',
-    features: [
-      'Everything in Pro',
-      'Monthly 1:1 consultation call',
-      'Custom research per quarter',
-      'Group briefing sessions',
-      'Physical Annual Report delivery',
-      'Private Slack community access',
-      '72-hour preview of all reports',
-    ],
-  },
-  {
-    name: 'Team',
-    price: '₹3,999',
-    period: '/month',
-    description: 'For investment teams and small firms',
-    color: 'bg-amber-50',
-    accent: 'text-amber-800',
-    cta: 'Contact for Team',
-    href: '/contact?service=Team',
-    features: [
-      '5 Pro user seats',
-      'Team dashboard and analytics',
-      '1 custom research request per quarter',
-      'Shared knowledge base',
-      'Team collaboration tools',
-      'Dedicated account manager',
-    ],
-  },
-];
+/** Presentation-only styling per plan; commercial + feature data comes from the catalog. */
+const PLAN_STYLES: Record<PlanId, { color: string; accent: string; recommended?: boolean }> = {
+  FREE: { color: 'bg-gray-50', accent: 'text-gray-700' },
+  PRO: { color: 'bg-teal-50', accent: 'text-teal-800', recommended: true },
+  ELITE: { color: 'bg-purple-50', accent: 'text-purple-800' },
+  TEAM: { color: 'bg-amber-50', accent: 'text-amber-800' },
+  ENTERPRISE: { color: 'bg-slate-50', accent: 'text-slate-800' },
+};
+
+/**
+ * The pricing grid is generated from `lib/entitlements` so the public page can
+ * never drift from the plans used for authorization. Annual/quarterly billing is
+ * a billing option on the Pro plan, not a separate entitlement.
+ */
+const PLANS = (Object.keys(PLAN_CATALOG) as PlanId[]).map((id) => {
+  const plan = getPlanDefinition(id);
+  const pricing = getPlanPricing(id);
+  const style = PLAN_STYLES[id];
+  return {
+    id,
+    name: plan.name,
+    price: pricing.price,
+    period: pricing.period,
+    description: pricing.description,
+    cta: pricing.cta,
+    href: pricing.href,
+    features: plan.benefits,
+    ...style,
+  };
+});
 
 const FAQS = [
   {
@@ -150,18 +92,9 @@ export default function PricingPage() {
             {PLANS.map((plan) => (
               <div
                 key={plan.name}
-                className={`card border p-7 flex flex-col ${plan.color} ${
-                  plan.recommended ? 'ring-2 ring-brand-teal' : ''
-                }`}
+                className={`card border p-7 flex flex-col ${plan.color} ${plan.recommended ? 'ring-2 ring-brand-teal' : ''
+                  }`}
               >
-                {plan.badge && (
-                  <div className="text-center mb-4">
-                    <span className="inline-block bg-brand-teal text-white text-sm font-medium px-3 py-1 rounded-full">
-                      {plan.badge}
-                    </span>
-                  </div>
-                )}
-
                 {plan.recommended && (
                   <div className="text-center mb-4">
                     <span className="inline-block bg-brand-teal text-white text-sm font-medium px-3 py-1 rounded-full">
@@ -207,9 +140,8 @@ export default function PricingPage() {
                 <div className="mt-auto">
                   <Link
                     href={plan.href}
-                    className={`w-full text-center block ${
-                      plan.recommended ? 'btn-primary' : 'btn-outline'
-                    }`}
+                    className={`w-full text-center block ${plan.recommended ? 'btn-primary' : 'btn-outline'
+                      }`}
                   >
                     {plan.cta}
                   </Link>

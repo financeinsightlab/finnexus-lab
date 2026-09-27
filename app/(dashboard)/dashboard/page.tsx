@@ -3,6 +3,12 @@ import { redirect } from 'next/navigation';
 import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { getInsightBySlug, getResearchBySlug } from '@/lib/content';
+import {
+  getPlanDefinition,
+  isFreeUser,
+  planBenefits,
+  resolvePlan,
+} from '@/lib/entitlements';
 import HeroBackground from '@/components/ui/HeroBackground';
 
 function initialsFrom(nameOrEmail: string | null | undefined) {
@@ -16,25 +22,6 @@ function initialsFrom(nameOrEmail: string | null | undefined) {
     .filter(Boolean)
     .join('');
   return letters || 'F';
-}
-
-function roleLabel(role: string | undefined | null) {
-  switch (role) {
-    case 'FREE':
-      return 'FREE';
-    case 'PRO':
-      return 'PRO';
-    case 'ELITE':
-      return 'ELITE';
-    case 'TEAM':
-      return 'TEAM';
-    case 'ENTERPRISE':
-      return 'ENTERPRISE';
-    case 'ADMIN':
-      return 'ADMIN';
-    default:
-      return role ? String(role) : 'FREE';
-  }
 }
 
 export default async function DashboardPage() {
@@ -77,24 +64,21 @@ export default async function DashboardPage() {
   const displayName =
     session.user.name ?? session.user.email ?? 'Kunwar Analytics Member';
 
-  const role = roleLabel(session.user.role as string | undefined);
+  // Entitlements are derived from subscription state (not the permission role):
+  // `resolvePlan` falls back to FREE unless the subscription is active.
+  const plan = resolvePlan(session.user);
+  const planDef = getPlanDefinition(plan);
+  const freeUser = isFreeUser(session.user);
   const subscriptionStatus = session.user.subscriptionStatus as string | undefined;
 
   const avatarInitials = initialsFrom(displayName);
 
-  const planName =
-    role === 'PRO' ? 'Pro' : role === 'ELITE' ? 'Elite' : role === 'TEAM' ? 'Team' : 'Free';
+  const planName = planDef.name;
+  const benefits = planBenefits(session.user);
 
   const memberSince = member?.createdAt
     ? new Date(member.createdAt).toLocaleDateString('en-IN')
     : '';
-
-  const benefits =
-    role === 'PRO'
-      ? ['Priority research access', 'Faster updates & briefs', 'Advanced filtering in search']
-      : role === 'ELITE'
-        ? ['Everything in Pro', 'Deep-dive market reports', 'Early access to premium insights']
-        : [];
 
   return (
     <div>
@@ -106,13 +90,13 @@ export default async function DashboardPage() {
           </h1>
 
           <div className="mt-4 flex flex-wrap items-center gap-2">
-            <span className="tag tag-teal">{role}</span>
+            <span className="tag tag-teal">{planDef.name}</span>
             <span className="text-white/80 text-sm">
               Status: {subscriptionStatus ?? 'INACTIVE'}
             </span>
           </div>
 
-          {role === 'FREE' ? (
+          {freeUser ? (
             <div className="mt-6">
               <Link href="/pricing" className="btn btn-primary inline-flex">
                 Upgrade to Pro →
@@ -177,7 +161,7 @@ export default async function DashboardPage() {
           </div>
 
           <div className="mt-5">
-            {role === 'FREE' ? (
+            {freeUser ? (
               <div className="space-y-3">
                 <p className="text-sm text-brand-slate">
                   Upgrade to unlock premium research and insights.

@@ -1,5 +1,5 @@
-import { auth } from "@/auth"
 import { redirect } from "next/navigation"
+import { getCurrentUser, isStaff } from "@/lib/auth-guards"
 import AdminLayoutClient from "./AdminLayoutClient"
 
 export default async function AdminLayout({
@@ -7,17 +7,18 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode
 }) {
-  const session = await auth()
+  // Central guard for the whole /admin tree (Proxy also gates this). Using the
+  // shared helper keeps the rule in one place — see lib/auth-guards.ts.
+  const user = await getCurrentUser()
 
-  if (!session?.user) redirect("/auth/signin")
-  const userRole = session.user.role as string
-  if (!["ADMIN", "ANALYST"].includes(userRole)) redirect("/")
+  if (!user) redirect("/auth/signin")
+  if (!isStaff(user)) redirect("/")
 
   return (
     <AdminLayoutClient
-      userName={session.user.name || "Admin"}
-      userRole={session.user.role}
-      userInitial={session.user.name?.[0] || "A"}
+      userName={user.name || "Admin"}
+      userRole={user.role}
+      userInitial={user.name?.[0] || "A"}
     >
       {children}
     </AdminLayoutClient>

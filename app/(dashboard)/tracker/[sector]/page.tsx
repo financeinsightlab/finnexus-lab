@@ -11,6 +11,7 @@ import SectionHeader from '@/components/ui/SectionHeader';
 import JsonLd from '@/components/seo/JsonLd';
 import { getSectorConsensus } from '@/lib/sentimentEngine';
 import { getAllResearch } from '@/lib/content';
+import { canAccess } from '@/lib/entitlements';
 
 function DirectionBadge({ change, changeType }: { change: string; changeType: Direction }) {
   const styles: Record<Direction, string> = {
@@ -60,7 +61,8 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
   if (!t) notFound();
 
   const session = await auth();
-  const isPro = session?.user?.subscriptionPlan === 'PRO' || session?.user?.role === 'ADMIN';
+  // Entitlement check derived from plan + billing state (staff always qualify).
+  const isPro = canAccess(session?.user, 'PRO');
 
   const quarterRef = getQuarterByKey(qParam);
   const quarterKey = quarterRef.key;
@@ -75,11 +77,13 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
     { id: 'swot', label: 'SWOT' }, { id: 'outlook', label: 'Outlook' }, { id: 'pro', label: 'Pro Metrics' },
   ];
 
-  const breadcrumbLd = { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
-    { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://kunwaranalytics.in/' },
-    { '@type': 'ListItem', position: 2, name: 'Sector Trackers', item: 'https://kunwaranalytics.in/tracker' },
-    { '@type': 'ListItem', position: 3, name: `${t.name} Sector Tracker`, item: `https://kunwaranalytics.in/tracker/${sector}` },
-  ] };
+  const breadcrumbLd = {
+    '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: 'https://kunwaranalytics.in/' },
+      { '@type': 'ListItem', position: 2, name: 'Sector Trackers', item: 'https://kunwaranalytics.in/tracker' },
+      { '@type': 'ListItem', position: 3, name: `${t.name} Sector Tracker`, item: `https://kunwaranalytics.in/tracker/${sector}` },
+    ]
+  };
 
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-[#0a1120] dark:text-slate-100">

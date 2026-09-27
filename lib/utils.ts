@@ -1,4 +1,5 @@
 import { format, parseISO } from 'date-fns';
+import { canAccess, type EntitledUser } from './entitlements';
 
 export function formatDate(dateStr: string | Date | number | null | undefined): string {
   if (!dateStr) return '';
@@ -44,38 +45,20 @@ export const CATEGORY_VARIANT: Record<string, 'teal' | 'navy' | 'gold' | 'green'
 };
 
 /**
- * Check if a user has premium subscription access
- * A user is considered premium if:
- * 1. They are an ADMIN, or
- * 2. They have an ACTIVE subscription status AND a premium subscription plan
+ * Check if a user has premium subscription access.
+ *
+ * Delegates to the single entitlement engine so the (previously hard-coded and
+ * stale) plan list cannot drift. A user is premium when their effective plan is
+ * at least PRO — staff always qualify, paid plans require an active/trialing
+ * subscription.
  */
-export function hasPremiumAccess(user: {
-  role?: string;
-  subscriptionStatus?: string;
-  subscriptionPlan?: string | null;
-}): boolean {
-  // Admin users always have premium access
-  if (user.role === 'ADMIN') {
-    return true;
-  }
-
-  // Check if subscription is active
-  const isActive = user.subscriptionStatus === 'ACTIVE';
-  
-  // Check if they have a premium plan
-  const premiumPlans = ['PRO', 'ELITE', 'TEAM', 'PROFESSIONAL', 'ENTERPRISE', 'API_ONLY'];
-  const hasPremiumPlan = premiumPlans.includes(user.subscriptionPlan || '');
-  
-  return isActive && hasPremiumPlan;
+export function hasPremiumAccess(user: EntitledUser): boolean {
+  return canAccess(user, 'PRO');
 }
 
 /**
  * Check if a user needs to upgrade (shows subscription prompts)
  */
-export function needsUpgrade(user: {
-  role?: string;
-  subscriptionStatus?: string;
-  subscriptionPlan?: string | null;
-}): boolean {
+export function needsUpgrade(user: EntitledUser): boolean {
   return !hasPremiumAccess(user);
 }

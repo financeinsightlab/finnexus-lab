@@ -1,80 +1,98 @@
-import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/auth'
-import { prisma } from '@/lib/prisma'
+import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+import { prisma } from '@/lib/prisma';
+import { authorizeApi, isAdmin, STAFF_ROLES } from '@/lib/auth-guards';
+import { parseJsonBody, toInputJson } from '@/lib/validation';
+import { logger } from '@/lib/logger';
+
+const createTemplateSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).nullish(),
+  type: z.string().min(1).max(100).optional(),
+  category: z.string().min(1).max(100).optional(),
+  data: z.unknown(),
+  isPublic: z.boolean().optional(),
+});
 
 // GET /api/blocks/templates?category=hero
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = request.nextUrl
-    const category = searchParams.get('category')
+    const { searchParams } = request.nextUrl;
+    const category = searchParams.get('category');
 
     const templates = await prisma.blockTemplate.findMany({
       where: {
         isPublic: true,
-        ...(category ? { category } : {})
+        ...(category ? { category } : {}),
       },
       orderBy: { createdAt: 'desc' },
-    })
+    });
 
-    return NextResponse.json({ success: true, templates })
+    return NextResponse.json({ success: true, templates });
   } catch (e) {
-    console.error(e)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    logger.error('GET /api/blocks/templates failed', {
+      error: e instanceof Error ? e.message : String(e),
+    });
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
 
 // POST /api/blocks/templates — Save a new template
 export async function POST(request: NextRequest) {
   try {
-    const session = await auth()
-    if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    if (!['ADMIN', 'ANALYST'].includes(session.user.role as string)) {
-      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
-    }
+    const authz = await authorizeApi(STAFF_ROLES);
+    if (!authz.ok) return authz.response;
 
-    const body = await request.json()
-    const { name, description, type, category, data, isPublic } = body
+    const parsed = await parseJsonBody(request, createTemplateSchema);
+    if (!parsed.ok) return parsed.response;
+
+    const { name, description, type, category, data, isPublic } = parsed.data;
 
     const template = await prisma.blockTemplate.create({
       data: {
         name,
-        description,
+        description: description ?? null,
         type: type || 'section',
         category: category || 'custom',
-        data: data as any,
+        data: toInputJson(data),
         isPublic: isPublic ?? true,
-        createdBy: session.user.id!,
-      }
-    })
+        createdBy: authz.user.id,
+      },
+    });
 
-    return NextResponse.json({ success: true, template })
+    return NextResponse.json({ success: true, template });
   } catch (e) {
-    console.error(e)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    logger.error('POST /api/blocks/templates failed', {
+      error: e instanceof Error ? e.message : String(e),
+    });
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }
 
 // DELETE /api/blocks/templates?id=xxx
 export async function DELETE(request: NextRequest) {
   try {
-    const session = await auth()
-    if (!session?.user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    const authz = await authorizeApi(STAFF_ROLES);
+    if (!authz.ok) return authz.response;
 
-    const id = request.nextUrl.searchParams.get('id')
-    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 })
+    const id = request.nextUrl.searchParams.get('id');
+    if (!id) return NextResponse.json({ error: 'id required' }, { status: 400 });
 
-    const template = await prisma.blockTemplate.findUnique({ where: { id } })
-    if (!template) return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    const template = await prisma.blockTemplate.findUnique({ where: { id } });
+    if (!template) return NextResponse.json({ error: 'Not found' }, { status: 404 });
 
-    const isOwner = template.createdBy === session.user.id
-    const isAdmin = session.user.role === 'ADMIN'
-    if (!isOwner && !isAdmin) return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    const isOwner = template.createdBy === authz.user.id;
+    if (!isOwner && !isAdmin(authz.user)) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
-    await prisma.blockTemplate.delete({ where: { id } })
+    await prisma.blockTemplate.delete({ where: { id } });
 
-    return NextResponse.json({ success: true })
+    return NextResponse.json({ success: true });
   } catch (e) {
-    console.error(e)
-    return NextResponse.json({ error: 'Server error' }, { status: 500 })
+    logger.error('DELETE /api/blocks/templates failed', {
+      error: e instanceof Error ? e.message : String(e),
+    });
+    return NextResponse.json({ error: 'Server error' }, { status: 500 });
   }
 }

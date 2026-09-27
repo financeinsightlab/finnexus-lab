@@ -2,16 +2,9 @@
 
 import { UserRole, SubscriptionStatus } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
-import { auth } from '@/auth';
+import { requireAdmin } from '@/lib/auth-guards';
 import { revalidatePath } from 'next/cache';
-
-// Security wrapper ensuring ONLY an ADMIN can execute
-async function requireAdmin() {
-  const session = await auth();
-  if (!session?.user || session.user.role !== 'ADMIN') {
-    throw new Error('Unauthorized. You must have the ADMIN Role to execute this action.');
-  }
-}
+import { logger } from '@/lib/logger';
 
 export async function updateUserAccess(
   userId: string,
@@ -25,7 +18,7 @@ export async function updateUserAccess(
     // Define premium plans
     const premiumPlans = ['PRO', 'ELITE', 'TEAM', 'PROFESSIONAL', 'ENTERPRISE', 'API_ONLY'];
     const isPremiumPlan = premiumPlans.includes(subscriptionPlan);
-    
+
     // If user is given a premium plan, automatically set status to ACTIVE
     const finalStatus = (isPremiumPlan ? 'ACTIVE' : subscriptionStatus) as SubscriptionStatus;
 
@@ -37,11 +30,13 @@ export async function updateUserAccess(
         subscriptionPlan: subscriptionPlan === 'NULL' ? null : subscriptionPlan,
       },
     });
-    
+
     revalidatePath('/admin/users');
     return { success: true };
   } catch (error: unknown) {
-    console.error('Failed to update user access:', error);
+    logger.error('Failed to update user access', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: errorMessage };
   }
@@ -61,7 +56,9 @@ export async function updatePurchasedServices(userId: string, services: string[]
     revalidatePath('/admin/users');
     return { success: true };
   } catch (error: unknown) {
-    console.error('Failed to update services:', error);
+    logger.error('Failed to update services', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: errorMessage };
   }
@@ -71,8 +68,9 @@ export async function deleteUser(userId: string) {
   await requireAdmin();
 
   try {
-    const session = await auth();
-    if (session?.user?.id === userId) {
+    const { getCurrentUser } = await import('@/lib/auth-guards');
+    const currentUser = await getCurrentUser();
+    if (currentUser?.id === userId) {
       throw new Error('Cannot delete your own admin account.');
     }
 
@@ -83,7 +81,9 @@ export async function deleteUser(userId: string) {
     revalidatePath('/admin/users');
     return { success: true };
   } catch (error: unknown) {
-    console.error('Failed to delete user:', error);
+    logger.error('Failed to delete user', {
+      error: error instanceof Error ? error.message : String(error),
+    });
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return { success: false, error: errorMessage };
   }

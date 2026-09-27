@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getAllResearch } from '@/lib/content';
 import { parseFreshStats } from '@/lib/freshness';
+import { requireCron } from '@/lib/auth-guards';
+import { logger } from '@/lib/logger';
 
 /**
  * Vercel Cron endpoint — runs Mondays at 09:00 IST (03:30 UTC)
@@ -16,14 +18,9 @@ import { prisma } from '@/lib/prisma';
 export const runtime = 'nodejs';
 
 export async function GET(request: Request) {
-  // Validate cron secret in production
-  const authHeader = request.headers.get('Authorization');
-  if (
-    process.env.NODE_ENV === 'production' &&
-    authHeader !== `Bearer ${process.env.CRON_SECRET}`
-  ) {
-    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  }
+  // Validate cron secret (shared guard — standardized across every /api/cron/*)
+  const unauthorized = requireCron(request);
+  if (unauthorized) return unauthorized;
 
   // 1. Fetch MDX/Legacy reports
   const mdxPosts = getAllResearch();
@@ -36,28 +33,30 @@ export async function GET(request: Request) {
       select: { title: true, slug: true, content: true }
     });
   } catch (e) {
-    console.error("DB Fetch failed:", e);
+    logger.error('Freshness check: DB fetch failed', {
+      error: e instanceof Error ? e.message : String(e),
+    });
   }
 
   const posts = [...mdxPosts, ...dbPosts];
   const staleThisWeek: {
     reportTitle: string;
-    reportSlug:  string;
-    stat:        string;
-    daysOld:     number;
-    source?:     string;
-    updateUrl?:  string;
+    reportSlug: string;
+    stat: string;
+    daysOld: number;
+    source?: string;
+    updateUrl?: string;
   }[] = [];
 
   for (const post of posts) {
     if (!post.content) continue;
-    
+
     // Unescape HTML for CMS content
     const rawContent = post.content
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"');
-      
+
     const stats = parseFreshStats(rawContent);
     for (const s of stats) {
       // Newly stale = crossed into stale within the last 7 days
@@ -66,21 +65,21 @@ export async function GET(request: Request) {
       if (s.daysOld >= staleThreshold && s.daysOld < staleThreshold + 7) {
         staleThisWeek.push({
           reportTitle: post.title,
-          reportSlug:  post.slug,
-          stat:        s.value,
-          daysOld:     s.daysOld,
-          source:      s.source,
-          updateUrl:   s.updateUrl,
+          reportSlug: post.slug,
+          stat: s.value,
+          daysOld: s.daysOld,
+          source: s.source,
+          updateUrl: s.updateUrl,
         });
       }
     }
   }
 
   const summary = {
-    checkedAt:       new Date().toISOString(),
-    totalReports:    posts.length,
-    newlyStale:      staleThisWeek.length,
-    stats:           staleThisWeek,
+    checkedAt: new Date().toISOString(),
+    totalReports: posts.length,
+    newlyStale: staleThisWeek.length,
+    stats: staleThisWeek,
     message:
       staleThisWeek.length > 0
         ? `${staleThisWeek.length} statistics became stale this week — review needed.`

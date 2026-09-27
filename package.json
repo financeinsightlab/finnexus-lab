@@ -5,9 +5,12 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && npm run index && next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
     "index": "tsx scripts/algolia-index.ts",
     "seed:study": "node scripts/seed-study-categories.mjs"
   },
@@ -85,6 +88,7 @@
     "tailwindcss": "^3.4.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.23.12",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^3.2.7"
   }
 }
