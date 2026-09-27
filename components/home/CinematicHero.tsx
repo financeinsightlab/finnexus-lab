@@ -13,7 +13,22 @@ import AnimatedCounter from '@/components/ui/AnimatedCounter'
  * Handles prefers-reduced-motion detection and passes to 3D scene.
  */
 
-const HeroScene = dynamic(() => import('@/components/three/HeroScene'), { ssr: false })
+// Lightweight placeholder shown while the ~200KB Three.js bundle downloads
+function HeroPlaceholder() {
+  return (
+    <div
+      className="absolute inset-0"
+      style={{
+        background: 'radial-gradient(ellipse at 30% 50%, rgba(59,130,246,0.08), transparent 70%), radial-gradient(ellipse at 70% 50%, rgba(124,58,237,0.06), transparent 70%)',
+      }}
+    />
+  )
+}
+
+const HeroScene = dynamic(() => import('@/components/three/HeroScene'), {
+  ssr: false,
+  loading: () => <HeroPlaceholder />,
+})
 
 const HERO_STATS = [
   { value: 10, suffix: '+', label: 'Reports' },

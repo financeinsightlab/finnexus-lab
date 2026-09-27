@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "katex/dist/katex.min.css";
+import { Inter, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { GoogleAnalytics } from '@next/third-parties/google';
@@ -11,8 +12,30 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import PageTracker from "@/components/analytics/PageTracker";
 import { Suspense } from "react";
 import JsonLd, { organizationSchema, websiteSchema } from "@/components/seo/JsonLd";
-import CustomCursor from '@/components/ui/CustomCursor';
-import SmoothScroll from '@/components/ui/SmoothScroll';
+import ClientShell from "@/components/ui/ClientShell";
+
+/* ── Self-hosted fonts via next/font — zero external requests ── */
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["300", "400", "500", "600", "700", "800"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500"],
+  display: "swap",
+  variable: "--font-mono",
+});
+
+const sourceSerif = Source_Serif_4({
+  subsets: ["latin"],
+  weight: ["400", "600"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-serif",
+});
 
 export const metadata: Metadata = {
   title: {
@@ -118,13 +141,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className="scroll-smooth" suppressHydrationWarning>
+    <html lang="en" className={`scroll-smooth ${inter.variable} ${ibmPlexMono.variable} ${sourceSerif.variable}`} suppressHydrationWarning>
       <head>
-        {/* Font preconnect — reduces FOUT by establishing the connection early */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         {/* Apple touch icon for iOS Add-to-Home-Screen */}
         <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+        {/* DNS prefetch for external image sources */}
+        <link rel="dns-prefetch" href="https://jkpnjvznnysbxbxw.public.blob.vercel-storage.com" />
         {/* SEO + GEO: Organization and WebSite structured data for search engines and AI/LLM crawlers */}
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
@@ -133,11 +155,9 @@ export default function RootLayout({
         {/* Global ambient background — fixed, behind all content */}
         <div className="fixed inset-0 z-0 pointer-events-none cinema-mesh opacity-30" />
         <div className="fixed inset-0 z-0 pointer-events-none cinema-noise" />
-        {/* Premium custom cursor */}
-        <CustomCursor />
         <Providers>
           <AuthProvider>
-            <SmoothScroll>
+            <ClientShell>
               <Navbar />
               <ScrollProgress />
               {/* Wrap Analytics in Suspense so it doesn't block the shell render */}
@@ -147,7 +167,7 @@ export default function RootLayout({
               <PageTracker />
               <main className="flex-1 relative z-10">{children}</main>
               <Footer />
-            </SmoothScroll>
+            </ClientShell>
             {process.env.NEXT_PUBLIC_GA_ID && (
               <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
             )}
@@ -156,4 +176,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+}

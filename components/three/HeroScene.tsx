@@ -242,7 +242,13 @@ export default function HeroScene({ reduced = false }: { reduced?: boolean }) {
     <Canvas
       camera={{ position: [0, 0, 9], fov: 55 }}
       dpr={[1, 1.5]}
-      gl={{ antialias: true, alpha: true, powerPreference: 'high-performance' }}
+      gl={{
+        antialias: false,
+        alpha: true,
+        powerPreference: 'high-performance',
+        stencil: false,
+        depth: true,
+      }}
       style={{ position: 'absolute', inset: 0 }}
     >
       <Scene reduced={reduced} />

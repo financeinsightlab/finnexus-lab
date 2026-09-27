@@ -11,10 +11,10 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['Inter', 'sans-serif'],
-        serif: ['Source Serif 4', 'serif'],
-        mono: ['IBM Plex Mono', 'monospace'],
-        display: ['Inter', 'sans-serif'],
+        sans: ['var(--font-inter)', 'Inter', 'sans-serif'],
+        serif: ['var(--font-serif)', 'Source Serif 4', 'serif'],
+        mono: ['var(--font-mono)', 'IBM Plex Mono', 'monospace'],
+        display: ['var(--font-inter)', 'Inter', 'sans-serif'],
       },
       colors: {
         /* ── Legacy brand colors (kept for compatibility) ── */

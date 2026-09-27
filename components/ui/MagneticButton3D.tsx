@@ -1,7 +1,8 @@
 // FILE: components/ui/MagneticButton3D.tsx
 'use client'
 
-import { useRef, useCallback, useState, ReactNode, MouseEvent } from 'react'
+import { useRef, useCallback, useState, useEffect, ReactNode, MouseEvent } from 'react'
+import Link from 'next/link'
 
 /**
  * MagneticButton3D — luxury premium button with:
@@ -37,11 +38,11 @@ export default function MagneticButton3D({
   const [reduced, setReduced] = useState(false)
   const rafRef = useRef<number>(0)
 
-  useState(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       setReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     }
-  })
+  }, [])
 
   const handleMove = useCallback(
     (e: MouseEvent<HTMLElement>) => {
@@ -109,19 +110,8 @@ export default function MagneticButton3D({
       ? 'cinema-btn-outline'
       : 'cinema-btn-ghost'
 
-  const Tag = href ? 'a' : 'button'
-
-  return (
-    <Tag
-      // @ts-expect-error — ref works for both a and button
-      ref={btnRef}
-      href={href}
-      onClick={handleClick}
-      onMouseMove={handleMove}
-      onMouseLeave={handleLeave}
-      data-cursor="hover"
-      className={`${baseClass} ${variantClass} ${className}`}
-    >
+  const inner = (
+    <>
       {/* Light sweep overlay */}
       <span
         ref={sweepRef}
@@ -130,6 +120,37 @@ export default function MagneticButton3D({
       />
       {/* Content */}
       <span className="relative z-10 flex items-center gap-2">{children}</span>
-    </Tag>
+    </>
+  )
+
+  if (href) {
+    return (
+      <Link
+        // @ts-expect-error — ref works for anchor
+        ref={btnRef}
+        href={href}
+        onClick={handleClick}
+        onMouseMove={handleMove}
+        onMouseLeave={handleLeave}
+        data-cursor="hover"
+        className={`${baseClass} ${variantClass} ${className}`}
+        prefetch={false}
+      >
+        {inner}
+      </Link>
+    )
+  }
+
+  return (
+    <button
+      ref={btnRef as React.RefObject<HTMLButtonElement>}
+      onClick={handleClick}
+      onMouseMove={handleMove}
+      onMouseLeave={handleLeave}
+      data-cursor="hover"
+      className={`${baseClass} ${variantClass} ${className}`}
+    >
+      {inner}
+    </button>
   )
 }

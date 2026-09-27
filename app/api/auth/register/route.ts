@@ -1,16 +1,7 @@
-// app/api/auth/register/route.ts
 import { NextResponse } from 'next/server';
 import bcryptjs from 'bcryptjs';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
-
-declare global {
-  var prisma: PrismaClient | undefined;
-}
-
-const prisma = globalThis.prisma ?? new PrismaClient();
-
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
 
 const registerSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100, 'Name too long'),

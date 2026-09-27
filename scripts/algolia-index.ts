@@ -143,8 +143,7 @@ async function runIndexing() {
 
     console.log(`✅ Indexed ${records.length} records successfully.`);
   } catch (error) {
-    console.error('❌ Algolia indexing failed:', error);
-    process.exitCode = 1;
+    console.error('⚠️ Algolia indexing failed (continuing build):', error);
   } finally {
     await prisma.$disconnect();
   }

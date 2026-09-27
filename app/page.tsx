@@ -181,7 +181,7 @@ export default async function HomePage() {
                         alt={pillar.title}
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                        priority={i < 3}
+                        priority={i === 0}
                         quality={90}
                         className="object-cover object-center transition-transform duration-700 ease-out group-hover:scale-110"
                       />

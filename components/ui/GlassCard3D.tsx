@@ -1,7 +1,7 @@
 // FILE: components/ui/GlassCard3D.tsx
 'use client'
 
-import { useRef, useCallback, useState, ReactNode } from 'react'
+import { useRef, useCallback, useState, useEffect, ReactNode } from 'react'
 
 /**
  * GlassCard3D — premium frosted glass card with:
@@ -46,11 +46,11 @@ export default function GlassCard3D({
   const rafRef = useRef<number>(0)
 
   // Check reduced motion once
-  useState(() => {
+  useEffect(() => {
     if (typeof window !== 'undefined') {
       setReduced(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
     }
-  })
+  }, [])
 
   const handleMove = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {

@@ -1,16 +1,9 @@
-﻿import Link from 'next/link';
+import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { PrismaClient } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { getInsightBySlug, getResearchBySlug } from '@/lib/content';
 import HeroBackground from '@/components/ui/HeroBackground';
-
-declare global {
-  var prisma: PrismaClient | undefined;
-}
-
-const prisma = globalThis.prisma ?? new PrismaClient();
-if (process.env.NODE_ENV !== 'production') globalThis.prisma = prisma;
 
 function initialsFrom(nameOrEmail: string | null | undefined) {
   const str = (nameOrEmail ?? '').trim();

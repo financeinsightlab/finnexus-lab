@@ -1,10 +1,9 @@
 'use server';
 
-import { PrismaClient, UserRole, SubscriptionStatus } from '@prisma/client';
+import { UserRole, SubscriptionStatus } from '@prisma/client';
+import { prisma } from '@/lib/prisma';
 import { auth } from '@/auth';
 import { revalidatePath } from 'next/cache';
-
-const prisma = new PrismaClient();
 
 // Security wrapper ensuring ONLY an ADMIN can execute
 async function requireAdmin() {

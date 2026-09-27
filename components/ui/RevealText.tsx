@@ -1,7 +1,7 @@
 // FILE: components/ui/RevealText.tsx
 'use client'
 
-import { useEffect, useRef, ReactNode } from 'react'
+import { useEffect, useRef } from 'react'
 import gsap from 'gsap'
 
 /**
@@ -58,7 +58,7 @@ export default function RevealText({
     }
 
     // Set initial state
-    gsap.set(wordsRef.current, { opacity: 0, y, filter: 'blur(8px)' })
+    gsap.set(wordsRef.current, { opacity: 0, y })
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -66,7 +66,6 @@ export default function RevealText({
           gsap.to(wordsRef.current, {
             opacity: 1,
             y: 0,
-            filter: 'blur(0px)',
             duration,
             delay,
             stagger,
@@ -93,7 +92,6 @@ export default function RevealText({
               if (el) wordsRef.current[i] = el
             }}
             className="inline-block"
-            style={{ willChange: 'transform, opacity, filter' }}
           >
             {word}
             {i < words.length - 1 ? '\u00A0' : ''}
