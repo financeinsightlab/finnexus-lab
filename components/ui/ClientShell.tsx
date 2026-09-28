@@ -13,6 +13,9 @@ const CustomCursor = dynamic(() => import('@/components/ui/CustomCursor'), {
 const SmoothScroll = dynamic(() => import('@/components/ui/SmoothScroll'), {
   ssr: false,
 })
+const AskKunwarBubble = dynamic(() => import('@/components/ask/AskKunwarBubble'), {
+  ssr: false,
+})
 
 export default function ClientShell({ children }: { children: ReactNode }) {
   return (
@@ -21,6 +24,8 @@ export default function ClientShell({ children }: { children: ReactNode }) {
       <SmoothScroll>
         {children}
       </SmoothScroll>
+      {/* Floating Ask Kunwar AI bubble — shown on every page */}
+      <AskKunwarBubble />
     </>
   )
 }

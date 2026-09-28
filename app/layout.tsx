@@ -16,9 +16,6 @@ import ClientShell from "@/components/ui/ClientShell";
 import CommandPalette from "@/components/ui/CommandPalette";
 import ServiceWorkerRegistrar from "@/components/pwa/ServiceWorkerRegistrar";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
-import dynamic from 'next/dynamic';
-
-const AskKunwarBubble = dynamic(() => import('@/components/ask/AskKunwarBubble'), { ssr: false });
 
 /* ── Self-hosted fonts via next/font — zero external requests ── */
 const inter = Inter({
@@ -175,8 +172,6 @@ export default function RootLayout({
                 <PageTracker />
                 <main className="flex-1 relative z-10">{children}</main>
                 <Footer />
-                {/* Floating Ask Kunwar AI bubble — visible on every page */}
-                <AskKunwarBubble />
                 <ServiceWorkerRegistrar />
               </ClientShell>
               {process.env.NEXT_PUBLIC_GA_ID && (
