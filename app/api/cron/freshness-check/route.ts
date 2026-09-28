@@ -3,6 +3,7 @@ import { getAllResearch } from '@/lib/content';
 import { parseFreshStats } from '@/lib/freshness';
 import { requireCron } from '@/lib/auth-guards';
 import { logger } from '@/lib/logger';
+import { slaSummary, slaWorklist, type SlaInput } from '@/lib/freshness-sla';
 
 /**
  * Vercel Cron endpoint — runs Mondays at 09:00 IST (03:30 UTC)
@@ -26,11 +27,11 @@ export async function GET(request: Request) {
   const mdxPosts = getAllResearch();
 
   // 2. Fetch CMS/Database reports
-  let dbPosts: { title: string, slug: string, content: string }[] = [];
+  let dbPosts: { title: string, slug: string, content: string, updatedAt: Date }[] = [];
   try {
     dbPosts = await prisma.post.findMany({
       where: { type: 'RESEARCH', published: true },
-      select: { title: true, slug: true, content: true }
+      select: { title: true, slug: true, content: true, updatedAt: true }
     });
   } catch (e) {
     logger.error('Freshness check: DB fetch failed', {
@@ -75,11 +76,37 @@ export async function GET(request: Request) {
     }
   }
 
+  // 3. Per-content-type SLA worklist (Pillar C4). Where the FreshStat check
+  // measures decay *inside* a report, the SLA layer flags whole documents that
+  // have aged past their type's service level and need refreshing.
+  const slaInputs: SlaInput[] = mdxPosts.map((post) => ({
+    type: 'research',
+    title: post.title,
+    slug: post.slug,
+    updatedAt: post.date,
+  }));
+
+  for (const post of dbPosts) {
+    slaInputs.push({
+      type: 'research',
+      title: post.title,
+      slug: post.slug,
+      updatedAt: post.updatedAt,
+    });
+  }
+
+  const worklist = slaWorklist(slaInputs);
+
   const summary = {
     checkedAt: new Date().toISOString(),
     totalReports: posts.length,
     newlyStale: staleThisWeek.length,
     stats: staleThisWeek,
+    sla: {
+      counts: slaSummary(worklist),
+      breaches: worklist.filter((item) => item.status === 'breach').length,
+      worklist: worklist.slice(0, 25),
+    },
     message:
       staleThisWeek.length > 0
         ? `${staleThisWeek.length} statistics became stale this week — review needed.`

@@ -20,7 +20,8 @@ import { SUBJECTS } from '@/lib/pgdm/curriculum';
 import { TOOLS } from '@/lib/tools-registry';
 import { getPublishedStudyMaterials } from '@/lib/study';
 import { logger } from '@/lib/logger';
-import { score, tokenize } from '@/lib/search-utils';
+import { tokenize } from '@/lib/search-utils';
+import { contentFields, hybridScore } from '@/lib/search-hybrid';
 
 export type SearchKind =
     | 'research'
@@ -66,12 +67,18 @@ const KIND_LABELS: Record<SearchKind, string> = {
     study: 'Study Material',
 };
 
-/** Build a searchable item, dropping it when it does not match the query. */
+/**
+ * Build a searchable item, dropping it when it does not match the query.
+ *
+ * Ranking uses the Pillar B2 hybrid scorer: field-weighted (title > tags >
+ * body) with a specificity bonus, and a drop-in seam for vector scores. It is
+ * lexical-only here, so search stays free and works with no embedding keys.
+ */
 function makeItem(
     base: Omit<SearchItem, 'score'>,
     tokens: string[],
 ): SearchItem | null {
-    const s = score(tokens, base.title, base.description, base.tags);
+    const s = hybridScore(tokens, contentFields(base.title, base.description, base.tags));
     return s > 0 ? { ...base, score: s } : null;
 }
 

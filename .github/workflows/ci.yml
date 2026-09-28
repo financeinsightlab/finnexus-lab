@@ -51,3 +51,50 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  lighthouse:
+    name: Lighthouse CI (accessibility & performance budgets)
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    needs: verify
+    # Non-blocking: budgets emit warnings so a red LH run never blocks a deploy.
+    continue-on-error: true
+
+    env:
+      # Placeholder values so the app boots without real secrets. Pages that
+      # require a database degrade gracefully; the audited routes are public.
+      DATABASE_URL: postgresql://postgres:postgres@localhost:5432/ci?sslmode=disable
+      DIRECT_URL: postgresql://postgres:postgres@localhost:5432/ci?sslmode=disable
+      AUTH_SECRET: ci-placeholder-secret
+      AUTH_URL: http://localhost:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Prisma client
+        run: npx prisma generate
+
+      - name: Build
+        run: npm run build
+
+      - name: Run Lighthouse CI
+        run: npx --yes @lhci/cli@0.14.0 autorun
+
+      - name: Upload Lighthouse report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lighthouse-report
+          path: .lighthouseci
+          if-no-files-found: ignore
+          retention-days: 7

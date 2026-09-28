@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/freshness-check",
       "schedule": "30 3 * * 1"
+    },
+    {
+      "path": "/api/cron/live-ingest",
+      "schedule": "0 2 * * *"
     }
   ]
 }

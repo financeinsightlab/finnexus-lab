@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
+import { captureError } from '@/lib/observability';
 
 /**
  * Catches errors thrown in the root layout itself (which app/error.tsx cannot).
@@ -14,7 +15,13 @@ export default function GlobalError({
     reset: () => void;
 }) {
     useEffect(() => {
-        console.error('[app/global-error]', error.digest ?? '', error.message);
+        // Route through the observability seam so a real sink (Sentry or any
+        // custom reporter) can pick this up without changing the boundary.
+        captureError(error, {
+            source: 'app/global-error',
+            level: 'fatal',
+            extra: { digest: error.digest },
+        });
     }, [error]);
 
     return (
