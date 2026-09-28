@@ -5,6 +5,7 @@ import type { MouseEvent } from 'react';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 import { Configure, Hits, InstantSearch, SearchBox } from 'react-instantsearch';
 import { algoliasearch } from 'algoliasearch';
+import GlobalSearchFallback from '@/components/layout/GlobalSearchFallback';
 
 type AlgoliaHit = {
   objectID: string;
@@ -51,7 +52,7 @@ function useVisualViewport(active: boolean) {
 function useDesktopMediaQuery() {
   return useSyncExternalStore(
     (onStoreChange) => {
-      if (typeof window === 'undefined') return () => {};
+      if (typeof window === 'undefined') return () => { };
       const mq = window.matchMedia('(min-width: 768px)');
       mq.addEventListener('change', onStoreChange);
       return () => mq.removeEventListener('change', onStoreChange);
@@ -125,9 +126,8 @@ function CompactHit({ hit, onPick }: { hit: AlgoliaHit; onPick: () => void }) {
     >
       <div className="flex min-w-0 flex-wrap items-center gap-2">
         <span
-          className={`max-w-full shrink-0 truncate rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${
-            hit.type === 'insight' ? 'bg-blue-100 text-blue-800' : 'bg-teal-100 text-teal-800'
-          }`}
+          className={`max-w-full shrink-0 truncate rounded-md px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider ${hit.type === 'insight' ? 'bg-blue-100 text-blue-800' : 'bg-teal-100 text-teal-800'
+            }`}
         >
           {badge}
         </span>
@@ -192,29 +192,9 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
 
   const panelStyle = { maxHeight: panelMaxHeightPx } as const;
 
+  // No Algolia keys → fall back to the keyless server-side search facade.
   const fallbackContent = (
-    <div
-      ref={panelRef}
-      className="w-full min-w-0 max-w-lg shrink-0 rounded-2xl border border-gray-200 bg-white p-4 shadow-2xl sm:p-6"
-      style={panelStyle}
-      role="dialog"
-      aria-modal="true"
-      aria-label="Search"
-      onMouseDown={(e) => e.stopPropagation()}
-    >
-      <p className="mb-2 font-semibold text-brand-navy">Search unavailable</p>
-      <p className="mb-4 text-sm text-brand-slate">
-        Add <code className="rounded bg-gray-100 px-1 text-xs">NEXT_PUBLIC_ALGOLIA_SEARCH_KEY</code> to enable search.
-      </p>
-      <div className="flex gap-2">
-        <Link href="/research" className="btn btn-primary flex-1 text-center" onClick={onClose}>
-          Browse research
-        </Link>
-        <button type="button" className="btn btn-outline flex-1" onClick={onClose}>
-          Close
-        </button>
-      </div>
-    </div>
+    <GlobalSearchFallback onClose={onClose} panelStyle={panelStyle} desktopAutofocus={desktopAutofocus} />
   );
 
   const searchContent = (

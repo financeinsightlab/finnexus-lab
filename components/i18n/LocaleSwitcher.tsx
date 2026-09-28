@@ -35,7 +35,7 @@ export default function LocaleSwitcher({ className = '' }: { className?: string 
             <button
                 type="button"
                 onClick={() => setOpen((v) => !v)}
-                className="flex items-center gap-2 px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-200 text-sm font-medium border border-transparent hover:border-gray-700 min-h-[40px]"
+                className="flex items-center gap-2 px-3 py-2 rounded-xl text-brand-slate hover:text-brand-navy hover:bg-black/5 dark:text-gray-300 dark:hover:text-white dark:hover:bg-white/10 transition-all duration-200 text-sm font-medium border border-transparent dark:hover:border-gray-700 min-h-[40px]"
                 aria-haspopup="listbox"
                 aria-expanded={open}
                 aria-label="Change language"
@@ -47,7 +47,7 @@ export default function LocaleSwitcher({ className = '' }: { className?: string 
             {open && (
                 <ul
                     role="listbox"
-                    className="absolute right-0 top-[calc(100%+8px)] z-50 w-52 overflow-hidden rounded-2xl border border-gray-800 bg-gray-900/98 py-1 shadow-2xl shadow-black/60 backdrop-blur-xl"
+                    className="absolute right-0 top-[calc(100%+8px)] z-50 w-52 overflow-hidden rounded-2xl border border-slate-200 bg-white py-1 shadow-2xl shadow-black/20 backdrop-blur-xl dark:border-gray-800 dark:bg-gray-900/98 dark:shadow-black/60"
                 >
                     {LOCALES.map((option) => (
                         <li key={option}>
@@ -57,8 +57,8 @@ export default function LocaleSwitcher({ className = '' }: { className?: string 
                                 aria-selected={option === locale}
                                 onClick={() => choose(option)}
                                 className={`flex w-full items-center gap-3 px-3 py-2.5 text-left text-sm transition-colors ${option === locale
-                                        ? 'bg-white/5 text-white'
-                                        : 'text-gray-300 hover:bg-white/5 hover:text-white'
+                                    ? 'bg-brand-teal/10 text-brand-navy dark:bg-white/5 dark:text-white'
+                                    : 'text-brand-slate hover:bg-black/5 hover:text-brand-navy dark:text-gray-300 dark:hover:bg-white/5 dark:hover:text-white'
                                     }`}
                             >
                                 <span aria-hidden>{LOCALE_FLAGS[option]}</span>
