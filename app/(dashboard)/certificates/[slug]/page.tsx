@@ -2,6 +2,13 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { CERTIFICATES, getCertificateBySlug } from '@/lib/certificates';
+import { buildCredential } from '@/lib/credentials';
+import JsonLd from '@/components/seo/JsonLd';
+
+// Stable epoch for the credential catalogue so the statically-generated
+// JSON-LD is deterministic across builds (this is a definition, not an
+// individually issued badge — issuance timestamps arrive with learner records).
+const CREDENTIAL_EPOCH = new Date('2025-01-01T00:00:00.000Z');
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -38,8 +45,11 @@ export default async function CertificateDetailPage({ params }: Props) {
         (c) => c.slug !== certificate.slug && c.category === certificate.category,
     ).slice(0, 3);
 
+    const credential = buildCredential(certificate, { issuedOn: CREDENTIAL_EPOCH });
+
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-[#0a1120]">
+            <JsonLd data={credential} />
             <header className="relative overflow-hidden bg-[#0f1c2d] text-white">
                 <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-teal-500/20 blur-[100px]" />
                 <div className="relative mx-auto max-w-4xl px-6 py-14">

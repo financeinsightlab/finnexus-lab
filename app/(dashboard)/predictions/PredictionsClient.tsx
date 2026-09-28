@@ -7,6 +7,8 @@ import type { PredictionWithAuthor } from '@/lib/predictions'
 import { createCommunityPrediction } from '@/actions/community-predictions'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 
+const LEDGER_HREF = '/predictions/ledger'
+
 interface PredictionStats {
   total: number
   confirmed: number
@@ -24,10 +26,10 @@ interface PredictionsClientProps {
 }
 
 const STATUS_CONFIG = {
-  CONFIRMED: { label: 'Confirmed',  bg: 'bg-green-500/10',  text: 'text-green-400', border: 'border-green-500/20', dot: '🟢' },
-  INCORRECT: { label: 'Incorrect',  bg: 'bg-red-500/10',    text: 'text-red-400',   border: 'border-red-500/20', dot: '🔴' },
-  PARTIAL:   { label: 'Partial',    bg: 'bg-amber-500/10',  text: 'text-amber-400', border: 'border-amber-500/20', dot: '🟡' },
-  PENDING:   { label: 'Pending',    bg: 'bg-yellow-500/10', text: 'text-yellow-400',border: 'border-yellow-500/20', dot: '⏳' },
+  CONFIRMED: { label: 'Confirmed', bg: 'bg-green-500/10', text: 'text-green-400', border: 'border-green-500/20', dot: '🟢' },
+  INCORRECT: { label: 'Incorrect', bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/20', dot: '🔴' },
+  PARTIAL: { label: 'Partial', bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', dot: '🟡' },
+  PENDING: { label: 'Pending', bg: 'bg-yellow-500/10', text: 'text-yellow-400', border: 'border-yellow-500/20', dot: '⏳' },
 } as const
 
 function slugify(str: string) {
@@ -73,9 +75,9 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto">
             {[
               { label: 'Total Predictions', value: stats.total, sub: 'all time', color: 'text-white' },
-              { label: '% Confirmed',   value: `${pct(stats.confirmed)}%`,  sub: `${stats.confirmed} confirmed`,  color: 'text-green-400' },
-              { label: '% Incorrect',   value: `${pct(stats.incorrect)}%`,  sub: `${stats.incorrect} incorrect`,  color: 'text-red-400'   },
-              { label: '% Pending',     value: `${pct(stats.pending)}%`,    sub: `${stats.pending} open`,         color: 'text-yellow-400' },
+              { label: '% Confirmed', value: `${pct(stats.confirmed)}%`, sub: `${stats.confirmed} confirmed`, color: 'text-green-400' },
+              { label: '% Incorrect', value: `${pct(stats.incorrect)}%`, sub: `${stats.incorrect} incorrect`, color: 'text-red-400' },
+              { label: '% Pending', value: `${pct(stats.pending)}%`, sub: `${stats.pending} open`, color: 'text-yellow-400' },
             ].map((s) => (
               <div key={s.label} className="bg-white/5 border border-white/5 p-5 text-center rounded-2xl backdrop-blur-sm">
                 <p className={`text-3xl font-extrabold ${s.color}`}>{s.value}</p>
@@ -113,18 +115,24 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
               </button>
             ))}
           </div>
+          <Link
+            href={LEDGER_HREF}
+            className="ml-auto inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20"
+          >
+            📒 Public Ledger
+          </Link>
         </div>
       </section>
 
       <div className="max-w-[1400px] mx-auto px-6 py-12">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
-          
+
           {/* LEFT: OFFICIAL PREDICTIONS */}
           <div className="lg:col-span-3 space-y-8">
             <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
-               🏛️ Official Forecasts <span className="text-sm font-medium text-slate-500 ml-2">({filteredOfficial.length})</span>
+              🏛️ Official Forecasts <span className="text-sm font-medium text-slate-500 ml-2">({filteredOfficial.length})</span>
             </h2>
-            
+
             {filteredOfficial.length === 0 ? (
               <div className="text-center py-24 bg-white/5 rounded-3xl border border-white/5">
                 <p className="text-lg font-medium text-slate-400">No official predictions match your filters.</p>
@@ -132,10 +140,10 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
             ) : (
               <div className="grid gap-5 md:grid-cols-2">
                 {filteredOfficial.map((p) => {
-                  const cfg        = STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.PENDING
-                  const resolveMs  = new Date(p.resolveDate).getTime()
-                  const daysLeft   = Math.ceil((resolveMs - now) / 86_400_000)
-                  const isPast     = daysLeft < 0
+                  const cfg = STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.PENDING
+                  const resolveMs = new Date(p.resolveDate).getTime()
+                  const daysLeft = Math.ceil((resolveMs - now) / 86_400_000)
+                  const isPast = daysLeft < 0
                   const authorSlug = slugify(p.author.name ?? 'unknown')
 
                   return (
@@ -164,7 +172,7 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
                           {isPast ? `Resolved ${Math.abs(daysLeft)}d ago` : `${daysLeft}d left`}
                         </span>
                       </div>
-                      
+
                       {p.resolutionNote && (
                         <div className="mt-2 bg-yellow-500/5 border border-yellow-500/10 p-3 rounded-xl">
                           <p className="text-xs text-yellow-500/80">📝 {p.resolutionNote}</p>
@@ -180,7 +188,7 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
           {/* RIGHT: LIVE COMMUNITY FEED */}
           <div className="lg:col-span-1 space-y-6">
             <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
-               👥 Live Community Feed
+              👥 Live Community Feed
             </h2>
 
             {/* Input Form */}
@@ -209,39 +217,39 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
               {/* Fade out edges */}
               <div className="absolute top-0 w-full h-10 bg-gradient-to-b from-[#0B0D13] to-transparent z-10 pointer-events-none" />
               <div className="absolute bottom-0 w-full h-10 bg-gradient-to-t from-[#0B0D13] to-transparent z-10 pointer-events-none" />
-              
+
               <div className="flex flex-col gap-4 overflow-y-auto h-full px-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
                 {/* Scrollable List without duplicates */}
                 {communityPredictions.map((p) => (
                   <div key={p.id} className="bg-white/5 border border-white/10 rounded-xl p-4 shrink-0 relative group">
                     <div className="flex justify-between items-center mb-2">
-                       <span className="font-bold text-white text-xs">{p.author.name}</span>
-                       <VerificationBadge role={p.author.role} customBadge={p.author.customBadge} />
+                      <span className="font-bold text-white text-xs">{p.author.name}</span>
+                      <VerificationBadge role={p.author.role} customBadge={p.author.customBadge} />
                     </div>
                     <p className="text-sm text-slate-300 italic mb-2">"{p.claim}"</p>
                     <div className="flex justify-between items-center text-[10px] text-slate-500 font-mono">
-                       <span>{new Date(p.createdAt).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
-                       <span className="text-teal-400">{p.status}</span>
+                      <span>{new Date(p.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                      <span className="text-teal-400">{p.status}</span>
                     </div>
-                    
+
                     {/* Admin Delete Action for live feed */}
                     {isAdmin && (
-                       <button
-                         onClick={async () => {
-                           if (!confirm("Delete this community prediction?")) return;
-                           const formData = new FormData();
-                           formData.append("id", p.id);
-                           const { deletePredictionAction } = await import('@/app/admin/predictions/actions');
-                           await deletePredictionAction(formData);
-                         }}
-                         className="absolute top-2 right-2 text-xs font-bold bg-red-500/10 text-red-400 px-2 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
-                       >
-                         Delete
-                       </button>
+                      <button
+                        onClick={async () => {
+                          if (!confirm("Delete this community prediction?")) return;
+                          const formData = new FormData();
+                          formData.append("id", p.id);
+                          const { deletePredictionAction } = await import('@/app/admin/predictions/actions');
+                          await deletePredictionAction(formData);
+                        }}
+                        className="absolute top-2 right-2 text-xs font-bold bg-red-500/10 text-red-400 px-2 py-0.5 rounded-md opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        Delete
+                      </button>
                     )}
                   </div>
                 ))}
-                
+
                 {communityPredictions.length === 0 && (
                   <div className="text-center py-20">
                     <p className="text-slate-500 text-sm">No community predictions yet. Be the first!</p>

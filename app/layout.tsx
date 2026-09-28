@@ -13,6 +13,8 @@ import PageTracker from "@/components/analytics/PageTracker";
 import { Suspense } from "react";
 import JsonLd, { organizationSchema, websiteSchema } from "@/components/seo/JsonLd";
 import ClientShell from "@/components/ui/ClientShell";
+import CommandPalette from "@/components/ui/CommandPalette";
+import ServiceWorkerRegistrar from "@/components/pwa/ServiceWorkerRegistrar";
 
 /* ── Self-hosted fonts via next/font — zero external requests ── */
 const inter = Inter({
@@ -159,6 +161,7 @@ export default function RootLayout({
           <AuthProvider>
             <ClientShell>
               <Navbar />
+              <CommandPalette />
               <ScrollProgress />
               {/* Wrap Analytics in Suspense so it doesn't block the shell render */}
               <Suspense fallback={null}>
@@ -167,6 +170,7 @@ export default function RootLayout({
               <PageTracker />
               <main className="flex-1 relative z-10">{children}</main>
               <Footer />
+              <ServiceWorkerRegistrar />
             </ClientShell>
             {process.env.NEXT_PUBLIC_GA_ID && (
               <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
@@ -176,4 +180,4 @@ export default function RootLayout({
       </body>
     </html>
   );
-}
+}
