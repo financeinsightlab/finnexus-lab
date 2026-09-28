@@ -12,7 +12,7 @@ async function importDirectory(dirName: string, postType: 'INSIGHT' | 'RESEARCH'
   const files = fs.readdirSync(dirPath).filter(f => f.endsWith('.mdx') || f.endsWith('.md'));
   
   const admin = await prisma.user.findFirst({ where: { role: 'ADMIN' } }) || 
-                await prisma.user.create({ data: { email: 'admin@kunwaranalytics.in', name: 'Admin', role: 'ADMIN' }});
+                await prisma.user.create({ data: { email: 'kunwaranalytics@gmail.com', name: 'Admin', role: 'ADMIN' }});
 
   for (const file of files) {
     const slug = file.replace(/\.mdx?$/, '');

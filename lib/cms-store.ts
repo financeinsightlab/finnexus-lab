@@ -42,7 +42,7 @@ let postsStore: StoredPost[] = []
 const DEFAULT_ADMIN = {
   id: 'user-admin-01',
   name: 'Kunwar Analytics Research Desk',
-  email: 'research@kunwaranalytics.in',
+  email: 'kunwaranalytics@gmail.com',
   role: 'ADMIN',
 }
 

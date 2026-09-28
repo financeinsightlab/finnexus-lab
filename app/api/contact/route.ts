@@ -69,21 +69,31 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // TODO: deliver via Resend once RESEND_API_KEY is configured.
-    // await resend.emails.send({ from: 'contact@kunwaranalytics.in', to: 'hello@kunwaranalytics.in', ... });
+    // Save contact submission to persistent storage (Postgres DB + JSON fallback)
+    const { createContactInquiry } = await import('@/lib/contact-inquiries');
+    const saved = await createContactInquiry({
+      name,
+      organisation,
+      email,
+      subject,
+      budget,
+      message,
+      ip,
+    });
 
-    console.log('Contact form submission:', {
+    console.log('Contact form submission saved:', {
+      id: saved.id,
       name,
       organisation: organisation || 'Not provided',
       email,
       subject,
       budget: budget || 'Not provided',
-      message,
+      recipientEmail: 'kunwaranalytics@gmail.com',
       ip,
       timestamp: new Date().toISOString(),
     });
 
-    return NextResponse.json({ success: true });
+    return NextResponse.json({ success: true, id: saved.id });
   } catch (error) {
     console.error('Contact form error:', error);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });

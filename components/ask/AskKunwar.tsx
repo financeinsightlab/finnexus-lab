@@ -21,9 +21,11 @@ interface AskResponse {
 }
 
 const SUGGESTIONS = [
-    'What is driving India\'s inflation?',
-    'How do quick-commerce unit economics work?',
+    'What features and tools does Kunwar Analytics have?',
+    'What are the pricing plans and how to pay via UPI?',
     'What does the DCF valuation approach cover?',
+    'How do quick-commerce unit economics work?',
+    'How do I contact the research desk or enterprise team?',
 ];
 
 /**
@@ -66,6 +68,58 @@ export default function AskKunwar() {
         }
     }
 
+    const renderMarkdown = (text: string) => {
+        const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+        const tokens: React.ReactNode[] = [];
+        let lastIndex = 0;
+        let match;
+
+        while ((match = linkRegex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                tokens.push(renderFormatting(text.slice(lastIndex, match.index), tokens.length));
+            }
+            const label = match[1];
+            const url = match[2];
+            tokens.push(
+                <Link
+                    key={tokens.length}
+                    href={url}
+                    className="text-amber-600 dark:text-amber-400 font-semibold underline underline-offset-2 hover:opacity-80"
+                >
+                    {label}
+                </Link>
+            );
+            lastIndex = match.index + match[0].length;
+        }
+
+        if (lastIndex < text.length) {
+            tokens.push(renderFormatting(text.slice(lastIndex), tokens.length));
+        }
+
+        return tokens;
+    };
+
+    const renderFormatting = (chunk: string, baseKey: number) => {
+        const parts = chunk.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+        return (
+            <span key={baseKey}>
+                {parts.map((part, i) => {
+                    if (part.startsWith('**') && part.endsWith('**')) {
+                        return <strong key={i} className="font-bold text-neutral-900 dark:text-white">{part.slice(2, -2)}</strong>;
+                    }
+                    if (part.startsWith('`') && part.endsWith('`')) {
+                        return (
+                            <code key={i} className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 font-mono text-amber-600 dark:text-amber-400 text-xs">
+                                {part.slice(1, -1)}
+                            </code>
+                        );
+                    }
+                    return <span key={i}>{part}</span>;
+                })}
+            </span>
+        );
+    };
+
     return (
         <div className="mx-auto w-full max-w-3xl">
             <form
@@ -83,7 +137,7 @@ export default function AskKunwar() {
                     type="text"
                     value={question}
                     onChange={(event) => setQuestion(event.target.value)}
-                    placeholder="Ask about markets, strategy, or the study library…"
+                    placeholder="Ask about features, pricing, valuation, research, or study courses…"
                     className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
                 />
                 <button
@@ -126,9 +180,9 @@ export default function AskKunwar() {
                             Answer · sourced from {result.citations.length} page
                             {result.citations.length === 1 ? '' : 's'}
                         </p>
-                        <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-neutral-800 dark:text-neutral-100">
-                            {result.answer}
-                        </p>
+                        <div className="mt-3 text-sm leading-relaxed text-neutral-800 dark:text-neutral-100 whitespace-pre-line space-y-2">
+                            {renderMarkdown(result.answer)}
+                        </div>
                     </div>
 
                     {result.citations.length > 0 && (

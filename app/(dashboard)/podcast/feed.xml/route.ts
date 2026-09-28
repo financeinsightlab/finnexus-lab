@@ -67,7 +67,7 @@ export function GET() {
     <itunes:subtitle>Market intelligence in 30 minutes.</itunes:subtitle>
     <itunes:owner>
       <itunes:name>Kunwar Analytics</itunes:name>
-      <itunes:email>hello@kunwaranalytics.in</itunes:email>
+      <itunes:email>kunwaranalytics@gmail.com</itunes:email>
     </itunes:owner>
 ${items}
   </channel>

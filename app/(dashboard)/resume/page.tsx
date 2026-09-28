@@ -58,8 +58,8 @@ export default function ResumePage() {
                 </div>
                 <div className="flex items-center gap-3">
                   <span className="text-brand-teal text-lg">•</span>
-                  <a href="mailto:sumit.singh.2025@absschool.in" className="hover:text-brand-teal transition-colors break-all underline decoration-slate-200 underline-offset-4">
-                    sumit.singh.2025@absschool.in
+                  <a href="mailto:kunwaranalytics@gmail.com" className="hover:text-brand-teal transition-colors break-all underline decoration-slate-200 underline-offset-4">
+                    kunwaranalytics@gmail.com
                   </a>
                 </div>
                 <div className="flex items-center gap-3">

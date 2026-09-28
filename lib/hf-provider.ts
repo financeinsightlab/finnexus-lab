@@ -5,25 +5,32 @@
 // null so the caller can fall back to localExtractiveProvider.
 
 import type { AnswerProvider, Passage } from './retrieval-qa';
+import { getPlatformSystemPrompt } from './kunwar-knowledge';
 
 // A small, fast instruction-following model on HF Inference API (free tier).
 const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.3';
 const HF_API_URL = `https://api-inference.huggingface.co/models/${HF_MODEL}`;
 
 function buildPrompt(question: string, passages: readonly Passage[]): string {
-    const context = passages
-        .slice(0, 5)
-        .map((p) => `[${p.index}] ${p.title}: ${p.snippet}`)
-        .join('\n\n');
+    const context = passages.length > 0
+        ? passages
+            .slice(0, 5)
+            .map((p) => `[${p.index}] ${p.title} (${p.url}): ${p.snippet}`)
+            .join('\n\n')
+        : 'General Kunwar Analytics platform knowledge.';
 
-    return `<s>[INST] You are "Ask Kunwar", a financial research assistant for Kunwar Analytics.
-Answer the user's question ONLY using the sources below. Cite each source used with [number] inline.
-If the sources don't contain enough information, say so honestly. Be concise and factual.
+    const systemContext = getPlatformSystemPrompt();
+
+    return `<s>[INST] ${systemContext}
+
+When answering, reference the platform knowledge above and the research sources below.
+If sources are cited, include the citation bracket like [1] or [2].
+Be thorough, structured, and helpful. Use markdown formatting with bolding and bullet points.
 
 Sources:
 ${context}
 
-Question: ${question} [/INST]`;
+User Question: ${question} [/INST]`;
 }
 
 export const huggingFaceProvider: AnswerProvider = {

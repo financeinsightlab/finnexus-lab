@@ -35,14 +35,17 @@ interface Message {
 }
 
 const QUICK_QUESTIONS = [
-    '📈 Quick commerce unit economics?',
+    '⚡ What features does Kunwar Analytics have?',
+    '💳 What are the pricing plans & how to pay?',
     '💹 How does DCF valuation work?',
-    '🏦 What drives Fintech growth in India?',
-    '📊 Explain EBITDA margins',
+    '📈 Quick commerce unit economics?',
+    '🏦 What drives Fintech credit in India?',
+    '📧 How do I contact the research desk?',
 ];
 
 const PROVIDER_LABELS: Record<string, string> = {
-    'huggingface-mistral': '🤖 AI · Mistral',
+    'huggingface-mistral': '🤖 AI · Mistral-7B',
+    'kunwar-knowledge-engine': '⚡ Kunwar Intelligence',
     'local-extractive': '🔍 Search-based',
 };
 
@@ -86,7 +89,7 @@ export default function AskKunwarBubble() {
             setMessages([{
                 id: 'welcome',
                 role: 'assistant',
-                text: "Hi! I'm **Kunwar**, your AI research assistant 📊\n\nI can answer questions about Indian markets, finance, business analytics, and our research library — with citations to the source. What would you like to know?",
+                text: "Hi! I'm **Kunwar**, your AI research and platform assistant 📊\n\nI can answer anything about our **features, pricing plans, DCF valuation tools, UPI payment (`sumitsingh7445@ptyes`)**, and institutional research library. What would you like to know?",
             }]);
         }
     };
@@ -159,15 +162,59 @@ export default function AskKunwarBubble() {
         void sendMessage(input);
     };
 
-    // Render message text with basic **bold** markdown
+    // Render message text with basic markdown (bold, links, code)
     const renderText = (text: string) => {
-        const parts = text.split(/(\*\*[^*]+\*\*)/g);
-        return parts.map((part, i) => {
-            if (part.startsWith('**') && part.endsWith('**')) {
-                return <strong key={i}>{part.slice(2, -2)}</strong>;
+        // First match markdown links [label](url)
+        const linkRegex = /\[([^\]]+)\]\(([^)]+)\)/g;
+        const tokens: React.ReactNode[] = [];
+        let lastIndex = 0;
+        let match;
+
+        while ((match = linkRegex.exec(text)) !== null) {
+            if (match.index > lastIndex) {
+                tokens.push(renderFormatting(text.slice(lastIndex, match.index), tokens.length));
             }
-            return <span key={i}>{part}</span>;
-        });
+            const label = match[1];
+            const url = match[2];
+            tokens.push(
+                <Link
+                    key={tokens.length}
+                    href={url}
+                    onClick={() => setOpen(false)}
+                    className="text-teal-400 font-semibold underline underline-offset-2 hover:text-teal-300"
+                >
+                    {label}
+                </Link>
+            );
+            lastIndex = match.index + match[0].length;
+        }
+
+        if (lastIndex < text.length) {
+            tokens.push(renderFormatting(text.slice(lastIndex), tokens.length));
+        }
+
+        return tokens;
+    };
+
+    const renderFormatting = (chunk: string, baseKey: number) => {
+        const parts = chunk.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+        return (
+            <span key={baseKey}>
+                {parts.map((part, i) => {
+                    if (part.startsWith('**') && part.endsWith('**')) {
+                        return <strong key={i} className="font-bold text-white">{part.slice(2, -2)}</strong>;
+                    }
+                    if (part.startsWith('`') && part.endsWith('`')) {
+                        return (
+                            <code key={i} className="px-1.5 py-0.5 rounded bg-white/10 font-mono text-teal-300 text-xs">
+                                {part.slice(1, -1)}
+                            </code>
+                        );
+                    }
+                    return <span key={i}>{part}</span>;
+                })}
+            </span>
+        );
     };
 
     return (
@@ -322,7 +369,7 @@ export default function AskKunwarBubble() {
                             ref={inputRef}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
-                            placeholder="Ask about markets, finance, strategy…"
+                            placeholder="Ask about features, pricing, tools, research…"
                             disabled={loading}
                             className="flex-1 bg-transparent py-3 pl-3.5 text-sm text-white placeholder:text-slate-600 outline-none disabled:opacity-50"
                         />

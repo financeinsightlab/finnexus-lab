@@ -1,0 +1,29 @@
+[
+  {
+    "id": "cinq_1790625001166_8k493",
+    "name": "Rohan Mehta",
+    "email": "rohan.mehta@investcorp.com",
+    "organisation": "InvestCorp Capital",
+    "subject": "Custom DCF Model Inquiry",
+    "budget": "₹25,000 - ₹50,000",
+    "message": "Hello Kunwar Analytics team, we are looking for a tailored 3-statement model for EV charging infrastructure in India.",
+    "status": "UNREAD",
+    "ip": "::1",
+    "createdAt": "2026-09-28T19:50:01.166Z"
+  },
+  {
+    "id": "cinq_1790624881084_el4fl",
+    "name": "Aarav Sharma",
+    "email": "aarav@example.com",
+    "organisation": "Apex Capital",
+    "subject": "Enterprise Research Retainer",
+    "budget": "₹50,000 - ₹1,00,000",
+    "message": "We are interested in a quarterly research retainer covering Indian renewable energy and semiconductors.",
+    "status": "REPLIED",
+    "ip": null,
+    "createdAt": "2026-09-28T19:48:01.084Z",
+    "replyText": "Hi Aarav, thank you for reaching out. We would be happy to discuss a quarterly retainer. Let us schedule a call this Thursday at 3 PM.",
+    "repliedAt": "2026-09-28T19:48:02.705Z",
+    "repliedBy": "Kunwar Analytics Admin"
+  }
+]

@@ -16,7 +16,8 @@ import {
   X,
   Target,
   Lock,
-  Image as ImageIcon
+  Image as ImageIcon,
+  MessageSquare
 } from "lucide-react"
 
 interface CollapsibleSidebarProps {
@@ -71,6 +72,7 @@ export default function CollapsibleSidebar({
 
   const menuItems = [
     { label: "Dashboard", href: "/admin", icon: LayoutDashboard, adminOnly: true },
+    { label: "Inquiries & Contact", href: "/admin/messages", icon: MessageSquare, adminOnly: true },
     { label: "Content CMS", href: "/admin/cms", icon: FileText },
     { label: "Media Library", href: "/admin/media", icon: ImageIcon },
     { label: "Study Material", href: "/admin/study", icon: FileText },

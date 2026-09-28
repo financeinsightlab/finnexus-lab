@@ -12,7 +12,9 @@ import {
   Clock,
   UserPlus,
   LogIn,
+  MessageSquare,
 } from "lucide-react"
+import { getContactInquiries } from "@/lib/contact-inquiries"
 import Link from "next/link"
 import React from "react"
 import HeroBackground from "@/components/ui/HeroBackground"
@@ -38,6 +40,7 @@ export default async function AdminDashboard() {
     postsByType,
     totalPageViews,
     totalLogins,
+    inquiryData,
   ] = await Promise.all([
     prisma.user.count(),
     prisma.user.count({ where: { createdAt: { gte: weekAgo } } }),
@@ -58,6 +61,7 @@ export default async function AdminDashboard() {
     prisma.post.groupBy({ by: ["type"], _count: { id: true } }),
     prisma.pageView.count(),
     prisma.loginEvent.count(),
+    getContactInquiries().catch(() => ({ inquiries: [], stats: { total: 0, unread: 0, replied: 0 } })),
   ])
 
   const userGrowth = newUsersLastWeek > 0
@@ -109,6 +113,15 @@ export default async function AdminDashboard() {
       bg: "bg-pink-500/10",
       trend: "All time",
       trendUp: true,
+    },
+    {
+      label: "Inquiries",
+      value: inquiryData.stats.total.toLocaleString(),
+      icon: MessageSquare,
+      color: "text-teal-400",
+      bg: "bg-teal-500/10",
+      trend: `${inquiryData.stats.unread} unread`,
+      trendUp: inquiryData.stats.unread > 0,
     },
   ]
 
@@ -248,6 +261,7 @@ export default async function AdminDashboard() {
             { label: "Case Studies", href: "/admin/cms?type=CASE_STUDY", color: "text-purple-400" },
             { label: "User Directory", href: "/admin/users", color: "text-amber-400" },
             { label: "Live Analytics", href: "/admin/analytics", color: "text-pink-400" },
+            { label: "Contact Inquiries", href: "/admin/messages", color: "text-teal-400" },
             { label: "New Content", href: "/admin/cms/new", color: "text-[#0D6E6E]" },
           ].map((link, i) => (
             <Link

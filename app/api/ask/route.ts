@@ -56,31 +56,86 @@ export async function POST(request: Request) {
                 score: item.score,
             }));
 
-        // Try HuggingFace first; fall back to local extractive if key is missing or call fails
+        const { getPlatformPassages, synthesizeLocalPlatformAnswer } = await import('@/lib/kunwar-knowledge');
+        const platformSources = getPlatformPassages(question);
+
+        // Merge sources: platform sources + research search sources
+        const combinedSources: PassageSource[] = [
+            ...platformSources,
+            ...sources,
+        ].slice(0, 6);
+
+        // Try HuggingFace first; fall back to local platform or extractive synthesizer
         const hasHFKey = !!process.env.HUGGINGFACE_API_KEY;
         let answer;
 
         if (hasHFKey) {
             try {
-                answer = await answerFromSources(question, sources, {
+                answer = await answerFromSources(question, combinedSources, {
                     provider: huggingFaceProvider,
                 });
             } catch (hfError) {
-                logger.warn('Ask Kunwar: HuggingFace failed, falling back to local extractive', {
+                logger.warn('Ask Kunwar: HuggingFace failed, falling back to local synthesizer', {
                     error: hfError instanceof Error ? hfError.message : String(hfError),
                 });
-                answer = await answerFromSources(question, sources, {
+
+                // Check if this is a platform query we can answer locally with full authority
+                const localPlatformText = synthesizeLocalPlatformAnswer(
+                    question,
+                    combinedSources.map((s, idx) => ({ ...s, index: idx + 1 }))
+                );
+
+                if (localPlatformText) {
+                    answer = {
+                        question,
+                        answer: localPlatformText,
+                        citations: combinedSources.map((s, idx) => ({
+                            index: idx + 1,
+                            title: s.title,
+                            url: s.url,
+                            kind: s.kind,
+                            snippet: s.description.slice(0, 160),
+                            score: s.score,
+                        })),
+                        provider: 'kunwar-knowledge-engine',
+                        noAnswer: false,
+                    };
+                } else {
+                    answer = await answerFromSources(question, combinedSources, {
+                        provider: localExtractiveProvider,
+                    });
+                }
+            }
+        } else {
+            const localPlatformText = synthesizeLocalPlatformAnswer(
+                question,
+                combinedSources.map((s, idx) => ({ ...s, index: idx + 1 }))
+            );
+
+            if (localPlatformText) {
+                answer = {
+                    question,
+                    answer: localPlatformText,
+                    citations: combinedSources.map((s, idx) => ({
+                        index: idx + 1,
+                        title: s.title,
+                        url: s.url,
+                        kind: s.kind,
+                        snippet: s.description.slice(0, 160),
+                        score: s.score,
+                    })),
+                    provider: 'kunwar-knowledge-engine',
+                    noAnswer: false,
+                };
+            } else {
+                answer = await answerFromSources(question, combinedSources, {
                     provider: localExtractiveProvider,
                 });
             }
-        } else {
-            answer = await answerFromSources(question, sources, {
-                provider: localExtractiveProvider,
-            });
         }
 
         return NextResponse.json(
-            { ...answer, sourceCount: sources.length },
+            { ...answer, sourceCount: combinedSources.length },
             { status: 200 },
         );
     } catch (error) {

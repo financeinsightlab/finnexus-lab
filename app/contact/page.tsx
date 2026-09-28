@@ -22,15 +22,15 @@ const CHANNELS = [
   {
     icon: '📧',
     label: 'General enquiries',
-    value: 'hello@kunwaranalytics.in',
-    href: 'mailto:hello@kunwaranalytics.in',
+    value: 'kunwaranalytics@gmail.com',
+    href: 'mailto:kunwaranalytics@gmail.com',
     note: 'Research, projects and collaborations',
   },
   {
     icon: '🏢',
     label: 'Enterprise & teams',
-    value: 'corporate@kunwaranalytics.in',
-    href: 'mailto:corporate@kunwaranalytics.in',
+    value: 'kunwaranalytics@gmail.com',
+    href: 'mailto:kunwaranalytics@gmail.com',
     note: 'Custom engagements, SLAs and invoicing',
   },
   {
