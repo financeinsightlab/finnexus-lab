@@ -4,6 +4,7 @@ import { getAllResearch, getAllInsights, getAllDataLab, getAllCaseStudies, getAl
 import { prisma } from '@/lib/prisma';
 import { SUBJECTS } from '@/lib/pgdm/curriculum';
 import { TOOLS } from '@/lib/tools-registry';
+import { CERTIFICATES } from '@/lib/certificates';
 
 const BASE = 'https://kunwaranalytics.in';
 
@@ -72,6 +73,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // ─── Certificate verification records ───
+  const certificatePages: MetadataRoute.Sitemap = CERTIFICATES.map((c) => ({
+    url: `${BASE}/certificates/${c.slug}`,
+    changeFrequency: 'monthly' as const,
+    priority: 0.7,
+  }));
+
   // ─── Database Content: Study Materials ───
   let studyMaterials: MetadataRoute.Sitemap = [];
   try {
@@ -116,5 +124,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/data-freshness`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.5 },
   ];
 
-  return [...statics, ...utilityPages, ...research, ...insights, ...dataLab, ...caseStudies, ...podcasts, ...studyMaterials, ...pgdmPages, ...toolPages];
+  return [...statics, ...utilityPages, ...research, ...insights, ...dataLab, ...caseStudies, ...podcasts, ...studyMaterials, ...pgdmPages, ...toolPages, ...certificatePages];
 }
