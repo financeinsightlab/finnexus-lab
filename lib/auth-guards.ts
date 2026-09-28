@@ -12,6 +12,7 @@ import { auth } from '@/auth';
 import type { Session } from 'next-auth';
 import type { UserRole } from '@prisma/client';
 import { NextResponse } from 'next/server';
+import { logger } from '@/lib/logger';
 
 /** Roles allowed into the staff back-office (/admin). */
 export const STAFF_ROLES: readonly UserRole[] = ['ADMIN', 'ANALYST'];
@@ -22,7 +23,19 @@ export type AuthedUser = Session['user'];
 
 /** Return the signed-in user, or null when unauthenticated. */
 export async function getCurrentUser(): Promise<AuthedUser | null> {
-    const session = await auth();
+    // `auth()` can reject while verifying a session cookie whose token was
+    // signed with a different/rotated secret (stale browser cookie, another
+    // environment's AUTH_SECRET). Treat any such failure as "not signed in"
+    // rather than letting the exception bubble up and 500 the whole page.
+    let session: Session | null;
+    try {
+        session = await auth();
+    } catch (error) {
+        logger.warn('auth() failed while resolving the current user (treating as anonymous)', {
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return null;
+    }
     // `session.user.id` is guaranteed by the next-auth module augmentation in
     // types/next-auth.d.ts, but guard anyway for safety at the boundary.
     return session?.user?.id ? session.user : null;

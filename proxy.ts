@@ -15,11 +15,50 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import type { UserRole } from '@prisma/client';
+import { logger } from '@/lib/logger';
 
 const STAFF_ROLES: readonly UserRole[] = ['ADMIN', 'ANALYST'];
 
 function isStaff(role: UserRole | undefined): boolean {
     return role !== undefined && STAFF_ROLES.includes(role);
+}
+
+// Session/CSRF cookies that may carry a token we could not decrypt. Both the
+// `__Secure-` and legacy names are cleared because the cookie name changes with
+// `secureCookie` (HTTP vs HTTPS), and a stale cookie from the other variant
+// must not be left behind to trigger the same failure again.
+function expiredSessionCookies(): string[] {
+    const base = 'Path=/; Max-Age=0; HttpOnly; SameSite=Lax';
+    return [
+        `__Secure-authjs.session-token=; ${base}; Secure`,
+        `authjs.session-token=; ${base}`,
+        `__Host-authjs.csrf-token=; ${base}; Secure`,
+        `authjs.csrf-token=; ${base}`,
+    ];
+}
+
+// Resolve the session token without ever throwing. `getToken` can reject while
+// decrypting a token that was signed with a *different* secret (e.g. a rotated
+// AUTH_SECRET, another environment's secret, or a truncated/tampered cookie).
+// In that case we must degrade to "unauthenticated" — never surface a 500 to a
+// real user whose browser merely holds a stale cookie.
+async function readSessionToken(request: NextRequest) {
+    // Accept either env name so a deployment that only sets the legacy
+    // `NEXTAUTH_SECRET` still verifies sessions instead of throwing.
+    const secret = process.env.AUTH_SECRET ?? process.env.NEXTAUTH_SECRET;
+    try {
+        return await getToken({
+            req: request,
+            secret,
+            secureCookie: process.env.NODE_ENV === 'production',
+        });
+    } catch (error) {
+        logger.warn('Proxy rejected an undecodable session token (degrading to anonymous)', {
+            pathname: request.nextUrl.pathname,
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return null;
+    }
 }
 
 export async function proxy(request: NextRequest) {
@@ -41,19 +80,20 @@ export async function proxy(request: NextRequest) {
     const isAdminApi = pathname.startsWith('/api/admin/');
 
     if (isAdminPage || isAdminApi) {
-        const token = await getToken({
-            req: request,
-            secret: process.env.AUTH_SECRET,
-            secureCookie: process.env.NODE_ENV === 'production',
-        });
+        const token = await readSessionToken(request);
 
         if (!token) {
+            const clearCookies = expiredSessionCookies();
             if (isAdminApi) {
-                return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+                const unauthorized = NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+                for (const cookie of clearCookies) unauthorized.headers.append('Set-Cookie', cookie);
+                return unauthorized;
             }
             const signIn = new URL('/auth/signin', request.url);
             signIn.searchParams.set('callbackUrl', pathname);
-            return NextResponse.redirect(signIn);
+            const redirect = NextResponse.redirect(signIn);
+            for (const cookie of clearCookies) redirect.headers.append('Set-Cookie', cookie);
+            return redirect;
         }
 
         if (!isStaff(token.role)) {
