@@ -4,6 +4,7 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { revalidatePath } from "next/cache"
 import { z } from "zod"
+import { publish } from "@/lib/publish"
 
 function slugify(text: string) {
   return text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
@@ -66,7 +67,7 @@ export async function createStudyMaterial(formData: FormData) {
   const data = parsed.data
   const slug = `${slugify(data.title).slice(0, 60)}-${Date.now()}`
 
-  await prisma.studyMaterial.create({
+  const created = await prisma.studyMaterial.create({
     data: {
       title: data.title,
       slug,
@@ -86,7 +87,12 @@ export async function createStudyMaterial(formData: FormData) {
     },
   })
 
-  revalidatePath('/study')
+  await publish({
+    entityType: 'study',
+    entityId: created.id,
+    slug: created.slug,
+    action: data.published ? 'published' : 'created',
+  })
   revalidatePath('/admin/study')
 }
 
@@ -146,9 +152,8 @@ export async function updateStudyMaterial(formData: FormData) {
     },
   })
 
-  revalidatePath('/study')
+  await publish({ entityType: 'study', entityId: id, slug: existing.slug, action: 'updated' })
   revalidatePath('/admin/study')
-  revalidatePath(`/study/${existing.slug}`)
 }
 
 export async function deleteStudyMaterial(formData: FormData) {
@@ -161,9 +166,10 @@ export async function deleteStudyMaterial(formData: FormData) {
   const id = formData.get('id') as string
   if (!id) throw new Error("Material ID is required")
 
+  const existing = await prisma.studyMaterial.findUnique({ where: { id } })
   await prisma.studyMaterial.delete({ where: { id } })
 
-  revalidatePath('/study')
+  await publish({ entityType: 'study', entityId: id, slug: existing?.slug ?? null, action: 'deleted' })
   revalidatePath('/admin/study')
 }
 

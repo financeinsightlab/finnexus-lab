@@ -15,6 +15,7 @@ import JsonLd, { organizationSchema, websiteSchema } from "@/components/seo/Json
 import ClientShell from "@/components/ui/ClientShell";
 import CommandPalette from "@/components/ui/CommandPalette";
 import ServiceWorkerRegistrar from "@/components/pwa/ServiceWorkerRegistrar";
+import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 
 /* ── Self-hosted fonts via next/font — zero external requests ── */
 const inter = Inter({
@@ -158,24 +159,26 @@ export default function RootLayout({
         <div className="fixed inset-0 z-0 pointer-events-none cinema-mesh opacity-30" />
         <div className="fixed inset-0 z-0 pointer-events-none cinema-noise" />
         <Providers>
-          <AuthProvider>
-            <ClientShell>
-              <Navbar />
-              <CommandPalette />
-              <ScrollProgress />
-              {/* Wrap Analytics in Suspense so it doesn't block the shell render */}
-              <Suspense fallback={null}>
-                <Analytics />
-              </Suspense>
-              <PageTracker />
-              <main className="flex-1 relative z-10">{children}</main>
-              <Footer />
-              <ServiceWorkerRegistrar />
-            </ClientShell>
-            {process.env.NEXT_PUBLIC_GA_ID && (
-              <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
-            )}
-          </AuthProvider>
+          <LocaleProvider>
+            <AuthProvider>
+              <ClientShell>
+                <Navbar />
+                <CommandPalette />
+                <ScrollProgress />
+                {/* Wrap Analytics in Suspense so it doesn't block the shell render */}
+                <Suspense fallback={null}>
+                  <Analytics />
+                </Suspense>
+                <PageTracker />
+                <main className="flex-1 relative z-10">{children}</main>
+                <Footer />
+                <ServiceWorkerRegistrar />
+              </ClientShell>
+              {process.env.NEXT_PUBLIC_GA_ID && (
+                <GoogleAnalytics gaId={process.env.NEXT_PUBLIC_GA_ID} />
+              )}
+            </AuthProvider>
+          </LocaleProvider>
         </Providers>
       </body>
     </html>

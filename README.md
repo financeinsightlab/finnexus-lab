@@ -153,18 +153,21 @@ provider-agnostic pieces ship today; the rest are staged behind a service key or
 | E — Credentials | **W3C Verifiable Credential / Open Badge 3.0** documents emitted as JSON-LD on every certificate page (verifiable URN + code) | [`lib/credentials.ts`](lib/credentials.ts:1), [`app/(dashboard)/certificates/[slug]/page.tsx`](<app/(dashboard)/certificates/[slug]/page.tsx:1>) |
 | F — Experience | Global **⌘K / Ctrl-K command palette** wired to the unified search API, arrow-key navigation | [`components/ui/CommandPalette.tsx`](components/ui/CommandPalette.tsx:1) |
 | F — PWA | **Installable PWA**: web-app manifest with shortcuts + production service-worker registrar | [`public/manifest.json`](public/manifest.json:1), [`components/pwa/ServiceWorkerRegistrar.tsx`](components/pwa/ServiceWorkerRegistrar.tsx:1) |
+| A — Monetization | **Stripe Checkout + Billing Portal + signed webhooks** with dependency-free REST client; maps the subscription lifecycle (including `PAST_DUE` dunning) onto `subscriptionPlan`/`subscriptionStatus` so entitlements always match reality. Checkout `/checkout/[plan]`, account Billing tab | [`lib/billing.ts`](lib/billing.ts:1), [`lib/stripe.ts`](lib/stripe.ts:1), [`app/api/checkout/route.ts`](app/api/checkout/route.ts:1), [`app/api/webhooks/stripe/route.ts`](app/api/webhooks/stripe/route.ts:1) |
+| B — "Ask Kunwar" RAG | Retrieval Q&A with citations and a **free local fallback**; only embeddings are optional | [`lib/retrieval-qa.ts`](lib/retrieval-qa.ts:1), [`app/api/ask/route.ts`](app/api/ask/route.ts:1) |
+| C — Live data | **Free public APIs** (FX + World Bank) with per-metric provenance and ingest cron | [`lib/live-data.ts`](lib/live-data.ts:1), [`app/api/metrics/live/route.ts`](app/api/metrics/live/route.ts:1) |
+| D — Comments 2.0 | Threaded comments, reactions, follow graph and notification preferences | [`lib/comments-store.ts`](lib/comments-store.ts:1), [`components/comments/CommentsSection.tsx`](components/comments/CommentsSection.tsx:1) |
+| E — Progress | Persisted, adaptive learning paths with streaks and recommendations | [`lib/learning-progress.ts`](lib/learning-progress.ts:1), [`app/api/learning/route.ts`](app/api/learning/route.ts:1) |
+| F — i18n | Dependency-free locale layer (en-IN / en-US) with formatters + navbar switcher | [`lib/i18n/`](lib/i18n/config.ts:1), [`components/i18n/LocaleSwitcher.tsx`](components/i18n/LocaleSwitcher.tsx:1) |
+| G — Observability | Error-reporting sink (logs by default, `SENTRY_DSN` optional) + job queue + publish pipeline | [`lib/observability.ts`](lib/observability.ts:1), [`lib/jobs-store.ts`](lib/jobs-store.ts:1) |
 
 ### Staged (blocked on a key or migration)
 
 | Pillar | Requires |
 | --- | --- |
-| A — Monetization | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, price IDs, and a `StripeCustomer`/subscription migration |
-| B — "Ask Kunwar" RAG | An embedding/LLM provider key and PostgreSQL `pgvector` |
-| C — Live data | A market/economic data-provider API key (per-metric provenance) |
-| D — Comments 2.0 | A schema migration for threads, reactions, and notification preferences |
-| E — Progress | An `Enrollment`/`Progress` schema migration for persisted, adaptive learning paths |
-| F — i18n | `next-intl` plus locale-prefixed routing |
-| G — Observability | `SENTRY_DSN` and a background-job runner (Inngest or QStash) |
+| A — Stripe go-live | Add the free **test-mode** keys `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_{PRO,ELITE,TEAM}` (plus the `add_billing_subscription` migration). The routes are already built and stay inert until then |
+| B — "Ask Kunwar" vectors | An embedding/LLM provider key and PostgreSQL `pgvector` (lexical retrieval already works without them) |
+| G — Email | `RESEND_API_KEY` (free tier) for transactional digests/alerts |
 
 ## Deployment
 

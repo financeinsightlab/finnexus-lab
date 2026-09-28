@@ -1,17 +1,27 @@
 'use client';
 
-import { Download, Check } from 'lucide-react';
+import { Download, Check, FileJson } from 'lucide-react';
 import { useState } from 'react';
 
+/**
+ * Data Lab download control (Pillar C3).
+ *
+ * Generates a CSV in the browser so it works even offline, and — when a
+ * `slug` is provided — also links to the machine-readable server endpoints
+ * (`/api/datasets/{slug}?format=csv|json`) whose metadata is advertised in the
+ * page's schema.org Dataset JSON-LD.
+ */
 export default function DataLabDownload({
   filename,
   data,
   columns,
+  slug,
   label = 'Download Dataset (CSV)',
 }: {
   filename: string;
   data: Record<string, unknown>[];
   columns?: string[];
+  slug?: string;
   label?: string;
 }) {
   const [done, setDone] = useState(false);
@@ -52,13 +62,26 @@ export default function DataLabDownload({
   };
 
   return (
-    <button
-      onClick={download}
-      type="button"
-      className="inline-flex items-center gap-2 rounded-xl bg-cinema-aurora/15 border border-cinema-aurora/30 text-cinema-aurora px-4 py-2.5 text-sm font-medium hover:bg-cinema-aurora/25 transition"
-    >
-      {done ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
-      {done ? 'Downloaded!' : label}
-    </button>
+    <div className="flex flex-wrap items-center gap-3">
+      <button
+        onClick={download}
+        type="button"
+        className="inline-flex items-center gap-2 rounded-xl bg-cinema-aurora/15 border border-cinema-aurora/30 text-cinema-aurora px-4 py-2.5 text-sm font-medium hover:bg-cinema-aurora/25 transition"
+      >
+        {done ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
+        {done ? 'Downloaded!' : label}
+      </button>
+
+      {slug && (
+        <a
+          href={`/api/datasets/${slug}?format=json`}
+          download
+          className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/15 text-gray-200 px-4 py-2.5 text-sm font-medium hover:bg-white/10 transition"
+        >
+          <FileJson className="w-4 h-4" />
+          JSON
+        </a>
+      )}
+    </div>
   );
 }

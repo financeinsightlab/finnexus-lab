@@ -96,6 +96,7 @@ export const NAV_CLUSTERS: NavCluster[] = [
         href: '/about',
         description: 'About the practice, services and ways to work together.',
         items: [
+            { label: 'Your Account', href: '/account', icon: '👤', description: 'Profile, badges, notifications and API keys' },
             { label: 'About', href: '/about', icon: 'ℹ️', description: 'Mission and approach' },
             { label: 'Services', href: '/services', icon: '🛠️', description: 'Research, modelling and advisory' },
             { label: 'Enterprise', href: '/enterprise', icon: '🏦', description: 'Custom engagements for teams' },

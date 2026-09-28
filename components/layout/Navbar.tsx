@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useTheme } from 'next-themes';
 import GlobalSearch from '@/components/layout/GlobalSearch';
+import LocaleSwitcher from '@/components/i18n/LocaleSwitcher';
 import { useSession, signOut } from 'next-auth/react';
 import { NAV_CLUSTERS, NAV_CTA, type NavCluster } from '@/lib/navigation';
 
@@ -216,6 +217,9 @@ export default function Navbar() {
               <SearchIcon />
               <span className="hidden xl:inline">Search</span>
             </button>
+
+            {/* Language (Pillar F2) */}
+            <LocaleSwitcher />
 
             {/* Theme */}
             <ThemeToggle />

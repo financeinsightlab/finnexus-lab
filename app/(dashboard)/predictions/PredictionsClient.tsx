@@ -6,6 +6,7 @@ import HeroBackground from '@/components/ui/HeroBackground'
 import type { PredictionWithAuthor } from '@/lib/predictions'
 import { createCommunityPrediction } from '@/actions/community-predictions'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
+import CommentsSection from '@/components/comments/CommentsSection'
 
 const LEDGER_HREF = '/predictions/ledger'
 
@@ -247,6 +248,15 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
                         Delete
                       </button>
                     )}
+
+                    {/* Threaded discussion (Pillar D) */}
+                    <div className="mt-4 border-t border-white/5 pt-2">
+                      <CommentsSection
+                        predictionId={p.id}
+                        isLoggedIn={isLoggedIn}
+                        heading="Discussion"
+                      />
+                    </div>
                   </div>
                 ))}
 

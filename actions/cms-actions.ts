@@ -4,6 +4,8 @@ import { auth } from "@/auth"
 import { prisma } from "@/lib/prisma"
 import { ArticleType } from "@prisma/client"
 import { revalidatePath } from "next/cache"
+import { publish } from "@/lib/publish"
+import { enqueue } from "@/lib/jobs-store"
 
 export type PostFormData = {
   title: string
@@ -13,7 +15,7 @@ export type PostFormData = {
   type: ArticleType
   published: boolean
   featuredImage?: string | null
-  
+
   // CMS Elite Meta
   seoTitle?: string | null
   metaDescription?: string | null
@@ -22,16 +24,16 @@ export type PostFormData = {
   ogTitle?: string | null
   tags?: string[]
   publishedAt?: Date | null
-  
+
   // Enhanced Metadata
   difficulty?: "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT" | null
   targetAudience?: string[]
   contentStatus?: "DRAFT" | "REVIEW" | "APPROVED" | "PUBLISHED" | null
   estimatedReadingTime?: number | null
-  
+
   // Scheduling
   scheduledPublishAt?: Date | null
-  
+
   // Visual Editor Blocks
   contentType?: 'MARKDOWN' | 'BLOCKS'
   blockContent?: any
@@ -72,8 +74,14 @@ export async function createPost(formData: PostFormData) {
     },
   })
 
+  await publish({
+    entityType: "post",
+    entityId: post.id,
+    slug: post.slug,
+    action: formData.published ? "published" : "created",
+  })
   revalidatePath("/admin/cms")
-  revalidatePath(`/${formData.type.toLowerCase()}`)
+  void enqueue("revalidate.path", { path: `/${formData.type.toLowerCase()}` }).catch(() => { })
   return post
 }
 
@@ -105,9 +113,8 @@ export async function updatePost(id: string, formData: PostFormData) {
     },
   })
 
+  await publish({ entityType: "post", entityId: post.id, slug: post.slug, action: "updated" })
   revalidatePath("/admin/cms")
-  revalidatePath(`/${formData.type.toLowerCase()}`)
-  revalidatePath(`/${formData.type.toLowerCase()}/${formData.slug}`)
   return post
 }
 
@@ -128,8 +135,8 @@ export async function deletePost(id: string) {
     where: { id },
   })
 
+  await publish({ entityType: "post", entityId: post.id, slug: post.slug, action: "deleted" })
   revalidatePath("/admin/cms")
-  revalidatePath(`/${post.type.toLowerCase()}`)
   return post
 }
 
@@ -159,9 +166,13 @@ export async function togglePublishPost(id: string) {
     },
   })
 
+  await publish({
+    entityType: "post",
+    entityId: updatedPost.id,
+    slug: updatedPost.slug,
+    action: updatedPost.published ? "published" : "unpublished",
+  })
   revalidatePath("/admin/cms")
-  revalidatePath(`/${post.type.toLowerCase()}`)
-  revalidatePath(`/${post.type.toLowerCase()}/${post.slug}`)
   return updatedPost
 }
 

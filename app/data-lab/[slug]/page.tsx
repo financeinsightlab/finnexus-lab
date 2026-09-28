@@ -16,6 +16,7 @@ import { mdxComponents } from '@/components/data-lab/mdxComponents';
 import QCommerceCalc from '@/components/calculators/QCommerceCalc';
 import { formatDate } from '@/lib/utils';
 import { getDataLabBySlug, getAllDataLab } from '@/lib/content';
+import { DATA_LAB_VISUALS, datasetJsonLd } from '@/lib/datasets';
 import { ArrowLeft, ArrowUpRight, Calendar, Clock, Wrench, Sparkles, ChevronLeft, ChevronRight } from 'lucide-react';
 
 function slugify(text: string) {
@@ -309,17 +310,10 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
     'mutual-fund-sip-analysis': { label: 'Explore 3-Statement Model', href: '/tools/3-statement-model' },
   }[slug];
 
-  const datasetSchema = {
-    '@context': 'https://schema.org',
-    '@type': 'Dataset',
-    name: project.title,
-    description: project.businessQuestion,
-    url: `https://kunwaranalytics.in/data-lab/${project.slug}`,
-    ...(project.image ? { image: `https://kunwaranalytics.in${project.image}` } : {}),
-    datePublished: project.date,
-    creator: { '@type': 'Organization', name: 'Kunwar Analytics', url: 'https://kunwaranalytics.in' },
-    keywords: [...project.tools, project.sector].join(', '),
-  };
+  // Rich schema.org Dataset JSON-LD (distribution links + variableMeasured) so
+  // the figures are citable by search and AI answer engines. Shared with the
+  // /api/datasets endpoints through lib/datasets.ts.
+  const datasetSchema = datasetJsonLd(project, DATA_LAB_VISUALS[project.slug]);
 
   return (
     <div className="min-h-screen bg-cinema-ink">
@@ -428,7 +422,11 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
             </div>
             <div className="flex flex-wrap items-center gap-3">
               {visual.download && (
-                <DataLabDownload filename={`kunwar-datalab-${slug}`} data={visual.download} />
+                <DataLabDownload
+                  filename={`kunwar-datalab-${slug}`}
+                  data={visual.download}
+                  slug={slug}
+                />
               )}
               {relatedTool && (
                 <Link

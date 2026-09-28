@@ -10,33 +10,46 @@ datasource db {
 }
 
 model User {
-  id                 String             @id @default(cuid())
-  name               String?
-  email              String?            @unique
-  emailVerified      DateTime?
-  image              String?
-  password           String?
-  customBadge        String?
-  role               UserRole           @default(MEMBER)
-  stripeCustomerId   String?            @unique
-  subscriptionStatus SubscriptionStatus @default(INACTIVE)
-  subscriptionPlan   String?
-  createdAt          DateTime           @default(now())
-  updatedAt          DateTime           @updatedAt
-  purchasedServices  String[]
-  accounts           Account[]
-  posts              Post[]
-  savedArticles      SavedArticle[]
-  sessions           Session[]
-  predictions        Prediction[]
-  comments           Comment[]
-  analystScore       AnalystScore?
+  id                     String                  @id @default(cuid())
+  name                   String?
+  email                  String?                 @unique
+  emailVerified          DateTime?
+  image                  String?
+  password               String?
+  customBadge            String?
+  role                   UserRole                @default(MEMBER)
+  stripeCustomerId       String?                 @unique
+  stripeSubscriptionId   String?                 @unique
+  subscriptionStatus     SubscriptionStatus      @default(INACTIVE)
+  subscriptionPlan       String?
+  createdAt              DateTime                @default(now())
+  updatedAt              DateTime                @updatedAt
+  purchasedServices      String[]
+  accounts               Account[]
+  posts                  Post[]
+  savedArticles          SavedArticle[]
+  sessions               Session[]
+  predictions            Prediction[]
+  comments               Comment[]
+  analystScore           AnalystScore?
   // Enhanced CMS relations
-  media              Media[]            @relation("UserMedia")
-  blockTemplates     BlockTemplate[]    @relation("UserTemplates")
-  pages              Page[]
+  media                  Media[]                 @relation("UserMedia")
+  blockTemplates         BlockTemplate[]         @relation("UserTemplates")
+  pages                  Page[]
   // Study Material relations
-  studyMaterials     StudyMaterial[]
+  studyMaterials         StudyMaterial[]
+  // ─── V2: organisations, community & learning ───────────────────────────────
+  memberships            Membership[]
+  apiKeys                ApiKey[]
+  commentReactions       CommentReaction[]
+  profile                Profile?
+  following              Follow[]                @relation("UserFollowing")
+  followers              Follow[]                @relation("UserFollowers")
+  notifications          Notification[]
+  notificationPreference NotificationPreference?
+  enrollments            Enrollment[]
+  lessonProgress         LessonProgress[]
+  badges                 UserBadge[]
 }
 
 model Account {
@@ -85,37 +98,37 @@ model SavedArticle {
 }
 
 model Post {
-  id              String      @id @default(cuid())
-  title           String
-  slug            String      @unique
-  excerpt         String?
-  content         String
-  type            ArticleType @default(RESEARCH)
-  published       Boolean     @default(false)
-  featuredImage   String?
-  authorId        String
-  seoTitle        String?
-  metaDescription String?
-  focusKeywords   String?
-  ogImage         String?
-  ogTitle         String?
-  tags            String[]    @default([])
-  difficulty      String      @default("INTERMEDIATE")
-  targetAudience  String[]    @default([])
-  contentStatus   String      @default("DRAFT") // DRAFT, REVIEW, APPROVED, PUBLISHED
-  estimatedReadingTime Int      @default(5)
-  scheduledPublishAt DateTime?
-  viewCount       Int         @default(0)
-  publishedAt     DateTime?
-  createdAt       DateTime    @default(now())
-  updatedAt       DateTime    @updatedAt
-  author          User        @relation(fields: [authorId], references: [id])
-  comments        Comment[]
+  id                   String         @id @default(cuid())
+  title                String
+  slug                 String         @unique
+  excerpt              String?
+  content              String
+  type                 ArticleType    @default(RESEARCH)
+  published            Boolean        @default(false)
+  featuredImage        String?
+  authorId             String
+  seoTitle             String?
+  metaDescription      String?
+  focusKeywords        String?
+  ogImage              String?
+  ogTitle              String?
+  tags                 String[]       @default([])
+  difficulty           String         @default("INTERMEDIATE")
+  targetAudience       String[]       @default([])
+  contentStatus        String         @default("DRAFT") // DRAFT, REVIEW, APPROVED, PUBLISHED
+  estimatedReadingTime Int            @default(5)
+  scheduledPublishAt   DateTime?
+  viewCount            Int            @default(0)
+  publishedAt          DateTime?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+  author               User           @relation(fields: [authorId], references: [id])
+  comments             Comment[]
   // Enhanced CMS fields
-  blockContent    Json?       // Alternative to markdown content for block-based editing
-  contentType     String      @default("MARKDOWN") // MARKDOWN or BLOCKS
-  media           Media[]     @relation("PostMedia")
-  blocks          ContentBlock[] @relation("PostBlocks")
+  blockContent         Json? // Alternative to markdown content for block-based editing
+  contentType          String         @default("MARKDOWN") // MARKDOWN or BLOCKS
+  media                Media[]        @relation("PostMedia")
+  blocks               ContentBlock[] @relation("PostBlocks")
 
   @@index([type])
   @@index([published])
@@ -125,49 +138,49 @@ model Post {
 // ─── ENHANCED CMS MODELS ──────────────────────────────────────────────────────
 
 model Media {
-  id          String   @id @default(cuid())
-  filename    String
+  id           String   @id @default(cuid())
+  filename     String
   originalName String
-  path        String   // Relative path from public/uploads
-  url         String   // Full URL
-  mimeType    String
-  size        Int      // Bytes
-  width       Int?
-  height      Int?
-  altText     String?
-  caption     String?
-  description String?
-  uploadedBy  String   // User ID
-  uploadedAt  DateTime @default(now())
-  metadata    Json?    // EXIF data, etc.
-  
+  path         String // Relative path from public/uploads
+  url          String // Full URL
+  mimeType     String
+  size         Int // Bytes
+  width        Int?
+  height       Int?
+  altText      String?
+  caption      String?
+  description  String?
+  uploadedBy   String // User ID
+  uploadedAt   DateTime @default(now())
+  metadata     Json? // EXIF data, etc.
+
   // Relationships
-  user        User     @relation("UserMedia", fields: [uploadedBy], references: [id])
-  posts       Post[]   @relation("PostMedia")
-  
+  user  User   @relation("UserMedia", fields: [uploadedBy], references: [id])
+  posts Post[] @relation("PostMedia")
+
   @@index([uploadedAt])
   @@index([mimeType])
   @@index([uploadedBy])
 }
 
 model ContentBlock {
-  id          String   @id @default(cuid())
-  type        String   // paragraph, heading, image, columns, etc.
-  data        Json     // Block-specific data
-  attributes  Json?    // Style attributes
-  order       Int      // Position in parent
-  parentId    String?  // For nested blocks
-  postId      String?  // If attached to a post
-  pageId      String?  // If attached to a page
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  id         String   @id @default(cuid())
+  type       String // paragraph, heading, image, columns, etc.
+  data       Json // Block-specific data
+  attributes Json? // Style attributes
+  order      Int // Position in parent
+  parentId   String? // For nested blocks
+  postId     String? // If attached to a post
+  pageId     String? // If attached to a page
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
   // Relationships
-  post        Post?    @relation("PostBlocks", fields: [postId], references: [id])
-  page        Page?    @relation("PageBlocks", fields: [pageId], references: [id])
-  parent      ContentBlock? @relation("BlockParent", fields: [parentId], references: [id])
-  children    ContentBlock[] @relation("BlockParent")
-  
+  post     Post?          @relation("PostBlocks", fields: [postId], references: [id])
+  page     Page?          @relation("PageBlocks", fields: [pageId], references: [id])
+  parent   ContentBlock?  @relation("BlockParent", fields: [parentId], references: [id])
+  children ContentBlock[] @relation("BlockParent")
+
   @@index([postId])
   @@index([pageId])
   @@index([parentId])
@@ -179,18 +192,18 @@ model BlockTemplate {
   id          String   @id @default(cuid())
   name        String
   description String?
-  type        String   // section, component, layout
-  preview     String?  // Preview image URL
-  data        Json     // Block data structure
-  category    String   // hero, feature, cta, etc.
+  type        String // section, component, layout
+  preview     String? // Preview image URL
+  data        Json // Block data structure
+  category    String // hero, feature, cta, etc.
   isPublic    Boolean  @default(true)
-  createdBy   String   // User ID
+  createdBy   String // User ID
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  
+
   // Relationships
-  user        User     @relation("UserTemplates", fields: [createdBy], references: [id])
-  
+  user User @relation("UserTemplates", fields: [createdBy], references: [id])
+
   @@index([category])
   @@index([type])
   @@index([isPublic])
@@ -198,24 +211,24 @@ model BlockTemplate {
 }
 
 model Page {
-  id          String   @id @default(cuid())
-  title       String
-  slug        String   @unique
-  content     Json?    // Block-based content
-  htmlContent String?  // Rendered HTML (cached)
-  status      PageStatus @default(DRAFT)
-  seoTitle    String?
+  id              String     @id @default(cuid())
+  title           String
+  slug            String     @unique
+  content         Json? // Block-based content
+  htmlContent     String? // Rendered HTML (cached)
+  status          PageStatus @default(DRAFT)
+  seoTitle        String?
   metaDescription String?
-  featuredImage String?
-  authorId    String
-  publishedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  
+  featuredImage   String?
+  authorId        String
+  publishedAt     DateTime?
+  createdAt       DateTime   @default(now())
+  updatedAt       DateTime   @updatedAt
+
   // Relationships
-  author      User     @relation(fields: [authorId], references: [id])
-  blocks      ContentBlock[] @relation("PageBlocks")
-  
+  author User           @relation(fields: [authorId], references: [id])
+  blocks ContentBlock[] @relation("PageBlocks")
+
   @@index([slug])
   @@index([status])
   @@index([authorId])
@@ -369,12 +382,12 @@ model Prediction {
   slug           String           @unique
   authorId       String
   author         User             @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  claim          String           // The prediction text
+  claim          String // The prediction text
   sector         String
   resolveDate    DateTime
   status         PredictionStatus @default(PENDING)
   resolutionNote String?
-  reportSlug     String?          // Which post/report it came from
+  reportSlug     String? // Which post/report it came from
   createdAt      DateTime         @default(now())
   updatedAt      DateTime         @updatedAt
   comments       Comment[]
@@ -404,47 +417,265 @@ model AnalystScore {
 // ─── COMMENTS & COMMUNITY ──────────────────────────────────────────────────────
 
 model Comment {
-  id           String      @id @default(cuid())
+  id           String            @id @default(cuid())
   content      String
   authorId     String
-  author       User        @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  author       User              @relation(fields: [authorId], references: [id], onDelete: Cascade)
   postId       String?
-  post         Post?       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  post         Post?             @relation(fields: [postId], references: [id], onDelete: Cascade)
   predictionId String?
-  prediction   Prediction? @relation(fields: [predictionId], references: [id], onDelete: Cascade)
-  createdAt    DateTime    @default(now())
-  updatedAt    DateTime    @updatedAt
+  prediction   Prediction?       @relation(fields: [predictionId], references: [id], onDelete: Cascade)
+  // ─── Comments 2.0 (Pillar D): threads, mentions, moderation, reactions ─────
+  parentId     String?
+  parent       Comment?          @relation("CommentThread", fields: [parentId], references: [id], onDelete: Cascade)
+  replies      Comment[]         @relation("CommentThread")
+  mentions     String[]          @default([]) // User IDs referenced with @mention
+  status       String            @default("VISIBLE") // VISIBLE, HIDDEN, DELETED
+  editedAt     DateTime?
+  reactions    CommentReaction[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
 
   @@index([authorId])
   @@index([postId])
   @@index([predictionId])
+  @@index([parentId])
+  @@index([createdAt])
+}
+
+model CommentReaction {
+  id        String   @id @default(cuid())
+  commentId String
+  comment   Comment  @relation(fields: [commentId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emoji     String   @default("👍")
+  createdAt DateTime @default(now())
+
+  @@unique([commentId, userId, emoji])
+  @@index([commentId])
+  @@index([userId])
+}
+
+// ─── ORGANISATIONS, MEMBERSHIP & API KEYS (Pillar A4/A5) ──────────────────────
+
+model Organization {
+  id               String       @id @default(cuid())
+  name             String
+  slug             String       @unique
+  plan             String       @default("TEAM")
+  stripeCustomerId String?      @unique
+  seats            Int          @default(5)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  memberships      Membership[]
+  apiKeys          ApiKey[]
+
+  @@index([slug])
+}
+
+model Membership {
+  id        String       @id @default(cuid())
+  userId    String
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  orgId     String
+  org       Organization @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  role      String       @default("MEMBER") // OWNER, ADMIN, MEMBER
+  createdAt DateTime     @default(now())
+
+  @@unique([userId, orgId])
+  @@index([orgId])
+  @@index([userId])
+}
+
+model ApiKey {
+  id              String        @id @default(cuid())
+  name            String
+  prefix          String        @unique // non-secret display prefix, e.g. ka_live_ab12
+  hash            String // SHA-256 of the secret material
+  scopes          String[]      @default([])
+  rateLimitPerMin Int?
+  userId          String?
+  user            User?         @relation(fields: [userId], references: [id], onDelete: SetNull)
+  orgId           String?
+  org             Organization? @relation(fields: [orgId], references: [id], onDelete: Cascade)
+  lastUsedAt      DateTime?
+  revokedAt       DateTime?
+  createdAt       DateTime      @default(now())
+
+  @@index([userId])
+  @@index([orgId])
+  @@index([revokedAt])
+}
+
+// ─── PUBLIC PROFILES, FOLLOWS, NOTIFICATIONS & GAMIFICATION (Pillar D2/D3/D4) ─
+
+model Profile {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  headline  String?
+  bio       String?
+  location  String?
+  website   String?
+  twitter   String?
+  linkedin  String?
+  github    String?
+  isPublic  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Follow {
+  id          String   @id @default(cuid())
+  followerId  String
+  follower    User     @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  followingId String
+  following   User     @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+
+  @@unique([followerId, followingId])
+  @@index([followingId])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String // comment, reply, mention, follow, badge, system
+  title     String
+  body      String?
+  href      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  @@index([userId, read])
+  @@index([createdAt])
+}
+
+model NotificationPreference {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  emailDigest    Boolean  @default(true)
+  productUpdates Boolean  @default(true)
+  comments       Boolean  @default(true)
+  follows        Boolean  @default(true)
+  marketing      Boolean  @default(false)
+  updatedAt      DateTime @updatedAt
+}
+
+model Badge {
+  id          String      @id @default(cuid())
+  slug        String      @unique
+  name        String
+  description String
+  icon        String      @default("🏅")
+  points      Int         @default(0)
+  users       UserBadge[]
+}
+
+model UserBadge {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  badgeId   String
+  badge     Badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  awardedAt DateTime @default(now())
+
+  @@unique([userId, badgeId])
+  @@index([badgeId])
+}
+
+// ─── PERSISTED LEARNING PROGRESS (Pillar E1) ─────────────────────────────────
+
+model Enrollment {
+  id             String    @id @default(cuid())
+  userId         String
+  user           User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseSlug     String
+  trackSlug      String?
+  status         String    @default("ACTIVE") // ACTIVE, COMPLETED, PAUSED
+  startedAt      DateTime  @default(now())
+  lastActivityAt DateTime  @default(now())
+  completedAt    DateTime?
+
+  @@unique([userId, courseSlug])
+  @@index([userId])
+  @@index([status])
+}
+
+model LessonProgress {
+  id           String    @id @default(cuid())
+  userId       String
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseSlug   String
+  lessonSlug   String
+  completed    Boolean   @default(false)
+  secondsSpent Int       @default(0)
+  completedAt  DateTime?
+  updatedAt    DateTime  @updatedAt
+
+  @@unique([userId, courseSlug, lessonSlug])
+  @@index([userId])
+  @@index([courseSlug])
+}
+
+// ─── BACKGROUND JOBS & PUBLISH PIPELINE (Pillar G3/G4) ───────────────────────
+
+model Job {
+  id         String    @id @default(cuid())
+  type       String
+  payload    Json?
+  status     String    @default("PENDING") // PENDING, RUNNING, DONE, FAILED
+  attempts   Int       @default(0)
+  runAt      DateTime  @default(now())
+  startedAt  DateTime?
+  finishedAt DateTime?
+  error      String?
+  createdAt  DateTime  @default(now())
+
+  @@index([status, runAt])
+  @@index([type])
+}
+
+model PublishEvent {
+  id          String   @id @default(cuid())
+  entityType  String // post, page, study
+  entityId    String
+  slug        String?
+  action      String // created, updated, published, unpublished, deleted
+  revalidated Boolean  @default(false)
+  createdAt   DateTime @default(now())
+
+  @@index([entityType])
   @@index([createdAt])
 }
 
 // ─── STUDY MATERIAL ───────────────────────────────────────────────────────────
 
 model StudyMaterial {
-  id          String   @id @default(cuid())
+  id          String        @id @default(cuid())
   title       String
-  slug        String   @unique
+  slug        String        @unique
   description String
-  content     String   // Markdown or rich text
+  content     String // Markdown or rich text
   categoryId  String
   category    StudyCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
   authorId    String
-  author      User     @relation(fields: [authorId], references: [id])
-  type        String   @default("ARTICLE") // ARTICLE, VIDEO, PDF, COURSE, NOTE
-  difficulty  String   @default("BEGINNER") // BEGINNER, INTERMEDIATE, ADVANCED
-  tags        String[] @default([])
+  author      User          @relation(fields: [authorId], references: [id])
+  type        String        @default("ARTICLE") // ARTICLE, VIDEO, PDF, COURSE, NOTE
+  difficulty  String        @default("BEGINNER") // BEGINNER, INTERMEDIATE, ADVANCED
+  tags        String[]      @default([])
   coverImage  String?
-  resourceUrl String?  // External link to PDF, video, etc.
-  duration    Int?     // Estimated minutes
-  published   Boolean  @default(false)
-  featured    Boolean  @default(false)
-  viewCount   Int      @default(0)
+  resourceUrl String? // External link to PDF, video, etc.
+  duration    Int? // Estimated minutes
+  published   Boolean       @default(false)
+  featured    Boolean       @default(false)
+  viewCount   Int           @default(0)
   publishedAt DateTime?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
 
   @@index([categoryId])
   @@index([published])
@@ -460,13 +691,13 @@ model StudyCategory {
   name        String   @unique
   slug        String   @unique
   description String?
-  icon        String?  // Emoji or icon name
-  color       String?  // Theme color
+  icon        String? // Emoji or icon name
+  color       String? // Theme color
   order       Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
-  materials   StudyMaterial[]
+  materials StudyMaterial[]
 
   @@index([slug])
   @@index([order])
