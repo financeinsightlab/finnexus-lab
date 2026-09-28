@@ -140,6 +140,32 @@ npm run test         # vitest unit tests
 Unit tests live alongside the code in `lib/**/*.test.ts` and focus on pure domain logic
 (entitlements, validation, search scoring, auth guards).
 
+## V2 roadmap status
+
+The [V2 product vision](docs/V2-PRODUCT-VISION.md) is delivered in pillars. The self-contained,
+provider-agnostic pieces ship today; the rest are staged behind a service key or a schema migration.
+
+### Shipped
+
+| Pillar | What | Where |
+| --- | --- | --- |
+| C — Trust | Public **Prediction Ledger** with transparent calibration (weighted accuracy, Brier score, streaks), per-sector breakdown, CSV export, and a schema.org `Dataset` for answer engines | [`lib/calibration.ts`](lib/calibration.ts:1), [`app/(dashboard)/predictions/ledger/page.tsx`](<app/(dashboard)/predictions/ledger/page.tsx:1>) |
+| E — Credentials | **W3C Verifiable Credential / Open Badge 3.0** documents emitted as JSON-LD on every certificate page (verifiable URN + code) | [`lib/credentials.ts`](lib/credentials.ts:1), [`app/(dashboard)/certificates/[slug]/page.tsx`](<app/(dashboard)/certificates/[slug]/page.tsx:1>) |
+| F — Experience | Global **⌘K / Ctrl-K command palette** wired to the unified search API, arrow-key navigation | [`components/ui/CommandPalette.tsx`](components/ui/CommandPalette.tsx:1) |
+| F — PWA | **Installable PWA**: web-app manifest with shortcuts + production service-worker registrar | [`public/manifest.json`](public/manifest.json:1), [`components/pwa/ServiceWorkerRegistrar.tsx`](components/pwa/ServiceWorkerRegistrar.tsx:1) |
+
+### Staged (blocked on a key or migration)
+
+| Pillar | Requires |
+| --- | --- |
+| A — Monetization | `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, price IDs, and a `StripeCustomer`/subscription migration |
+| B — "Ask Kunwar" RAG | An embedding/LLM provider key and PostgreSQL `pgvector` |
+| C — Live data | A market/economic data-provider API key (per-metric provenance) |
+| D — Comments 2.0 | A schema migration for threads, reactions, and notification preferences |
+| E — Progress | An `Enrollment`/`Progress` schema migration for persisted, adaptive learning paths |
+| F — i18n | `next-intl` plus locale-prefixed routing |
+| G — Observability | `SENTRY_DSN` and a background-job runner (Inngest or QStash) |
+
 ## Deployment
 
 Deployed on Vercel. Set the environment variables from [`.env.example`](.env.example) in the project
