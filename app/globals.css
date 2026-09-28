@@ -13,6 +13,16 @@
   --red: #9B2335;
 }
 
+@keyframes bounceGentle {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-bounce-gentle {
+  animation: bounceGentle 2s ease-in-out infinite;
+}
+
+
 @keyframes fadeInUp {
   0% {
     opacity: 0;
@@ -23,6 +33,7 @@
     transform: translateY(0);
   }
 }
+
 
 @keyframes fadeIn {
   0% {
