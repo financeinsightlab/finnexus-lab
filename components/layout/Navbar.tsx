@@ -93,6 +93,18 @@ export default function Navbar() {
   const clusterActive = (cluster: NavCluster) =>
     isActive(cluster.href) || cluster.items.some((item) => isActive(item.href));
 
+  /* Ctrl+K / Cmd+K opens search */
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        setSearchOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   /* Close user-dropdown on outside click */
   useEffect(() => {
     if (!userOpen) return;
@@ -210,14 +222,15 @@ export default function Navbar() {
 
           {/* ── RIGHT CONTROLS ── */}
           <div className="flex items-center gap-1 shrink-0">
-            {/* Search */}
+            {/* Search — also opens with Ctrl+K */}
             <button
               onClick={() => setSearchOpen(true)}
               className="flex items-center gap-2 px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-200 text-sm font-medium border border-transparent hover:border-gray-700 min-w-[40px] min-h-[40px] justify-center"
-              aria-label="Search"
+              aria-label="Search (Ctrl+K)"
             >
               <SearchIcon />
               <span className="hidden xl:inline">Search</span>
+              <kbd className="hidden xl:inline rounded border border-white/10 bg-black/30 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">⌘K</kbd>
             </button>
 
             {/* Language (Pillar F2) */}

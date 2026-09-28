@@ -1,22 +1,22 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { searchContent } from '@/lib/search';
-import { answerFromSources, type PassageSource } from '@/lib/retrieval-qa';
+import { answerFromSources, localExtractiveProvider, type PassageSource } from '@/lib/retrieval-qa';
+import { huggingFaceProvider } from '@/lib/hf-provider';
 import { logger } from '@/lib/logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
- * "Ask Kunwar" — retrieval-backed Q&A with inline citations (Pillar B1).
+ * "Ask Kunwar" — retrieval-backed Q&A with HuggingFace LLM (Pillar B1).
  *
- * Free by default: retrieval uses the unified keyword search and answers are
- * synthesized by the local extractive provider, so this works with **no API
- * key**. When an external LLM provider is configured it can be plugged in
- * through `lib/retrieval-qa` without changing this route.
+ * When HUGGINGFACE_API_KEY is set: uses Mistral-7B on HF Inference API for
+ * real generative answers with inline citations.
+ * When the key is absent or the call fails: falls back to the local extractive
+ * provider (no API key, no cost).
  *
- * The response always includes `citations` pointing at real pages on this site,
- * so an answer can never float free of its sources.
+ * Every answer carries citations pointing at real pages on this site.
  */
 
 const AskSchema = z.object({
@@ -56,13 +56,31 @@ export async function POST(request: Request) {
                 score: item.score,
             }));
 
-        const answer = await answerFromSources(question, sources);
+        // Try HuggingFace first; fall back to local extractive if key is missing or call fails
+        const hasHFKey = !!process.env.HUGGINGFACE_API_KEY;
+        let answer;
+
+        if (hasHFKey) {
+            try {
+                answer = await answerFromSources(question, sources, {
+                    provider: huggingFaceProvider,
+                });
+            } catch (hfError) {
+                logger.warn('Ask Kunwar: HuggingFace failed, falling back to local extractive', {
+                    error: hfError instanceof Error ? hfError.message : String(hfError),
+                });
+                answer = await answerFromSources(question, sources, {
+                    provider: localExtractiveProvider,
+                });
+            }
+        } else {
+            answer = await answerFromSources(question, sources, {
+                provider: localExtractiveProvider,
+            });
+        }
 
         return NextResponse.json(
-            {
-                ...answer,
-                sourceCount: sources.length,
-            },
+            { ...answer, sourceCount: sources.length },
             { status: 200 },
         );
     } catch (error) {

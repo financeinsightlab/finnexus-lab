@@ -49,19 +49,8 @@ export default function CommandPalette() {
     const [active, setActive] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
 
-    // ⌘K / Ctrl-K toggles; Escape closes.
-    useEffect(() => {
-        const onKeyDown = (event: KeyboardEvent) => {
-            if ((event.metaKey || event.ctrlKey) && event.key.toLowerCase() === 'k') {
-                event.preventDefault();
-                setOpen((value) => !value);
-            } else if (event.key === 'Escape') {
-                setOpen(false);
-            }
-        };
-        window.addEventListener('keydown', onKeyDown);
-        return () => window.removeEventListener('keydown', onKeyDown);
-    }, []);
+    // CommandPalette is triggered by the visible button below.
+    // Ctrl+K is handled by Navbar which opens GlobalSearch instead.
 
     useEffect(() => {
         if (open) inputRef.current?.focus();
