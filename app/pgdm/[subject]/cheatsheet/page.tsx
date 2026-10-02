@@ -105,8 +105,8 @@ export default async function CheatSheetPage({ params }: PageProps) {
                 </h2>
 
                 {lec?.formulas && lec.formulas.length > 0 && (
-                  <div className="mb-4 overflow-x-auto">
-                    <table className="w-full text-[13px]">
+                  <div className="horizontal-scroll-region mb-4 rounded-lg" role="region" aria-label={`${subject.code} unit ${i + 1} formulas`} tabIndex={0} data-lenis-prevent>
+                    <table className="w-full min-w-[560px] text-[13px]">
                       <thead>
                         <tr className="text-left text-[10px] uppercase tracking-widest text-slate-500 border-b border-white/10">
                           <th className="py-1.5 pr-3">Formula</th>

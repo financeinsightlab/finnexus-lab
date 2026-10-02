@@ -232,16 +232,16 @@ export default function MediaLibraryClient() {
   const activeMedia = activeMediaId ? media.find(m => m.id === activeMediaId) : null
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-white p-6 flex flex-col">
+    <div className="min-h-screen min-w-0 bg-[#0B0D13] p-4 text-white sm:p-6 flex flex-col">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Media Library</h1>
         <p className="text-gray-400 mt-2">Upload and manage your media files</p>
       </div>
 
-      <div className="flex flex-1 gap-6 min-h-[500px]">
+      <div className="flex min-w-0 flex-1 flex-col gap-4 min-h-[24rem] lg:min-h-[500px] lg:flex-row lg:gap-6">
         {/* Main Content Area */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex min-w-0 flex-1 flex-col">
           
           {/* Upload Zone */}
           <div
@@ -279,7 +279,8 @@ export default function MediaLibraryClient() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                 <input
-                  type="text"
+                  type="search"
+                  aria-label="Search media"
                   placeholder="Search media..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -307,13 +308,17 @@ export default function MediaLibraryClient() {
               <div className="flex items-center gap-2 bg-[#1A1F2E] border border-[#2D3748] rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-[#2D3748]' : 'text-gray-400'}`}
+                  className={`flex h-11 w-11 items-center justify-center rounded ${viewMode === 'grid' ? 'bg-[#2D3748]' : 'text-gray-400'}`}
+                  aria-label="Grid view"
+                  aria-pressed={viewMode === 'grid'}
                 >
                   <Grid className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-[#2D3748]' : 'text-gray-400'}`}
+                  className={`flex h-11 w-11 items-center justify-center rounded ${viewMode === 'list' ? 'bg-[#2D3748]' : 'text-gray-400'}`}
+                  aria-label="List view"
+                  aria-pressed={viewMode === 'list'}
                 >
                   <List className="w-5 h-5" />
                 </button>
@@ -345,7 +350,7 @@ export default function MediaLibraryClient() {
           </div>
 
           {/* Media Grid/List */}
-          <div className="flex-1 overflow-auto bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-2xl">
+          <div className="ui-scroll-region min-h-[20rem] min-w-0 flex-1 overflow-auto bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-4 sm:p-6 shadow-2xl" data-lenis-prevent>
             {loading ? (
               <div className="text-center py-20">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand-teal"></div>
@@ -364,9 +369,12 @@ export default function MediaLibraryClient() {
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {filteredMedia.map((item) => (
-                  <div
+                  <button
                     key={item.id}
-                    className={`relative group bg-[#0F1117] rounded-2xl overflow-hidden border-2 transition-all cursor-pointer shadow-lg hover:shadow-xl hover:-translate-y-1 ${
+                    type="button"
+                    aria-pressed={selectedMedia.includes(item.id)}
+                    aria-label={`${selectedMedia.includes(item.id) ? 'Deselect' : 'Select'} ${item.originalName}`}
+                    className={`relative group w-full cursor-pointer overflow-hidden rounded-2xl border-2 bg-[#0F1117] text-left transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D6E6E] ${
                       selectedMedia.includes(item.id) ? 'border-[#0D6E6E] ring-2 ring-[#0D6E6E]/30' : 'border-[#2D3748] hover:border-white/20'
                     }`}
                     onClick={(e) => toggleMediaSelection(item.id, e.shiftKey)}
@@ -411,12 +419,12 @@ export default function MediaLibraryClient() {
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             ) : (
-              <div className="bg-[#0F1117] rounded-xl overflow-hidden border border-[#2D3748]">
-                <table className="w-full text-left">
+              <div className="horizontal-scroll-region rounded-xl border border-[#2D3748] bg-[#0F1117]" role="region" aria-label="Media file list" tabIndex={0} data-lenis-prevent>
+                <table className="w-full min-w-[640px] text-left">
                   <thead className="bg-[#1A1F2E] border-b border-[#2D3748]">
                     <tr>
                       <th className="p-4">
@@ -449,7 +457,7 @@ export default function MediaLibraryClient() {
                           <input
                             type="checkbox"
                             checked={selectedMedia.includes(item.id)}
-                            readOnly
+                            aria-label={`Select ${item.originalName}`}
                             onClick={(e) => e.stopPropagation()}
                             onChange={() => toggleMediaSelection(item.id)}
                             className="rounded"
@@ -492,7 +500,7 @@ export default function MediaLibraryClient() {
 
         {/* Attachment Details Sidebar - Visible when exactly ONE item is selected */}
         {activeMedia && (
-          <div className="w-80 lg:w-96 bg-[#1A1F2E] border border-[#2D3748] flex flex-col rounded-2xl overflow-hidden shadow-2xl shrink-0 my-auto h-[min(calc(100vh-250px),800px)]">
+          <div className="ui-scroll-region flex min-h-0 max-h-[min(50dvh,32rem)] w-full shrink-0 flex-col overflow-hidden rounded-2xl border border-[#2D3748] bg-[#1A1F2E] shadow-2xl lg:my-auto lg:h-[min(calc(100dvh-10rem),50rem)] lg:max-h-none lg:w-96">
              <div className="p-5 border-b border-[#2D3748] bg-[#0F1117] flex items-center justify-between">
                 <h3 className="text-xs font-extrabold text-[#0D6E6E] uppercase tracking-[0.2em]">Attachment Details</h3>
                 <button onClick={handleClearSelection} className="p-1 hover:bg-white/10 rounded-lg text-gray-500">
@@ -500,7 +508,7 @@ export default function MediaLibraryClient() {
                 </button>
              </div>
              
-             <div className="flex-1 overflow-y-auto">
+             <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain" data-lenis-prevent>
                <div className="p-5 border-b border-[#2D3748] bg-[#1A1F2E]">
                   <div className="aspect-video relative rounded-xl overflow-hidden bg-black/50 mb-4 border border-[#2D3748] shadow-inner">
                     {activeMedia.mimeType.startsWith('image/') ? (

@@ -89,8 +89,8 @@ export default function UsersTableClient({ initialUsers }: { initialUsers: UserD
   };
 
   return (
-    <div className="overflow-x-auto">
-      <table className="w-full text-left border-collapse">
+    <div className="horizontal-scroll-region" role="region" aria-label="User management table" tabIndex={0} data-lenis-prevent>
+      <table className="w-full min-w-[900px] text-left border-collapse">
         <thead>
           <tr className="bg-white/5">
             <th className="px-8 py-5 text-xs font-bold text-slate-500 uppercase tracking-[0.2em]">Identity</th>

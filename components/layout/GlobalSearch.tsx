@@ -8,6 +8,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 
 interface SearchHit {
     kind: string;
@@ -48,47 +49,15 @@ type GlobalSearchProps = {
     onClose: () => void;
 };
 
-function useDesktopMediaQuery() {
-    const [isDesktop, setIsDesktop] = useState(false);
-    useEffect(() => {
-        const mq = window.matchMedia('(min-width: 768px)');
-        setIsDesktop(mq.matches);
-        const onChange = (e: MediaQueryListEvent) => setIsDesktop(e.matches);
-        mq.addEventListener('change', onChange);
-        return () => mq.removeEventListener('change', onChange);
-    }, []);
-    return isDesktop;
-}
-
 export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
     const [query, setQuery] = useState('');
     const [result, setResult] = useState<SearchResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const isDesktop = useDesktopMediaQuery();
+    const dialogRef = useRef<HTMLDivElement>(null);
 
-    // Autofocus on desktop when opened
-    useEffect(() => {
-        if (open && isDesktop) {
-            const timer = setTimeout(() => inputRef.current?.focus(), 50);
-            return () => clearTimeout(timer);
-        }
-    }, [open, isDesktop]);
-
-    // Lock scroll and handle Escape
-    useEffect(() => {
-        if (!open) return;
-        document.body.style.overflow = 'hidden';
-        const handleKey = (e: KeyboardEvent) => {
-            if (e.key === 'Escape') onClose();
-        };
-        window.addEventListener('keydown', handleKey);
-        return () => {
-            document.body.style.overflow = '';
-            window.removeEventListener('keydown', handleKey);
-        };
-    }, [open, onClose]);
+    useModalAccessibility(open, dialogRef, onClose, { initialFocusRef: inputRef });
 
     // Reset state when closed
     useEffect(() => {
@@ -150,16 +119,25 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
 
     return (
         <div
-            className="fixed inset-0 z-[60] flex flex-col items-center justify-start bg-black/60 backdrop-blur-sm px-4 pt-[10vh] pb-4"
+            className="fixed inset-0 z-[60] flex flex-col items-center justify-start bg-black/60 backdrop-blur-sm"
             role="presentation"
             onMouseDown={(e) => { if (e.target === e.currentTarget) onClose(); }}
+            style={{
+                paddingLeft: 'max(1rem, env(safe-area-inset-left))',
+                paddingRight: 'max(1rem, env(safe-area-inset-right))',
+                paddingTop: 'max(10vh, calc(env(safe-area-inset-top) + 1rem))',
+                paddingBottom: 'max(1rem, env(safe-area-inset-bottom))',
+            }}
         >
             <div
-                className="flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1c2d] shadow-2xl shadow-black/60"
-                style={{ maxHeight: '80vh' }}
+                ref={dialogRef}
+                className="viewport-dialog-panel ui-scroll-region flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1c2d] shadow-2xl shadow-black/60"
+                style={{ maxHeight: 'min(45rem, calc(100dvh - max(10vh, calc(env(safe-area-inset-top) + 1rem)) - max(1rem, env(safe-area-inset-bottom))))' }}
                 role="dialog"
                 aria-modal="true"
                 aria-labelledby="global-search-title"
+                tabIndex={-1}
+                data-lenis-prevent
                 onMouseDown={(e) => e.stopPropagation()}
             >
                 {/* Header */}
@@ -174,7 +152,7 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex h-8 w-8 items-center justify-center rounded-lg text-white/70 transition hover:bg-white/10 hover:text-white"
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-white/70 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
                             aria-label="Close search"
                         >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -208,7 +186,7 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                 </form>
 
                 {/* Results */}
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain">
+                <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain" data-lenis-prevent>
                     {error ? (
                         <p className="px-4 py-12 text-center text-sm text-red-400">{error}</p>
                     ) : query.trim().length < 2 ? (
@@ -249,11 +227,11 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                                             onClick={onClose}
                                             className="flex min-h-[52px] flex-col justify-center gap-0.5 px-4 py-3 transition hover:bg-white/5"
                                         >
-                                            <span className="line-clamp-1 font-medium text-sm text-slate-100">
+                                            <span className="break-words font-medium text-sm text-slate-100">
                                                 {item.title}
                                             </span>
                                             {item.description ? (
-                                                <span className="line-clamp-1 text-xs text-slate-500">
+                                                <span className="break-words text-xs text-slate-500">
                                                     {item.description}
                                                 </span>
                                             ) : null}

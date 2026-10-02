@@ -93,7 +93,7 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
       </section>
 
       {/* ─── Filters ─── */}
-      <section className="bg-[#0f1522] border-b border-white/5 py-6 sticky top-0 z-40">
+      <section className="border-b border-white/5 bg-[#0f1522] py-6 lg:sticky lg:top-16 lg:z-40">
         <div className="max-w-[1400px] mx-auto px-6 flex flex-wrap gap-4 items-center">
           <div className="flex gap-2 flex-wrap">
             {['All', 'PENDING', 'CONFIRMED', 'INCORRECT', 'PARTIAL'].map((s) => (
@@ -222,12 +222,12 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
             )}
 
             {/* Community Feed Scrolling Container */}
-            <div className="relative h-[800px] overflow-hidden bg-[#1A1F2E]/50 rounded-2xl border border-white/5 py-4 shrink-0">
+            <div className="relative h-[min(80dvh,50rem)] max-h-[min(80dvh,50rem)] overflow-hidden bg-[#1A1F2E]/50 rounded-2xl border border-white/5 py-4 shrink-0">
               {/* Fade out edges */}
               <div className="absolute top-0 w-full h-10 bg-gradient-to-b from-[#0B0D13] to-transparent z-10 pointer-events-none" />
               <div className="absolute bottom-0 w-full h-10 bg-gradient-to-t from-[#0B0D13] to-transparent z-10 pointer-events-none" />
 
-              <div className="flex flex-col gap-4 overflow-y-auto h-full px-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+              <div className="ui-scroll-region min-h-0 flex flex-col gap-4 overflow-y-auto h-full px-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent" data-lenis-prevent>
                 {/* Scrollable List without duplicates */}
                 {communityPredictions.map((p) => (
                   <div key={p.id} className="bg-white/5 border border-white/10 rounded-xl p-4 shrink-0 relative group">

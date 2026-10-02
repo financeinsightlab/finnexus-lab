@@ -1,25 +1,33 @@
 import { getCourse as getPgdmCourse } from '@/lib/pgdm/learning-adapter';
+import {
+  getStructuredLearningCourseDefinition,
+  isStructuredLearningCourse,
+} from '@/lib/learning-course-catalog';
 import { prisma } from '@/lib/prisma';
 import type { CourseDefinition } from '@/lib/learning-progress';
 
-/** Resolve an existing PGDM course or published Study CMS course. Published
- * CMS lesson rows override the static lesson list for the same preserved slug. */
+/** Resolve PGDM subjects, the 69 static Skill Academy / Analyst courses, or a
+ * published Study CMS course. Static curricula are authoritative; PGDM and CMS
+ * courses can still append separately managed lesson rows. */
 export async function resolveLearningCourse(courseSlug: string): Promise<CourseDefinition | undefined> {
   const pgdm = getPgdmCourse(courseSlug);
-  const material = pgdm ? null : await prisma.studyMaterial.findFirst({
+  const structured = !pgdm && isStructuredLearningCourse(courseSlug)
+    ? getStructuredLearningCourseDefinition(courseSlug)
+    : undefined;
+  const material = pgdm || structured ? null : await prisma.studyMaterial.findFirst({
     where: { slug: courseSlug, type: 'COURSE', published: true },
     select: { slug: true, title: true, tags: true, category: { select: { slug: true } } },
   });
-  if (!pgdm && !material) return undefined;
+  if (!pgdm && !structured && !material) return undefined;
 
-  const managedLessons = await prisma.courseLesson.findMany({
+  const managedLessons = pgdm || material ? await prisma.courseLesson.findMany({
     where: { courseSlug, published: true },
     orderBy: [{ displayOrder: 'asc' }, { createdAt: 'asc' }],
     select: { slug: true, title: true, durationMinutes: true },
-  });
+  }) : [];
 
-  const trackSlug = material?.category.slug ?? pgdm?.trackSlug;
-  const tags = [...new Set([...(trackSlug ? [trackSlug] : []), ...(material?.tags ?? pgdm?.tags ?? [])])];
+  const trackSlug = material?.category.slug ?? pgdm?.trackSlug ?? structured?.trackSlug;
+  const tags = [...new Set([...(trackSlug ? [trackSlug] : []), ...(material?.tags ?? pgdm?.tags ?? structured?.tags ?? [])])];
   const cmsLessons = managedLessons
     .filter((lesson) => !pgdm?.lessons.some((existing) => existing.slug === lesson.slug))
     .map((lesson, index) => ({
@@ -29,6 +37,10 @@ export async function resolveLearningCourse(courseSlug: string): Promise<CourseD
       weight: Math.max(0, 10 - index),
       tags,
     }));
+
+  if (structured) {
+    return { ...structured, lessons: structured.lessons, tags };
+  }
   if (pgdm) {
     return { ...pgdm, lessons: [...pgdm.lessons, ...cmsLessons], tags };
   }
@@ -45,4 +57,11 @@ export async function resolveLearningCourse(courseSlug: string): Promise<CourseD
       tags,
     })),
   };
+}
+
+/** Link helper used by learner dashboards and private completion records. */
+export function learningCourseHref(courseSlug: string) {
+  if (getPgdmCourse(courseSlug)) return `/pgdm/${encodeURIComponent(courseSlug)}`;
+  if (isStructuredLearningCourse(courseSlug)) return `/study/course/${encodeURIComponent(courseSlug)}`;
+  return `/study/${encodeURIComponent(courseSlug)}`;
 }

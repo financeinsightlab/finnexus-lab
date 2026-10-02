@@ -1,8 +1,9 @@
 "use client"
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { X, Search, Grid, List, Upload, Check, Image as ImageIcon, File, Film, Music, FileText, Trash2, Save, Copy } from 'lucide-react'
 import Image from 'next/image'
+import { useModalAccessibility } from '@/components/ui/useModalAccessibility'
 
 interface MediaItem {
   id: string
@@ -42,6 +43,10 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
     caption: '',
     description: ''
   })
+  const dialogRef = useRef<HTMLDivElement>(null)
+  const closeButtonRef = useRef<HTMLButtonElement>(null)
+
+  useModalAccessibility(isOpen, dialogRef, onClose, { initialFocusRef: closeButtonRef })
 
   // Watch selected media
   useEffect(() => {
@@ -224,45 +229,67 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm">
-      <div className="bg-[#1A1F2E] border border-[#2D3748] rounded-2xl w-[95vw] h-[95vh] max-w-7xl flex flex-col overflow-hidden shadow-2xl">
+    <div
+      className="safe-area-overlay fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm"
+      role="presentation"
+      onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}
+    >
+      <div
+        ref={dialogRef}
+        className="viewport-dialog-panel ui-scroll-region flex h-full w-full max-w-7xl flex-col overflow-hidden rounded-2xl border border-[#2D3748] bg-[#1A1F2E] shadow-2xl"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="media-library-modal-title"
+        tabIndex={-1}
+        data-lenis-prevent
+        onMouseDown={(event) => event.stopPropagation()}
+      >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-[#2D3748]">
-          <div>
-            <h2 className="text-xl font-bold text-white">Media Library</h2>
-            <p className="text-sm text-gray-400 mt-1">Manage and insert visual content</p>
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-[#2D3748] p-3 sm:p-6">
+          <div className="min-w-0">
+            <h2 id="media-library-modal-title" className="text-lg font-bold text-white sm:text-xl">Media Library</h2>
+            <p className="mt-1 text-sm text-gray-400">Manage and insert visual content</p>
           </div>
           <button
+            ref={closeButtonRef}
+            type="button"
             onClick={onClose}
-            className="p-2 rounded-lg hover:bg-white/10 transition-colors"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg hover:bg-white/10 transition-colors"
+            aria-label="Close media library"
           >
             <X className="w-5 h-5 text-gray-400" />
           </button>
         </div>
 
         {/* Toolbar */}
-        <div className="flex items-center justify-between p-4 border-b border-[#2D3748] bg-[#0F1117]">
-          <div className="flex items-center gap-4">
-            <div className="relative">
+        <div className="flex shrink-0 flex-col gap-3 border-b border-[#2D3748] bg-[#0F1117] p-3 sm:p-4 md:flex-row md:items-center md:justify-between">
+          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative min-w-0">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-4 h-4 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search media..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10 pr-4 py-2 bg-[#1A1F2E] border border-[#2D3748] rounded-lg text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#0D6E6E] w-64"
+                className="w-full min-w-0 rounded-lg border border-[#2D3748] bg-[#1A1F2E] py-2 pl-10 pr-4 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-[#0D6E6E] sm:w-64"
               />
             </div>
 
             <div className="flex items-center gap-2">
               <button
+                type="button"
                 onClick={() => setViewMode('grid')}
+                aria-label="Show media as a grid"
+                aria-pressed={viewMode === 'grid'}
                 className={`p-2 rounded-lg ${viewMode === 'grid' ? 'bg-[#0D6E6E]/20 text-[#0D6E6E]' : 'text-gray-400 hover:text-white'}`}
               >
                 <Grid className="w-5 h-5" />
               </button>
               <button
+                type="button"
                 onClick={() => setViewMode('list')}
+                aria-label="Show media as a list"
+                aria-pressed={viewMode === 'list'}
                 className={`p-2 rounded-lg ${viewMode === 'list' ? 'bg-[#0D6E6E]/20 text-[#0D6E6E]' : 'text-gray-400 hover:text-white'}`}
               >
                 <List className="w-5 h-5" />
@@ -270,7 +297,7 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
             </div>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-4 md:justify-end">
             <div className="relative">
               <input
                 type="file"
@@ -281,7 +308,7 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
               />
               <label
                 htmlFor="media-upload"
-                className="flex items-center gap-2 px-4 py-2 bg-[#0D6E6E] hover:bg-[#0D6E6E]/80 text-white rounded-lg cursor-pointer transition-colors"
+                className="flex min-h-11 items-center justify-center gap-2 px-4 py-2 bg-[#0D6E6E] hover:bg-[#0D6E6E]/80 text-white rounded-lg cursor-pointer transition-colors"
               >
                 <Upload className="w-4 h-4" />
                 Upload Media
@@ -301,9 +328,9 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
         </div>
 
         {/* Content Area with Split View */}
-        <div className="flex-1 flex overflow-hidden">
+        <div className="ui-scroll-region flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden lg:flex-row">
           {/* Main Media Area */}
-          <div className={`flex-1 overflow-auto p-6 ${selectedMedia ? 'border-r border-[#2D3748]' : ''}`}>
+          <div className={`ui-scroll-region min-h-0 min-w-0 flex-1 overflow-auto p-3 sm:p-6 ${selectedMedia ? 'border-b border-[#2D3748] lg:border-b-0 lg:border-r' : ''}`} data-lenis-prevent>
             {loading ? (
               <div className="flex items-center justify-center h-full">
                 <div className="text-center">
@@ -331,11 +358,13 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
                 {filteredMedia.map((item) => (
-                  <div
+                  <button
+                    type="button"
                     key={item.id}
-                    className={`group relative bg-[#0F1117] border rounded-xl overflow-hidden cursor-pointer transition-all ${
-                      selectedMedia === item.id 
-                        ? 'border-[#0D6E6E] ring-2 ring-[#0D6E6E]/20' 
+                    aria-pressed={selectedMedia === item.id}
+                    className={`group relative w-full overflow-hidden rounded-xl border bg-[#0F1117] text-left transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D6E6E] ${
+                      selectedMedia === item.id
+                        ? 'border-[#0D6E6E] ring-2 ring-[#0D6E6E]/20'
                         : 'border-[#2D3748] hover:border-[#0D6E6E]/50'
                     }`}
                     onClick={() => setSelectedMedia(item.id)}
@@ -370,7 +399,7 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
                     </div>
                     
                     <div className="p-3">
-                      <p className="text-sm font-medium text-white truncate">{item.originalName || item.filename}</p>
+                      <p className="break-words text-sm font-medium text-white">{item.originalName || item.filename}</p>
                       <div className="flex items-center justify-between mt-2">
                         <span className="text-xs text-gray-400">
                           {formatFileSize(item.size)}
@@ -380,14 +409,15 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             ) : (
-              <div className="bg-[#1A1F2E] rounded-lg overflow-hidden">
-                <table className="w-full">
+              <div className="horizontal-scroll-region rounded-lg border border-[#2D3748]" role="region" aria-label="Media file list" tabIndex={0} data-lenis-prevent>
+                <table className="w-full min-w-[640px]">
                   <thead className="bg-[#0F1117]">
                     <tr>
+                      <th className="w-12 py-3 px-4"><span className="sr-only">Select</span></th>
                       <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">File</th>
                       <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Size</th>
                       <th className="py-3 px-4 text-left text-sm font-medium text-gray-400">Type</th>
@@ -403,6 +433,15 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
                         }`}
                         onClick={() => setSelectedMedia(item.id)}
                       >
+                        <td className="py-3 px-4">
+                          <input
+                            type="checkbox"
+                            checked={selectedMedia === item.id}
+                            aria-label={`Select ${item.originalName || item.filename}`}
+                            onClick={(event) => event.stopPropagation()}
+                            onChange={() => setSelectedMedia(item.id)}
+                          />
+                        </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-3">
                             <div className="w-10 h-10 bg-[#0F1117] rounded-lg flex items-center justify-center">
@@ -442,7 +481,7 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
 
           {/* Attachment Details Sidebar */}
           {activeMedia && (
-            <div className="w-80 bg-[#151925] border-l border-[#2D3748] flex flex-col overflow-y-auto">
+            <div className="ui-scroll-region min-h-0 max-h-[min(42dvh,24rem)] w-full shrink-0 overflow-y-auto bg-[#151925] border-t border-[#2D3748] flex flex-col lg:h-full lg:max-h-full lg:w-80 lg:border-l lg:border-t-0" data-lenis-prevent>
               {/* Preview */}
               <div className="p-4 border-b border-[#2D3748] bg-[#0F1117]">
                 <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4">Attachment Details</h3>
@@ -555,8 +594,8 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-[#2D3748] bg-[#0F1117] mt-auto">
-          <div className="text-sm text-gray-400">
+        <div className="flex shrink-0 flex-col items-stretch gap-3 border-t border-[#2D3748] bg-[#0F1117] p-3 sm:flex-row sm:items-center sm:justify-between sm:p-6">
+          <div className="min-w-0 break-words text-sm text-gray-400">
             {activeMedia ? (
               <span className="text-white">
                 Selected: <span className="font-medium">{activeMedia.originalName || activeMedia.filename}</span>
@@ -566,17 +605,19 @@ export default function MediaLibraryModal({ isOpen, onClose, onSelect }: MediaLi
             )}
           </div>
           
-          <div className="flex items-center gap-4">
+          <div className="flex shrink-0 items-center gap-2 sm:gap-4">
             <button
+              type="button"
               onClick={onClose}
-              className="px-6 py-2 border border-[#2D3748] text-gray-400 hover:text-white hover:border-white/20 rounded-lg transition-colors"
+              className="min-h-11 flex-1 rounded-lg border border-[#2D3748] px-3 text-gray-400 transition-colors hover:text-white hover:border-white/20 sm:flex-initial sm:px-6"
             >
               Cancel
             </button>
             <button
+              type="button"
               onClick={handleSelect}
               disabled={!activeMedia}
-              className={`px-6 py-2 rounded-lg transition-colors ${
+              className={`min-h-11 flex-1 rounded-lg px-3 transition-colors sm:flex-initial sm:px-6 ${
                 activeMedia 
                   ? 'bg-[#0D6E6E] hover:bg-[#0D6E6E]/80 text-white' 
                   : 'bg-[#2D3748] text-gray-500 cursor-not-allowed'

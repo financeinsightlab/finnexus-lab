@@ -1,7 +1,8 @@
 "use client"
 
+import Link from 'next/link'
 import { useState, useMemo } from 'react'
-import { Search, X, SlidersHorizontal } from 'lucide-react'
+import { Search, X, SlidersHorizontal, ArrowRight } from 'lucide-react'
 import StudyCard from './StudyCard'
 import CoursesSection from './CoursesSection'
 
@@ -140,6 +141,14 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
               Free resources on finance, business analytics, and research methodology.
               Learn at your own pace with articles, videos, courses, and downloadable notes.
             </p>
+            <div className="mt-5 flex flex-wrap justify-center gap-3">
+              <Link href="#featured-learning-programs" className="inline-flex items-center gap-2 rounded-xl bg-teal-500 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-teal-400">
+                Choose from 3 separate programs <ArrowRight className="h-4 w-4" />
+              </Link>
+              <Link href="/study/course" className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-bold text-white transition-colors hover:bg-white/10">
+                Browse all 69 individual courses <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
 
           {/* Search Bar */}
@@ -168,7 +177,7 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
       <CoursesSection />
 
       {/* ─── Category Filter Chips ─── */}
-      <section className="bg-[#0f1522] border-b border-white/5 py-4 sticky top-0 z-40">
+      <section className="border-b border-white/5 bg-[#0f1522] py-4 lg:sticky lg:top-16 lg:z-40">
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-center gap-3 flex-wrap">
             <button

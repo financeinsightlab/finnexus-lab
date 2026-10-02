@@ -148,7 +148,7 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
           </div>
 
           {/* Row 2: Category Pills */}
-          <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+          <div className="horizontal-scroll-region flex min-w-0 items-center gap-1.5 py-2" role="region" aria-label="Filter insights by category" tabIndex={0} data-lenis-prevent>
             {categories.map((c) => {
               const count = c === 'All' ? posts.length : posts.filter((p) => p.category === c).length;
               const active = category === c;
@@ -156,7 +156,8 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
                 <button
                   key={c}
                   onClick={() => setCategory(c)}
-                  className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
+                  aria-pressed={active}
+                  className={`flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
                     active
                       ? 'bg-cinema-cyan text-black font-bold shadow-md shadow-cinema-cyan/25'
                       : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10'

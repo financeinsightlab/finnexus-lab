@@ -54,7 +54,7 @@ export default async function CaseStudiesPage() {
   const engagements = new Set(allStudies.map((s) => s.engagementType));
 
   return (
-    <div className="min-h-screen bg-cinema-black text-white overflow-hidden">
+    <div className="min-h-screen min-w-0 bg-cinema-black text-white">
       <JsonLd
         data={{
           '@context': 'https://schema.org',

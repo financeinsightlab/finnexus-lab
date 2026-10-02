@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+import { useModalAccessibility } from "@/components/ui/useModalAccessibility"
 import {
   BarChart3,
   Users,
@@ -36,6 +37,14 @@ export default function CollapsibleSidebar({
   // Initialize state to false (same on server and client to avoid hydration mismatch)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+  const mobileSidebarRef = useRef<HTMLElement>(null)
+  const mobileToggleRef = useRef<HTMLButtonElement>(null)
+  const mobileCloseButtonRef = useRef<HTMLButtonElement>(null)
+
+  useModalAccessibility(isMobileOpen, mobileSidebarRef, () => setIsMobileOpen(false), {
+    initialFocusRef: mobileCloseButtonRef,
+    restoreFocusRef: mobileToggleRef,
+  })
 
   // Load state from localStorage after hydration (client-side only)
   useEffect(() => {
@@ -94,9 +103,13 @@ export default function CollapsibleSidebar({
     <>
       {/* Mobile Toggle Button (only visible on small screens) */}
       <button
+        ref={mobileToggleRef}
         onClick={toggleMobileSidebar}
         className="lg:hidden fixed top-20 left-4 z-50 p-2 rounded-lg bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-[#2D3748] text-gray-700 dark:text-white"
         aria-label={isMobileOpen ? "Close sidebar" : "Open sidebar"}
+        aria-expanded={isMobileOpen}
+        aria-controls="admin-mobile-navigation"
+        aria-haspopup="dialog"
       >
         {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
@@ -112,7 +125,7 @@ export default function CollapsibleSidebar({
           ${isCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}
         `}
       >
-        <div className="flex flex-col h-full">
+        <div className="ui-scroll-region flex h-full min-h-0 flex-col overflow-hidden">
           {/* Header with Toggle Button */}
           <div className="px-6 py-8 flex items-center justify-between">
             <div className={`overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
@@ -138,7 +151,7 @@ export default function CollapsibleSidebar({
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 space-y-1">
+          <nav className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 space-y-1" data-lenis-prevent aria-label="Admin navigation">
             {menuItems.map((item) => {
               const isLocked = item.adminOnly && userRole !== "ADMIN"
               
@@ -254,33 +267,49 @@ export default function CollapsibleSidebar({
 
       {/* Mobile Sidebar Overlay */}
       {isMobileOpen && (
-        <div 
+        <div
           className="lg:hidden fixed inset-0 bg-black/50 z-30"
-          onClick={toggleMobileSidebar}
+          onClick={() => setIsMobileOpen(false)}
+          aria-hidden="true"
         />
       )}
 
       {/* Mobile Sidebar */}
-      <aside 
-        className={`
-          lg:hidden fixed top-16 bottom-0 left-0 w-64
-          bg-white dark:bg-[#1A1F2E] border-r border-gray-200 dark:border-[#2D3748] z-40
-          transform transition-transform duration-300 ease-in-out
-          ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}
-          flex flex-col
-        `}
+      <aside
+        id="admin-mobile-navigation"
+        ref={mobileSidebarRef}
+        className={`ui-scroll-region lg:hidden fixed top-16 bottom-0 left-0 w-64 max-h-[calc(100dvh-4rem)] overflow-hidden bg-white dark:bg-[#1A1F2E] border-r border-gray-200 dark:border-[#2D3748] z-40 transform transition-transform duration-300 ease-in-out flex flex-col ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+        aria-label="Admin navigation"
+        aria-labelledby="admin-mobile-navigation-title"
+        role={isMobileOpen ? 'dialog' : undefined}
+        aria-modal={isMobileOpen ? true : undefined}
+        aria-hidden={!isMobileOpen}
+        inert={!isMobileOpen}
+        tabIndex={-1}
+        data-lenis-prevent
       >
-        <div className="flex flex-col h-full">
+        <div className="ui-scroll-region flex h-full min-h-0 flex-col overflow-hidden">
           {/* Mobile Header */}
-          <div className="px-6 py-8">
-            <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#0D6E6E] mb-1">
-              Admin Portal
-            </h2>
-            <div className="h-px w-8 bg-[#0D6E6E] opacity-30"></div>
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 py-4 dark:border-[#2D3748]">
+            <div>
+              <h2 id="admin-mobile-navigation-title" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#0D6E6E] mb-1">
+                Admin Portal
+              </h2>
+              <div className="h-px w-8 bg-[#0D6E6E] opacity-30"></div>
+            </div>
+            <button
+              ref={mobileCloseButtonRef}
+              type="button"
+              onClick={() => setIsMobileOpen(false)}
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-500 hover:bg-slate-100 hover:text-slate-900 dark:hover:bg-white/10 dark:hover:text-white"
+              aria-label="Close admin navigation"
+            >
+              <X className="h-5 w-5" />
+            </button>
           </div>
 
           {/* Mobile Navigation */}
-          <nav className="flex-1 px-4 space-y-1">
+          <nav className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain px-4 py-2 space-y-1" data-lenis-prevent aria-label="Admin navigation links">
             {menuItems.filter((item) => !item.adminOnly || userRole === "ADMIN").map((item) => (
               <Link 
                 key={item.href}
@@ -297,7 +326,7 @@ export default function CollapsibleSidebar({
           </nav>
 
           {/* Mobile User Profile */}
-          <div className="p-4 border-t border-gray-200 dark:border-[#2D3748]">
+          <div className="ui-scroll-region min-h-0 max-h-[min(38dvh,18rem)] shrink-0 overflow-y-auto overscroll-y-contain border-t border-gray-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-[#2D3748]" data-lenis-prevent>
             <div className="flex items-center gap-3 px-4 py-4 mb-2 bg-white/5 rounded-2xl border border-white/5">
               <div className="w-8 h-8 rounded-full bg-[#0D6E6E] flex items-center justify-center text-xs font-bold text-white shadow-lg">
                 {userInitial}

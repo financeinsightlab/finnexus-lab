@@ -134,7 +134,7 @@ export default async function CertificateDetailPage({ params }: Props) {
                 </div>
 
                 <aside className="md:col-span-1">
-                    <div className="sticky top-24 rounded-2xl border border-amber-500/25 bg-gradient-to-b from-amber-500/5 to-transparent p-6">
+                    <div className="rounded-2xl border border-amber-500/25 bg-gradient-to-b from-amber-500/5 to-transparent p-6 md:sticky md:top-24">
                         <h2 className="text-sm font-bold uppercase tracking-wider text-amber-700 dark:text-amber-300">
                             Catalogue status
                         </h2>

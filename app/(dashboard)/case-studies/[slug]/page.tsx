@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { scrollableTableComponents } from '@/components/content/scrollableTableComponents';
 import Link from 'next/link';
 import { ChevronLeft, CalendarDays, Clock, Briefcase, Building2, ArrowRight, Award, Download, Layers } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
@@ -230,7 +231,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
       <div className="wrap max-w-4xl py-12 md:py-16">
         <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-strong:text-white prose-em:text-gray-200 prose-li:text-gray-300 prose-hr:border-white/10 prose-blockquote:text-gray-400 prose-blockquote:border-cinema-cyan prose-table:text-gray-300 prose-th:text-white prose-thead:border-white/20 prose-td:border-white/10">
           {caseStudy.content ? (
-            <MDXRemote source={caseStudy.content} />
+            <MDXRemote source={caseStudy.content} components={scrollableTableComponents} />
           ) : (
             <p className="text-gray-500">Full case study content coming soon.</p>
           )}

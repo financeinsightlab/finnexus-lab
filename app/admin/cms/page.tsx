@@ -180,8 +180,8 @@ export default async function CMSDashboard({
 
       {/* Table */}
       <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] overflow-hidden shadow-xl">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
+        <div className="horizontal-scroll-region" role="region" aria-label="CMS content list" tabIndex={0} data-lenis-prevent>
+          <table className="w-full min-w-[760px] text-left border-collapse">
             <thead>
               <tr className="bg-white/5">
                 <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Title</th>

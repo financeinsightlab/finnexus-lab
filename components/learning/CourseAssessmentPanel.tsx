@@ -137,7 +137,7 @@ export default function CourseAssessmentPanel({ courseSlug, returnTo }: { course
           )}
           {data.certificate?.status === 'ACTIVE' && (
             <p className="mt-4 text-sm font-semibold text-primary">This course has an active completion certificate.{' '}
-              <Link href={`/certificates/issued/${encodeURIComponent(data.certificate.certificateId)}`} className="underline underline-offset-4">View private completion record</Link>
+              <Link href={`/certificates/course/${encodeURIComponent(courseSlug)}`} className="underline underline-offset-4">View private completion certificate</Link>
             </p>
           )}
 
@@ -145,7 +145,7 @@ export default function CourseAssessmentPanel({ courseSlug, returnTo }: { course
             <div className={`mt-5 rounded-2xl border p-5 ${result.passed ? 'border-emerald-500/30 bg-emerald-500/10' : 'border-amber-500/30 bg-amber-500/10'}`} role="status" aria-live="polite">
               <p className="text-lg font-bold text-foreground">{result.passed ? 'Final test passed' : 'Final test not passed yet'}</p>
               <p className="mt-1 text-sm text-muted-foreground">Attempt {result.attempt.attemptNumber}: {result.attempt.score} / {result.attempt.maxScore} points ({result.attempt.percentage}%). Required: {result.passPercentage}%.</p>
-              {result.certificate?.certificateId && <Link href={`/certificates/issued/${encodeURIComponent(result.certificate.certificateId)}`} className="mt-3 inline-flex min-h-10 items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">View private completion record</Link>}
+              {result.certificate?.certificateId && <Link href={`/certificates/course/${encodeURIComponent(courseSlug)}`} className="mt-3 inline-flex min-h-10 items-center rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground">View your course certificate</Link>}
               <ol className="mt-5 space-y-3">
                 {result.review.map((answer, index) => (
                   <li key={answer.questionId} className="rounded-xl bg-background/80 p-4">

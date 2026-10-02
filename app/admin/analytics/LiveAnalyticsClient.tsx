@@ -85,8 +85,8 @@ export default function LiveAnalyticsClient({ initialLive, topPages, totalViews,
           </button>
         </div>
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+        <div className="horizontal-scroll-region" role="region" aria-label="Recent activity table" tabIndex={0} data-lenis-prevent>
+          <table className="w-full min-w-[680px] text-left">
             <thead>
               <tr className="bg-white/[0.02]">
                 <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">User</th>
@@ -155,8 +155,8 @@ export default function LiveAnalyticsClient({ initialLive, topPages, totalViews,
             <TrendingUp className="w-4 h-4 text-purple-400" /> Top Pages by Views
           </h3>
         </div>
-        <div className="overflow-x-auto">
-          <table className="w-full text-left">
+        <div className="horizontal-scroll-region" role="region" aria-label="Top pages table" tabIndex={0} data-lenis-prevent>
+          <table className="w-full min-w-[640px] text-left">
             <thead>
               <tr className="bg-white/[0.02]">
                 <th className="px-6 py-3 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Page</th>

@@ -66,7 +66,7 @@ export default function WaccCalc() {
       </div>
 
       {/* inputs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5">
+      <div className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5 sm:grid-cols-2 md:grid-cols-3">
         <NumField label="Risk-free rate (Rf)" value={rf} onChange={setRf} />
         <NumField label="Market risk premium" value={mrp} onChange={setMrp} />
         <NumField label="Levered beta (β)" value={beta} onChange={setBeta} step={0.05} suffix="β" />

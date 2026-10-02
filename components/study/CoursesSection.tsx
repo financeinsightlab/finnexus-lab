@@ -46,31 +46,31 @@ const COURSES = [
   },
   {
     id: 'skill-academy',
-    href: '/study/courses',
+    href: '/study/skill-academy',
     image: '/course-skill-academy.png',
     accent: '245,158,11',          // amber
     accentClass: 'amber',
     borderHover: 'hover:border-amber-500/50',
     badge: 'bg-amber-500/15 text-amber-400 border-amber-500/25',
-    badgeLabel: '25+ Tracks',
-    tagline: 'FREE · ZERO → EXPERT · 148+ MODULES',
+    badgeLabel: '54 Tracks',
+    tagline: 'FREE · ZERO → EXPERT · 383 LESSONS',
     title: 'Skill Academy — Zero → Expert',
-    subtitle: 'Power BI · Excel · SQL · Python · Tableau · Statistics',
+    subtitle: 'Power BI · Excel · SQL · Python · Tableau · Finance',
     description:
-      '148+ free modules covering Power BI, Excel, SQL, Tableau, Python, Statistics, English Communication, and Aptitude. Every track takes you from absolute zero to world-class expert.',
+      'Choose from 54 separately selectable courses across analytics, English, aptitude, finance, and accounting. Each track keeps its lessons, progress, final test, and certificate independent.',
     icon: GraduationCap,
     stats: [
-      { icon: Layers,   value: '148+',     label: 'Free Modules'   },
-      { icon: BookOpen, value: '25+',      label: 'Course Tracks'  },
-      { icon: Zap,      value: 'Zero→Pro', label: 'All Levels'     },
+      { icon: Layers,   value: '383',       label: 'Existing Lessons' },
+      { icon: BookOpen, value: '54',        label: 'Course Tracks'    },
+      { icon: Zap,      value: 'Zero→Expert', label: 'All Levels'     },
     ],
-    cta: 'Explore Courses',
+    cta: 'Browse 54 Tracks',
     gradient: 'from-amber-600/20 via-amber-500/5 to-transparent',
     glow: 'rgba(245,158,11,0.15)',
   },
   {
     id: 'analyst-complete',
-    href: '/study/analyst-course',
+    href: '/study/analyst-complete',
     image: '/course-analyst-complete.png',
     accent: '139,92,246',          // violet
     accentClass: 'violet',
@@ -81,7 +81,7 @@ const COURSES = [
     title: 'Analyst Complete Course',
     subtitle: 'Analytics Orientation → Production Portfolio',
     description:
-      'A complete structured path — 15 levels, 100+ lessons, 40+ projects. Dashboard, SQL Lab, Learning Library, Assessments, Case Studies, Interview Center, Portfolio Builder, Metrics Dictionary.',
+      'A complete structured path — 15 levels, 100+ lessons, and 40+ projects. Open the original interactive workspace or study any level as its own course with separate progress, final test, and certificate.',
     icon: Brain,
     stats: [
       { icon: Layers,   value: '15',      label: 'Levels'          },
@@ -254,7 +254,7 @@ function CourseCard({ course, index }: { course: (typeof COURSES)[0]; index: num
 
 export default function CoursesSection() {
   return (
-    <section className="relative bg-gradient-to-b from-[#0a0c12] to-[#0B0D13] py-14 border-b border-white/5">
+    <section id="featured-learning-programs" aria-labelledby="featured-programs-title" className="relative bg-gradient-to-b from-[#0a0c12] to-[#0B0D13] py-14 border-b border-white/5">
       {/* Ambient background glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full blur-[160px] opacity-[0.05] bg-teal-400" />
@@ -269,7 +269,7 @@ export default function CoursesSection() {
             <ChevronRight className="w-3 h-3" />
             Featured Courses & Programs
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
+          <h2 id="featured-programs-title" className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
             Everything You Need to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-violet-400 to-amber-400">
               Become an Analyst
