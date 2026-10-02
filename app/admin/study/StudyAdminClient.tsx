@@ -173,7 +173,8 @@ export default function StudyAdminClient({
 
       {/* ─── Materials Table ─── */}
       <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden">
-        <table className="w-full">
+        <div className="horizontal-scroll-region" role="region" aria-label="Study materials table" tabIndex={0} data-lenis-prevent>
+        <table className="w-full min-w-[720px]">
           <thead>
             <tr className="border-b border-white/[0.05]">
               <th className="px-4 py-3 text-left text-[10px] font-bold text-slate-500 uppercase tracking-widest">Title</th>
@@ -198,7 +199,7 @@ export default function StudyAdminClient({
                   <td className="px-4 py-3">
                     <Link href={`/admin/study/edit/${material.id}`} className="hover:text-[#0D6E6E] transition-colors">
                       <p className="text-sm font-medium text-white">{material.title}</p>
-                      <p className="text-xs text-slate-500 line-clamp-1">{material.description}</p>
+                      <p className="text-xs text-slate-500 break-words">{material.description}</p>
                     </Link>
                   </td>
                   <td className="px-4 py-3">
@@ -260,6 +261,7 @@ export default function StudyAdminClient({
             )}
           </tbody>
         </table>
+        </div>
       </div>
     </div>
   )

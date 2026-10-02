@@ -67,22 +67,51 @@ export default function AskKunwarBubble() {
     const [input, setInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [hasOpened, setHasOpened] = useState(false);
-    const messagesEndRef = useRef<HTMLDivElement>(null);
+    const messagesContainerRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const launcherRef = useRef<HTMLButtonElement>(null);
+
+    const closeAndRestoreLauncherFocus = () => {
+        setOpen(false);
+        window.requestAnimationFrame(() => launcherRef.current?.focus({ preventScroll: true }));
+    };
 
     // Auto-scroll to latest message
     useEffect(() => {
-        if (open) {
-            messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+        if (open && messagesContainerRef.current) {
+            const messagesContainer = messagesContainerRef.current;
+            messagesContainer.scrollTo({ top: messagesContainer.scrollHeight, behavior: 'smooth' });
         }
     }, [messages, open]);
 
-    // Focus input when opened
+    // Keep the modeless chat panel keyboard reachable and dismissible without
+    // taking focus away from the rest of the page.
     useEffect(() => {
-        if (open) {
-            setTimeout(() => inputRef.current?.focus(), 100);
-        }
+        if (!open) return;
+        const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 100);
+        const handleKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                event.stopPropagation();
+                setOpen(false);
+                window.requestAnimationFrame(() => launcherRef.current?.focus({ preventScroll: true }));
+            }
+        };
+        window.addEventListener('keydown', handleKeyDown);
+        return () => {
+            window.clearTimeout(focusTimer);
+            window.removeEventListener('keydown', handleKeyDown);
+        };
     }, [open]);
+
+    useEffect(() => {
+        const handleBodyScrollLock = (event: Event) => {
+            const locked = (event as CustomEvent<{ locked: boolean }>).detail?.locked;
+            if (locked) setOpen(false);
+        };
+        window.addEventListener('finnexus:body-scroll-lock', handleBodyScrollLock);
+        return () => window.removeEventListener('finnexus:body-scroll-lock', handleBodyScrollLock);
+    }, []);
 
     const handleOpen = () => {
         setOpen(true);
@@ -183,7 +212,7 @@ export default function AskKunwarBubble() {
                 <Link
                     key={tokens.length}
                     href={url}
-                    onClick={() => setOpen(false)}
+                    onClick={closeAndRestoreLauncherFocus}
                     className="text-teal-400 font-semibold underline underline-offset-2 hover:text-teal-300"
                 >
                     {label}
@@ -223,7 +252,11 @@ export default function AskKunwarBubble() {
     return (
         <>
             {/* Floating bubble button */}
-            <div className="fixed bottom-6 right-6 z-[200] flex flex-col items-end gap-3">
+            <div
+                className="fixed z-[40] flex flex-col items-end gap-3"
+                data-floating-ui="ask-launcher"
+                style={{ bottom: 'calc(1.5rem + env(safe-area-inset-bottom))', right: 'calc(1.5rem + env(safe-area-inset-right))' }}
+            >
                 {/* Tooltip label when not yet opened */}
                 {!hasOpened && !open && (
                     <div className="pointer-events-none animate-bounce-gentle">
@@ -236,8 +269,11 @@ export default function AskKunwarBubble() {
                 )}
 
                 <button
+                    ref={launcherRef}
                     onClick={() => open ? setOpen(false) : handleOpen()}
-                    className="group relative flex h-14 w-14 items-center justify-center rounded-full shadow-2xl shadow-teal-500/30 transition-all duration-300 hover:scale-110 active:scale-95"
+                    className="group relative flex h-14 w-14 items-center justify-center rounded-full shadow-2xl shadow-teal-500/30 transition-all duration-300 hover:scale-110 active:scale-95 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-300"
+                    aria-expanded={open}
+                    aria-controls="ask-kunwar-chat-panel"
                     style={{
                         background: 'linear-gradient(135deg, #0d9488 0%, #0891b2 50%, #7c3aed 100%)',
                     }}
@@ -266,8 +302,21 @@ export default function AskKunwarBubble() {
 
             {/* Chat panel */}
             <div
-                className={`fixed bottom-24 right-6 z-[199] w-[360px] max-w-[calc(100vw-1.5rem)] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0b1520] shadow-2xl shadow-black/60 transition-all duration-300 ${open ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
-                style={{ maxHeight: 'min(520px, calc(100dvh - 8rem))' }}
+                id="ask-kunwar-chat-panel"
+                className={`fixed z-[39] flex min-h-0 w-[360px] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0b1520] shadow-2xl shadow-black/60 transition-all duration-300 ${open ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+                style={{
+                    right: 'max(1rem, env(safe-area-inset-right))',
+                    bottom: 'calc(6rem + env(safe-area-inset-bottom))',
+                    width: 'min(360px, calc(100vw - 2rem - env(safe-area-inset-left) - env(safe-area-inset-right)))',
+                    maxHeight: 'min(520px, calc(100dvh - 7rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)))',
+                }}
+                role="dialog"
+                aria-label="Ask Kunwar AI chat"
+                aria-modal="false"
+                aria-hidden={!open}
+                inert={!open}
+                data-floating-ui="ask-panel"
+                data-lenis-prevent
             >
                 {/* Header */}
                 <div className="shrink-0 flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3"
@@ -288,14 +337,15 @@ export default function AskKunwarBubble() {
                     <div className="flex items-center gap-2">
                         <Link
                             href="/ask"
-                            className="rounded-lg px-2 py-1 text-[10px] font-semibold text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 transition-colors"
-                            onClick={() => setOpen(false)}
+                            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg px-2 py-1 text-[10px] font-semibold text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 transition-colors"
+                            onClick={closeAndRestoreLauncherFocus}
                         >
                             Full page →
                         </Link>
                         <button
-                            onClick={() => setOpen(false)}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+                            onClick={closeAndRestoreLauncherFocus}
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+                            aria-label="Close Ask Kunwar chat"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -305,7 +355,7 @@ export default function AskKunwarBubble() {
                 </div>
 
                 {/* Messages */}
-                <div className="flex-1 overflow-y-auto overscroll-contain p-4 space-y-4 min-h-0">
+                <div ref={messagesContainerRef} className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 space-y-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-500" role="log" aria-label="Conversation" aria-live="polite" tabIndex={0} data-lenis-prevent>
                     {messages.map((msg) => (
                         <div key={msg.id} className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                             {msg.role === 'assistant' && (
@@ -322,7 +372,7 @@ export default function AskKunwarBubble() {
                                     <TypingDots />
                                 ) : (
                                     <>
-                                        <p className="whitespace-pre-line">{renderText(msg.text)}</p>
+                                        <p className="break-words whitespace-pre-line">{renderText(msg.text)}</p>
                                         {msg.citations && msg.citations.length > 0 && (
                                             <div className="mt-3 space-y-1.5 border-t border-white/10 pt-2">
                                                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Sources</p>
@@ -333,14 +383,14 @@ export default function AskKunwarBubble() {
                                                             <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-teal-900/60 text-[9px] font-bold text-teal-400">
                                                                 {c.index}
                                                             </span>
-                                                            <span className="line-clamp-1">{c.title}</span>
+                                                            <span className="min-w-0 break-words">{c.title}</span>
                                                         </>
                                                     );
                                                     return href ? (
                                                         <Link
                                                             key={c.index}
                                                             href={href}
-                                                            onClick={() => setOpen(false)}
+                                                            onClick={closeAndRestoreLauncherFocus}
                                                             className="flex items-start gap-2 rounded-lg border border-white/5 bg-white/5 p-2 text-xs text-slate-300 transition hover:border-teal-500/30 hover:text-teal-300"
                                                         >
                                                             {content}
@@ -377,7 +427,6 @@ export default function AskKunwarBubble() {
                             ))}
                         </div>
                     )}
-                    <div ref={messagesEndRef} />
                 </div>
 
                 {/* Input */}
@@ -394,7 +443,7 @@ export default function AskKunwarBubble() {
                         <button
                             type="submit"
                             disabled={loading || !input.trim()}
-                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-teal-400 transition hover:bg-teal-500/20 disabled:opacity-40"
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-teal-400 transition hover:bg-teal-500/20 disabled:opacity-40"
                             aria-label="Send"
                         >
                             {loading ? (

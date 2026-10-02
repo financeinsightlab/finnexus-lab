@@ -150,12 +150,12 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
                             No predictions match the current filters.
                         </div>
                     ) : (
-                        <div className="overflow-hidden rounded-2xl border border-white/10">
-                            <table className="w-full text-left text-sm">
+                        <div className="horizontal-scroll-region rounded-2xl border border-white/10" role="region" aria-label="Prediction resolution history table" tabIndex={0} data-lenis-prevent>
+                            <table className="w-full min-w-[640px] text-left text-sm">
                                 <thead className="bg-white/5 text-[11px] uppercase tracking-widest text-slate-400">
                                     <tr>
                                         <th className="px-4 py-3">Claim</th>
-                                        <th className="hidden px-4 py-3 md:table-cell">Sector</th>
+                                        <th className="px-4 py-3">Sector</th>
                                         <th className="px-4 py-3">Resolve by</th>
                                         <th className="px-4 py-3">Verdict</th>
                                     </tr>
@@ -182,7 +182,7 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
                                                         </p>
                                                     )}
                                                 </td>
-                                                <td className="hidden px-4 py-4 text-slate-400 md:table-cell">
+                                                <td className="px-4 py-4 text-slate-400">
                                                     {prediction.sector}
                                                 </td>
                                                 <td className="whitespace-nowrap px-4 py-4 text-slate-400">

@@ -1,4 +1,5 @@
 import { createElement } from 'react';
+import ScrollableMdxTable from '@/components/content/ScrollableMdxTable';
 
 function slugify(text: string) {
   return text
@@ -23,4 +24,5 @@ export const mdxComponents = {
   h2: makeHeading(2),
   h3: makeHeading(3),
   h4: makeHeading(4),
+  table: ScrollableMdxTable,
 };

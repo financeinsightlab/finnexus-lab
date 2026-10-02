@@ -163,10 +163,10 @@ export default function PlacementPrepClient() {
             </button>
           </div>
 
-          <div className="mt-5 inline-flex bg-white/10 backdrop-blur rounded-xl p-1 border border-white/20">
+          <div className="mt-5 flex w-fit max-w-full flex-wrap bg-white/10 backdrop-blur rounded-xl p-1 border border-white/20">
             <button
               onClick={() => setTab("tracker")}
-              className={`px-5 py-2 text-sm font-bold rounded-lg transition ${
+              className={`inline-flex min-h-11 items-center px-5 py-2 text-sm font-bold rounded-lg transition ${
                 tab === "tracker"
                   ? "bg-white text-brand-navy shadow-lg"
                   : "text-white/90 hover:bg-white/10"
@@ -176,7 +176,7 @@ export default function PlacementPrepClient() {
             </button>
             <button
               onClick={() => setTab("learn")}
-              className={`px-5 py-2 text-sm font-bold rounded-lg transition ${
+              className={`inline-flex min-h-11 items-center px-5 py-2 text-sm font-bold rounded-lg transition ${
                 tab === "learn"
                   ? "bg-white text-brand-navy shadow-lg"
                   : "text-white/90 hover:bg-white/10"
@@ -186,7 +186,7 @@ export default function PlacementPrepClient() {
             </button>
             <button
               onClick={() => setTab("portfolio")}
-              className={`px-5 py-2 text-sm font-bold rounded-lg transition ${
+              className={`inline-flex min-h-11 items-center px-5 py-2 text-sm font-bold rounded-lg transition ${
                 tab === "portfolio"
                   ? "bg-white text-brand-navy shadow-lg"
                   : "text-white/90 hover:bg-white/10"
@@ -221,7 +221,7 @@ export default function PlacementPrepClient() {
                   <button
                     onClick={() => setCurrentDay((d) => Math.max(1, d - 1))}
                     disabled={currentDay === 1}
-                    className="px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-slate-700 dark:text-slate-200"
+                    className="inline-flex min-h-11 items-center px-3 py-2 rounded-lg bg-gray-100 dark:bg-white/5 hover:bg-gray-200 dark:hover:bg-white/10 disabled:opacity-40 disabled:cursor-not-allowed text-sm font-semibold text-slate-700 dark:text-slate-200"
                   >
                     ← Prev
                   </button>
@@ -233,20 +233,20 @@ export default function PlacementPrepClient() {
                     onChange={(e) =>
                       setCurrentDay(Math.max(1, Math.min(60, Number(e.target.value) || 1)))
                     }
-                    className="w-16 text-center px-2 py-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-[#0f1522] text-slate-800 dark:text-white font-semibold"
+                    className="min-h-11 w-16 text-center px-2 py-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-[#0f1522] text-slate-800 dark:text-white font-semibold"
                   />
                   <button
                     onClick={() => setCurrentDay((d) => Math.min(60, d + 1))}
                     disabled={currentDay === 60}
-                    className="px-3 py-2 rounded-lg bg-[#0D6E6E] hover:bg-[#0a5858] text-white disabled:opacity-40 text-sm font-semibold"
+                    className="inline-flex min-h-11 items-center px-3 py-2 rounded-lg bg-[#0D6E6E] hover:bg-[#0a5858] text-white disabled:opacity-40 text-sm font-semibold"
                   >
                     Next →
                   </button>
                 </div>
               </div>
 
-              <div className="overflow-x-auto -mx-4 px-4">
-                <div className="flex gap-1 min-w-max pb-1">
+              <div className="horizontal-scroll-region -mx-4 px-4 pb-2" role="region" aria-label="Select a day in the 60-day plan" tabIndex={0} data-lenis-prevent>
+                <div className="flex min-w-max gap-1 pb-1">
                   {PLAN.map((d) => {
                     const done = d.tasks.filter((t) => completedIds.has(t.id)).length;
                     const total = d.tasks.length;
@@ -258,7 +258,9 @@ export default function PlacementPrepClient() {
                         key={d.day}
                         onClick={() => setCurrentDay(d.day)}
                         title={`Day ${d.day} — ${done}/${total}`}
-                        className={`w-7 h-7 rounded-md text-[10px] font-bold flex items-center justify-center transition ${
+                        aria-label={`Day ${d.day}, ${done} of ${total} tasks complete${isCurrent ? ', selected' : ''}`}
+                        aria-pressed={isCurrent}
+                        className={`min-h-11 min-w-11 rounded-md text-xs font-bold flex shrink-0 items-center justify-center transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D6E6E] ${
                           isCurrent
                             ? "bg-[#0D6E6E] text-white ring-2 ring-[#0D6E6E] ring-offset-1 ring-offset-white dark:ring-offset-[#1A1F2E]"
                             : allDone

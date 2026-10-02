@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { scrollableTableComponents } from '@/components/content/scrollableTableComponents';
 import Link from 'next/link';
 import { ChevronLeft, CalendarDays, Briefcase, Building2, ArrowRight, Award, Download, Layers } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
@@ -237,7 +238,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             {/* MDX body: global typography + automatic wide tables/figures */}
             <div className="cms-content prose-content article-body">
               {caseStudy.content ? (
-                <MDXRemote source={caseStudy.content} />
+                <MDXRemote source={caseStudy.content} components={scrollableTableComponents} />
               ) : (
                 <p className="text-muted-foreground">Full case study content coming soon.</p>
               )}
@@ -245,6 +246,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           </article>
         </ContentLayout>
       </ContentPage>
+
 
       {/* ═══════════ MORE CASE STUDIES ═══════════ */}
       <section className="border-t border-border bg-muted/40">

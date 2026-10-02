@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
+import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 
 const FORCE_DEFINITIONS = [
   {
@@ -155,9 +156,23 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
 
 
   const [isLocked, setIsLocked] = useState(false);
+  const [lockDialogOpen, setLockDialogOpen] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const lockDialogRef = useRef<HTMLDivElement>(null);
+  const unlockButtonRef = useRef<HTMLButtonElement>(null);
+  const emailInputRef = useRef<HTMLInputElement>(null);
+  const lockGateFocusRef = showEmailGate ? emailInputRef : unlockButtonRef;
+
+  useModalAccessibility(isLocked && lockDialogOpen, lockDialogRef, () => setLockDialogOpen(false), {
+    initialFocusRef: lockGateFocusRef,
+  });
+
+  useEffect(() => {
+    if (isLocked) setLockDialogOpen(true);
+    else setLockDialogOpen(false);
+  }, [isLocked]);
 
   useEffect(() => {
     if (isPremiumUser) { setIsLocked(false); return; }
@@ -247,6 +262,13 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
             </div>
           </div>
         </div>
+
+        {isLocked && !lockDialogOpen && (
+          <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4" role="status">
+            <p className="min-w-0 flex-1 text-sm text-brand-slate dark:text-slate-200">This model remains locked. You can continue browsing, or reopen the premium access options.</p>
+            <button type="button" onClick={() => setLockDialogOpen(true)} className="btn btn-primary min-h-11 shrink-0">Unlock Premium Access</button>
+          </div>
+        )}
 
         <div className={`${isLocked ? 'blur-md pointer-events-none select-none opacity-40' : ''} transition-all duration-700`}>
           {/* Competitive Forces Scoring */}
@@ -351,7 +373,7 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
               <span className="font-bold italic text-gray-400 px-1">fx</span>
               <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 h-5 flex items-center shadow-inner text-xs">=AVERAGE(Rivalry, NewEntrants, Substitutes, BuyerPower, SupplierPower)</div>
             </div>
-            <div className="overflow-x-auto w-full">
+            <div className="horizontal-scroll-region w-full" role="region" aria-label="Porter’s Five Forces assessment table" tabIndex={0} data-lenis-prevent>
               <table className="w-full text-[11px] whitespace-nowrap border-collapse select-text">
                 <thead>
                   <tr>
@@ -404,21 +426,40 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
           </div>
         </div>
 
-        {isLocked && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-gray-900/20 backdrop-blur-sm">
-            <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center">
-              <div className="w-16 h-16 bg-brand-navy/10 rounded-full flex items-center justify-center mb-6">
+        {isLocked && lockDialogOpen && (
+          <div className="safe-area-overlay fixed inset-0 z-50 flex items-center justify-center bg-gray-900/20 backdrop-blur-sm" role="presentation">
+            <div
+              ref={lockDialogRef}
+              className="viewport-dialog-panel ui-scroll-region relative w-full max-w-lg overflow-y-auto rounded-2xl border border-gray-100 bg-white p-6 text-center shadow-2xl dark:bg-slate-900 sm:p-10"
+              style={{ maxHeight: 'calc(100dvh - max(1.5rem, env(safe-area-inset-top) + env(safe-area-inset-bottom) + 1rem))' }}
+              role="dialog"
+              aria-modal="true"
+              aria-labelledby="porter-premium-lock-title"
+              tabIndex={-1}
+              data-lenis-prevent
+            >
+              <button
+                type="button"
+                onClick={() => setLockDialogOpen(false)}
+                className="absolute right-3 top-3 flex h-11 w-11 items-center justify-center rounded-lg text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900 dark:hover:bg-white/10 dark:hover:text-white"
+                aria-label="Close premium access dialog"
+              >
+                <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full bg-brand-navy/10">
                 <svg className="w-8 h-8 text-brand-navy dark:text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" /></svg>
               </div>
-              <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Model Locked</h3>
+              <h3 id="porter-premium-lock-title" className="mb-3 text-2xl font-bold text-brand-navy dark:text-white">Model Locked</h3>
               <p className="text-brand-slate dark:text-slate-300 mb-8">Unlock Porter's Five Forces Analyzer and all 10 premium calculators.</p>
               {!showEmailGate ? (
-                <button onClick={() => setShowEmailGate(true)} className="btn btn-primary w-full text-lg py-4 shadow-xl">Unlock Premium Access</button>
+                <button ref={unlockButtonRef} onClick={() => setShowEmailGate(true)} className="btn btn-primary min-h-11 w-full py-4 text-lg shadow-xl">Unlock Premium Access</button>
               ) : (
                 <form onSubmit={handleSubscribe} className="w-full space-y-4">
-                  <input type="email" placeholder="Enter your work email..." className="input w-full" value={email} onChange={e => setEmail(e.target.value)} required />
-                  <button type="submit" disabled={loading} className="btn btn-primary w-full">{loading ? 'Verifying...' : 'Pay & Subscribe'}</button>
-                  <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500">Cancel</button>
+                  <input ref={emailInputRef} type="email" placeholder="Enter your work email..." className="input min-h-11 w-full" value={email} onChange={e => setEmail(e.target.value)} required />
+                  <button type="submit" disabled={loading} className="btn btn-primary min-h-11 w-full">{loading ? 'Verifying...' : 'Pay & Subscribe'}</button>
+                  <button type="button" onClick={() => setShowEmailGate(false)} className="min-h-11 px-4 text-sm text-gray-500">Cancel</button>
                 </form>
               )}
             </div>

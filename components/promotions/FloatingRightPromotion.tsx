@@ -181,11 +181,13 @@ export default function FloatingRightPromotion() {
 
       <aside
         aria-label="Partner promotion showcase"
-        className={`fixed bottom-[96px] right-4 sm:right-6 z-[160] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        data-floating-ui="promotion"
+        className={`fixed z-[30] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           visible
             ? 'translate-y-0 opacity-100 scale-100 pointer-events-auto'
             : 'translate-y-10 opacity-0 scale-95 pointer-events-none'
         }`}
+        style={{ bottom: 'calc(6rem + env(safe-area-inset-bottom))', right: 'max(1rem, env(safe-area-inset-right))' }}
       >
         {/* ── 1. MINIMIZED STATE: Sleek non-blocking bottom corner capsule pill ── */}
         {minimized ? (
@@ -225,13 +227,13 @@ export default function FloatingRightPromotion() {
           </div>
         ) : (
           /* ── 2. EXPANDED FULL CARD: Top-tier Glassmorphic Browser Showcase ── */
-          <div className="w-[calc(100vw-2rem)] max-w-[330px] sm:max-w-[340px] relative overflow-hidden rounded-3xl border-2 border-teal-500/40 bg-card/95 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.4),0_0_30px_rgba(13,148,136,0.2)] backdrop-blur-2xl dark:border-teal-400/35 dark:bg-[#0c1322]/95 transition-all hover:border-teal-500/70">
+          <div className="ui-scroll-region relative max-h-[calc(100dvh-7rem)] w-[calc(100vw-2rem)] max-w-[330px] sm:max-w-[340px] overflow-y-auto overscroll-y-contain rounded-3xl border-2 border-teal-500/40 bg-card/95 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.4),0_0_30px_rgba(13,148,136,0.2)] backdrop-blur-2xl dark:border-teal-400/35 dark:bg-[#0c1322]/95 transition-all hover:border-teal-500/70" style={{ maxHeight: 'calc(100dvh - 7rem - env(safe-area-inset-top) - env(safe-area-inset-bottom))' }} data-lenis-prevent>
             {/* Subtle Ambient Pulse behind card */}
             <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-teal-500/20 blur-3xl animate-pulse" />
             <div className="pointer-events-none absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-cyan-500/15 blur-3xl" />
 
             {/* Top Bar: Sponsored Badge, Live Indicator & Controls */}
-            <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-border/50">
+            <div className="sticky top-0 z-10 -mx-1 flex items-center justify-between gap-2 bg-card/95 pb-2.5 pt-1 dark:bg-[#0c1322]/95 border-b border-border/50 backdrop-blur-xl">
               <div className="flex items-center gap-1.5">
                 <span className="inline-flex items-center gap-1 rounded-full border border-teal-500/30 bg-teal-500/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">
                   <Sparkles className="h-2.5 w-2.5 text-teal-500 animate-spin [animation-duration:8s]" />

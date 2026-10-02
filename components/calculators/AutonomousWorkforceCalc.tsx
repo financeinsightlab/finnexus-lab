@@ -323,8 +323,8 @@ export default function AutonomousWorkforceCalc({ slug, isPremiumUser }: { slug:
 
           {/* Paywall Overlay */}
           {isLocked && (
-            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center pt-20">
-              <div className="bg-gray-900 border border-gray-800 p-10 rounded-2xl shadow-2xl max-w-lg text-center relative z-50 overflow-hidden">
+            <div className="paywall-overlay absolute inset-0 z-50 flex flex-col items-center justify-center pt-20">
+              <div className="paywall-panel ui-scroll-region w-full bg-gray-900 border border-gray-800 p-6 sm:p-10 rounded-2xl shadow-2xl max-w-lg text-center relative z-50" data-lenis-prevent>
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-900/20 via-gray-900 to-gray-900 pointer-events-none"></div>
                 <div className="w-16 h-16 bg-cyan-900/30 text-cyan-400 rounded-full flex items-center justify-center mb-6 mx-auto border border-cyan-500/30">
                   <Brain className="w-8 h-8" />

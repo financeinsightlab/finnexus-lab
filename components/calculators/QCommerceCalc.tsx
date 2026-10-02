@@ -262,7 +262,7 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
                   =CM2 - FixedCosts - Marketing = Store_EBITDA
                 </div>
               </div>
-              <div className="overflow-x-auto w-full">
+              <div className="horizontal-scroll-region w-full" role="region" aria-label="Quick commerce model table" tabIndex={0} data-lenis-prevent>
                 <table className="w-full text-[11px] whitespace-nowrap border-collapse select-text">
                   <thead>
                     <tr>

@@ -57,7 +57,7 @@ export default function DataLabExplorer({ projects }: { projects: DataLabProject
   return (
     <div>
       {/* Search + Filter Bar */}
-      <div className="sticky top-20 z-30 rounded-2xl border border-border bg-card/95 p-5 shadow-sm backdrop-blur-xl md:p-6">
+      <div className="rounded-2xl border border-border bg-card/95 p-5 shadow-sm backdrop-blur-xl md:p-6 lg:sticky lg:top-20 lg:z-30">
         <div className="flex flex-col md:flex-row gap-4">
           {/* Search */}
           <div className="relative flex-1">

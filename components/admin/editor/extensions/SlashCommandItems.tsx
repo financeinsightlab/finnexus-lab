@@ -124,7 +124,7 @@ export const CommandList = forwardRef<{ onKeyDown: (event: { event: KeyboardEven
       <div className="p-2 border-b border-white/5 bg-white/5">
         <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 py-1">Widget Library</p>
       </div>
-      <div className="p-1 max-h-[400px] overflow-y-auto no-scrollbar">
+      <div className="ui-scroll-region max-h-[min(60dvh,25rem)] overflow-y-auto p-1" data-lenis-prevent>
         {props.items.length ? (
           props.items.map((item: CommandItem, index: number) => (
             <button

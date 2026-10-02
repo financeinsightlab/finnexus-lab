@@ -118,7 +118,7 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
   }
 
   return (
-    <div className="flex h-full bg-[#0B0D13] overflow-hidden">
+    <div className="flex h-full min-h-[600px] min-w-0 flex-col overflow-hidden bg-[#0B0D13] md:flex-row">
       {/* Left: Block Palette Sidebar */}
       {sidebarOpen && (
         <BlockSidebar
@@ -128,10 +128,10 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
       )}
 
       {/* Center: Canvas */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex min-h-[16rem] min-w-0 flex-1 flex-col overflow-hidden">
         {/* Canvas toolbar */}
-        <div className="h-12 flex items-center justify-between px-4 bg-[#1A1F2E] border-b border-[#2D3748] shrink-0">
-          <div className="flex items-center gap-2 text-slate-500">
+        <div className="min-h-12 flex h-auto flex-wrap items-center justify-between gap-2 bg-[#1A1F2E] border-b border-[#2D3748] px-2 py-2 shrink-0 md:h-12 md:flex-nowrap md:px-4 md:py-0">
+          <div className="flex flex-wrap items-center gap-2 text-slate-500">
             <button 
               onClick={() => setSidebarOpen(!sidebarOpen)} 
               className="p-1.5 hover:text-white transition-colors bg-white/5 rounded-lg"
@@ -155,6 +155,8 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
                     : 'text-slate-500 hover:text-white'
                 }`}
                 title={mode}
+                aria-label={`Preview ${mode}`}
+                aria-pressed={previewMode === mode}
               >
                 <Icon className="w-4 h-4" />
               </button>
@@ -175,7 +177,7 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
         </div>
 
         {/* Scrollable Canvas Area */}
-        <div className="flex-1 overflow-y-auto bg-[#0F1117] p-6">
+        <div className="ui-scroll-region min-h-0 min-w-0 flex-1 overflow-y-auto bg-[#0F1117] p-4 md:p-6" data-lenis-prevent>
           <div className={`transition-all duration-300 ${previewWidths[previewMode]}`}>
             <BlockCanvas
               blocks={blocks}

@@ -150,7 +150,7 @@ function FeaturedPostsTab({ allPosts, featuredResearchIds, featuredInsightIds, o
       )}
 
       {/* Post list */}
-      <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
+      <div className="ui-scroll-region min-h-0 max-h-[min(20rem,60dvh)] space-y-2 overflow-y-auto pr-1" data-lenis-prevent>
         {posts.length === 0 ? (
           <p className="text-slate-600 text-sm text-center py-6">No published {label.toLowerCase()} found in the database.<br />Import MDX files first.</p>
         ) : posts.map(post => {

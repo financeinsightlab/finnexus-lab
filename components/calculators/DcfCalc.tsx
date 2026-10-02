@@ -425,7 +425,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 </div>
               </div>
 
-              <div className="overflow-x-auto w-full hide-scrollbar">
+              <div className="horizontal-scroll-region w-full" role="region" aria-label="Discounted cash flow model table" tabIndex={0} data-lenis-prevent>
                 <table className="w-full text-[11px] whitespace-nowrap border-collapse min-w-[800px] select-text">
                   <thead>
                     <tr>
@@ -624,8 +624,8 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
           
           {/* Paywall Overlay */}
           {isLocked && (
-            <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center pt-20 bg-gray-900/10 backdrop-blur-sm -m-6 rounded-3xl">
-              <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
+            <div className="paywall-overlay absolute inset-0 z-[100] flex flex-col items-center justify-center pt-20 bg-gray-900/10 backdrop-blur-sm -m-6 rounded-3xl">
+              <div className="paywall-panel ui-scroll-region w-full bg-white dark:bg-slate-900 p-6 sm:p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 relative z-50" data-lenis-prevent>
                 <div className="w-16 h-16 bg-gold-100 text-gold-600 rounded-full flex items-center justify-center mb-6">
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />

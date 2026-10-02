@@ -68,9 +68,10 @@ function formatMathFormulas(html: string): string {
     }
 
     return `
-      <div class="cms-math content-wide">
+      <div class="cms-math content-wide" role="region" aria-label="Scrollable mathematical formula" tabindex="0" data-lenis-prevent>
         <span class="cms-math__label">Mathematical model</span>
         <div class="katex-display">${renderedMath}</div>
+
       </div>
     `
   })
@@ -282,12 +283,13 @@ function renderConsultingTable(title: string, headers: string[], data: string[][
     .join('')
 
   return `
-    <div class="cms-table-scroll cms-wide content-wide">
+    <div class="cms-table-scroll horizontal-scroll-region cms-wide content-wide" role="region" aria-label="Scrollable data table; use horizontal scrolling to view all columns" tabindex="0" data-lenis-prevent>
       <table>
         ${title ? `<caption class="cms-table-caption">${escapeHtml(title)}</caption>` : ''}
         ${thead}
         <tbody>${tbody}</tbody>
       </table>
+
     </div>
   `
 }
@@ -372,8 +374,9 @@ function renderBlock(block: Block, ctx: RenderContext): string {
               <span style="background:#34D399"></span>
             </span>
             <span class="cms-code-window__title">${escapeHtml(title)}</span>
+
           </div>
-          <pre><code>${escapeHtml(parsed.code)}</code></pre>
+          <div class="cms-code-window__scroll" role="region" aria-label="Scrollable code sample" tabindex="0" data-lenis-prevent><pre><code>${escapeHtml(parsed.code)}</code></pre></div>
         </div>
       `
     }

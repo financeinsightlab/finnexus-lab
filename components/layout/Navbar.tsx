@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTheme } from 'next-themes';
+import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 import GlobalSearch from '@/components/layout/GlobalSearch';
 import LocaleSwitcher from '@/components/i18n/LocaleSwitcher';
 import { useSession, signOut } from 'next-auth/react';
@@ -88,7 +89,21 @@ export default function Navbar() {
   const [openCluster, setOpenCluster] = useState<string | null>(null);
   const [userOpen, setUserOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const mobileDrawerRef = useRef<HTMLElement>(null);
+  const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
+  const userTriggerRef = useRef<HTMLButtonElement>(null);
+  const clusterTriggerRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
   const { data: session } = useSession();
+
+  useModalAccessibility(mobileOpen, mobileDrawerRef, () => setMobileOpen(false), {
+    initialFocusRef: mobileCloseButtonRef,
+  });
+
+  useEffect(() => {
+    if (mobileOpen) document.body.setAttribute('data-public-navigation-open', 'true');
+    else document.body.removeAttribute('data-public-navigation-open');
+    return () => document.body.removeAttribute('data-public-navigation-open');
+  }, [mobileOpen]);
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 
@@ -107,21 +122,39 @@ export default function Navbar() {
     return () => window.removeEventListener('keydown', onKey);
   }, []);
 
-  /* Close user-dropdown on outside click */
+  /* Close user dropdown on outside click or Escape. */
   useEffect(() => {
     if (!userOpen) return;
-    const close = (e: MouseEvent) => {
+    const closeOnOutsideClick = (e: MouseEvent) => {
       if (!(e.target as HTMLElement).closest('[data-user-dropdown]')) setUserOpen(false);
     };
-    document.addEventListener('mousedown', close);
-    return () => document.removeEventListener('mousedown', close);
+    const closeOnEscape = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      setUserOpen(false);
+      userTriggerRef.current?.focus();
+    };
+    document.addEventListener('mousedown', closeOnOutsideClick);
+    document.addEventListener('keydown', closeOnEscape, true);
+    return () => {
+      document.removeEventListener('mousedown', closeOnOutsideClick);
+      document.removeEventListener('keydown', closeOnEscape, true);
+    };
   }, [userOpen]);
 
-  /* Lock body scroll when mobile menu is open */
+  /* Escape closes a desktop navigation menu and returns focus to its trigger. */
   useEffect(() => {
-    document.body.style.overflow = mobileOpen ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
-  }, [mobileOpen]);
+    if (!openCluster || mobileOpen) return;
+    const closeOnEscape = (e: KeyboardEvent) => {
+      if (e.key !== 'Escape') return;
+      e.preventDefault();
+      const clusterId = openCluster;
+      setOpenCluster(null);
+      requestAnimationFrame(() => clusterTriggerRefs.current[clusterId]?.focus());
+    };
+    document.addEventListener('keydown', closeOnEscape, true);
+    return () => document.removeEventListener('keydown', closeOnEscape, true);
+  }, [mobileOpen, openCluster]);
 
   /* Close menus on route change */
   useEffect(() => { setMobileOpen(false); setOpenCluster(null); }, [pathname]);
@@ -143,7 +176,7 @@ export default function Navbar() {
       </a>
 
       <header className="fixed top-0 inset-x-0 z-50 h-16 glass-cinema border-b border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08),0_0_30px_rgba(59,130,246,0.05)]">
-        <nav className="h-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between gap-4">
+        <nav className="h-full max-w-[1400px] mx-auto px-2 sm:px-6 lg:px-8 flex items-center justify-between gap-2 sm:gap-4">
 
           {/* ── LOGO ── */}
           <Logo />
@@ -158,10 +191,11 @@ export default function Navbar() {
                 onMouseLeave={() => setOpenCluster((cur) => (cur === cluster.id ? null : cur))}
               >
                 <Link
+                  ref={(element) => { clusterTriggerRefs.current[cluster.id] = element; }}
                   href={cluster.href}
                   onFocus={() => setOpenCluster(cluster.id)}
                   aria-expanded={openCluster === cluster.id}
-                  aria-haspopup="true"
+                  aria-controls={`nav-cluster-menu-${cluster.id}`}
                   className={clusterButtonClass(cluster)}
                 >
                   <span className="text-sm opacity-75">{cluster.icon}</span>
@@ -172,7 +206,7 @@ export default function Navbar() {
 
                 {openCluster === cluster.id && (
                   <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
-                    <div className="anim-fade w-[580px] max-w-[92vw] rounded-2xl border border-white/10 bg-gray-900/98 backdrop-blur-xl p-4 shadow-2xl shadow-black/60">
+                    <div id={`nav-cluster-menu-${cluster.id}`} className="ui-scroll-region anim-fade w-[580px] max-w-[92vw] max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-2xl border border-white/10 bg-gray-900/98 backdrop-blur-xl p-4 shadow-2xl shadow-black/60" data-lenis-prevent>
                       <div className="flex items-start gap-3 px-2 pb-3">
                         <span className="text-2xl leading-none">{cluster.icon}</span>
                         <div>
@@ -253,10 +287,11 @@ export default function Navbar() {
               ) : (
                 <div className="relative">
                   <button
+                    ref={userTriggerRef}
                     onClick={() => setUserOpen(v => !v)}
                     className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500/10 to-emerald-500/10 text-teal-400 border border-teal-500/30 text-sm font-medium hover:bg-teal-500/20 hover:border-teal-500 transition-all"
                     aria-expanded={userOpen}
-                    aria-haspopup="true"
+                    aria-controls="user-account-menu"
                   >
                     <span className="text-base">👤</span>
                     <span>Account</span>
@@ -264,7 +299,7 @@ export default function Navbar() {
                   </button>
 
                   {userOpen && (
-                    <div className="absolute top-[calc(100%+8px)] right-0 w-56 bg-gray-900/98 backdrop-blur-xl border border-gray-800 rounded-2xl shadow-2xl shadow-black/60 z-50 anim-fade flex flex-col" style={{ maxHeight: 'calc(100vh - 80px)' }}>
+                    <div id="user-account-menu" className="absolute top-[calc(100%+8px)] right-0 w-56 min-h-0 overflow-hidden bg-gray-900/98 backdrop-blur-xl border border-gray-800 rounded-2xl shadow-2xl shadow-black/60 z-50 anim-fade flex flex-col" style={{ maxHeight: 'calc(100dvh - 5rem)' }}>
                       <div className="px-4 pt-3 pb-1 shrink-0">
                         <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest">Account</p>
                         <div className="mt-1 px-1 py-1.5 bg-white/4 rounded-lg border border-white/6">
@@ -272,7 +307,7 @@ export default function Navbar() {
                           <p className="text-sm font-medium text-white truncate mt-0.5">{session.user?.email}</p>
                         </div>
                       </div>
-                      <div className="px-2 pb-1 overflow-y-auto no-scrollbar">
+                      <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto px-2 pb-1" data-lenis-prevent>
                         <Link
                           href="/dashboard"
                           onClick={() => setUserOpen(false)}
@@ -331,6 +366,8 @@ export default function Navbar() {
               className="lg:hidden relative ml-1 w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-xl hover:bg-white/10 text-white transition-all duration-200 active:scale-95"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
+              aria-controls="public-mobile-navigation"
+              aria-haspopup="dialog"
             >
               <span className={`block w-5 h-0.5 bg-current rounded-full transition-all duration-300 origin-center ${mobileOpen ? 'rotate-45 translate-y-2' : ''}`} />
               <span className={`block w-5 h-0.5 bg-current rounded-full transition-all duration-300 ${mobileOpen ? 'opacity-0 scale-x-0' : ''}`} />
@@ -345,24 +382,36 @@ export default function Navbar() {
       ──────────────────────────────────────────────────────────── */}
       <div
         className={`lg:hidden fixed inset-0 z-[60] transition-all duration-300 ${mobileOpen ? 'visible' : 'invisible'}`}
+        aria-hidden={!mobileOpen}
+        inert={!mobileOpen}
+        role="presentation"
       >
         {/* Backdrop */}
         <div
           className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setMobileOpen(false)}
+          aria-hidden="true"
         />
 
         {/* Drawer panel */}
         <aside
-          className={`absolute right-0 top-0 h-full w-[340px] max-w-[92vw] bg-gray-950 border-l border-white/5 shadow-2xl flex flex-col transition-transform duration-300 ease-out ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          id="public-mobile-navigation"
+          ref={mobileDrawerRef}
+          className={`viewport-height ui-scroll-region absolute inset-y-0 right-0 flex w-[340px] max-w-[92vw] flex-col overscroll-y-contain bg-gray-950 border-l border-white/5 shadow-2xl transition-transform duration-300 ease-out ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
           aria-label="Mobile navigation"
+          role={mobileOpen ? 'dialog' : undefined}
+          aria-modal={mobileOpen ? true : undefined}
+          tabIndex={-1}
+          data-lenis-prevent
+          style={{ paddingRight: 'env(safe-area-inset-right)' }}
         >
           {/* Drawer header */}
-          <div className="flex items-center justify-between p-5 border-b border-white/5">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 px-4 pb-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:p-5">
             <Logo onClick={() => setMobileOpen(false)} />
             <button
+              ref={mobileCloseButtonRef}
               onClick={() => setMobileOpen(false)}
-              className="w-9 h-9 flex items-center justify-center rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
               aria-label="Close menu"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
@@ -373,7 +422,7 @@ export default function Navbar() {
           </div>
 
           {/* Scrollable content */}
-          <div className="flex-1 overflow-y-auto overscroll-contain">
+          <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain" role="region" aria-label="Mobile navigation links" tabIndex={0} data-lenis-prevent>
 
             {/* Search */}
             <div className="p-4">
@@ -420,9 +469,11 @@ export default function Navbar() {
                 </div>
               ))}
             </div>
+          </div>
 
-            {/* Account */}
-            <div className="px-4 pb-4 mt-4 border-t border-white/5 pt-4">
+          {/* Account and primary action remain available while the navigation list scrolls. */}
+          <div className="ui-scroll-region min-h-0 max-h-[min(42dvh,20rem)] shrink-0 overflow-y-auto overscroll-y-contain border-t border-white/5 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3" data-lenis-prevent>
+            <div className="px-0 pb-2">
               <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest mb-3 px-1">Account</p>
               {!session ? (
                 <Link
@@ -464,7 +515,7 @@ export default function Navbar() {
             </div>
 
             {/* CTA */}
-            <div className="px-4 pb-6">
+            <div className="px-0 pb-0 pt-3">
               <Link
                 href={NAV_CTA.href}
                 onClick={() => setMobileOpen(false)}

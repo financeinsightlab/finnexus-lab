@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import CopyButton from '@/components/ui/CopyButton';
 import HeroBackground from '@/components/ui/HeroBackground';
@@ -149,7 +149,7 @@ export default function SpeakingPage() {
 
           {/* Expertise */}
           <aside>
-            <div className="card p-8 bg-brand-slate/5 border-none shadow-none rounded-2xl sticky top-24">
+            <div className="card rounded-2xl border-none bg-brand-slate/5 p-8 shadow-none lg:sticky lg:top-24">
               <h3 className="text-xl font-bold text-brand-navy mb-6">Expertise Areas</h3>
               <ul className="space-y-6">
                 {EXPERTISE_AREAS.map((area, idx) => (

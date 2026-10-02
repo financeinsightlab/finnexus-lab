@@ -2219,6 +2219,10 @@ aside[aria-label="Mobile navigation"] {
 .cms-code-window__dots { display: inline-flex; gap: 0.375rem; }
 .cms-code-window__dots span { width: 0.625rem; height: 0.625rem; border-radius: 9999px; }
 .cms-code-window pre { border: 0; border-radius: 0; margin: 0; }
+.cms-code-window__scroll { min-width: 0; overflow-x: auto; overscroll-behavior-x: contain; -webkit-overflow-scrolling: touch; scrollbar-width: thin; }
+.cms-math:focus-visible,
+.cms-table-scroll:focus-visible,
+.cms-code-window__scroll:focus-visible { outline: 2px solid hsl(var(--ring)); outline-offset: 2px; }
 
 /* Tables */
 .cms-table-scroll {
@@ -2513,3 +2517,111 @@ aside[aria-label="Mobile navigation"] {
 .dark .cms-content .cms-list__check { color: #6EE7B7; }
 .cms-content .cms-content__muted { color: var(--content-ink-soft); font-size: 0.875rem; }
 .cms-figure--left img { margin-right: auto; }
+
+ .prose .horizontal-scroll-region > table {
+   width: max-content;
+   min-width: 100%;
+   margin-top: 0;
+   margin-bottom: 0;
+ }
+
+/* Constrained scroll surfaces. Pair these helpers with an intentional overflow
+   axis; they fix flex sizing, overscroll chaining, and touch scrolling without
+   making arbitrary parents scrollable. */
+.ui-scroll-region {
+  min-width: 0;
+  min-height: 0;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: rgba(100, 116, 139, 0.65) transparent;
+  scrollbar-width: thin;
+}
+.ui-scroll-region::-webkit-scrollbar,
+.horizontal-scroll-region::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+.ui-scroll-region::-webkit-scrollbar-track,
+.horizontal-scroll-region::-webkit-scrollbar-track {
+  background: transparent;
+}
+.ui-scroll-region::-webkit-scrollbar-thumb,
+.horizontal-scroll-region::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+  background: rgba(100, 116, 139, 0.55);
+}
+.dark .ui-scroll-region,
+.dark .horizontal-scroll-region {
+  scrollbar-color: rgba(148, 163, 184, 0.5) transparent;
+}
+.dark .ui-scroll-region::-webkit-scrollbar-thumb,
+.dark .horizontal-scroll-region::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+}
+
+.horizontal-scroll-region {
+  min-width: 0;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-color: rgba(100, 116, 139, 0.65) transparent;
+  scrollbar-width: thin;
+}
+.horizontal-scroll-region:focus-visible {
+  outline: 2px solid #0d6e6e;
+  outline-offset: 2px;
+}
+
+.viewport-height {
+  height: 100vh;
+  height: 100dvh;
+}
+.viewport-max-height {
+  max-height: 100vh;
+  max-height: 100dvh;
+}
+.viewport-dialog-panel {
+  min-height: 0;
+  max-height: min(56rem, calc(100vh - max(1.5rem, env(safe-area-inset-top) + env(safe-area-inset-bottom) + 1.5rem)));
+  max-height: min(56rem, calc(100dvh - max(1.5rem, env(safe-area-inset-top) + env(safe-area-inset-bottom) + 1.5rem)));
+}
+.safe-area-overlay {
+  padding: max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+}
+
+/* Calculator paywalls cover their result pane rather than the whole site. The
+   panel itself handles tall copy/forms; the rest of the page remains scrollable. */
+.paywall-overlay {
+  min-width: 0;
+  padding: max(0.75rem, env(safe-area-inset-top))
+    max(0.75rem, env(safe-area-inset-right))
+    max(0.75rem, env(safe-area-inset-bottom))
+    max(0.75rem, env(safe-area-inset-left));
+}
+.paywall-panel {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  max-width: min(32rem, 100%);
+  min-width: 0;
+  min-height: 0;
+  max-height: calc(100dvh - max(1.5rem, env(safe-area-inset-top) + env(safe-area-inset-bottom) + 1.5rem));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Avoid floating controls intercepting modal/drawer interactions. */
+body[data-scroll-locked='true'] [data-floating-ui],
+body[data-public-navigation-open='true'] [data-floating-ui] {
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
+.wrap {
+  min-width: 0;
+}
+

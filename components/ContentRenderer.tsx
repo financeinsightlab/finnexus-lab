@@ -3,6 +3,7 @@
 import React, { useMemo } from "react"
 import { renderBlocks } from "@/lib/blocks/renderer"
 import { markdownToBlocks, type Block } from "@/lib/blocks/registry"
+import { wrapUncontainedTables } from "@/lib/scrollable-html"
 
 interface ContentRendererProps {
   /** Raw CMS content: HTML, Markdown, or empty when `blocks` is used. */
@@ -52,11 +53,16 @@ const ContentRenderer = ({ content, contentType, blocks, className = "" }: Conte
     }
   }, [content, contentType, blocks])
 
+  // Author-authored HTML (rich-text editor) can contain tables the block
+  // renderer never saw — give those a keyboard-scrollable region too.
+  // Tables already inside a `.horizontal-scroll-region` are left alone.
+  const safeHtml = useMemo(() => wrapUncontainedTables(html), [html])
+
   return (
     <div
       className={`cms-content prose-content article-body ${className}`.trim()}
       // Server-rendered / author-authored HTML from the CMS block engine.
-      dangerouslySetInnerHTML={{ __html: html }}
+      dangerouslySetInnerHTML={{ __html: safeHtml }}
     />
   )
 }

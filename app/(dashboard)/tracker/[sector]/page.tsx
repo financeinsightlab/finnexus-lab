@@ -155,8 +155,8 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       </section>
 
       {/* Sticky nav */}
-      <div className="sticky top-0 z-30 bg-white/90 dark:bg-[#0a1120]/90 backdrop-blur border-b border-slate-200 dark:border-white/10">
-        <div className="max-w-7xl mx-auto px-6 overflow-x-auto">
+      <div className="sticky top-16 z-40 bg-white/90 backdrop-blur dark:bg-[#0a1120]/90 dark:border-white/10 border-b border-slate-200">
+        <div className="horizontal-scroll-region max-w-7xl mx-auto px-6" role="region" aria-label="Sector tracker sections" tabIndex={0} data-lenis-prevent>
           <nav className="flex gap-1 py-3 whitespace-nowrap text-sm">
             {sections.map((s) => <a key={s.id} href={`#${s.id}`} className="px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white font-medium transition-colors">{s.label}</a>)}
           </nav>
@@ -216,19 +216,19 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       <section id="landscape" className="py-14 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeader label="Peer Benchmarking" title="Competitive landscape" subtitle="A standardised view of the leading players across the sector." />
-          <div className="mt-8 overflow-hidden rounded-2xl border border-slate-200 dark:border-white/10">
-            <table className="w-full text-sm">
+          <div className="horizontal-scroll-region mt-8 rounded-2xl border border-slate-200 dark:border-white/10" role="region" aria-label="Competitive landscape table" tabIndex={0} data-lenis-prevent>
+            <table className="w-full min-w-[820px] text-sm">
               <thead><tr className="bg-slate-50 dark:bg-white/5 text-left text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                <th className="px-5 py-3 font-semibold">Rank</th><th className="px-5 py-3 font-semibold">Player</th><th className="px-5 py-3 font-semibold hidden md:table-cell">Metric</th><th className="px-5 py-3 font-semibold">Value</th><th className="px-5 py-3 font-semibold">Trend</th><th className="px-5 py-3 font-semibold hidden lg:table-cell">Notes</th>
+                <th className="px-5 py-3 font-semibold">Rank</th><th className="px-5 py-3 font-semibold">Player</th><th className="px-5 py-3 font-semibold">Metric</th><th className="px-5 py-3 font-semibold">Value</th><th className="px-5 py-3 font-semibold">Trend</th><th className="px-5 py-3 font-semibold">Notes</th>
               </tr></thead>
               <tbody>{t.competitive.map((c, i) => (
                 <tr key={c.player} className={`border-t border-slate-100 dark:border-white/10 ${i === 0 ? 'bg-teal-50/50 dark:bg-teal-500/5' : ''}`}>
                   <td className="px-5 py-4"><span className={`inline-flex w-7 h-7 items-center justify-center rounded-full text-xs font-extrabold ${i === 0 ? 'bg-teal-600 text-white' : i === 1 ? 'bg-slate-700 text-white' : i === 2 ? 'bg-amber-500 text-white' : 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300'}`}>{c.rank}</span></td>
                   <td className="px-5 py-4 font-bold text-slate-900 dark:text-white">{c.player}</td>
-                  <td className="px-5 py-4 text-slate-600 dark:text-slate-300 hidden md:table-cell">{c.metric}</td>
+                  <td className="px-5 py-4 text-slate-600 dark:text-slate-300">{c.metric}</td>
                   <td className="px-5 py-4 font-semibold text-slate-800 dark:text-slate-200">{c.value}</td>
                   <td className="px-5 py-4"><DirectionBadge change={c.trend === 'flat' ? 'stable' : c.trend === 'up' ? 'gaining' : 'losing'} changeType={c.trend} /></td>
-                  <td className="px-5 py-4 text-xs text-slate-500 dark:text-slate-400 hidden lg:table-cell">{c.note}</td>
+                  <td className="px-5 py-4 text-xs text-slate-500 dark:text-slate-400">{c.note}</td>
                 </tr>))}
               </tbody>
             </table>

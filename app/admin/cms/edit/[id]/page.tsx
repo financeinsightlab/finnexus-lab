@@ -38,7 +38,7 @@ export default async function EditPostPage({
   }
 
   return (
-    <div className="-m-8 h-screen bg-[#0B1C2C]">
+    <div className="-mx-6 -my-6 h-[calc(100dvh-4rem)] min-w-0 overflow-hidden bg-[#0B1C2C] md:-mx-10 md:-my-10">
       <EditClient post={post} />
     </div>
   )

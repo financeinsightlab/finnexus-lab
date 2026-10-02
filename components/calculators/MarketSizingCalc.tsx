@@ -218,7 +218,7 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
                 <span className="font-bold italic text-gray-400 px-1">fx</span>
                 <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 h-5 flex items-center shadow-inner text-xs">=Population * Segment% * Addressable% * Obtainable% * ARPU</div>
               </div>
-              <div className="overflow-x-auto w-full">
+              <div className="horizontal-scroll-region w-full" role="region" aria-label="Market sizing model table" tabIndex={0} data-lenis-prevent>
                 <table className="w-full text-[11px] whitespace-nowrap border-collapse select-text">
                   <thead>
                     <tr>

@@ -6,6 +6,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { X } from 'lucide-react';
+import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 import type { SearchItem, SearchResult } from '@/lib/search';
 
 const STATIC_ACTIONS: SearchItem[] = [
@@ -50,13 +52,14 @@ export default function CommandPalette() {
     const [loading, setLoading] = useState(false);
     const [active, setActive] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
+    const dialogRef = useRef<HTMLDivElement>(null);
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
 
     // CommandPalette is triggered by the visible button below.
     // Ctrl+K is handled by Navbar which opens GlobalSearch instead.
-
-    useEffect(() => {
-        if (open) inputRef.current?.focus();
-    }, [open]);
+    useModalAccessibility(open, dialogRef, () => setOpen(false), {
+        initialFocusRef: inputRef,
+    });
 
     // Debounced remote search; falls back to the static action list when empty.
     useEffect(() => {
@@ -135,6 +138,8 @@ export default function CommandPalette() {
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-label="Open command palette"
+                aria-expanded={open}
+                aria-controls="command-palette-dialog"
                 className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white md:inline-flex"
             >
                 <span aria-hidden>🔍</span>
@@ -146,18 +151,29 @@ export default function CommandPalette() {
 
             {open && (
                 <div
-                    className="fixed inset-0 z-[100] flex items-start justify-center bg-black/60 p-4 pt-[12vh] backdrop-blur-sm"
-                    onClick={() => setOpen(false)}
+                    className="safe-area-overlay fixed inset-0 z-[100] flex items-start justify-center bg-black/60 backdrop-blur-sm"
+                    onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}
+                    style={{
+                        paddingLeft: 'max(0.75rem, env(safe-area-inset-left))',
+                        paddingRight: 'max(0.75rem, env(safe-area-inset-right))',
+                        paddingTop: 'max(12vh, calc(env(safe-area-inset-top) + 1rem))',
+                        paddingBottom: 'max(0.75rem, env(safe-area-inset-bottom))',
+                    }}
                     role="presentation"
                 >
                     <div
-                        className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-[#0f1420] shadow-2xl"
-                        onClick={(event) => event.stopPropagation()}
+                        ref={dialogRef}
+                        id="command-palette-dialog"
+                        className="viewport-dialog-panel ui-scroll-region flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1420] shadow-2xl"
+                        style={{ maxHeight: 'calc(100dvh - max(12vh, calc(env(safe-area-inset-top) + 1rem)) - max(0.75rem, env(safe-area-inset-bottom)))' }}
+                        onMouseDown={(event) => event.stopPropagation()}
                         role="dialog"
                         aria-modal="true"
                         aria-label="Command palette"
+                        tabIndex={-1}
+                        data-lenis-prevent
                     >
-                        <div className="flex items-center gap-3 border-b border-white/10 px-4">
+                        <div className="flex shrink-0 items-center gap-3 border-b border-white/10 px-4">
                             <span aria-hidden className="text-slate-500">
                                 🔍
                             </span>
@@ -167,12 +183,21 @@ export default function CommandPalette() {
                                 onChange={(event) => setQuery(event.target.value)}
                                 onKeyDown={onInputKeyDown}
                                 placeholder="Search pages, research, lectures, tools…"
-                                className="w-full bg-transparent py-4 text-sm text-white outline-none placeholder:text-slate-500"
+                                className="min-w-0 flex-1 bg-transparent py-4 text-sm text-white outline-none placeholder:text-slate-500"
                             />
-                            {loading && <span className="text-xs text-slate-500">…</span>}
+                            {loading && <span className="shrink-0 text-xs text-slate-500">…</span>}
+                            <button
+                                ref={closeButtonRef}
+                                type="button"
+                                onClick={() => setOpen(false)}
+                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
+                                aria-label="Close command palette"
+                            >
+                                <X className="h-5 w-5" />
+                            </button>
                         </div>
 
-                        <ul className="max-h-[52vh] overflow-y-auto py-2">
+                        <ul className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain py-2" data-lenis-prevent>
                             {rows.length === 0 ? (
                                 <li className="px-4 py-8 text-center text-sm text-slate-500">
                                     No matches. Try another term.
@@ -184,21 +209,21 @@ export default function CommandPalette() {
                                             type="button"
                                             onMouseEnter={() => setActive(index)}
                                             onClick={() => run(row.item)}
-                                            className={`flex w-full items-center gap-3 px-4 py-2.5 text-left ${index === active ? 'bg-white/5' : ''
+                                            className={`flex w-full min-w-0 items-start gap-3 px-4 py-2.5 text-left ${index === active ? 'bg-white/5' : ''
                                                 }`}
                                         >
                                             <span aria-hidden className="text-base">
                                                 {GROUP_ICON[row.item.kind] ?? '📄'}
                                             </span>
-                                            <span className="min-w-0 flex-1">
-                                                <span className="block truncate text-sm font-medium text-slate-100">
+                                            <span className="min-w-0 flex-1 break-words">
+                                                <span className="block break-words text-sm font-medium text-slate-100">
                                                     {row.item.title}
                                                 </span>
-                                                <span className="block truncate text-xs text-slate-500">
+                                                <span className="block break-words text-xs text-slate-500">
                                                     {row.item.description}
                                                 </span>
                                             </span>
-                                            <span className="shrink-0 text-[10px] uppercase tracking-widest text-slate-600">
+                                            <span className="max-w-[28%] shrink-0 break-words text-right text-[10px] uppercase tracking-widest text-slate-600">
                                                 {row.label}
                                             </span>
                                         </button>
@@ -207,7 +232,7 @@ export default function CommandPalette() {
                             )}
                         </ul>
 
-                        <div className="flex items-center justify-between border-t border-white/10 px-4 py-2 text-[10px] text-slate-500">
+                        <div className="flex shrink-0 items-center justify-between gap-2 border-t border-white/10 px-4 py-2 text-[10px] text-slate-500">
                             <span>↑↓ navigate · ↵ open · esc close</span>
                             <span>Kunwar Analytics</span>
                         </div>

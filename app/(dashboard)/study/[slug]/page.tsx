@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { getStudyMaterialBySlug, getRelatedStudyMaterials, incrementStudyMaterialView } from '@/lib/study'
 import { ArrowLeft, Clock, Eye, ExternalLink, BookOpen } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
+import { scrollableTableComponents } from '@/components/content/scrollableTableComponents'
 import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd'
 import CourseLessonsList from '@/components/learning/CourseLessonsList'
 import CourseAssessmentPanel from '@/components/learning/CourseAssessmentPanel'
@@ -200,7 +201,7 @@ export default async function StudyMaterialPage({ params }: PageProps) {
       <ContentPage as="article" className="py-12">
         <div className="cms-content prose-content article-body">
           {material.content ? (
-            <MDXRemote source={material.content} />
+            <MDXRemote source={material.content} components={scrollableTableComponents} />
           ) : (
             <p className="text-center italic text-gray-500">Content not available.</p>
           )}

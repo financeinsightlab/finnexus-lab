@@ -2,6 +2,7 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
+import { scrollableTableComponents } from '@/components/content/scrollableTableComponents';
 import Link from 'next/link';
 import { Share2, Clock, CalendarDays, ArrowLeft, Rss, Sparkles } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
@@ -234,7 +235,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Show Notes & Transcript</h2>
           <div className="cms-content prose-content article-body">
             {episode.content ? (
-              <MDXRemote source={episode.content} />
+              <MDXRemote source={episode.content} components={scrollableTableComponents} />
             ) : (
               <p className="text-muted-foreground">No show notes available for this episode.</p>
             )}

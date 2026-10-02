@@ -337,7 +337,7 @@ function ProfilePanel() {
                 Make my profile public (appears on community pages)
             </label>
 
-            <div className="flex items-center gap-4">
+            <div className="flex flex-wrap items-center gap-4">
                 <button onClick={save} disabled={saving} className="btn btn-primary disabled:opacity-60">
                     {saving ? 'Saving…' : 'Save profile'}
                 </button>
@@ -469,9 +469,9 @@ function NotificationsPanel() {
                         >
                             <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
-                                    <div className="font-semibold text-brand-navy dark:text-white">{n.title}</div>
+                                    <div className="break-words font-semibold text-brand-navy dark:text-white">{n.title}</div>
                                     {n.body && (
-                                        <p className="mt-1 text-sm text-brand-slate dark:text-slate-400">{n.body}</p>
+                                        <p className="mt-1 break-words text-sm text-brand-slate dark:text-slate-400">{n.body}</p>
                                     )}
                                     <div className="mt-1 text-xs text-brand-slate">{formatDate(n.createdAt)}</div>
                                 </div>
@@ -569,7 +569,7 @@ function KeysPanel() {
                                 }`}
                         >
                             <div className="min-w-0">
-                                <div className="font-semibold text-brand-navy dark:text-white">{key.name}</div>
+                                <div className="break-words font-semibold text-brand-navy dark:text-white">{key.name}</div>
                                 <div className="font-mono text-xs text-brand-slate">
                                     {key.prefix}••••••••  ·  {key.rateLimitPerMin}/min
                                 </div>
@@ -599,7 +599,7 @@ function KeysPanel() {
                 <p className="text-sm text-brand-slate dark:text-slate-400">
                     The secret is shown once. We only store a hash — copy it now.
                 </p>
-                <div className="flex gap-3">
+                <div className="flex flex-col gap-3 sm:flex-row">
                     <input
                         className={inputClass}
                         value={name}
@@ -607,7 +607,7 @@ function KeysPanel() {
                         placeholder="e.g. Research notebook"
                         maxLength={120}
                     />
-                    <button onClick={issue} disabled={busy} className="btn btn-primary shrink-0 disabled:opacity-60">
+                    <button onClick={issue} disabled={busy} className="btn btn-primary min-h-11 shrink-0 disabled:opacity-60">
                         {busy ? 'Issuing…' : 'Issue key'}
                     </button>
                 </div>
