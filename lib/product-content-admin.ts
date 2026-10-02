@@ -46,36 +46,44 @@ export function revalidateProductContent(input: {
   targetType?: string;
   targetSlug?: string;
 }) {
-  if (input.type === 'FAQ') {
-    revalidateTag('public-faqs', { expire: 0 });
-    revalidateContextRoute(input.sourceType, input.sourceSlug);
-    return;
-  }
-  if (input.type === 'FINANCE_TERM') {
-    revalidateTag('public-finance-terms', { expire: 0 });
-    revalidatePath('/finance-terms');
-    if (input.sourceSlug) revalidatePath(`/finance-terms/${encodeURIComponent(input.sourceSlug)}`);
-    revalidatePath('/sitemap.xml');
-    return;
-  }
-  if (input.type === 'RELATED') {
-    revalidateTag('public-related-content', { expire: 0 });
-    revalidateContextRoute(input.sourceType, input.sourceSlug);
-    revalidateContextRoute(input.targetType, input.targetSlug);
-    return;
-  }
-  if (input.type === 'PROMOTION') {
-    revalidateTag('public-promotions', { expire: 0 });
-    revalidatePath('/');
-    for (const route of ['/pricing', '/pgdm', '/tools', '/research', '/study']) revalidatePath(route);
-    return;
-  }
-  if (input.type === 'COURSE') {
-    if (input.sourceSlug) {
-      revalidatePath(`/pgdm/${encodeURIComponent(input.sourceSlug)}`);
-      revalidatePath(`/study/${encodeURIComponent(input.sourceSlug)}`);
+  try {
+    if (input.type === 'FAQ') {
+      try { revalidateTag('public-faqs', { expire: 0 }); } catch {}
+      revalidateContextRoute(input.sourceType, input.sourceSlug);
+      return;
     }
-    revalidatePath('/sitemap.xml');
+    if (input.type === 'FINANCE_TERM') {
+      try { revalidateTag('public-finance-terms', { expire: 0 }); } catch {}
+      try { revalidatePath('/finance-terms'); } catch {}
+      if (input.sourceSlug) {
+        try { revalidatePath(`/finance-terms/${encodeURIComponent(input.sourceSlug)}`); } catch {}
+      }
+      try { revalidatePath('/sitemap.xml'); } catch {}
+      return;
+    }
+    if (input.type === 'RELATED') {
+      try { revalidateTag('public-related-content', { expire: 0 }); } catch {}
+      revalidateContextRoute(input.sourceType, input.sourceSlug);
+      revalidateContextRoute(input.targetType, input.targetSlug);
+      return;
+    }
+    if (input.type === 'PROMOTION') {
+      try { revalidateTag('public-promotions', { expire: 0 }); } catch {}
+      try { revalidatePath('/'); } catch {}
+      for (const route of ['/pricing', '/pgdm', '/tools', '/research', '/study', '/finance-terms']) {
+        try { revalidatePath(route); } catch {}
+      }
+      return;
+    }
+    if (input.type === 'COURSE') {
+      if (input.sourceSlug) {
+        try { revalidatePath(`/pgdm/${encodeURIComponent(input.sourceSlug)}`); } catch {}
+        try { revalidatePath(`/study/${encodeURIComponent(input.sourceSlug)}`); } catch {}
+      }
+      try { revalidatePath('/sitemap.xml'); } catch {}
+    }
+  } catch {
+    // Non-fatal cache revalidation error
   }
 }
 

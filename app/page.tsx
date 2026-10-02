@@ -4,7 +4,6 @@ import Image from 'next/image';
 import SectionHeader from '@/components/ui/SectionHeader';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
-import PromotionSlot from '@/components/promotions/PromotionSlot';
 import FinanceTermsCarousel from '@/components/finance-terms/FinanceTermsCarousel';
 import { getFeaturedFinanceTerms } from '@/lib/finance-terms';
 
@@ -106,7 +105,7 @@ async function getHomePagePosts() {
 export default async function HomePage() {
   const [{ research, insights, heroStats, trackers }, featuredTerms] = await Promise.all([
     getHomePagePosts(),
-    getFeaturedFinanceTerms(6).catch(() => []),
+    getFeaturedFinanceTerms(24).catch(() => []),
   ]);
 
   const pillars = [
@@ -131,7 +130,6 @@ export default async function HomePage() {
       {/* ===== CINEMATIC HERO ===== */}
       <CinematicHero />
       <FinanceTermsCarousel terms={featuredTerms} />
-      <PromotionSlot placement="HOME_SECTION" path="/" contentType="HOME" />
 
       {/* ===== PLATFORM PILLARS ===== */}
       <section className="relative py-28 bg-cinema-ink overflow-hidden">

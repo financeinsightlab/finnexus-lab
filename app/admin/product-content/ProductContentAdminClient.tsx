@@ -23,8 +23,14 @@ async function api<T>(url: string, init?: RequestInit): Promise<T> {
     headers: { ...(init?.body ? { 'Content-Type': 'application/json' } : {}), ...init?.headers },
     cache: 'no-store',
   });
-  const data = await response.json().catch(() => ({})) as T & { error?: string };
-  if (!response.ok) throw new Error(data.error || `Request failed (${response.status})`);
+  const data = (await response.json().catch(() => ({}))) as T & {
+    error?: string;
+    issues?: { path?: string; message?: string }[];
+  };
+  if (!response.ok) {
+    const detail = data.issues?.map((i) => (i.path ? `${i.path}: ${i.message}` : i.message)).filter(Boolean).join(', ');
+    throw new Error(detail ? `${data.error}: ${detail}` : data.error || `Request failed (${response.status})`);
+  }
   return data;
 }
 
@@ -121,11 +127,11 @@ function FaqManager() {
 
 interface TermRecord {
   id: string; slug: string; term: string; simpleMeaning: string; example: string; interviewAnswer: string; formula: string | null;
-  category: string; difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT'; keywords: string[]; synonyms: string[];
+  category: string; subCategory: string | null; difficulty: 'BEGINNER' | 'INTERMEDIATE' | 'ADVANCED' | 'EXPERT'; keywords: string[]; synonyms: string[];
   relatedTermSlugs: string[]; featured: boolean; published: boolean; seoVisible: boolean; displayOrder: number;
 }
-type TermDraft = Omit<TermRecord, 'id' | 'keywords' | 'synonyms' | 'relatedTermSlugs' | 'formula'> & { id?: string; keywordsText: string; synonymsText: string; relatedTermSlugsText: string; formula: string };
-function blankTerm(): TermDraft { return { slug: '', term: '', simpleMeaning: '', example: '', interviewAnswer: '', formula: '', category: 'Finance', difficulty: 'BEGINNER', keywordsText: '', synonymsText: '', relatedTermSlugsText: '', featured: false, published: false, seoVisible: true, displayOrder: 0 }; }
+type TermDraft = Omit<TermRecord, 'id' | 'keywords' | 'synonyms' | 'relatedTermSlugs' | 'formula' | 'subCategory'> & { id?: string; keywordsText: string; synonymsText: string; relatedTermSlugsText: string; formula: string; subCategory: string };
+function blankTerm(): TermDraft { return { slug: '', term: '', simpleMeaning: '', example: '', interviewAnswer: '', formula: '', category: 'Finance', subCategory: '', difficulty: 'BEGINNER', keywordsText: '', synonymsText: '', relatedTermSlugsText: '', featured: false, published: false, seoVisible: true, displayOrder: 0 }; }
 function listFromText(text: string) { return [...new Set(text.split(/[\n,]/).map((value) => value.trim()).filter(Boolean))]; }
 
 function FinanceTermManager() {
@@ -134,13 +140,13 @@ function FinanceTermManager() {
   const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false);
   const [notice, setNotice] = useState<Notice>(null); const [filter, setFilter] = useState('');
   useEffect(() => { void api<{ terms: TermRecord[] }>('/api/admin/content/finance-terms').then((data) => setTerms(data.terms)).catch((error: unknown) => setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Finance terms could not be loaded.' })).finally(() => setLoading(false)); }, []);
-  const visible = useMemo(() => terms.filter((term) => `${term.term} ${term.category} ${term.slug}`.toLowerCase().includes(filter.toLowerCase())), [terms, filter]);
+  const visible = useMemo(() => terms.filter((term) => `${term.term} ${term.category} ${term.subCategory ?? ''} ${term.slug}`.toLowerCase().includes(filter.toLowerCase())), [terms, filter]);
   const update = <K extends keyof TermDraft>(key: K, value: TermDraft[K]) => setDraft((current) => ({ ...current, [key]: value }));
-  const edit = (term: TermRecord) => { setDraft({ ...term, formula: term.formula ?? '', keywordsText: term.keywords.join(', '), synonymsText: term.synonyms.join(', '), relatedTermSlugsText: term.relatedTermSlugs.join(', ') }); setNotice({ kind: 'info', text: `Editing “${term.term}”.` }); };
+  const edit = (term: TermRecord) => { setDraft({ ...term, formula: term.formula ?? '', subCategory: term.subCategory ?? '', keywordsText: term.keywords.join(', '), synonymsText: term.synonyms.join(', '), relatedTermSlugsText: term.relatedTermSlugs.join(', ') }); setNotice({ kind: 'info', text: `Editing “${term.term}”.` }); };
   const save = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setSaving(true); setNotice(null);
     try {
-      const { term } = await api<{ term: TermRecord }>('/api/admin/content/finance-terms', { method: 'POST', body: JSON.stringify({ ...draft, keywords: listFromText(draft.keywordsText), synonyms: listFromText(draft.synonymsText), relatedTermSlugs: listFromText(draft.relatedTermSlugsText), formula: draft.formula || null }) });
+      const { term } = await api<{ term: TermRecord }>('/api/admin/content/finance-terms', { method: 'POST', body: JSON.stringify({ ...draft, subCategory: draft.subCategory.trim() || null, keywords: listFromText(draft.keywordsText), synonyms: listFromText(draft.synonymsText), relatedTermSlugs: listFromText(draft.relatedTermSlugsText), formula: draft.formula || null }) });
       setTerms((current) => [term, ...current.filter((entry) => entry.id !== term.id)]); setDraft(blankTerm()); setNotice({ kind: 'success', text: 'Finance term saved and public glossary caches revalidated.' });
     } catch (error) { setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Finance term could not be saved.' }); }
     finally { setSaving(false); }
@@ -151,8 +157,8 @@ function FinanceTermManager() {
     <div className="grid gap-6 xl:grid-cols-[minmax(0,1.1fr)_minmax(380px,0.9fr)]">
       <section className="order-2 rounded-2xl border border-border bg-card p-5 xl:order-1" aria-labelledby="terms-list-title">
         <div className="flex flex-wrap items-center justify-between gap-3"><div><h2 id="terms-list-title" className="text-lg font-bold text-foreground">Finance Terms</h2><p className="mt-1 text-sm text-muted-foreground">Only CMS-authored terms are listed; no sample production terms are preloaded.</p></div><span className="text-xs text-muted-foreground">{terms.length} records</span></div>
-        <label htmlFor="term-filter" className="sr-only">Filter finance terms</label><input id="term-filter" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filter by term or category" className={inputClass} />
-        {loading ? <p className="py-8 text-sm text-muted-foreground" role="status">Loading terms…</p> : visible.length ? <ul className="mt-4 divide-y divide-border">{visible.map((term) => <li key={term.id} className="flex flex-wrap items-start justify-between gap-3 py-4"><div><div className="flex flex-wrap items-center gap-2"><StatusBadge active={term.published} /><span className="text-[10px] font-semibold uppercase tracking-wider text-primary">{term.category}</span>{term.featured && <span className="text-[10px] text-amber-700 dark:text-amber-300">Featured</span>}</div><p className="mt-2 font-semibold text-foreground">{term.term}</p><p className="mt-1 text-xs text-muted-foreground">/finance-terms/{term.slug}</p></div><div className="flex gap-2"><button type="button" onClick={() => edit(term)} className={buttonClass}>Edit</button>{term.published && <button type="button" onClick={() => void unpublish(term.id)} className={buttonClass}>Unpublish</button>}</div></li>)}</ul> : <p className="py-8 text-sm text-muted-foreground">No glossary terms match this filter.</p>}
+        <label htmlFor="term-filter" className="sr-only">Filter finance terms</label><input id="term-filter" value={filter} onChange={(e) => setFilter(e.target.value)} placeholder="Filter by term, category, or subcategory" className={inputClass} />
+        {loading ? <p className="py-8 text-sm text-muted-foreground" role="status">Loading terms…</p> : visible.length ? <ul className="mt-4 divide-y divide-border">{visible.map((term) => <li key={term.id} className="flex flex-wrap items-start justify-between gap-3 py-4"><div><div className="flex flex-wrap items-center gap-2"><StatusBadge active={term.published} /><span className="text-[10px] font-semibold uppercase tracking-wider text-primary">{term.category}</span>{term.subCategory && <span className="rounded bg-muted px-1.5 py-0.5 text-[10px] text-muted-foreground">{term.subCategory}</span>}{term.featured && <span className="text-[10px] text-amber-700 dark:text-amber-300">Featured</span>}</div><p className="mt-2 font-semibold text-foreground">{term.term}</p><p className="mt-1 text-xs text-muted-foreground">/finance-terms/{term.slug}</p></div><div className="flex gap-2"><button type="button" onClick={() => edit(term)} className={buttonClass}>Edit</button>{term.published && <button type="button" onClick={() => void unpublish(term.id)} className={buttonClass}>Unpublish</button>}</div></li>)}</ul> : <p className="py-8 text-sm text-muted-foreground">No glossary terms match this filter.</p>}
       </section>
       <section className="order-1 rounded-2xl border border-border bg-card p-5 xl:order-2" aria-labelledby="term-editor-title">
         <h2 id="term-editor-title" className="text-lg font-bold text-foreground">{draft.id ? 'Edit finance term' : 'Create finance term'}</h2><p className="mt-1 text-sm text-muted-foreground">Each published term gets a stable, searchable URL and a DefinedTerm structured-data record.</p>
@@ -162,7 +168,7 @@ function FinanceTermManager() {
           <Field label="Simple meaning" htmlFor="term-meaning"><textarea id="term-meaning" required minLength={10} maxLength={6000} rows={3} value={draft.simpleMeaning} onChange={(e) => update('simpleMeaning', e.target.value)} className={textAreaClass} /></Field>
           <Field label="Practical example" htmlFor="term-example"><textarea id="term-example" required minLength={5} maxLength={6000} rows={3} value={draft.example} onChange={(e) => update('example', e.target.value)} className={textAreaClass} /></Field>
           <Field label="Interview-ready explanation" htmlFor="term-answer"><textarea id="term-answer" required minLength={5} maxLength={6000} rows={3} value={draft.interviewAnswer} onChange={(e) => update('interviewAnswer', e.target.value)} className={textAreaClass} /></Field>
-          <div className="grid gap-4 sm:grid-cols-2"><Field label="Formula (optional)" htmlFor="term-formula"><input id="term-formula" maxLength={2000} value={draft.formula} onChange={(e) => update('formula', e.target.value)} className={inputClass} /></Field><Field label="Category" htmlFor="term-category"><input id="term-category" required maxLength={80} value={draft.category} onChange={(e) => update('category', e.target.value)} className={inputClass} /></Field></div>
+          <div className="grid gap-4 sm:grid-cols-3"><Field label="Formula (optional)" htmlFor="term-formula"><input id="term-formula" maxLength={2000} value={draft.formula} onChange={(e) => update('formula', e.target.value)} className={inputClass} /></Field><Field label="Category" htmlFor="term-category"><input id="term-category" required maxLength={80} value={draft.category} onChange={(e) => update('category', e.target.value)} className={inputClass} /></Field><Field label="Subcategory (optional)" htmlFor="term-subcategory" hint="e.g. Valuation, Ratios"><input id="term-subcategory" maxLength={80} value={draft.subCategory} onChange={(e) => update('subCategory', e.target.value)} placeholder="e.g. DCF" className={inputClass} /></Field></div>
           <div className="grid gap-4 sm:grid-cols-2"><Field label="Difficulty" htmlFor="term-difficulty"><select id="term-difficulty" value={draft.difficulty} onChange={(e) => update('difficulty', e.target.value as TermDraft['difficulty'])} className={inputClass}><option value="BEGINNER">Beginner</option><option value="INTERMEDIATE">Intermediate</option><option value="ADVANCED">Advanced</option><option value="EXPERT">Expert</option></select></Field><Field label="Display order" htmlFor="term-order"><input id="term-order" type="number" min={0} max={10000} value={draft.displayOrder} onChange={(e) => update('displayOrder', Number(e.target.value))} className={inputClass} /></Field></div>
           <Field label="Keywords" htmlFor="term-keywords" hint="Separate keywords with commas or new lines."><textarea id="term-keywords" rows={2} value={draft.keywordsText} onChange={(e) => update('keywordsText', e.target.value)} className={textAreaClass} /></Field>
           <div className="grid gap-4 sm:grid-cols-2"><Field label="Synonyms" htmlFor="term-synonyms"><textarea id="term-synonyms" rows={2} value={draft.synonymsText} onChange={(e) => update('synonymsText', e.target.value)} className={textAreaClass} /></Field><Field label="Related term slugs" htmlFor="term-related"><textarea id="term-related" rows={2} value={draft.relatedTermSlugsText} onChange={(e) => update('relatedTermSlugsText', e.target.value)} className={textAreaClass} /></Field></div>
@@ -294,7 +300,7 @@ function LearningManager({ courses }: { courses: AdminCourseOption[] }) {
 
 interface PromotionRecord {
   id: string; brandName: string; title: string; shortDescription: string; fullDescription: string | null; logoUrl: string | null;
-  imageUrl: string | null; lightCreativeUrl: string | null; darkCreativeUrl: string | null; ctaText: string; destinationUrl: string;
+  imageUrl: string | null; videoUrl: string | null; lightCreativeUrl: string | null; darkCreativeUrl: string | null; ctaText: string; destinationUrl: string;
   affiliateUrl: string | null; trackingUrl: string | null; category: string; placement: string; targetPages: string[];
   targetContentTypes: string[]; startsAt: string | null; endsAt: string | null; active: boolean; priority: number; displayFrequency: number;
   mobileVisible: boolean; desktopVisible: boolean; disclosureType: string; disclosureText: string; campaignId: string | null; utmParameters: unknown;
@@ -302,8 +308,36 @@ interface PromotionRecord {
 type PromotionDraft = Omit<PromotionRecord, 'id' | 'targetPages' | 'targetContentTypes' | 'startsAt' | 'endsAt' | 'utmParameters'> & {
   id?: string; targetPagesText: string; targetContentTypesText: string; startsAtLocal: string; endsAtLocal: string; utmText: string;
 };
-function blankPromotion(): PromotionDraft { return { brandName: '', title: '', shortDescription: '', fullDescription: '', logoUrl: '', imageUrl: '', lightCreativeUrl: '', darkCreativeUrl: '', ctaText: 'Learn more', destinationUrl: '', affiliateUrl: '', trackingUrl: '', category: 'Education', placement: 'BETWEEN_CONTENT', targetPagesText: '', targetContentTypesText: '', startsAtLocal: '', endsAtLocal: '', active: false, priority: 0, displayFrequency: 1, mobileVisible: true, desktopVisible: true, disclosureType: 'SPONSORED', disclosureText: 'Sponsored · Paid promotion', campaignId: '', utmText: '{}' }; }
-const promotionPlacements = ['HOME_HERO', 'HOME_SECTION', 'SIDEBAR', 'COURSE_PAGE', 'TOOL_PAGE', 'CALCULATOR_PAGE', 'RESEARCH_PAGE', 'ARTICLE_PAGE', 'STUDY_PAGE', 'DASHBOARD', 'FOOTER', 'BETWEEN_CONTENT', 'CTA_BLOCK'];
+function blankPromotion(): PromotionDraft { return { brandName: '', title: '', shortDescription: '', fullDescription: '', logoUrl: '', imageUrl: '', videoUrl: '', lightCreativeUrl: '', darkCreativeUrl: '', ctaText: 'Learn more', destinationUrl: '', affiliateUrl: '', trackingUrl: '', category: 'Education', placement: 'SIDEBAR', targetPagesText: 'ALL', targetContentTypesText: '', startsAtLocal: '', endsAtLocal: '', active: false, priority: 0, displayFrequency: 1, mobileVisible: true, desktopVisible: true, disclosureType: 'SPONSORED', disclosureText: 'Sponsored · Paid promotion', campaignId: '', utmText: '{}' }; }
+const promotionPlacements = [
+  { value: 'ALL', label: '🌟 ALL PLACEMENTS & PAGES (Universal Global Everywhere)' },
+  { value: 'SIDEBAR', label: 'SIDEBAR — Sticky Right-Side Card (Recommended)' },
+  { value: 'HOME_SECTION', label: 'HOME SECTION — Between Hero & Pillars' },
+  { value: 'HOME_HERO', label: 'HOME HERO — Top of Homepage' },
+  { value: 'BETWEEN_CONTENT', label: 'BETWEEN CONTENT — In Content Pages' },
+  { value: 'RESEARCH_PAGE', label: 'RESEARCH PAGE — Research Reports' },
+  { value: 'COURSE_PAGE', label: 'COURSE PAGE — Study & PGDM Lectures' },
+  { value: 'TOOL_PAGE', label: 'TOOL PAGE — Calculators & Frameworks' },
+  { value: 'CALCULATOR_PAGE', label: 'CALCULATOR PAGE — Individual Calculators' },
+  { value: 'ARTICLE_PAGE', label: 'ARTICLE PAGE — Insights & Articles' },
+  { value: 'STUDY_PAGE', label: 'STUDY PAGE — Study Materials' },
+  { value: 'DASHBOARD', label: 'DASHBOARD — User Dashboard' },
+  { value: 'CTA_BLOCK', label: 'CTA BLOCK — Call-to-Action Slot' },
+  { value: 'FOOTER', label: 'FOOTER — Bottom of Pages' },
+];
+
+const TARGET_PAGE_PRESETS = [
+  { label: '🌟 All Pages (Global)', path: 'ALL' },
+  { label: '🏠 Home (/)', path: '/' },
+  { label: '📊 Research (/research)', path: '/research' },
+  { label: '💡 Insights (/insights)', path: '/insights' },
+  { label: '🎓 Study / PGDM (/pgdm)', path: '/pgdm' },
+  { label: '🛠️ Tools (/tools)', path: '/tools' },
+  { label: '📖 Case Studies (/case-studies)', path: '/case-studies' },
+  { label: '📚 Finance Terms (/finance-terms)', path: '/finance-terms' },
+  { label: '💳 Pricing (/pricing)', path: '/pricing' },
+];
+
 interface PromotionReport { id: string; brandName: string; title: string; active: boolean; campaignId: string | null; impressions: number; clicks: number; ctr: number }
 function dateToLocal(value: string | null) { if (!value) return ''; const date = new Date(value); return Number.isNaN(date.getTime()) ? '' : new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16); }
 function localToIso(value: string) { return value ? new Date(value).toISOString() : null; }
@@ -311,43 +345,395 @@ function localToIso(value: string) { return value ? new Date(value).toISOString(
 function PromotionManager() {
   const [promotions, setPromotions] = useState<PromotionRecord[]>([]); const [reports, setReports] = useState<PromotionReport[]>([]);
   const [draft, setDraft] = useState<PromotionDraft>(blankPromotion); const [loading, setLoading] = useState(true); const [saving, setSaving] = useState(false); const [notice, setNotice] = useState<Notice>(null);
+  const [crawling, setCrawling] = useState(false);
+  const [crawlUrlInput, setCrawlUrlInput] = useState('');
+
   useEffect(() => { let live = true; Promise.all([api<{ promotions: PromotionRecord[] }>('/api/admin/content/promotions'), api<{ reports: PromotionReport[] }>('/api/admin/content/promotions/report')]).then(([campaigns, report]) => { if (live) { setPromotions(campaigns.promotions); setReports(report.reports); } }).catch((error: unknown) => { if (live) setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Promotion data could not be loaded.' }); }).finally(() => { if (live) setLoading(false); }); return () => { live = false; }; }, []);
   const update = <K extends keyof PromotionDraft>(key: K, value: PromotionDraft[K]) => setDraft((current) => ({ ...current, [key]: value }));
-  const edit = (campaign: PromotionRecord) => setDraft({ ...campaign, targetPagesText: campaign.targetPages.join('\n'), targetContentTypesText: campaign.targetContentTypes.join(', '), startsAtLocal: dateToLocal(campaign.startsAt), endsAtLocal: dateToLocal(campaign.endsAt), utmText: JSON.stringify(campaign.utmParameters ?? {}, null, 2) });
+  const edit = (campaign: PromotionRecord) => setDraft({ ...campaign, videoUrl: campaign.videoUrl ?? '', targetPagesText: campaign.targetPages.join('\n'), targetContentTypesText: campaign.targetContentTypes.join(', '), startsAtLocal: dateToLocal(campaign.startsAt), endsAtLocal: dateToLocal(campaign.endsAt), utmText: JSON.stringify(campaign.utmParameters ?? {}, null, 2) });
+  
+  const [crawledData, setCrawledData] = useState<{
+    liveScreenshotUrl?: string;
+    extractedImages?: string[];
+  } | null>(null);
+
+  const handleCrawlWebsite = async (overrideUrl?: string) => {
+    const targetUrl = (overrideUrl || crawlUrlInput || draft.destinationUrl || '').trim();
+    if (!targetUrl) {
+      setNotice({ kind: 'error', text: 'Please enter a Website Page URL to crawl.' });
+      return;
+    }
+    setCrawling(true);
+    setNotice(null);
+    try {
+      const res = await api<{ ok: boolean; metadata: {
+        brandName: string;
+        title: string;
+        shortDescription: string;
+        imageUrl: string | null;
+        liveScreenshotUrl?: string;
+        logoUrl: string | null;
+        destinationUrl: string;
+        suggestedCta: string;
+        category: string;
+        extractedImages?: string[];
+      } }>('/api/admin/content/promotions/crawl', {
+        method: 'POST',
+        body: JSON.stringify({ url: targetUrl }),
+      });
+      if (res.metadata) {
+        const m = res.metadata;
+        const chosenImage = m.imageUrl || m.liveScreenshotUrl || null;
+        setCrawledData({
+          liveScreenshotUrl: m.liveScreenshotUrl,
+          extractedImages: m.extractedImages || [],
+        });
+        setDraft((current) => ({
+          ...current,
+          brandName: m.brandName || current.brandName,
+          title: m.title || current.title,
+          shortDescription: m.shortDescription || current.shortDescription,
+          imageUrl: chosenImage || current.imageUrl,
+          lightCreativeUrl: chosenImage || current.lightCreativeUrl,
+          darkCreativeUrl: chosenImage || current.darkCreativeUrl,
+          logoUrl: m.logoUrl || current.logoUrl,
+          destinationUrl: m.destinationUrl || current.destinationUrl,
+          ctaText: m.suggestedCta || current.ctaText,
+          category: m.category || current.category,
+          targetPagesText: 'ALL',
+          placement: 'ALL',
+        }));
+        setCrawlUrlInput(m.destinationUrl);
+        setNotice({
+          kind: 'success',
+          text: `✨ Successfully extracted live data for ${m.brandName}! Live website screenshot and details auto-filled.`,
+        });
+      }
+    } catch (err) {
+      setNotice({
+        kind: 'error',
+        text: err instanceof Error ? err.message : 'Could not crawl website URL.',
+      });
+    } finally {
+      setCrawling(false);
+    }
+  };
+  
+  const togglePreset = (path: string) => {
+    const current = listFromText(draft.targetPagesText);
+    let updated: string[];
+    if (path === 'ALL') {
+      updated = current.includes('ALL') ? [] : ['ALL'];
+    } else {
+      const filtered = current.filter((p) => p !== 'ALL');
+      updated = filtered.includes(path) ? filtered.filter((p) => p !== path) : [...filtered, path];
+    }
+    update('targetPagesText', updated.length ? updated.join('\n') : 'ALL');
+  };
+
   const save = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault(); setSaving(true); setNotice(null);
     try {
       let utmParameters: unknown = null;
       if (draft.utmText.trim()) { utmParameters = JSON.parse(draft.utmText); if (!utmParameters || typeof utmParameters !== 'object' || Array.isArray(utmParameters)) throw new Error('UTM parameters must be a JSON object.'); }
-      const body = { ...draft, targetPages: listFromText(draft.targetPagesText), targetContentTypes: listFromText(draft.targetContentTypesText).map((value) => value.toUpperCase()), startsAt: localToIso(draft.startsAtLocal), endsAt: localToIso(draft.endsAtLocal), utmParameters };
+      const body = {
+        ...draft,
+        logoUrl: draft.logoUrl?.trim() || null,
+        imageUrl: draft.imageUrl?.trim() || null,
+        videoUrl: draft.videoUrl?.trim() || null,
+        lightCreativeUrl: draft.lightCreativeUrl?.trim() || null,
+        darkCreativeUrl: draft.darkCreativeUrl?.trim() || null,
+        affiliateUrl: draft.affiliateUrl?.trim() || null,
+        trackingUrl: draft.trackingUrl?.trim() || null,
+        campaignId: draft.campaignId?.trim() || null,
+        targetPages: listFromText(draft.targetPagesText),
+        targetContentTypes: listFromText(draft.targetContentTypesText).map((value) => value.toUpperCase()),
+        startsAt: draft.startsAtLocal ? localToIso(draft.startsAtLocal) : null,
+        endsAt: draft.endsAtLocal ? localToIso(draft.endsAtLocal) : null,
+        utmParameters,
+      };
       const { promotion } = await api<{ promotion: PromotionRecord }>('/api/admin/content/promotions', { method: 'POST', body: JSON.stringify(body) });
-      setPromotions((current) => [promotion, ...current.filter((campaign) => campaign.id !== promotion.id)]); setDraft(blankPromotion()); setNotice({ kind: 'success', text: 'Promotion saved. Scheduled rendering uses the disclosure text and sponsored, nofollow link attributes.' });
+      setPromotions((current) => [promotion, ...current.filter((campaign) => campaign.id !== promotion.id)]); setDraft(blankPromotion()); setCrawledData(null); setNotice({ kind: 'success', text: 'Promotion saved. Live rendering is updated immediately on enabled pages.' });
     } catch (error) { setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Promotion could not be saved.' }); }
     finally { setSaving(false); }
   };
-  const deactivate = async (id: string) => { try { await api('/api/admin/content/promotions', { method: 'DELETE', body: JSON.stringify({ id }) }); setPromotions((current) => current.map((campaign) => campaign.id === id ? { ...campaign, active: false } : campaign)); setNotice({ kind: 'success', text: 'Campaign deactivated. Event history remains available.' }); } catch (error) { setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Campaign could not be deactivated.' }); } };
+
+  const deleteCampaign = async (id: string, brandName: string) => {
+    if (!window.confirm(`Are you sure you want to permanently delete the promotion campaign for "${brandName}"?\n\nThis cannot be undone.`)) {
+      return;
+    }
+    try {
+      await api('/api/admin/content/promotions', {
+        method: 'DELETE',
+        body: JSON.stringify({ id, permanent: true }),
+      });
+      setPromotions((current) => current.filter((c) => c.id !== id));
+      if (draft.id === id) {
+        setDraft(blankPromotion());
+        setCrawledData(null);
+      }
+      setNotice({ kind: 'success', text: `Campaign "${brandName}" was permanently deleted.` });
+    } catch (error) {
+      setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Campaign could not be deleted.' });
+    }
+  };
+
+  const toggleCampaignActive = async (id: string, currentActive: boolean) => {
+    try {
+      await api('/api/admin/content/promotions', {
+        method: 'DELETE',
+        body: JSON.stringify({ id, permanent: false, active: !currentActive }),
+      });
+      setPromotions((current) => current.map((c) => c.id === id ? { ...c, active: !currentActive } : c));
+      setNotice({ kind: 'success', text: !currentActive ? 'Campaign activated.' : 'Campaign deactivated.' });
+    } catch (error) {
+      setNotice({ kind: 'error', text: error instanceof Error ? error.message : 'Status could not be updated.' });
+    }
+  };
+
+  const currentTargets = listFromText(draft.targetPagesText);
 
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl border border-border bg-card p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-foreground">Affiliate and sponsored promotions</h2><p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">No campaigns are preloaded. Create only a real, approved partnership; leave campaigns inactive until reviewed. Reporting counts raw viewable impressions and clicks, not unique reach or conversions.</p></div><span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">{promotions.length} campaigns</span></div><div className="mt-4"><NoticeBanner notice={notice} onDismiss={() => setNotice(null)} /></div></section>
-      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(380px,0.9fr)]">
-        <section className="rounded-2xl border border-border bg-card p-5" aria-labelledby="promotion-list-title"><h3 id="promotion-list-title" className="text-lg font-bold text-foreground">Campaigns and last-30-day reporting</h3>{loading ? <p className="py-6 text-sm text-muted-foreground" role="status">Loading campaigns…</p> : promotions.length ? <ul className="mt-3 divide-y divide-border">{promotions.map((campaign) => { const report = reports.find((item) => item.id === campaign.id); return <li key={campaign.id} className="py-4"><div className="flex flex-wrap items-start justify-between gap-3"><div><div className="flex flex-wrap items-center gap-2"><StatusBadge active={campaign.active} label="Active" /><span className="rounded-full bg-muted px-2 py-1 text-[10px] text-muted-foreground">{campaign.placement}</span></div><p className="mt-2 font-semibold text-foreground">{campaign.title}</p><p className="text-xs text-muted-foreground">{campaign.brandName} · {campaign.campaignId || 'No campaign ID'}</p><p className="mt-2 text-xs text-muted-foreground">{report?.impressions ?? 0} impressions · {report?.clicks ?? 0} clicks · {report?.ctr ?? 0}% CTR (raw events)</p></div><div className="flex gap-2"><button type="button" onClick={() => edit(campaign)} className={buttonClass}>Edit</button>{campaign.active && <button type="button" onClick={() => void deactivate(campaign.id)} className={buttonClass}>Deactivate</button>}</div></div></li>; })}</ul> : <p className="py-6 text-sm text-muted-foreground">No promotions configured. Nothing is being advertised or tracked.</p>}</section>
-        <section className="rounded-2xl border border-border bg-card p-5" aria-labelledby="promotion-editor-title"><h3 id="promotion-editor-title" className="text-lg font-bold text-foreground">{draft.id ? 'Edit campaign' : 'Create campaign'}</h3><p className="mt-1 text-sm text-muted-foreground">Disclosure is visible on every rendered promotion. Links use sponsored and nofollow attributes.</p>
+      <section className="rounded-2xl border border-border bg-card p-5"><div className="flex flex-wrap items-center justify-between gap-3"><div><h2 className="text-lg font-bold text-foreground">Affiliate and sponsored partner promotions</h2><p className="mt-1 max-w-3xl text-sm leading-6 text-muted-foreground">Manage right-side cards, video/image media promotions, and in-content ads. When enabled for pages, promotions appear in an attractive animated card format with full disclosure.</p></div><span className="rounded-full bg-muted px-3 py-1 text-xs font-semibold text-muted-foreground">{promotions.length} campaigns</span></div><div className="mt-4"><NoticeBanner notice={notice} onDismiss={() => setNotice(null)} /></div></section>
+      <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(420px,0.95fr)]">
+        <section className="rounded-2xl border border-border bg-card p-5" aria-labelledby="promotion-list-title"><h3 id="promotion-list-title" className="text-lg font-bold text-foreground">Campaigns and last-30-day reporting</h3>{loading ? <p className="py-6 text-sm text-muted-foreground" role="status">Loading campaigns…</p> : promotions.length ? <ul className="mt-3 divide-y divide-border">{promotions.map((campaign) => { const report = reports.find((item) => item.id === campaign.id); return <li key={campaign.id} className="py-4"><div className="flex flex-wrap items-start justify-between gap-3"><div><div className="flex flex-wrap items-center gap-2"><StatusBadge active={campaign.active} label="Active" /><span className="rounded-full bg-muted px-2 py-1 text-[10px] text-muted-foreground">{campaign.placement}</span>{campaign.videoUrl && <span className="rounded-full bg-purple-500/10 px-2 py-0.5 text-[10px] font-bold text-purple-600 dark:text-purple-400">Video Promo</span>}</div><p className="mt-2 font-semibold text-foreground">{campaign.title}</p><p className="text-xs text-muted-foreground">{campaign.brandName} · {campaign.campaignId || 'No campaign ID'}</p><p className="mt-1 text-xs text-muted-foreground">Target pages: {campaign.targetPages.length ? campaign.targetPages.join(', ') : 'All Pages'}</p><p className="mt-2 text-xs text-muted-foreground">{report?.impressions ?? 0} impressions · {report?.clicks ?? 0} clicks · {report?.ctr ?? 0}% CTR</p></div><div className="flex flex-wrap items-center gap-2"><button type="button" onClick={() => edit(campaign)} className={buttonClass}>Edit</button><button type="button" onClick={() => void toggleCampaignActive(campaign.id, campaign.active)} className={buttonClass}>{campaign.active ? 'Deactivate' : 'Activate'}</button><button type="button" onClick={() => void deleteCampaign(campaign.id, campaign.brandName)} className="rounded-lg border border-red-500/30 bg-red-500/10 px-2.5 py-1 text-xs font-semibold text-red-600 hover:bg-red-500/20 dark:text-red-400 transition-colors">Delete</button></div></div></li>; })}</ul> : <p className="py-6 text-sm text-muted-foreground">No promotions configured. Create a partnership campaign below.</p>}</section>
+        <section className="rounded-2xl border border-border bg-card p-5" aria-labelledby="promotion-editor-title"><h3 id="promotion-editor-title" className="text-lg font-bold text-foreground">{draft.id ? 'Edit campaign' : 'Create campaign'}</h3><p className="mt-1 text-sm text-muted-foreground">Card form with animated appearance. Supports high-res images and video promotions.</p>
           <form onSubmit={save} className="mt-4 space-y-4">
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Brand / partner" htmlFor="promo-brand"><input id="promo-brand" required maxLength={120} value={draft.brandName} onChange={(e) => update('brandName', e.target.value)} className={inputClass} /></Field><Field label="Campaign ID (optional)" htmlFor="promo-campaign"><input id="promo-campaign" maxLength={120} value={draft.campaignId ?? ''} onChange={(e) => update('campaignId', e.target.value)} className={inputClass} /></Field></div>
-            <Field label="Promotion title" htmlFor="promo-title"><input id="promo-title" required minLength={3} maxLength={180} value={draft.title} onChange={(e) => update('title', e.target.value)} className={inputClass} /></Field>
-            <Field label="Short description" htmlFor="promo-description"><textarea id="promo-description" required minLength={10} maxLength={500} rows={3} value={draft.shortDescription} onChange={(e) => update('shortDescription', e.target.value)} className={textAreaClass} /></Field>
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="CTA text" htmlFor="promo-cta"><input id="promo-cta" required maxLength={60} value={draft.ctaText} onChange={(e) => update('ctaText', e.target.value)} className={inputClass} /></Field><Field label="Category" htmlFor="promo-category"><input id="promo-category" required maxLength={80} value={draft.category} onChange={(e) => update('category', e.target.value)} className={inputClass} /></Field></div>
-            <Field label="Destination URL" htmlFor="promo-destination" hint="Affiliate/tracking destinations must be HTTP or HTTPS."><input id="promo-destination" type="url" required maxLength={2048} value={draft.destinationUrl} onChange={(e) => update('destinationUrl', e.target.value)} className={inputClass} /></Field>
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Affiliate URL (optional)" htmlFor="promo-affiliate"><input id="promo-affiliate" type="url" value={draft.affiliateUrl ?? ''} onChange={(e) => update('affiliateUrl', e.target.value)} className={inputClass} /></Field><Field label="Tracking URL (optional)" htmlFor="promo-tracking"><input id="promo-tracking" type="url" value={draft.trackingUrl ?? ''} onChange={(e) => update('trackingUrl', e.target.value)} className={inputClass} /></Field></div>
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Placement" htmlFor="promo-placement"><select id="promo-placement" value={draft.placement} onChange={(e) => update('placement', e.target.value)} className={inputClass}>{promotionPlacements.map((placement) => <option key={placement} value={placement}>{placement.replaceAll('_', ' ')}</option>)}</select></Field><Field label="Content types (comma-separated)" htmlFor="promo-types" hint="Leave empty for all types. Example: COURSE, TOOL."><input id="promo-types" value={draft.targetContentTypesText} onChange={(e) => update('targetContentTypesText', e.target.value)} className={inputClass} /></Field></div>
-            <Field label="Target paths (one per line)" htmlFor="promo-paths" hint="Leave empty for every path that matches this placement. Use ALL to target all paths."><textarea id="promo-paths" rows={3} value={draft.targetPagesText} onChange={(e) => update('targetPagesText', e.target.value)} placeholder="/pgdm/financial-management" className={textAreaClass} /></Field>
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Start time (optional)" htmlFor="promo-start"><input id="promo-start" type="datetime-local" value={draft.startsAtLocal} onChange={(e) => update('startsAtLocal', e.target.value)} className={inputClass} /></Field><Field label="End time (optional)" htmlFor="promo-end"><input id="promo-end" type="datetime-local" value={draft.endsAtLocal} onChange={(e) => update('endsAtLocal', e.target.value)} className={inputClass} /></Field></div>
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Disclosure text" htmlFor="promo-disclosure" hint="Keep the paid / affiliate relationship unmistakable."><input id="promo-disclosure" required minLength={6} maxLength={120} value={draft.disclosureText} onChange={(e) => update('disclosureText', e.target.value)} className={inputClass} /></Field><Field label="Priority" htmlFor="promo-priority"><input id="promo-priority" type="number" min={-100} max={1000} value={draft.priority} onChange={(e) => update('priority', Number(e.target.value))} className={inputClass} /></Field></div>
-            <div className="grid gap-4 sm:grid-cols-2"><Field label="Display rotation weight" htmlFor="promo-frequency"><input id="promo-frequency" type="number" min={1} max={10} value={draft.displayFrequency} onChange={(e) => update('displayFrequency', Number(e.target.value))} className={inputClass} /></Field><Field label="Disclosure type" htmlFor="promo-type"><input id="promo-type" required maxLength={40} value={draft.disclosureType} onChange={(e) => update('disclosureType', e.target.value)} className={inputClass} /></Field></div>
-            <details className="rounded-xl border border-border p-3"><summary className="cursor-pointer text-sm font-semibold text-foreground">Creative URLs and UTM parameters</summary><div className="mt-3 space-y-3"><div className="grid gap-3 sm:grid-cols-2">{([['Logo URL','logoUrl'],['Image URL','imageUrl'],['Light creative URL','lightCreativeUrl'],['Dark creative URL','darkCreativeUrl']] as const).map(([label,key]) => <Field key={key} label={label} htmlFor={`promo-${key}`}><input id={`promo-${key}`} type="url" value={draft[key] ?? ''} onChange={(e) => update(key, e.target.value)} className={inputClass} /></Field>)}</div><Field label="UTM parameters JSON" htmlFor="promo-utm"><textarea id="promo-utm" rows={3} value={draft.utmText} onChange={(e) => update('utmText', e.target.value)} className={`${textAreaClass} font-mono text-xs`} /></Field></div></details>
-            <div className="grid gap-3 sm:grid-cols-2"><Toggle id="promo-active" label="Campaign active" checked={draft.active} onChange={(value) => update('active', value)} hint="Leave off until the actual campaign and destination are approved." /><Toggle id="promo-mobile" label="Visible on mobile" checked={draft.mobileVisible} onChange={(value) => update('mobileVisible', value)} /><Toggle id="promo-desktop" label="Visible on desktop" checked={draft.desktopVisible} onChange={(value) => update('desktopVisible', value)} /></div>
-            <div className="flex flex-wrap gap-2"><button type="submit" disabled={saving} className={primaryButtonClass}>{saving ? 'Saving…' : 'Save campaign'}</button><button type="button" onClick={() => { setDraft(blankPromotion()); setNotice(null); }} className={buttonClass}>Clear form</button></div>
+            {/* ── 1-Click Website URL Auto-Extractor & Crawler ── */}
+            <div className="rounded-2xl border-2 border-dashed border-teal-500/50 bg-teal-500/5 p-4 space-y-3 dark:border-teal-400/40 dark:bg-teal-950/20">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="flex items-center gap-2 text-xs font-black uppercase tracking-wider text-teal-600 dark:text-teal-400">
+                  <span className="flex h-2 w-2 rounded-full bg-teal-500 animate-ping" />
+                  ✨ 1-Click Website URL Auto-Crawler & Extractor
+                </span>
+                <span className="rounded-md bg-teal-500/10 px-2 py-0.5 text-[10px] font-bold text-teal-600 dark:text-teal-400">
+                  Instant Auto-Fill
+                </span>
+              </div>
+              <p className="text-xs leading-5 text-muted-foreground">
+                Add only a website page URL (e.g. <code>https://geoseolab.com/</code>). Our crawler extracts the live brand name, title, description, banner graphic, logo, and optimal CTA automatically!
+              </p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="url"
+                  placeholder="Paste website page URL (e.g. https://geoseolab.com/)"
+                  value={crawlUrlInput || draft.destinationUrl}
+                  onChange={(e) => {
+                    setCrawlUrlInput(e.target.value);
+                    update('destinationUrl', e.target.value);
+                  }}
+                  className={inputClass}
+                />
+                <button
+                  type="button"
+                  disabled={crawling}
+                  onClick={() => handleCrawlWebsite()}
+                  className="shrink-0 flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 via-teal-600 to-cyan-600 px-5 py-2.5 text-xs font-black text-white shadow-md hover:from-teal-600 hover:to-cyan-700 disabled:opacity-50 transition-all cursor-pointer"
+                >
+                  {crawling ? (
+                    <>
+                      <span className="h-3 w-3 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                      Crawling page…
+                    </>
+                  ) : (
+                    '🔍 Extract & Auto-Fill'
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2"><Field label="Brand / partner" htmlFor="promo-brand"><input id="promo-brand" required maxLength={120} value={draft.brandName} onChange={(e) => update('brandName', e.target.value)} placeholder="e.g. Acme Analytics" className={inputClass} /></Field><Field label="Campaign ID (optional)" htmlFor="promo-campaign"><input id="promo-campaign" maxLength={120} value={draft.campaignId ?? ''} onChange={(e) => update('campaignId', e.target.value)} placeholder="e.g. ACME_2026" className={inputClass} /></Field></div>
+            <Field label="Promotion title / headline" htmlFor="promo-title"><input id="promo-title" required minLength={3} maxLength={180} value={draft.title} onChange={(e) => update('title', e.target.value)} placeholder="e.g. Institutional Financial Modeling Toolkit" className={inputClass} /></Field>
+            <Field label="Short description" htmlFor="promo-description"><textarea id="promo-description" required minLength={10} maxLength={500} rows={3} value={draft.shortDescription} onChange={(e) => update('shortDescription', e.target.value)} placeholder="Compelling 2-3 line value proposition that appeals to finance visitors." className={textAreaClass} /></Field>
+            <div className="grid gap-4 sm:grid-cols-2"><Field label="CTA button text" htmlFor="promo-cta"><input id="promo-cta" required maxLength={60} value={draft.ctaText} onChange={(e) => update('ctaText', e.target.value)} placeholder="e.g. Explore Now / Claim 20% Off" className={inputClass} /></Field><Field label="Category" htmlFor="promo-category"><input id="promo-category" required maxLength={80} value={draft.category} onChange={(e) => update('category', e.target.value)} placeholder="e.g. SAAS / Education / Broker" className={inputClass} /></Field></div>
+            <Field label="Destination URL (Website link)" htmlFor="promo-destination" hint="Target landing page (HTTP or HTTPS).">
+              <div className="flex gap-2">
+                <input id="promo-destination" type="url" required maxLength={2048} value={draft.destinationUrl} onChange={(e) => update('destinationUrl', e.target.value)} placeholder="https://example.com/landing" className={inputClass} />
+                <button
+                  type="button"
+                  disabled={crawling}
+                  onClick={() => handleCrawlWebsite(draft.destinationUrl)}
+                  className="shrink-0 rounded-xl border border-teal-500/40 bg-teal-500/10 px-3 py-2 text-xs font-bold text-teal-600 hover:bg-teal-500/20 dark:text-teal-400 disabled:opacity-50 transition-colors cursor-pointer"
+                >
+                  {crawling ? 'Crawling…' : '🔍 Crawl'}
+                </button>
+              </div>
+            </Field>
+            <div className="grid gap-4 sm:grid-cols-2"><Field label="Affiliate URL (optional)" htmlFor="promo-affiliate"><input id="promo-affiliate" type="url" value={draft.affiliateUrl ?? ''} onChange={(e) => update('affiliateUrl', e.target.value)} placeholder="https://partner.link/..." className={inputClass} /></Field><Field label="Tracking URL (optional)" htmlFor="promo-tracking"><input id="promo-tracking" type="url" value={draft.trackingUrl ?? ''} onChange={(e) => update('trackingUrl', e.target.value)} placeholder="https://click.track/..." className={inputClass} /></Field></div>
+            
+            <div className="space-y-2">
+              <Field label="Placement form" htmlFor="promo-placement">
+                <select id="promo-placement" value={draft.placement} onChange={(e) => update('placement', e.target.value)} className={inputClass}>
+                  {promotionPlacements.map((p) => <option key={p.value} value={p.value}>{p.label}</option>)}
+                </select>
+              </Field>
+              <p className="text-xs text-muted-foreground">Select <strong>SIDEBAR</strong> for the sticky/floating right-side card with animated appearance.</p>
+            </div>
+
+            {/* Target pages with presets */}
+            <div className="rounded-xl border border-border bg-muted/30 p-3 space-y-2">
+              <label className="text-xs font-bold text-foreground">Target Pages on Kunwar Analytics</label>
+              <p className="text-xs text-muted-foreground">Click buttons to enable/disable for specific sections, or use All Pages:</p>
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {TARGET_PAGE_PRESETS.map((preset) => {
+                  const active = preset.path === 'ALL' ? currentTargets.includes('ALL') || currentTargets.length === 0 : currentTargets.includes(preset.path);
+                  return (
+                    <button
+                      key={preset.path}
+                      type="button"
+                      onClick={() => togglePreset(preset.path)}
+                      className={`rounded-lg px-2.5 py-1 text-xs font-medium transition-colors ${
+                        active ? 'bg-primary text-primary-foreground font-semibold shadow-sm' : 'border border-border bg-background text-muted-foreground hover:bg-muted'
+                      }`}
+                    >
+                      {preset.label}
+                    </button>
+                  );
+                })}
+              </div>
+              <Field label="Custom Target Paths (one per line)" htmlFor="promo-paths" hint="Leave empty or use ALL for all pages. Use relative paths like /research or /tools.">
+                <textarea id="promo-paths" rows={2} value={draft.targetPagesText} onChange={(e) => update('targetPagesText', e.target.value)} placeholder="/research&#10;/insights&#10;ALL" className={textAreaClass} />
+              </Field>
+            </div>
+
+            {/* Creative media: Image, Video, Logo */}
+            <div className="rounded-xl border border-border p-3 space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <div>
+                  <p className="text-sm font-semibold text-foreground">Creative Media (Video & Images)</p>
+                  <p className="text-xs text-muted-foreground">Top websites use live website screenshots, animated videos or rich imagery.</p>
+                </div>
+                {draft.destinationUrl && (
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const liveShot = `https://s0.wp.com/mshots/v1/${encodeURIComponent(draft.destinationUrl.trim())}?w=1280`;
+                      update('imageUrl', liveShot);
+                      update('lightCreativeUrl', liveShot);
+                      update('darkCreativeUrl', liveShot);
+                      setNotice({ kind: 'info', text: '📸 Set display image to live website snapshot preview.' });
+                    }}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-teal-500/40 bg-teal-500/10 px-3 py-1 text-xs font-bold text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                  >
+                    📸 Set Live Webpage Snapshot
+                  </button>
+                )}
+              </div>
+
+              {/* Extracted Image Chips if crawler found candidates */}
+              {crawledData?.extractedImages && crawledData.extractedImages.length > 0 && (
+                <div className="rounded-lg bg-muted/40 p-2 space-y-1.5">
+                  <p className="text-[11px] font-semibold text-muted-foreground">Discovered Web Images (Click to use):</p>
+                  <div className="flex flex-wrap gap-2">
+                    {crawledData.liveScreenshotUrl && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          update('imageUrl', crawledData.liveScreenshotUrl!);
+                          update('lightCreativeUrl', crawledData.liveScreenshotUrl!);
+                          update('darkCreativeUrl', crawledData.liveScreenshotUrl!);
+                        }}
+                        className="flex items-center gap-1.5 rounded-lg border border-teal-500/50 bg-teal-500/15 px-2.5 py-1 text-xs font-bold text-teal-600 dark:text-teal-400 hover:bg-teal-500/25"
+                      >
+                        📸 Live Web Snapshot
+                      </button>
+                    )}
+                    {crawledData.extractedImages.map((imgUrl, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          update('imageUrl', imgUrl);
+                          update('lightCreativeUrl', imgUrl);
+                          update('darkCreativeUrl', imgUrl);
+                        }}
+                        className="flex items-center gap-1 rounded-lg border border-border bg-background px-2 py-1 text-[11px] text-foreground hover:border-primary transition-colors truncate max-w-[140px]"
+                        title={imgUrl}
+                      >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={imgUrl} alt="" className="h-4 w-4 rounded object-cover shrink-0" />
+                        <span className="truncate">Image {idx + 1}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Video URL (MP4 / WebM)" htmlFor="promo-video" hint="Auto-loops video promotion">
+                  <input id="promo-video" type="url" value={draft.videoUrl ?? ''} onChange={(e) => update('videoUrl', e.target.value)} placeholder="https://.../creative.mp4" className={inputClass} />
+                </Field>
+                <Field label="Image / Banner URL" htmlFor="promo-image" hint="Creative display image or live website snapshot">
+                  <input id="promo-image" type="url" value={draft.imageUrl ?? ''} onChange={(e) => update('imageUrl', e.target.value)} placeholder="https://.../banner.png" className={inputClass} />
+                </Field>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Brand Logo URL (optional)" htmlFor="promo-logo">
+                  <input id="promo-logo" type="url" value={draft.logoUrl ?? ''} onChange={(e) => update('logoUrl', e.target.value)} placeholder="https://.../logo.png" className={inputClass} />
+                </Field>
+                <Field label="Dark-mode Creative URL (optional)" htmlFor="promo-darkCreativeUrl">
+                  <input id="promo-darkCreativeUrl" type="url" value={draft.darkCreativeUrl ?? ''} onChange={(e) => update('darkCreativeUrl', e.target.value)} placeholder="https://.../banner-dark.png" className={inputClass} />
+                </Field>
+              </div>
+            </div>
+
+            {/* Live Interactive Preview Card */}
+            {(draft.title || draft.brandName || draft.imageUrl || draft.videoUrl) && (
+              <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-2">
+                <p className="text-xs font-bold uppercase tracking-wider text-primary">Live Card Form Preview (Right-Side Widget)</p>
+                <div className="max-w-[320px] rounded-2xl border border-border bg-card shadow-xl overflow-hidden p-3 space-y-2">
+                  <div className="flex items-center justify-between">
+                    <span className="rounded-full bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wider">
+                      {draft.disclosureText || 'Sponsored · Paid promotion'}
+                    </span>
+                    <span className="text-[10px] text-muted-foreground">Preview</span>
+                  </div>
+                  {draft.videoUrl ? (
+                    <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-black/20">
+                      <video src={draft.videoUrl} autoPlay muted loop playsInline className="h-full w-full object-cover" />
+                    </div>
+                  ) : draft.imageUrl ? (
+                    <div className="relative aspect-video w-full rounded-xl overflow-hidden bg-muted">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={draft.imageUrl} alt="Creative Preview" className="h-full w-full object-cover" />
+                    </div>
+                  ) : null}
+                  <div>
+                    <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">{draft.brandName || 'Partner Brand'}</p>
+                    <p className="text-xs font-bold text-foreground leading-snug">{draft.title || 'Compelling Headline Here'}</p>
+                    <p className="text-[11px] text-muted-foreground line-clamp-2 mt-1">{draft.shortDescription || 'Short description of the promotion here...'}</p>
+                  </div>
+                  <div className="w-full text-center rounded-xl bg-primary py-2 text-xs font-bold text-primary-foreground shadow-sm">
+                    {draft.ctaText || 'Learn more'} →
+                  </div>
+                </div>
+              </div>
+            )}
+
+            <div className="grid gap-4 sm:grid-cols-2"><Field label="Disclosure text" htmlFor="promo-disclosure"><input id="promo-disclosure" required minLength={6} maxLength={120} value={draft.disclosureText} onChange={(e) => update('disclosureText', e.target.value)} className={inputClass} /></Field><Field label="Priority (higher shows first)" htmlFor="promo-priority"><input id="promo-priority" type="number" min={-100} max={1000} value={draft.priority} onChange={(e) => update('priority', Number(e.target.value))} className={inputClass} /></Field></div>
+            <div className="grid gap-3 sm:grid-cols-3"><Toggle id="promo-active" label="Campaign active" checked={draft.active} onChange={(value) => update('active', value)} hint="Must be checked to show on pages." /><Toggle id="promo-mobile" label="Visible on mobile" checked={draft.mobileVisible} onChange={(value) => update('mobileVisible', value)} /><Toggle id="promo-desktop" label="Visible on desktop" checked={draft.desktopVisible} onChange={(value) => update('desktopVisible', value)} /></div>
+            <div className="flex flex-wrap items-center gap-2 pt-2">
+              <button type="submit" disabled={saving} className={primaryButtonClass}>
+                {saving ? 'Saving…' : 'Save campaign'}
+              </button>
+              <button
+                type="button"
+                onClick={() => { setDraft(blankPromotion()); setCrawledData(null); setNotice(null); }}
+                className={buttonClass}
+              >
+                Clear form
+              </button>
+              {draft.id && (
+                <button
+                  type="button"
+                  onClick={() => void deleteCampaign(draft.id!, draft.brandName)}
+                  className="ml-auto rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-1.5 text-xs font-bold text-red-600 hover:bg-red-500/20 dark:text-red-400 transition-colors"
+                >
+                  🗑️ Delete Campaign
+                </button>
+              )}
+            </div>
           </form>
         </section>
       </div>

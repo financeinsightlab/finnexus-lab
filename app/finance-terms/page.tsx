@@ -3,7 +3,15 @@ import Link from 'next/link';
 import { Suspense } from 'react';
 import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd';
 import FinanceTermSearchForm from '@/components/finance-terms/FinanceTermSearchForm';
-import { FINANCE_TERMS_BASE, FINANCE_TERM_PAGE_SIZE, getFinanceTermCategories, getFinanceTermIndex } from '@/lib/finance-terms';
+import FinanceTermsCarousel from '@/components/finance-terms/FinanceTermsCarousel';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
+import {
+  FINANCE_TERMS_BASE,
+  FINANCE_TERM_PAGE_SIZE,
+  getFinanceTermCategories,
+  getFinanceTermIndex,
+  getFeaturedFinanceTerms,
+} from '@/lib/finance-terms';
 
 export const metadata: Metadata = {
   title: 'Finance Terms in Simple Words | Kunwar Analytics',
@@ -25,12 +33,13 @@ export default async function FinanceTermsPage({ searchParams }: { searchParams:
   const category = (params.category ?? '').trim().slice(0, 80);
   const page = Math.max(1, Number.parseInt(params.page ?? '1', 10) || 1);
   let indexAvailable = true;
-  const [result, categories] = await Promise.all([
+  const [result, categories, featuredTerms] = await Promise.all([
     getFinanceTermIndex({ query, category, page, pageSize: FINANCE_TERM_PAGE_SIZE }).catch(() => {
       indexAvailable = false;
       return { terms: [], total: 0 };
     }),
     getFinanceTermCategories().catch(() => []),
+    getFeaturedFinanceTerms(24).catch(() => []),
   ]);
   const totalPages = Math.max(1, Math.ceil(result.total / FINANCE_TERM_PAGE_SIZE));
   const baseParams = new URLSearchParams();
@@ -66,6 +75,11 @@ export default async function FinanceTermsPage({ searchParams }: { searchParams:
           </div>
         </div>
       </header>
+
+      {/* ===== INTERACTIVE FINANCE TERMS SLIDE DECK (Identical to Home Screen) ===== */}
+      <div className="border-b border-border/60 bg-gradient-to-b from-background via-muted/15 to-background">
+        <FinanceTermsCarousel terms={featuredTerms} showExploreLink={false} />
+      </div>
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-bold text-foreground">{query ? `Results for “${query}”` : category ? `${category} terms` : 'Browse the glossary'}</h2>
@@ -111,6 +125,9 @@ export default async function FinanceTermsPage({ searchParams }: { searchParams:
             {page < totalPages && <Link href={makePageHref(page + 1)} rel="next" className="rounded-lg border border-border px-4 py-2 text-sm font-semibold hover:bg-accent">Next page</Link>}
           </nav>
         )}
+        <div className="my-8">
+          <PromotionSlot placement="BETWEEN_CONTENT" path="/finance-terms" contentType="FINANCE_TERM" />
+        </div>
         <div className="mt-10 rounded-2xl border border-border bg-muted/40 p-5 text-sm text-muted-foreground">
           Looking for learning paths or tools? <Link href="/pgdm" className="font-semibold text-primary hover:underline">Browse individual PGDM courses</Link> or <Link href="/tools" className="font-semibold text-primary hover:underline">explore calculators</Link>.
         </div>

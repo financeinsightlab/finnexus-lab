@@ -5,10 +5,13 @@ export default async function PromotionSlot({
   placement,
   path,
   contentType,
+  variant = 'inline',
 }: {
   placement: PromotionPlacement;
   path: string;
   contentType?: string;
+  /** inline = full-width between-content card; sidebar = compact sticky widget */
+  variant?: 'inline' | 'sidebar';
 }) {
   let promotion;
   try {
@@ -21,6 +24,7 @@ export default async function PromotionSlot({
   return (
     <PromotionCard
       path={path}
+      variant={variant}
       promotion={{
         id: promotion.id,
         brandName: promotion.brandName,
@@ -28,6 +32,7 @@ export default async function PromotionSlot({
         shortDescription: promotion.shortDescription,
         logoUrl: promotion.logoUrl,
         imageUrl: promotion.imageUrl,
+        videoUrl: promotion.videoUrl,
         lightCreativeUrl: promotion.lightCreativeUrl,
         darkCreativeUrl: promotion.darkCreativeUrl,
         ctaText: promotion.ctaText,

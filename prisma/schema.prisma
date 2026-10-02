@@ -810,6 +810,7 @@ model FinanceTerm {
   interviewAnswer   String   @db.Text
   formula           String?  @db.Text
   category          String
+  subCategory       String?
   difficulty        String   @default("BEGINNER")
   keywords          String[] @default([])
   synonyms          String[] @default([])
@@ -943,6 +944,7 @@ model Promotion {
   imageUrl              String?
   lightCreativeUrl      String?
   darkCreativeUrl       String?
+  videoUrl              String?
   ctaText               String   @default("Learn more")
   destinationUrl        String
   affiliateUrl          String?

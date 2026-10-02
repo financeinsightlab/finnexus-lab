@@ -16,6 +16,9 @@ const SmoothScroll = dynamic(() => import('@/components/ui/SmoothScroll'), {
 const AskKunwarBubble = dynamic(() => import('@/components/ask/AskKunwarBubble'), {
   ssr: false,
 })
+const FloatingRightPromotion = dynamic(() => import('@/components/promotions/FloatingRightPromotion'), {
+  ssr: false,
+})
 
 export default function ClientShell({ children }: { children: ReactNode }) {
   return (
@@ -26,6 +29,8 @@ export default function ClientShell({ children }: { children: ReactNode }) {
       </SmoothScroll>
       {/* Floating Ask Kunwar AI bubble — shown on every page */}
       <AskKunwarBubble />
+      {/* Floating Right-Side Partner Promotion — elevated above chatbot icon */}
+      <FloatingRightPromotion />
     </>
   )
 }
