@@ -89,12 +89,12 @@ const Editor = ({ content, onChange }: EditorProps) => {
         },
         blockquote: {
           HTMLAttributes: {
-            class: 'border-l-4 border-[#0D6E6E] pl-6 py-2 italic font-serif text-slate-400 bg-white/2 my-6 rounded-r-xl',
+            class: 'border-l-4 border-brand pl-6 py-2 italic font-serif text-content-secondary bg-brand-muted my-6 rounded-r-xl',
           },
         },
         codeBlock: {
           HTMLAttributes: {
-            class: 'rounded-xl bg-black/50 p-6 font-mono text-sm border border-white/5 my-6 text-emerald-400',
+            class: 'rounded-xl bg-surface-muted p-6 font-mono text-sm border border-border my-6 text-content-primary',
           },
         },
       }),
@@ -103,33 +103,33 @@ const Editor = ({ content, onChange }: EditorProps) => {
       Link.configure({
         openOnClick: false,
         HTMLAttributes: {
-          class: 'text-[#0D6E6E] underline underline-offset-4 font-bold hover:text-[#0F9E9E] transition-colors',
+          class: 'text-brand underline underline-offset-4 font-bold hover:text-brand-hover transition-colors',
         },
       }),
       Image.configure({
         HTMLAttributes: {
-          class: 'rounded-2xl border border-white/10 shadow-2xl my-10 mx-auto block max-w-full',
+          class: 'rounded-2xl border border-border shadow-lg my-10 mx-auto block max-w-full',
         },
       }),
       Table.configure({
         resizable: true,
         HTMLAttributes: {
-          class: 'border-collapse table-auto w-full my-8 bg-white/2 rounded-xl overflow-hidden',
+          class: 'border-collapse table-auto w-full my-8 bg-surface rounded-xl overflow-hidden',
         },
       }),
       TableRow.configure({
         HTMLAttributes: {
-          class: 'border-b border-white/10 last:border-0',
+          class: 'border-b border-border-subtle last:border-0',
         },
       }),
       TableHeader.configure({
         HTMLAttributes: {
-          class: 'bg-white/5 font-bold text-[#0D6E6E] text-xs uppercase tracking-widest p-4 text-left font-sans',
+          class: 'bg-surface-muted font-bold text-brand text-xs uppercase tracking-widest p-4 text-left font-sans',
         },
       }),
       TableCell.configure({
         HTMLAttributes: {
-          class: 'p-4 text-sm text-slate-400 font-serif border-r border-white/10 last:border-0',
+          class: 'p-4 text-sm text-content-secondary font-serif border-r border-border-subtle last:border-0',
         },
       }),
       TaskList.configure({
@@ -217,7 +217,7 @@ const Editor = ({ content, onChange }: EditorProps) => {
     },
     editorProps: {
       attributes: {
-        class: "prose prose-invert max-w-none focus:outline-none min-h-[600px] font-serif leading-relaxed text-slate-300 px-4 md:px-12 py-12 selection:bg-[#0D6E6E]/30",
+        class: "prose max-w-none focus:outline-none min-h-[600px] font-serif leading-relaxed text-content-secondary px-4 md:px-12 py-12 selection:bg-brand/20",
       },
     },
   })
@@ -254,47 +254,47 @@ const Editor = ({ content, onChange }: EditorProps) => {
   }
 
   return (
-    <div className="w-full bg-[#1A1F2E]/30 border border-[#2D3748] rounded-[32px] overflow-hidden shadow-2xl flex flex-col anim-fade border-dashed hover:border-[#0D6E6E]/20 transition-all">
+    <div className="w-full bg-surface/30 border border-border rounded-[32px] overflow-hidden shadow-2xl flex flex-col anim-fade border-dashed hover:border-brand/20 transition-all">
       {/* Visual Indicator: Slash Menu Hint */}
-      <div className="bg-[#0D6E6E]/5 px-8 pt-6 pb-2">
-         <p className="text-[10px] font-bold text-[#0D6E6E] uppercase tracking-widest flex items-center gap-2">
+      <div className="bg-brand/5 px-8 pt-6 pb-2">
+         <p className="text-[10px] font-bold text-brand uppercase tracking-widest flex items-center gap-2">
            <Layout className="w-3 h-3" /> Core Canvas Block
          </p>
       </div>
 
       {/* Premium Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 md:p-6 bg-[#1A1F2E]/40 border-b border-[#2D3748]">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 md:p-6 bg-surface/40 border-b border-border">
         <div className="flex flex-wrap items-center gap-1.5">
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-3 rounded-2xl transition-all ${editor.isActive("bold") ? "text-[#0D6E6E] bg-[#0D6E6E]/10 shadow-inner" : "text-slate-500 hover:text-white"}`}
+            className={`p-3 rounded-2xl transition-all ${editor.isActive("bold") ? "text-brand bg-brand/10 shadow-inner" : "text-content-muted hover:text-content-primary"}`}
             title="Bold"
           >
             <Bold className="w-5 h-5" />
           </button>
           <button
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-3 rounded-2xl transition-all ${editor.isActive("italic") ? "text-[#0D6E6E] bg-[#0D6E6E]/10" : "text-slate-500 hover:text-white"}`}
+            className={`p-3 rounded-2xl transition-all ${editor.isActive("italic") ? "text-brand bg-brand/10" : "text-content-muted hover:text-content-primary"}`}
             title="Italic"
           >
             <Italic className="w-5 h-5" />
           </button>
           
-          <div className="w-px h-6 bg-white/10 mx-2" />
+          <div className="w-px h-6 bg-border-subtle mx-2" />
 
           <button
             onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-            className={`p-3 rounded-2xl transition-all ${editor.isActive("heading", { level: 1 }) ? "text-[#0D6E6E] bg-[#0D6E6E]/10" : "text-slate-500 hover:text-white"}`}
+            className={`p-3 rounded-2xl transition-all ${editor.isActive("heading", { level: 1 }) ? "text-brand bg-brand/10" : "text-content-muted hover:text-content-primary"}`}
             title="H1"
           >
             <Heading1 className="w-5 h-5" />
           </button>
           
-          <div className="w-px h-6 bg-white/10 mx-2" />
+          <div className="w-px h-6 bg-border-subtle mx-2" />
 
           <button
             onClick={() => editor.chain().focus().toggleBulletList().run()}
-            className={`p-3 rounded-2xl transition-all ${editor.isActive("bulletList") ? "text-[#0D6E6E] bg-[#0D6E6E]/10" : "text-slate-500 hover:text-white"}`}
+            className={`p-3 rounded-2xl transition-all ${editor.isActive("bulletList") ? "text-brand bg-brand/10" : "text-content-muted hover:text-content-primary"}`}
             title="Bullets"
           >
             <List className="w-5 h-5" />
@@ -302,7 +302,7 @@ const Editor = ({ content, onChange }: EditorProps) => {
 
           <button
             onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
-            className="p-3 rounded-2xl transition-all text-slate-500 hover:text-teal-400 hover:bg-white/5"
+            className="p-3 rounded-2xl transition-all text-content-muted hover:text-brand hover:bg-accent"
             title="Insert Table"
           >
             <TableIcon className="w-5 h-5" />
@@ -310,65 +310,65 @@ const Editor = ({ content, onChange }: EditorProps) => {
 
           <button
             onClick={() => editor.chain().focus().toggleTaskList().run()}
-            className={`p-3 rounded-2xl transition-all ${editor.isActive("taskList") ? "text-[#0D6E6E] bg-[#0D6E6E]/10" : "text-slate-500 hover:text-white"}`}
+            className={`p-3 rounded-2xl transition-all ${editor.isActive("taskList") ? "text-brand bg-brand/10" : "text-content-muted hover:text-content-primary"}`}
             title="Task List"
           >
             <CheckSquare className="w-5 h-5" />
           </button>
 
-          <div className="w-px h-6 bg-white/10 mx-2" />
+          <div className="w-px h-6 bg-border-subtle mx-2" />
 
           <button
             onClick={setLink}
-            className={`p-3 rounded-2xl transition-all ${editor.isActive("link") ? "text-[#0D6E6E] bg-[#0D6E6E]/10" : "text-slate-500 hover:text-white"}`}
+            className={`p-3 rounded-2xl transition-all ${editor.isActive("link") ? "text-brand bg-brand/10" : "text-content-muted hover:text-content-primary"}`}
             title="Methodology Link"
           >
             <LinkIcon className="w-5 h-5" />
           </button>
           <button
             onClick={addImage}
-            className="p-3 rounded-2xl transition-all text-slate-500 hover:text-white"
+            className="p-3 rounded-2xl transition-all text-content-muted hover:text-content-primary"
             title="Visual Media"
           >
             <ImageIcon className="w-5 h-5" />
           </button>
         </div>
 
-        <div className="flex items-center gap-4 bg-black/20 p-2 rounded-2xl border border-white/5">
-          <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-xl">
-            <Clock className="w-4 h-4 text-[#0D6E6E]" />
-            <span className="text-[10px] font-bold text-slate-300 uppercase leading-none">{readingTime} MIN READ</span>
+        <div className="flex items-center gap-4 bg-surface-muted p-2 rounded-2xl border border-border-subtle">
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-surface rounded-xl">
+            <Clock className="w-4 h-4 text-brand" />
+            <span className="text-[10px] font-bold text-content-secondary uppercase leading-none">{readingTime} MIN READ</span>
           </div>
           <div className="flex items-center gap-1.5 pr-2">
-            <span className="text-[10px] font-bold text-[#0D6E6E] uppercase leading-none tracking-tighter">{wordCount} WORDS</span>
+            <span className="text-[10px] font-bold text-brand uppercase leading-none tracking-tighter">{wordCount} WORDS</span>
           </div>
         </div>
       </div>
 
       {/* Editor Content Area */}
-      <div className="flex-1 bg-gradient-to-b from-[#0F1117] to-transparent">
+      <div className="flex-1 bg-surface">
         <EditorContent editor={editor} />
       </div>
 
       {/* Bubble Menu for quick formatting - temporarily disabled due to import issues */}
       {/* {editor && (
-        <BubbleMenu editor={editor} options={{ offset: 12 }} className="flex bg-[#1A1F2E] border border-[#2D3748] rounded-2xl overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.5)] anim-fade-up border-white/10 p-1 gap-1">
+        <BubbleMenu editor={editor} options={{ offset: 12 }} className="flex bg-surface border border-border rounded-2xl overflow-hidden shadow-lg anim-fade-up border-border p-1 gap-1">
           <button
             onClick={() => editor.chain().focus().toggleBold().run()}
-            className={`p-3 rounded-xl transition-all ${editor.isActive("bold") ? "text-[#0D6E6E] bg-[#0D6E6E]/10" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
+            className={`p-3 rounded-xl transition-all ${editor.isActive("bold") ? "text-brand bg-brand/10" : "text-content-secondary hover:bg-accent hover:text-content-primary"}`}
           >
             <Bold className="w-4 h-4" />
           </button>
           <button
             onClick={() => editor.chain().focus().toggleItalic().run()}
-            className={`p-3 rounded-xl transition-all ${editor.isActive("italic") ? "text-[#0D6E6E] bg-[#0D6E6E]/10" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
+            className={`p-3 rounded-xl transition-all ${editor.isActive("italic") ? "text-brand bg-brand/10" : "text-content-secondary hover:bg-accent hover:text-content-primary"}`}
           >
             <Italic className="w-4 h-4" />
           </button>
-          <div className="w-px h-5 bg-white/10 my-auto mx-1" />
+          <div className="w-px h-5 bg-border-subtle my-auto mx-1" />
           <button
             onClick={setLink}
-            className={`p-3 rounded-xl transition-all ${editor.isActive("link") ? "text-[#0D6E6E] bg-[#0D6E6E]/10" : "text-slate-300 hover:bg-white/5 hover:text-white"}`}
+            className={`p-3 rounded-xl transition-all ${editor.isActive("link") ? "text-brand bg-brand/10" : "text-content-secondary hover:bg-accent hover:text-content-primary"}`}
           >
             <LinkIcon className="w-4 h-4" />
           </button>

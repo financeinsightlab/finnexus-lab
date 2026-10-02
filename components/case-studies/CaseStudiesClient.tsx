@@ -77,12 +77,12 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
             placeholder="Search case studies, industries, tags…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-9 py-3 bg-cinema-charcoal border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-cinema-cyan/60 focus:ring-1 focus:ring-cinema-cyan/40 transition-all"
+            className="w-full pl-10 pr-9 py-3 bg-surface border border-input rounded-xl text-sm text-content-primary placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-content-muted hover:text-content-primary cursor-pointer"
             >
               <X className="w-4 h-4" />
             </button>
@@ -99,7 +99,7 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
               className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
                 industry === ind
                   ? 'bg-cinema-cyan text-cinema-black border-cinema-cyan shadow-glow-cyan'
-                  : 'bg-cinema-charcoal text-gray-300 border-white/10 hover:border-cinema-cyan/50 hover:text-white'
+                  : 'bg-surface text-content-secondary border-border hover:border-brand/50 hover:text-content-primary'
               }`}
             >
               {ind}
@@ -118,7 +118,7 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
       ) : (
         <div className="text-center py-20 glass-cinema rounded-2xl border border-white/10">
           <div className="text-5xl mb-4">📁</div>
-          <p className="text-lg font-semibold text-white mb-1">No case studies found</p>
+          <p className="text-lg font-semibold text-content-primary mb-1">No case studies found</p>
           <p className="text-gray-400">
             {hasFilters ? 'Try adjusting your search or filters.' : 'Check back soon for new case studies.'}
           </p>

@@ -38,7 +38,7 @@ export async function CommentSection({ postId, predictionId, currentPath }: { po
             required
             rows={3}
             placeholder="Share your insights..."
-            className="w-full bg-[#1A1F2E]/50 border border-white/10 rounded-2xl p-4 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-[#0D6E6E] focus:ring-1 focus:ring-[#0D6E6E] resize-none transition-all"
+            className="w-full bg-surface/50 border border-white/10 rounded-2xl p-4 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand resize-none transition-all"
           />
           <div className="absolute bottom-3 right-3">
             <button type="submit" className="px-4 py-2 bg-white text-black hover:bg-slate-200 rounded-xl text-xs font-bold transition-colors">
@@ -47,7 +47,7 @@ export async function CommentSection({ postId, predictionId, currentPath }: { po
           </div>
         </form>
       ) : (
-        <div className="p-4 rounded-2xl bg-[#1A1F2E]/50 border border-white/5 text-center">
+        <div className="p-4 rounded-2xl bg-surface/50 border border-white/5 text-center">
           <p className="text-slate-400 text-sm">You must be logged in to participate in the discussion.</p>
         </div>
       )}
@@ -76,7 +76,7 @@ export async function CommentSection({ postId, predictionId, currentPath }: { po
                   <form action={deleteCommentAction}>
                     <input type="hidden" name="commentId" value={comment.id} />
                     <input type="hidden" name="path" value={currentPath} />
-                    <button type="submit" className="text-slate-500 hover:text-red-400 transition-colors text-xs font-mono ml-4">
+                    <button type="submit" className="text-slate-500 hover:text-error transition-colors text-xs font-mono ml-4">
                       delete
                     </button>
                   </form>

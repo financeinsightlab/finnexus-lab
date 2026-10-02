@@ -130,7 +130,7 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
             <div className="flex items-center justify-between gap-4 mb-8">
               <Link
                 href="/insights"
-                className="inline-flex items-center gap-2 text-sm text-cinema-cyan hover:text-white transition-colors group"
+                className="inline-flex items-center gap-2 text-sm text-cinema-cyan hover:text-brand-hover transition-colors group"
               >
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 Back to All Insights
@@ -158,7 +158,7 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
               </h1>
 
               {thesis && (
-                <div className="p-5 rounded-2xl bg-[#090E18] border-l-4 border-cinema-cyan border-r border-y border-white/10 shadow-xl">
+                <div className="p-5 rounded-2xl bg-surface-raised border-l-4 border-cinema-cyan border-r border-y border-white/10 shadow-xl">
                   <p className="text-sm uppercase tracking-wider font-bold text-cinema-cyan mb-1 flex items-center gap-1.5">
                     <Sparkles className="w-3.5 h-3.5" /> Executive Thesis
                   </p>
@@ -185,7 +185,7 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
         {/* ── 3D COVER IMAGE HERO BANNER ── */}
         {coverImage && (
           <div className="wrap max-w-5xl -mt-8 relative z-20">
-            <div className="overflow-hidden rounded-3xl shadow-2xl border border-white/15 bg-[#080D1A]">
+            <div className="overflow-hidden rounded-3xl shadow-2xl border border-white/15 bg-surface-muted">
               <img
                 src={coverImage}
                 alt={title}
@@ -286,7 +286,7 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
                           </div>
                         )}
                         <p className="text-[10px] text-cinema-cyan font-mono mb-1">{rel.category}</p>
-                        <h4 className="text-xs font-semibold text-white group-hover:text-cinema-cyan transition-colors line-clamp-2 leading-snug">
+                        <h4 className="text-xs font-semibold text-white group-hover:text-brand-hover transition-colors line-clamp-2 leading-snug">
                           {rel.title}
                         </h4>
                       </Link>

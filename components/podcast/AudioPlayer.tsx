@@ -98,7 +98,7 @@ export default function AudioPlayer({ src, title, episodeNumber, compact = false
             <Headphones className="w-3 h-3" />
             {ready ? (playing ? 'Now playing' : 'Episode preview') : 'Loading preview…'}
           </div>
-          <p className="text-sm md:text-base font-semibold text-white truncate">
+          <p className="text-sm md:text-base font-semibold text-content-primary truncate">
             EP {String(episodeNumber).padStart(2, '0')} — {title}
           </p>
         </div>
@@ -108,7 +108,7 @@ export default function AudioPlayer({ src, title, episodeNumber, compact = false
           <button
             onClick={cycleRate}
             aria-label="Playback speed"
-            className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white hover:border-cinema-cyan/40 transition-colors cursor-pointer"
+            className="hidden sm:flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-muted border border-border text-xs font-semibold text-content-secondary hover:text-content-primary hover:border-brand/40 transition-colors cursor-pointer"
           >
             <Gauge className="w-3.5 h-3.5 text-cinema-cyan" />
             {rate}x
@@ -117,7 +117,7 @@ export default function AudioPlayer({ src, title, episodeNumber, compact = false
             href={src}
             download
             aria-label="Download audio"
-            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs font-semibold text-gray-300 hover:text-white hover:border-cinema-cyan/40 transition-colors"
+            className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-muted border border-border text-xs font-semibold text-content-secondary hover:text-content-primary hover:border-brand/40 transition-colors"
           >
             <Download className="w-3.5 h-3.5 text-cinema-cyan" />
             <span className="hidden sm:inline">MP3</span>
@@ -137,7 +137,7 @@ export default function AudioPlayer({ src, title, episodeNumber, compact = false
           onChange={(e) => seek(Number(e.target.value))}
           aria-label="Seek"
           className="flex-grow h-1.5 appearance-none rounded-full bg-white/10 accent-cinema-cyan cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-3.5 [&::-webkit-slider-thumb]:h-3.5 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-cinema-cyan [&::-webkit-slider-thumb]:shadow-glow-cyan"
-          style={{ background: `linear-gradient(to right, #06B6D4 ${progress}%, rgba(255,255,255,0.1) ${progress}%)` }}
+          style={{ background: `linear-gradient(to right, hsl(var(--brand)) ${progress}%, hsl(var(--border-strong)) ${progress}%)` }}
         />
         <span className="text-[11px] font-mono text-gray-400 w-10 tabular-nums">{formatTime(duration)}</span>
       </div>

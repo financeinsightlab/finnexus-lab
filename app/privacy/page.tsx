@@ -12,7 +12,7 @@ const updated = 'October 2, 2026';
 
 export default function PrivacyPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
+    <main className="min-h-screen bg-gradient-to-b from-background to-surface-muted/50">
       <div className="wrap py-20">
         <div className="mx-auto max-w-4xl">
           <header className="mb-8 flex items-center gap-4">
@@ -24,7 +24,7 @@ export default function PrivacyPage() {
             </div>
           </header>
 
-          <aside className="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-sm leading-6 text-amber-950">
+          <aside className="mb-10 rounded-2xl border border-warning/30 bg-warning-muted p-6 text-sm leading-6 text-content-primary">
             This notice describes current product behavior. It does not claim GDPR, CCPA, DPDP Act,
             ISO 27001, or SOC 2 certification or compliance, and it is not a substitute for
             jurisdiction-specific legal review.

@@ -125,7 +125,7 @@ function CourseCard({ course, index }: { course: (typeof COURSES)[0]; index: num
     rafRef.current = requestAnimationFrame(() => {
       if (!cardRef.current) return
       cardRef.current.style.transform = 'perspective(1200px) rotateX(0deg) rotateY(0deg) scale(1)'
-      cardRef.current.style.boxShadow = `0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)`
+      cardRef.current.style.boxShadow = '0 8px 32px rgb(var(--shadow-rgb) / 0.12), 0 0 0 1px hsl(var(--border) / 0.7)'
     })
   }, [])
 
@@ -134,11 +134,10 @@ function CourseCard({ course, index }: { course: (typeof COURSES)[0]; index: num
       ref={cardRef}
       onMouseMove={handleMove}
       onMouseLeave={handleLeave}
-      className="relative rounded-2xl overflow-hidden transition-[transform,box-shadow] duration-300 ease-out"
+      className="relative rounded-2xl overflow-hidden bg-surface-raised text-content-primary border border-border transition-[transform,box-shadow] duration-300 ease-out"
       style={{
         transformStyle: 'preserve-3d',
-        boxShadow: '0 8px 32px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.06)',
-        background: 'linear-gradient(160deg, #111827 0%, #0d1117 100%)',
+        boxShadow: '0 8px 32px rgb(var(--shadow-rgb) / 0.12), 0 0 0 1px hsl(var(--border) / 0.7)',
         animationDelay: `${index * 100}ms`,
       }}
     >
@@ -155,7 +154,7 @@ function CourseCard({ course, index }: { course: (typeof COURSES)[0]; index: num
         <div
           className="absolute inset-0"
           style={{
-            background: `linear-gradient(180deg, rgba(${course.accent},0.12) 0%, rgba(13,17,23,0.75) 70%, #0d1117 100%)`,
+            background: `linear-gradient(180deg, rgba(${course.accent},0.12) 0%, hsl(var(--surface-raised) / 0.08) 55%, hsl(var(--surface-raised)) 100%)`,
           }}
         />
         {/* Top-left tagline */}
@@ -190,17 +189,17 @@ function CourseCard({ course, index }: { course: (typeof COURSES)[0]; index: num
         </p>
 
         {/* Title */}
-        <h3 className="text-lg font-extrabold text-white leading-tight mb-2">
+        <h3 className="text-lg font-extrabold text-content-primary leading-tight mb-2">
           {course.title}
         </h3>
 
         {/* Description */}
-        <p className="text-[12px] text-slate-400 leading-relaxed mb-4">
+        <p className="text-[12px] text-content-secondary leading-relaxed mb-4">
           {course.description}
         </p>
 
         {/* Divider */}
-        <div className="w-full h-px bg-white/5 mb-4" />
+        <div className="w-full h-px bg-border-subtle mb-4" />
 
         {/* Stats row */}
         <div className="flex items-center gap-4 mb-5">
@@ -208,10 +207,10 @@ function CourseCard({ course, index }: { course: (typeof COURSES)[0]; index: num
             const StatIcon = stat.icon
             return (
               <div key={stat.label} className="flex items-center gap-1.5">
-                <StatIcon className="w-3.5 h-3.5 text-slate-600" />
+                <StatIcon className="w-3.5 h-3.5 text-content-muted" />
                 <div>
-                  <div className="text-xs font-black text-white leading-none">{stat.value}</div>
-                  <div className="text-[10px] text-slate-600 leading-none mt-0.5">{stat.label}</div>
+                  <div className="text-xs font-black text-content-primary leading-none">{stat.value}</div>
+                  <div className="text-[10px] text-content-muted leading-none mt-0.5">{stat.label}</div>
                 </div>
               </div>
             )
@@ -225,7 +224,7 @@ function CourseCard({ course, index }: { course: (typeof COURSES)[0]; index: num
           style={{
             background: `linear-gradient(135deg, rgba(${course.accent},0.2), rgba(${course.accent},0.1))`,
             border: `1px solid rgba(${course.accent},0.3)`,
-            color: `rgb(${course.accent})`,
+            color: 'hsl(var(--brand))',
           }}
           onMouseEnter={(e) => {
             ;(e.currentTarget as HTMLElement).style.background = `rgba(${course.accent},0.25)`
@@ -254,7 +253,7 @@ function CourseCard({ course, index }: { course: (typeof COURSES)[0]; index: num
 
 export default function CoursesSection() {
   return (
-    <section className="relative bg-gradient-to-b from-[#0a0c12] to-[#0B0D13] py-14 border-b border-white/5">
+    <section className="relative bg-gradient-to-b from-surface-muted to-background py-14 border-b border-border-subtle">
       {/* Ambient background glows */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] rounded-full blur-[160px] opacity-[0.05] bg-teal-400" />
@@ -265,17 +264,17 @@ export default function CoursesSection() {
       <div className="relative z-10 max-w-[1400px] mx-auto px-6">
         {/* ── Section Header ── */}
         <div className="text-center mb-10">
-          <span className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-white/40 bg-white/5 border border-white/10 px-3 py-1.5 rounded-full mb-4">
+          <span className="inline-flex items-center gap-2 text-[11px] font-black uppercase tracking-widest text-content-muted bg-surface-muted border border-border px-3 py-1.5 rounded-full mb-4">
             <ChevronRight className="w-3 h-3" />
             Featured Courses & Programs
           </span>
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
+          <h2 className="text-3xl md:text-4xl font-extrabold text-content-primary leading-tight">
             Everything You Need to{' '}
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-violet-400 to-amber-400">
               Become an Analyst
             </span>
           </h2>
-          <p className="text-slate-500 mt-3 text-sm max-w-xl mx-auto">
+          <p className="text-content-secondary mt-3 text-sm max-w-xl mx-auto">
             Three free, structured programs — pick your path and start learning today.
           </p>
         </div>
@@ -288,7 +287,7 @@ export default function CoursesSection() {
         </div>
 
         {/* ── Bottom tagline ── */}
-        <p className="text-center text-[11px] text-slate-700 mt-8 font-medium">
+        <p className="text-center text-[11px] text-content-muted mt-8 font-medium">
           All programs are completely free · No sign-up required to browse
         </p>
       </div>

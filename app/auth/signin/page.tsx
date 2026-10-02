@@ -69,11 +69,11 @@ export default function SignInPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-silver px-4 py-10">
+    <div className="min-h-screen flex items-center justify-center bg-surface-muted px-4 py-10">
       <div className="bg-white rounded-2xl p-8 md:p-10 w-full max-w-md shadow-lg">
         <div className="text-center mb-8">
-          <div className="font-extrabold tracking-tight text-2xl text-brand-navy">Kunwar Analytics</div>
-          <div className="text-sm text-brand-slate mt-1">Financial Intelligence Platform</div>
+          <div className="font-extrabold tracking-tight text-2xl text-content-primary">Kunwar Analytics</div>
+          <div className="text-sm text-content-secondary mt-1">Financial Intelligence Platform</div>
         </div>
 
         <div className="flex gap-2 mb-6">
@@ -103,7 +103,7 @@ export default function SignInPage() {
           type="button"
           onClick={handleGoogleSignIn}
           disabled={loading}
-          className="w-full flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-brand-navy hover:bg-gray-50 transition-colors focus-ring"
+          className="w-full flex items-center justify-center gap-3 rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm font-semibold text-content-primary hover:bg-gray-50 transition-colors focus-ring"
         >
           <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true">
             <path
@@ -135,7 +135,7 @@ export default function SignInPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {mode === 'register' ? (
             <div>
-              <label className="block text-sm font-semibold text-brand-navy mb-1" htmlFor="name">
+              <label className="block text-sm font-semibold text-content-primary mb-1" htmlFor="name">
                 Name
               </label>
               <input
@@ -151,7 +151,7 @@ export default function SignInPage() {
           ) : null}
 
           <div>
-            <label className="block text-sm font-semibold text-brand-navy mb-1" htmlFor="email">
+            <label className="block text-sm font-semibold text-content-primary mb-1" htmlFor="email">
               Email
             </label>
             <input
@@ -169,7 +169,7 @@ export default function SignInPage() {
 
           <div>
             <label
-              className="block text-sm font-semibold text-brand-navy mb-1"
+              className="block text-sm font-semibold text-content-primary mb-1"
               htmlFor="password"
             >
               Password

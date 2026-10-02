@@ -252,7 +252,7 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
 
             {/* Excel Matrix */}
             <div className="bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden">
-              <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2">
+              <div className="bg-success text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/></svg>
                 <span>Q_Commerce_Dark_Store_Unit_Economics.xlsx</span>
               </div>
@@ -290,10 +290,10 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
                       { i: '13', label: '  (—) Marketing Spend', mo: -calculations.marketingSpend, por: -(calculations.marketingSpend/calculations.ordersPerMonth), pct: -marketingPercent },
                       { i: '14', label: 'NET STORE EBITDA', mo: calculations.netStoreProfit, por: Math.round(calculations.netStoreProfit/calculations.ordersPerMonth), pct: calculations.netMargin, bold: true, highlight: 'navy' },
                     ].map(row => (
-                      <tr key={row.i} className={`hover:bg-blue-50/30 group ${row.highlight === 'navy' ? 'bg-[#eef3fb]' : row.highlight === 'green' ? 'bg-green-50/20' : row.highlight === 'teal' ? 'bg-teal-50/10' : row.highlight === 'blue' ? 'bg-sky-50/20' : ''}`}>
+                      <tr key={row.i} className={`hover:bg-blue-50/30 group ${row.highlight === 'navy' ? 'bg-surface-muted' : row.highlight === 'green' ? 'bg-green-50/20' : row.highlight === 'teal' ? 'bg-teal-50/10' : row.highlight === 'blue' ? 'bg-sky-50/20' : ''}`}>
                         <td className="border border-gray-300 bg-gray-100 text-center font-bold text-gray-400 text-xs w-6 sticky left-0 z-20">{row.i}</td>
                         <td className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 sticky left-6 z-20 ${row.bold ? 'font-bold text-gray-800' : 'text-gray-500 pl-8'} bg-white dark:bg-slate-900 group-hover:bg-blue-50/0`}>{row.label}</td>
-                        <td className={`border border-gray-200 dark:border-slate-700 px-3 py-1.5 text-right font-mono ${row.highlight === 'navy' ? 'font-extrabold text-[#0b5c96] text-[13px]' : row.mo < 0 ? 'text-red-600' : 'text-gray-700'} ${row.bold ? 'font-bold' : ''}`}>
+                        <td className={`border border-gray-200 dark:border-slate-700 px-3 py-1.5 text-right font-mono ${row.highlight === 'navy' ? 'font-extrabold text-info text-[13px]' : row.mo < 0 ? 'text-red-600' : 'text-gray-700'} ${row.bold ? 'font-bold' : ''}`}>
                           {row.mo < 0 ? `(₹${Math.round(Math.abs(row.mo)).toLocaleString()})` : `₹${Math.round(row.mo).toLocaleString()}`}
                         </td>
                         <td className={`border border-gray-200 dark:border-slate-700 px-3 py-1.5 text-right font-mono ${Math.round(row.por) < 0 ? 'text-red-600' : 'text-gray-700'} ${row.bold ? 'font-bold' : ''}`}>

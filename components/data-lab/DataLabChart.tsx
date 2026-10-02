@@ -36,20 +36,20 @@ export default function DataLabChart({
   }, []);
 
   return (
-    <div className="glass-cinema rounded-2xl border border-white/10 p-6">
+    <div className="glass-cinema rounded-2xl border border-border p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          {title && <h3 className="text-lg font-bold text-white">{title}</h3>}
-          {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
+          {title && <h3 className="text-lg font-bold text-content-primary">{title}</h3>}
+          {subtitle && <p className="text-sm text-content-muted mt-1">{subtitle}</p>}
         </div>
         {series.some(s => s.kind === 'line' || s.kind === 'area' || type === 'line') && (
-          <div className="inline-flex rounded-xl bg-white/5 border border-white/10 p-1">
+          <div className="inline-flex rounded-xl bg-surface-muted border border-border p-1">
             {(['bar', 'line', 'area'] as const).map(t => (
               <button
                 key={t}
                 onClick={() => setSelected(t)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                  selected === t ? 'bg-cinema-cyan/20 text-cinema-cyan' : 'text-gray-400 hover:text-white'
+                  selected === t ? 'bg-brand-muted text-brand' : 'text-content-muted hover:text-content-primary'
                 }`}
               >
                 {t === 'bar' ? 'Bar' : t === 'line' ? 'Line' : 'Area'}
@@ -59,9 +59,9 @@ export default function DataLabChart({
         )}
       </div>
 
-      <div style={{ width: '100%', height }} className="text-gray-200">
+      <div style={{ width: '100%', height }} className="text-content-secondary">
         {!mounted && (
-          <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
+          <div className="w-full h-full flex items-center justify-center text-content-muted text-sm">
             Loading chart…
           </div>
         )}
@@ -76,29 +76,29 @@ export default function DataLabChart({
                 </linearGradient>
               ))}
             </defs>
-            <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.08)" />
+            <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border-subtle))" />
             <XAxis
               dataKey={xKey}
-              tick={{ fill: '#9ca3af', fontSize: 12 }}
+              tick={{ fill: 'hsl(var(--content-muted))', fontSize: 12 }}
               tickLine={false}
-              axisLine={{ stroke: 'rgba(255,255,255,0.15)' }}
+              axisLine={{ stroke: 'hsl(var(--border))' }}
             />
             <YAxis
-              tick={{ fill: '#9ca3af', fontSize: 12 }}
+              tick={{ fill: 'hsl(var(--content-muted))', fontSize: 12 }}
               tickLine={false}
               axisLine={false}
               width={42}
             />
             <Tooltip
               contentStyle={{
-                background: '#121419',
-                border: '1px solid rgba(255,255,255,0.15)',
+                background: 'hsl(var(--surface-overlay))',
+                border: '1px solid hsl(var(--border))',
                 borderRadius: 12,
-                color: '#fff',
+                color: 'hsl(var(--content-primary))',
               }}
-              labelStyle={{ color: '#fff', fontWeight: 600 }}
+              labelStyle={{ color: 'hsl(var(--content-primary))', fontWeight: 600 }}
             />
-            <Legend wrapperStyle={{ fontSize: 12, color: '#d1d5db' }} />
+            <Legend wrapperStyle={{ fontSize: 12, color: 'hsl(var(--content-secondary))' }} />
             {series.map(s => {
               const kind = s.kind === 'line' || selected === 'line' ? 'line' : selected === 'area' ? 'area' : 'bar';
               if (kind === 'line') {

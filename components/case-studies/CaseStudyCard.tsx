@@ -7,14 +7,14 @@ import { ArrowRight, Briefcase, CalendarDays, Clock, Building2, Layers } from 'l
 import type { CaseStudy } from '@/types';
 
 const ENGAGEMENT_ACCENTS: Record<string, string> = {
-  'Market Entry + Growth Strategy': 'text-cinema-cyan border-cinema-cyan/30 bg-cinema-cyan/10',
-  'Cost Transformation + Operations': 'text-cinema-amber border-cinema-amber/30 bg-cinema-amber/10',
-  'M&A Due Diligence + 100-Day Plan': 'text-cinema-violet border-cinema-violet/30 bg-cinema-violet/10',
-  'Pricing Strategy': 'text-cinema-aurora border-cinema-aurora/30 bg-cinema-aurora/10',
-  'Digital Transformation + Operating Model': 'text-cinema-glow-blue border-cinema-glow-blue/30 bg-cinema-glow-blue/10',
-  'Supply Chain Optimization': 'text-cinema-cyan border-cinema-cyan/30 bg-cinema-cyan/10',
-  'Go-to-Market Strategy': 'text-cinema-amber border-cinema-amber/30 bg-cinema-amber/10',
-  'Turnaround & Restructuring': 'text-rose-400 border-rose-400/30 bg-rose-400/10',
+  'Market Entry + Growth Strategy': 'text-brand border-brand/30 bg-brand-muted',
+  'Cost Transformation + Operations': 'text-warning border-warning/30 bg-warning-muted',
+  'M&A Due Diligence + 100-Day Plan': 'text-accent-violet border-accent-violet/30 bg-accent-violet-muted',
+  'Pricing Strategy': 'text-success border-success/30 bg-success-muted',
+  'Digital Transformation + Operating Model': 'text-info border-info/30 bg-info-muted',
+  'Supply Chain Optimization': 'text-brand border-brand/30 bg-brand-muted',
+  'Go-to-Market Strategy': 'text-warning border-warning/30 bg-warning-muted',
+  'Turnaround & Restructuring': 'text-error border-error/30 bg-error-muted',
 };
 
 interface CaseStudyCardProps {
@@ -35,7 +35,7 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
     setTilt({ x: py * -8, y: px * 10 }); // rotateX from Y movement, rotateY from X movement
   };
 
-  const accent = ENGAGEMENT_ACCENTS[study.engagementType] ?? 'text-cinema-cyan border-cinema-cyan/30 bg-cinema-cyan/10';
+  const accent = ENGAGEMENT_ACCENTS[study.engagementType] ?? 'text-brand border-brand/30 bg-brand-muted';
 
   return (
     <div style={{ perspective: '1200px' }} className="h-full">
@@ -78,19 +78,19 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
                 {study.engagementType}
               </span>
               {study.featured && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border border-cinema-amber/40 bg-cinema-amber/20 text-cinema-amber backdrop-blur-sm">
+                <span className="inline-flex items-center gap-1 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border border-warning/40 bg-warning text-content-inverse backdrop-blur-sm">
                   ★ Featured
                 </span>
               )}
             </div>
 
             {/* Bottom meta on image */}
-            <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-gray-300">
+            <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] !text-white">
               <span className="inline-flex items-center gap-1.5">
-                <Building2 className="w-3.5 h-3.5 text-cinema-cyan" /> {study.clientType}
+                <Building2 className="w-3.5 h-3.5 !text-cyan-300" /> {study.clientType}
               </span>
               <span className="inline-flex items-center gap-1.5">
-                <Clock className="w-3.5 h-3.5 text-cinema-cyan" /> {study.timeline ?? '—'}
+                <Clock className="w-3.5 h-3.5 !text-cyan-300" /> {study.timeline ?? '—'}
               </span>
             </div>
           </div>
@@ -109,7 +109,7 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
               </span>
             </div>
 
-            <h3 className="font-bold text-white text-lg leading-snug mb-2 group-hover:text-cinema-cyan transition-colors line-clamp-2">
+            <h3 className="font-bold text-content-primary text-lg leading-snug mb-2 group-hover:text-brand transition-colors line-clamp-2">
               {study.title}
             </h3>
 
@@ -123,7 +123,7 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
                 {study.frameworks.slice(0, 3).map((framework) => (
                   <span
                     key={framework}
-                    className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md border border-cinema-cyan/20 bg-cinema-cyan/5 text-cinema-cyan/90"
+                    className="inline-flex items-center gap-1 text-[10px] px-2 py-0.5 rounded-md border border-brand/20 bg-brand-muted text-brand"
                   >
                     <Layers className="w-2.5 h-2.5" /> {framework}
                   </span>

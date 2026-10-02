@@ -110,7 +110,7 @@ export default async function PodcastPage({
   const featured = episodes.find((e) => e.featured) ?? episodes[0];
 
   return (
-    <div className="min-h-screen bg-cinema-black text-white overflow-hidden">
+    <div className="min-h-screen bg-cinema-black text-content-primary overflow-hidden">
       <JsonLd data={podcastSeriesSchema} />
 
       {/* ═══════════ HERO ═══════════ */}
@@ -213,7 +213,7 @@ export default async function PodcastPage({
                         EP {String(featured.episodeNumber).padStart(2, '0')} · {featured.format}
                       </span>
                       <h3 className="font-bold text-white text-lg leading-snug line-clamp-3">
-                        <Link href={`/podcast/${featured.slug}`} className="hover:text-cinema-cyan transition-colors">
+                        <Link href={`/podcast/${featured.slug}`} className="hover:text-brand transition-colors">
                           {featured.title}
                         </Link>
                       </h3>

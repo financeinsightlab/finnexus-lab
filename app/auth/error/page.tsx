@@ -20,11 +20,11 @@ export default function AuthErrorPage({ searchParams }: ErrorPageProps) {
           : 'Something went wrong during sign in.';
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-brand-silver px-4 py-10">
+    <div className="min-h-screen flex items-center justify-center bg-surface-muted px-4 py-10">
       <div className="bg-white rounded-2xl p-8 w-full max-w-md shadow-lg">
         <div className="text-center">
-          <h1 className="text-xl font-extrabold text-brand-navy">Sign in error</h1>
-          <p className="mt-3 text-sm text-brand-slate">{message}</p>
+          <h1 className="text-xl font-extrabold text-content-primary">Sign in error</h1>
+          <p className="mt-3 text-sm text-content-secondary">{message}</p>
         </div>
 
         <Link href="/auth/signin" className="btn btn-primary w-full justify-center mt-7">

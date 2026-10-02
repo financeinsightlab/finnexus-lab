@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import dynamic from "next/dynamic"
 import Editor from "@/components/admin/Editor"
 import { createPost, PostFormData } from "@/actions/cms-actions"
@@ -30,6 +30,7 @@ import React from "react"
 import { contentTemplates, applyTemplate } from "@/lib/templates"
 import { Block } from "@/lib/blocks/registry"
 import ContentRenderer from "@/components/ContentRenderer"
+import { useDialogAccessibility } from '@/components/ui/useDialogAccessibility'
 
 const BlockEditor = dynamic(() => import('@/components/admin/block-editor/BlockEditor'), { ssr: false })
 
@@ -79,6 +80,17 @@ export default function EditorClient() {
   
   // Media Library
   const [showMediaLibrary, setShowMediaLibrary] = useState(false)
+  const mediaLibraryDialogRef = useDialogAccessibility(showMediaLibrary, () => setShowMediaLibrary(false))
+  const templateDialogRef = useDialogAccessibility(showTemplates, () => setShowTemplates(false))
+
+  useEffect(() => {
+    if (!sidebarOpen) return
+    const closeSettingsOnEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape' && !showMediaLibrary && !showTemplates) setSidebarOpen(false)
+    }
+    document.addEventListener('keydown', closeSettingsOnEscape)
+    return () => document.removeEventListener('keydown', closeSettingsOnEscape)
+  }, [sidebarOpen, showMediaLibrary, showTemplates])
   const [mediaSearch, setMediaSearch] = useState("")
   
   // Scheduling
@@ -261,11 +273,11 @@ export default function EditorClient() {
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#0B0D13]">
+    <div className="flex flex-col h-[calc(100dvh-4rem)] min-h-0 overflow-hidden bg-surface-muted">
       {/* Elementor-Style Floating Header */}
-      <header className="h-16 flex items-center justify-between px-6 bg-[#1A1F2E]/80 backdrop-blur-xl border-b border-white/5 z-[60] shrink-0">
-        <div className="flex items-center gap-4">
-          <Link href="/admin/cms" className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-all text-slate-400">
+      <header className="h-16 flex items-center justify-between gap-2 px-2 sm:px-6 bg-surface/80 backdrop-blur-xl border-b border-border-subtle z-[60] shrink-0">
+        <div className="flex items-center gap-2 sm:gap-4 min-w-0">
+          <Link href="/admin/cms" className="w-8 h-8 sm:w-9 sm:h-9 shrink-0 flex items-center justify-center rounded-xl bg-surface-muted hover:bg-accent transition-all text-content-secondary">
             <ChevronLeft className="w-5 h-5" />
           </Link>
           <div className="flex flex-col">
@@ -274,25 +286,25 @@ export default function EditorClient() {
               placeholder="Post Title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-transparent text-sm font-bold text-white placeholder:text-slate-600 focus:outline-none w-[200px] md:w-[350px]"
+              className="bg-transparent text-sm font-bold text-content-primary placeholder:text-content-muted focus:outline-none w-[76px] sm:w-[200px] md:w-[350px]"
             />
-            <span className="text-[10px] text-[#0D6E6E] font-bold uppercase tracking-widest mt-0.5">Drafting Elite Report</span>
+            <span className="hidden sm:block text-[10px] text-brand font-bold uppercase tracking-widest mt-0.5">Drafting Elite Report</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1 sm:gap-3 shrink-0">
           <button
             onClick={() => setShowTemplates(true)}
-            className="p-2.5 rounded-xl transition-all bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white"
+            className="p-1.5 sm:p-2.5 rounded-xl transition-all bg-accent-violet-muted text-accent-violet hover:bg-accent-violet hover:text-content-inverse"
             title="Use Template"
           >
             <Sparkles className="w-5 h-5" />
           </button>
           
-          <div className="flex items-center bg-black/30 border border-white/10 rounded-xl p-1 gap-1">
+          <div className="flex items-center bg-surface-muted border border-border rounded-xl p-0.5 sm:p-1 gap-0.5 sm:gap-1">
             <button
               onClick={() => setContentType('MARKDOWN')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'MARKDOWN' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`flex items-center gap-1 px-1.5 sm:gap-1.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'MARKDOWN' ? 'bg-accent text-content-primary' : 'text-content-muted hover:text-content-secondary'}`}
               title="Classic Markdown / Rich Text editor"
             >
               <Type className="w-3.5 h-3.5" />
@@ -300,7 +312,7 @@ export default function EditorClient() {
             </button>
             <button
               onClick={() => setContentType('BLOCKS')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'BLOCKS' ? 'bg-[#0D6E6E] text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
+              className={`flex items-center gap-1 px-1.5 sm:gap-1.5 sm:px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'BLOCKS' ? 'bg-primary text-primary-foreground shadow' : 'text-content-muted hover:text-content-secondary'}`}
               title="Visual Block Builder"
             >
               <Blocks className="w-3.5 h-3.5" />
@@ -310,69 +322,71 @@ export default function EditorClient() {
           
           <button
             onClick={() => setPreviewMode(!previewMode)}
-            className={`p-2.5 rounded-xl transition-all ${previewMode ? 'bg-[#0D6E6E] text-white shadow-[0_0_15px_rgba(13,110,110,0.5)]' : 'bg-white/5 text-slate-400 hover:text-white'}`}
+            className={`p-1.5 sm:p-2.5 rounded-xl transition-all ${previewMode ? 'bg-primary text-primary-foreground shadow-[0_0_15px_rgba(13,110,110,0.5)]' : 'bg-surface-muted text-content-secondary hover:text-content-primary'}`}
             title="Toggle Visual Preview"
           >
             <Eye className="w-5 h-5" />
           </button>
           
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <button
               onClick={() => handleSave(false)}
               disabled={loading}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-300 hover:text-white bg-white/5 transition-all disabled:opacity-50"
+              aria-label="Save draft" title="Save draft" className="flex items-center gap-1 sm:gap-2 px-1.5 sm:px-5 py-2.5 rounded-xl text-sm font-bold text-content-secondary hover:text-content-primary bg-surface-muted transition-all disabled:opacity-50"
             >
               <Save className="w-4 h-4 text-emerald-500" />
-              Save
+              <span className="hidden lg:inline">Save</span>
             </button>
             <button
               onClick={() => handleSave(true)}
               disabled={loading}
-              className="btn-primary flex items-center gap-2 font-bold px-6 py-2.5 disabled:opacity-50"
+              aria-label={loading ? "Publishing" : "Publish"} title={loading ? "Publishing" : "Publish"} className="btn-primary flex items-center gap-1 sm:gap-2 font-bold px-1.5 sm:px-6 py-2.5 disabled:opacity-50"
             >
               <Send className="w-4 h-4 rotate-12" />
-              {loading ? "Publishing..." : "Publish Elite"}
+              <span className="hidden lg:inline">{loading ? "Publishing..." : "Publish Elite"}</span>
             </button>
           </div>
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="relative flex-1 flex overflow-hidden">
         {/* PANEL 1: SETTINGS SELECTOR (LEFT SLIM) */}
-        <aside className="w-16 bg-[#0B0D13] border-r border-white/5 flex flex-col items-center py-6 gap-6 shrink-0 z-50">
-          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-3 text-slate-500 hover:text-white transition-all bg-white/5 rounded-2xl mb-4">
+        <aside className="w-16 bg-surface-muted border-r border-border-subtle flex flex-col items-center py-6 gap-6 shrink-0 z-50">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} aria-expanded={sidebarOpen} aria-controls="cms-settings-panel" aria-label={sidebarOpen ? "Close content settings" : "Open content settings"} className="p-3 text-content-muted hover:text-content-primary transition-all bg-surface-muted rounded-2xl mb-4">
             {sidebarOpen ? <PanelLeftClose className="w-5 h-5"/> : <PanelLeftOpen className="w-5 h-5"/>}
           </button>
-          <button onClick={() => { setActiveTab("general"); setSidebarOpen(true); }} className={`p-3 rounded-2xl transition-all ${activeTab === "general" && sidebarOpen ? "bg-[#0D6E6E] text-white shadow-lg shadow-[#0D6E6E]/20" : "text-slate-600 hover:text-slate-300 hover:bg-white/5"}`} title="General Config">
+          <button onClick={() => { setActiveTab("general"); setSidebarOpen(true); }} className={`p-3 rounded-2xl transition-all ${activeTab === "general" && sidebarOpen ? "bg-primary text-primary-foreground shadow-lg shadow-[#0D6E6E]/20" : "text-content-muted hover:text-content-secondary hover:bg-surface-muted"}`} title="General Config">
             <Settings className="w-5 h-5" />
           </button>
-          <button onClick={() => { setActiveTab("seo"); setSidebarOpen(true); }} className={`p-3 rounded-2xl transition-all ${activeTab === "seo" && sidebarOpen ? "bg-[#0D6E6E] text-white shadow-lg shadow-[#0D6E6E]/20" : "text-slate-600 hover:text-slate-300 hover:bg-white/5"}`} title="SEO Optimization">
+          <button onClick={() => { setActiveTab("seo"); setSidebarOpen(true); }} className={`p-3 rounded-2xl transition-all ${activeTab === "seo" && sidebarOpen ? "bg-primary text-primary-foreground shadow-lg shadow-[#0D6E6E]/20" : "text-content-muted hover:text-content-secondary hover:bg-surface-muted"}`} title="SEO Optimization">
             <Globe className="w-5 h-5" />
           </button>
-          <button onClick={() => { setActiveTab("social"); setSidebarOpen(true); }} className={`p-3 rounded-2xl transition-all ${activeTab === "social" && sidebarOpen ? "bg-[#0D6E6E] text-white shadow-lg shadow-[#0D6E6E]/20" : "text-slate-600 hover:text-slate-300 hover:bg-white/5"}`} title="Social Sharing">
+          <button onClick={() => { setActiveTab("social"); setSidebarOpen(true); }} className={`p-3 rounded-2xl transition-all ${activeTab === "social" && sidebarOpen ? "bg-primary text-primary-foreground shadow-lg shadow-[#0D6E6E]/20" : "text-content-muted hover:text-content-secondary hover:bg-surface-muted"}`} title="Social Sharing">
             <Share2 className="w-5 h-5" />
           </button>
-          <button onClick={() => { setActiveTab("advanced"); setSidebarOpen(true); }} className={`p-3 rounded-2xl transition-all ${activeTab === "advanced" && sidebarOpen ? "bg-[#0D6E6E] text-white shadow-lg shadow-[#0D6E6E]/20" : "text-slate-600 hover:text-slate-300 hover:bg-white/5"}`} title="Advanced Ops">
+          <button onClick={() => { setActiveTab("advanced"); setSidebarOpen(true); }} className={`p-3 rounded-2xl transition-all ${activeTab === "advanced" && sidebarOpen ? "bg-primary text-primary-foreground shadow-lg shadow-[#0D6E6E]/20" : "text-content-muted hover:text-content-secondary hover:bg-surface-muted"}`} title="Advanced Ops">
             <BarChart className="w-5 h-5" />
           </button>
         </aside>
 
         {/* PANEL 2: SETTINGS CONTENT (EXPANDED LEFT) */}
         {sidebarOpen && (
-          <aside className="w-80 bg-[#1A1F2E] border-r border-[#2D3748] p-8 overflow-y-auto no-scrollbar shrink-0 relative transition-all duration-300">
-            <button onClick={() => setSidebarOpen(false)} className="absolute top-4 right-4 p-2 bg-black/20 text-slate-400 hover:text-white rounded-lg">
+          <>
+          <button type="button" aria-label="Close settings panel" className="xl:hidden absolute inset-0 z-40 bg-background/40" onClick={() => setSidebarOpen(false)} />
+          <aside id="cms-settings-panel" aria-label="Content settings" className="absolute inset-y-0 left-16 z-50 w-[min(20rem,calc(100vw-4rem))] bg-surface border-r border-border p-5 sm:p-8 overflow-y-auto no-scrollbar shrink-0 transition-all duration-300 xl:relative xl:inset-auto xl:left-auto xl:z-auto xl:w-80">
+            <button onClick={() => setSidebarOpen(false)} aria-label="Close content settings" className="absolute top-4 right-4 p-2 bg-surface-muted text-content-secondary hover:text-content-primary rounded-lg">
               <X className="w-4 h-4"/>
             </button>
             <div className="space-y-8 anim-fade mt-4">
             {activeTab === "general" && (
               <div className="space-y-6">
                 <div>
-                  <h3 className="section-label mb-6 text-[#0D6E6E]">General Controls</h3>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Category Classification</label>
+                  <h3 className="section-label mb-6 text-brand">General Controls</h3>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Category Classification</label>
                   <select
                     value={type}
                     onChange={(e) => setType(e.target.value as ArticleType)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl text-xs font-bold p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                    className="w-full bg-surface-muted border border-border rounded-2xl text-xs font-bold p-3 text-content-primary outline-none focus:border-brand/50"
                     title="Content Type"
                   >
                     <option value="RESEARCH">Research Report</option>
@@ -384,11 +398,11 @@ export default function EditorClient() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Difficulty Level</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Difficulty Level</label>
                   <select
                     value={difficulty}
                     onChange={(e) => setDifficulty(e.target.value as "BEGINNER" | "INTERMEDIATE" | "ADVANCED" | "EXPERT")}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl text-xs font-bold p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                    className="w-full bg-surface-muted border border-border rounded-2xl text-xs font-bold p-3 text-content-primary outline-none focus:border-brand/50"
                     title="Difficulty Level"
                   >
                     <option value="BEGINNER">Beginner</option>
@@ -399,11 +413,11 @@ export default function EditorClient() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Content Status</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Content Status</label>
                   <select
                     value={contentStatus}
                     onChange={(e) => setContentStatus(e.target.value as "DRAFT" | "REVIEW" | "APPROVED" | "PUBLISHED")}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl text-xs font-bold p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                    className="w-full bg-surface-muted border border-border rounded-2xl text-xs font-bold p-3 text-content-primary outline-none focus:border-brand/50"
                     title="Content Status"
                   >
                     <option value="DRAFT">Draft</option>
@@ -414,54 +428,54 @@ export default function EditorClient() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Estimated Reading Time (minutes)</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Estimated Reading Time (minutes)</label>
                   <input
                     type="number"
                     min="1"
                     max="120"
                     value={estimatedReadingTime}
                     onChange={(e) => setEstimatedReadingTime(parseInt(e.target.value) || 5)}
-                    className="w-full bg-white/5 border border-white/10 rounded-2xl text-xs font-bold p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                    className="w-full bg-surface-muted border border-border rounded-2xl text-xs font-bold p-3 text-content-primary outline-none focus:border-brand/50"
                     placeholder="5"
                   />
                 </div>
 
                 <div>
-                   <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">URL Identity (Slug)</label>
+                   <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">URL Identity (Slug)</label>
                    <div className="flex gap-2">
                      <input 
                        type="text" 
                        value={slug}
                        onChange={(e) => setSlug(e.target.value)}
                        placeholder="report-slug"
-                       className="flex-1 bg-white/5 border border-white/10 rounded-xl text-xs font-mono p-3 text-emerald-400 outline-none focus:border-[#0D6E6E]/50"
+                       className="flex-1 bg-surface-muted border border-border rounded-xl text-xs font-mono p-3 text-emerald-400 outline-none focus:border-brand/50"
                      />
-                     <button onClick={generateSlug} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all" title="Generate">
-                       <Layout className="w-3.5 h-3.5 text-slate-400" />
+                     <button onClick={generateSlug} className="p-3 bg-surface-muted hover:bg-accent rounded-xl transition-all" title="Generate">
+                       <Layout className="w-3.5 h-3.5 text-content-secondary" />
                      </button>
                    </div>
                 </div>
 
                 <div>
-                   <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Primary Visual Media</label>
+                   <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Primary Visual Media</label>
                    <div className="flex gap-2 mb-2">
                      <input
                        type="text"
                        value={featuredImage}
                        onChange={(e) => setFeaturedImage(e.target.value)}
                        placeholder="Image URL or search..."
-                       className="flex-1 bg-white/5 border border-white/10 rounded-xl text-[10px] p-3 text-slate-400 outline-none focus:border-[#0D6E6E]/50"
+                       className="flex-1 bg-surface-muted border border-border rounded-xl text-[10px] p-3 text-content-secondary outline-none focus:border-brand/50"
                      />
                      <button
                        onClick={() => setShowMediaLibrary(true)}
-                       className="p-3 bg-[#0D6E6E]/20 text-[#0D6E6E] rounded-xl hover:bg-[#0D6E6E] hover:text-white transition-all"
+                       className="p-3 bg-brand/20 text-brand rounded-xl hover:bg-primary-hover hover:text-primary-foreground transition-all"
                        title="Open Media Library"
                      >
                        <ImageIcon className="w-4 h-4" />
                      </button>
                    </div>
-                   {featuredImage && <div className="mt-3 rounded-xl overflow-hidden border border-white/10"><img src={featuredImage} alt="Preview" className="w-full h-32 object-cover" /></div>}
-                   <p className="text-[10px] text-slate-600 mt-2">Paste a URL or use the media library to select an image</p>
+                   {featuredImage && <div className="mt-3 rounded-xl overflow-hidden border border-border"><img src={featuredImage} alt="Preview" className="w-full h-32 object-cover" /></div>}
+                   <p className="text-[10px] text-content-muted mt-2">Paste a URL or use the media library to select an image</p>
                  </div>
               </div>
             )}
@@ -471,25 +485,25 @@ export default function EditorClient() {
                 <h3 className="section-label mb-6 text-emerald-400">Search Engine Mastery</h3>
                 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">SEO Authority Title</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">SEO Authority Title</label>
                   <input 
                     type="text" 
                     value={seoTitle}
                     onChange={(e) => setSeoTitle(e.target.value)}
                     placeholder="Custom Browser Title..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl text-xs p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                    className="w-full bg-surface-muted border border-border rounded-xl text-xs p-3 text-content-primary outline-none focus:border-brand/50"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2 flex justify-between">
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2 flex justify-between">
                     Meta Description <span>{metaDescription.length}/160</span>
                   </label>
                   <textarea 
                     value={metaDescription}
                     onChange={(e) => setMetaDescription(e.target.value)}
                     placeholder="Brief abstract for Google..."
-                    className="w-full h-32 bg-white/5 border border-white/10 rounded-xl text-xs p-3 text-slate-400 outline-none focus:border-[#0D6E6E]/50 resize-none"
+                    className="w-full h-32 bg-surface-muted border border-border rounded-xl text-xs p-3 text-content-secondary outline-none focus:border-brand/50 resize-none"
                   />
                   <div className="flex gap-1 mt-1">
                     <div className={`h-1 flex-1 rounded-full ${metaDescription.length > 160 ? 'bg-red-500' : metaDescription.length > 120 ? 'bg-emerald-500' : 'bg-slate-700'}`} />
@@ -497,13 +511,13 @@ export default function EditorClient() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Focus Keywords (Methodology)</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Focus Keywords (Methodology)</label>
                   <input 
                     type="text" 
                     value={focusKeywords}
                     onChange={(e) => setFocusKeywords(e.target.value)}
                     placeholder="E.g., fintech, india, strategy"
-                    className="w-full bg-white/5 border border-white/10 rounded-xl text-xs p-3 text-white outline-none focus:border-[#0D6E6E]/50 font-mono"
+                    className="w-full bg-surface-muted border border-border rounded-xl text-xs p-3 text-content-primary outline-none focus:border-brand/50 font-mono"
                   />
                 </div>
               </div>
@@ -513,23 +527,23 @@ export default function EditorClient() {
               <div className="space-y-6">
                 <h3 className="section-label mb-6 text-blue-400">Social Architecture</h3>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Open Graph Title</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Open Graph Title</label>
                   <input 
                     type="text" 
                     value={ogTitle}
                     onChange={(e) => setOgTitle(e.target.value)}
                     placeholder="Title for LinkedIn/X..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl text-xs p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                    className="w-full bg-surface-muted border border-border rounded-xl text-xs p-3 text-content-primary outline-none focus:border-brand/50"
                   />
                 </div>
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Primary Social Asset</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Primary Social Asset</label>
                   <input 
                     type="text" 
                     value={ogImage}
                     onChange={(e) => setOgImage(e.target.value)}
                     placeholder="Custom Social Image URL..."
-                    className="w-full bg-white/5 border border-white/10 rounded-xl text-[10px] p-3 text-slate-400 outline-none focus:border-[#0D6E6E]/50"
+                    className="w-full bg-surface-muted border border-border rounded-xl text-[10px] p-3 text-content-secondary outline-none focus:border-brand/50"
                   />
                 </div>
               </div>
@@ -540,7 +554,7 @@ export default function EditorClient() {
                 <h3 className="section-label mb-6 text-purple-400">Taxonomy & Systems</h3>
                 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Document Tags</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Document Tags</label>
                   <div className="flex gap-2 mb-3">
                     <input
                       type="text"
@@ -548,11 +562,11 @@ export default function EditorClient() {
                       onChange={(e) => setNewTag(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && addTag()}
                       placeholder="Add insight tag..."
-                      className="flex-1 bg-white/5 border border-white/10 rounded-xl text-xs p-2.5 text-white outline-none focus:border-[#0D6E6E]/50"
+                      className="flex-1 bg-surface-muted border border-border rounded-xl text-xs p-2.5 text-content-primary outline-none focus:border-brand/50"
                     />
                     <button
                       onClick={addTag}
-                      className="p-2.5 bg-[#0D6E6E]/20 text-[#0D6E6E] rounded-xl hover:bg-[#0D6E6E] hover:text-white transition-all"
+                      className="p-2.5 bg-brand/20 text-brand rounded-xl hover:bg-primary-hover hover:text-primary-foreground transition-all"
                       title="Add Tag"
                     >
                       <Plus className="w-4 h-4" />
@@ -560,11 +574,11 @@ export default function EditorClient() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {tags.map(tag => (
-                      <span key={tag} className="flex items-center gap-1.5 px-3 py-1 bg-white/5 border border-white/5 rounded-lg text-[10px] font-bold text-slate-400 uppercase tracking-wider group transition-all hover:border-[#0D6E6E]/30">
+                      <span key={tag} className="flex items-center gap-1.5 px-3 py-1 bg-surface-muted border border-border-subtle rounded-lg text-[10px] font-bold text-content-secondary uppercase tracking-wider group transition-all hover:border-brand/30">
                         {tag}
                         <button
                           onClick={() => removeTag(tag)}
-                          className="text-slate-600 hover:text-red-400"
+                          className="text-content-muted hover:text-error"
                           title={`Remove ${tag} tag`}
                         >
                           <X className="w-3 h-3" />
@@ -575,7 +589,7 @@ export default function EditorClient() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Target Audience</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Target Audience</label>
                   <div className="flex gap-2 mb-3">
                     <input
                       type="text"
@@ -583,11 +597,11 @@ export default function EditorClient() {
                       onChange={(e) => setNewAudience(e.target.value)}
                       onKeyPress={(e) => e.key === 'Enter' && addAudience()}
                       placeholder="Add target audience..."
-                      className="flex-1 bg-white/5 border border-white/10 rounded-xl text-xs p-2.5 text-white outline-none focus:border-[#0D6E6E]/50"
+                      className="flex-1 bg-surface-muted border border-border rounded-xl text-xs p-2.5 text-content-primary outline-none focus:border-brand/50"
                     />
                     <button
                       onClick={addAudience}
-                      className="p-2.5 bg-purple-500/20 text-purple-400 rounded-xl hover:bg-purple-500 hover:text-white transition-all"
+                      className="p-2.5 bg-accent-violet-muted text-accent-violet rounded-xl hover:bg-accent-violet hover:text-content-inverse transition-all"
                       title="Add Audience"
                     >
                       <Plus className="w-4 h-4" />
@@ -599,7 +613,7 @@ export default function EditorClient() {
                         {audience}
                         <button
                           onClick={() => removeAudience(audience)}
-                          className="text-purple-600 hover:text-red-400"
+                          className="text-purple-600 hover:text-error"
                           title={`Remove ${audience} audience`}
                         >
                           <X className="w-3 h-3" />
@@ -610,7 +624,7 @@ export default function EditorClient() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Content Scheduling</label>
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Content Scheduling</label>
                   <div className="space-y-4">
                     <div className="flex items-center gap-3">
                       <input
@@ -618,44 +632,44 @@ export default function EditorClient() {
                         id="schedulePublish"
                         checked={schedulePublish}
                         onChange={(e) => setSchedulePublish(e.target.checked)}
-                        className="w-4 h-4 rounded bg-white/5 border-white/10 text-[#0D6E6E] focus:ring-[#0D6E6E]"
+                        className="w-4 h-4 rounded bg-surface-muted border-border text-brand focus:ring-brand"
                       />
-                      <label htmlFor="schedulePublish" className="text-sm font-bold text-slate-300">
+                      <label htmlFor="schedulePublish" className="text-sm font-bold text-content-secondary">
                         Schedule for future publishing
                       </label>
                     </div>
                     
                     {schedulePublish && (
-                      <div className="space-y-4 pl-7 border-l border-white/10">
+                      <div className="space-y-4 pl-7 border-l border-border">
                         <div>
-                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Publish Date</label>
+                          <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Publish Date</label>
                           <input
                             type="date"
                             value={publishDate}
                             onChange={(e) => setPublishDate(e.target.value)}
                             min={new Date().toISOString().split('T')[0]}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl text-xs p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                            className="w-full bg-surface-muted border border-border rounded-xl text-xs p-3 text-content-primary outline-none focus:border-brand/50"
                             title="Select publish date"
                             placeholder="Select date"
                           />
                         </div>
                         
                         <div>
-                          <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Publish Time (24-hour)</label>
+                          <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Publish Time (24-hour)</label>
                           <input
                             type="time"
                             value={publishTime}
                             onChange={(e) => setPublishTime(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-xl text-xs p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                            className="w-full bg-surface-muted border border-border rounded-xl text-xs p-3 text-content-primary outline-none focus:border-brand/50"
                             title="Select publish time in 24-hour format"
                             placeholder="HH:MM"
                           />
                         </div>
                         
-                        <div className="bg-[#0D6E6E]/10 border border-[#0D6E6E]/20 rounded-xl p-3">
+                        <div className="bg-brand/10 border border-brand/20 rounded-xl p-3">
                           <div className="flex justify-between items-center text-xs">
-                            <span className="text-slate-400">Scheduled for:</span>
-                            <span className="font-bold text-white">
+                            <span className="text-content-secondary">Scheduled for:</span>
+                            <span className="font-bold text-content-primary">
                               {new Date(`${publishDate}T${publishTime}`).toLocaleString('en-US', {
                                 weekday: 'short',
                                 year: 'numeric',
@@ -666,7 +680,7 @@ export default function EditorClient() {
                               })}
                             </span>
                           </div>
-                          <p className="text-[10px] text-slate-500 mt-2">
+                          <p className="text-[10px] text-content-muted mt-2">
                             Content will be automatically published at the scheduled time.
                           </p>
                         </div>
@@ -676,22 +690,22 @@ export default function EditorClient() {
                 </div>
 
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Content Analytics & Performance</label>
-                  <div className="bg-white/5 border border-white/10 rounded-xl p-4 space-y-4">
+                  <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Content Analytics & Performance</label>
+                  <div className="bg-surface-muted border border-border rounded-xl p-4 space-y-4">
                     {/* Word Count & Readability */}
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-400">Word Count</span>
-                          <span className="text-sm font-bold text-white">{calculateWordCount(content)}</span>
+                          <span className="text-xs text-content-secondary">Word Count</span>
+                          <span className="text-sm font-bold text-content-primary">{calculateWordCount(content)}</span>
                         </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-surface-muted rounded-full overflow-hidden">
                           <div
                             className="h-full bg-emerald-500 rounded-full"
                             style={{ width: `${Math.min(100, calculateWordCount(content) / 20)}%` }}
                           />
                         </div>
-                        <p className="text-[10px] text-slate-500">
+                        <p className="text-[10px] text-content-muted">
                           {calculateWordCount(content) >= 800 ? "Excellent length" :
                            calculateWordCount(content) >= 300 ? "Good length" :
                            "Consider adding more content"}
@@ -700,18 +714,18 @@ export default function EditorClient() {
                       
                       <div className="space-y-2">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-400">Readability</span>
+                          <span className="text-xs text-content-secondary">Readability</span>
                           <span className={`text-sm font-bold ${getReadabilityLevel(calculateReadabilityScore(content)).color}`}>
                             {getReadabilityLevel(calculateReadabilityScore(content)).label}
                           </span>
                         </div>
-                        <div className="h-1.5 bg-white/5 rounded-full overflow-hidden">
+                        <div className="h-1.5 bg-surface-muted rounded-full overflow-hidden">
                           <div
                             className="h-full bg-blue-500 rounded-full"
                             style={{ width: `${calculateReadabilityScore(content)}%` }}
                           />
                         </div>
-                        <p className="text-[10px] text-slate-500">
+                        <p className="text-[10px] text-content-muted">
                           Score: {calculateReadabilityScore(content)}/100
                         </p>
                       </div>
@@ -720,12 +734,12 @@ export default function EditorClient() {
                     {/* SEO Score */}
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <span className="text-xs text-slate-400">SEO Optimization</span>
+                        <span className="text-xs text-content-secondary">SEO Optimization</span>
                         <span className={`text-sm font-bold ${getSEOScoreColor(calculateSEOScore())}`}>
                           {calculateSEOScore()}/100
                         </span>
                       </div>
-                      <div className="h-2 bg-white/5 rounded-full overflow-hidden">
+                      <div className="h-2 bg-surface-muted rounded-full overflow-hidden">
                         <div
                           className="h-full bg-gradient-to-r from-emerald-500 to-green-500 rounded-full"
                           style={{ width: `${calculateSEOScore()}%` }}
@@ -733,40 +747,40 @@ export default function EditorClient() {
                       </div>
                       <div className="flex flex-wrap gap-2 mt-2">
                         {title.length >= 50 && title.length <= 60 && (
-                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded">Title ✓</span>
+                          <span className="px-2 py-0.5 bg-success-muted text-success text-[10px] font-bold rounded">Title ✓</span>
                         )}
                         {metaDescription.length >= 120 && metaDescription.length <= 160 && (
-                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded">Description ✓</span>
+                          <span className="px-2 py-0.5 bg-success-muted text-success text-[10px] font-bold rounded">Description ✓</span>
                         )}
                         {featuredImage && (
-                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded">Image ✓</span>
+                          <span className="px-2 py-0.5 bg-success-muted text-success text-[10px] font-bold rounded">Image ✓</span>
                         )}
                         {calculateWordCount(content) >= 300 && (
-                          <span className="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold rounded">Length ✓</span>
+                          <span className="px-2 py-0.5 bg-success-muted text-success text-[10px] font-bold rounded">Length ✓</span>
                         )}
                       </div>
                     </div>
                     
                     {/* Performance Metrics */}
-                    <div className="grid grid-cols-3 gap-3 pt-3 border-t border-white/10">
+                    <div className="grid grid-cols-3 gap-3 pt-3 border-t border-border">
                       <div className="text-center">
-                        <div className="text-lg font-bold text-white">{targetAudience.length}</div>
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider">Audience Groups</div>
+                        <div className="text-lg font-bold text-content-primary">{targetAudience.length}</div>
+                        <div className="text-[10px] text-content-muted uppercase tracking-wider">Audience Groups</div>
                       </div>
                       <div className="text-center">
                         <div className="text-lg font-bold text-emerald-400">{estimatedReadingTime}</div>
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider">Min Read</div>
+                        <div className="text-[10px] text-content-muted uppercase tracking-wider">Min Read</div>
                       </div>
                       <div className="text-center">
                         <div className="text-lg font-bold text-purple-400">{tags.length}</div>
-                        <div className="text-[10px] text-slate-500 uppercase tracking-wider">Tags</div>
+                        <div className="text-[10px] text-content-muted uppercase tracking-wider">Tags</div>
                       </div>
                     </div>
                     
                     {schedulePublish && (
-                      <div className="pt-3 border-t border-white/10">
+                      <div className="pt-3 border-t border-border">
                         <div className="flex justify-between items-center">
-                          <span className="text-xs text-slate-400">Scheduled Publish</span>
+                          <span className="text-xs text-content-secondary">Scheduled Publish</span>
                           <span className="text-sm font-bold text-amber-400">
                             {new Date(`${publishDate}T${publishTime}`).toLocaleDateString('en-US', {
                               month: 'short',
@@ -776,7 +790,7 @@ export default function EditorClient() {
                             })}
                           </span>
                         </div>
-                        <p className="text-[10px] text-slate-500 mt-1">
+                        <p className="text-[10px] text-content-muted mt-1">
                           Content will auto-publish at scheduled time
                         </p>
                       </div>
@@ -788,46 +802,51 @@ export default function EditorClient() {
      
             {/* Media Library Modal */}
             {showMediaLibrary && (
-              <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[200] flex items-center justify-center p-6 anim-fade">
-                <div className="bg-[#1A1F2E] border border-[#2D3748] rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-                  <div className="p-8 border-b border-white/5 flex items-center justify-between">
+              <div
+                className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[200] flex items-center justify-center p-2 sm:p-6 anim-fade"
+                role="presentation"
+                onMouseDown={(event) => { if (event.target === event.currentTarget) setShowMediaLibrary(false) }}
+              >
+                <div ref={mediaLibraryDialogRef} className="bg-surface border border-border rounded-2xl sm:rounded-3xl max-w-5xl w-full max-h-[96vh] sm:max-h-[90vh] overflow-hidden flex flex-col" role="dialog" aria-modal="true" aria-labelledby="cms-media-library-title" tabIndex={-1}>
+                  <div className="p-4 sm:p-8 border-b border-border-subtle flex items-center justify-between">
                     <div>
-                      <h2 className="text-2xl font-bold text-white">Media Library</h2>
-                      <p className="text-slate-500 mt-2">Select or search for images to use in your content</p>
+                      <h2 id="cms-media-library-title" className="text-lg sm:text-2xl font-bold text-content-primary">Media Library</h2>
+                      <p className="text-content-muted mt-2">Select or search for images to use in your content</p>
                     </div>
                     <button
                       onClick={() => setShowMediaLibrary(false)}
-                      className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
+                      className="p-3 rounded-xl bg-surface-muted hover:bg-accent text-content-secondary hover:text-content-primary transition-all"
                       title="Close"
+                      aria-label="Close media library"
                     >
                       <X className="w-5 h-5" />
                     </button>
                   </div>
                   
-                  <div className="p-8 border-b border-white/5">
-                    <div className="flex gap-4">
+                  <div className="p-4 sm:p-8 border-b border-border-subtle">
+                    <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
                       <div className="flex-1">
                         <input
                           type="text"
                           value={mediaSearch}
                           onChange={(e) => setMediaSearch(e.target.value)}
                           placeholder="Search for images (e.g., business, data, technology)..."
-                          className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#0D6E6E]/50"
+                          className="w-full bg-surface-muted border border-border rounded-xl p-3 text-content-primary outline-none focus:border-brand/50"
                         />
                       </div>
-                      <button className="px-6 py-3 bg-[#0D6E6E] text-white font-bold rounded-xl hover:bg-[#0F9E9E] transition-all">
+                      <button className="w-full sm:w-auto px-5 sm:px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary-hover transition-all">
                         Upload
                       </button>
                     </div>
-                    <div className="flex gap-4 mt-4">
-                      <button className="px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">All Images</button>
-                      <button className="px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Unsplash</button>
-                      <button className="px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Uploads</button>
-                      <button className="px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Recent</button>
+                    <div className="flex flex-wrap gap-2 sm:gap-4 mt-4">
+                      <button className="px-4 py-2 bg-surface-muted rounded-lg text-sm text-content-secondary hover:text-content-primary transition-all">All Images</button>
+                      <button className="px-4 py-2 bg-surface-muted rounded-lg text-sm text-content-secondary hover:text-content-primary transition-all">Unsplash</button>
+                      <button className="px-4 py-2 bg-surface-muted rounded-lg text-sm text-content-secondary hover:text-content-primary transition-all">Uploads</button>
+                      <button className="px-4 py-2 bg-surface-muted rounded-lg text-sm text-content-secondary hover:text-content-primary transition-all">Recent</button>
                     </div>
                   </div>
                   
-                  <div className="p-8 overflow-y-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="p-4 sm:p-8 overflow-y-auto grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                     {[
                       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
                       "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
@@ -838,9 +857,11 @@ export default function EditorClient() {
                       "https://images.unsplash.com/photo-1556761175-4d6c8eafc3d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
                       "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                     ].map((url, index) => (
-                      <div
+                      <button
+                        type="button"
                         key={index}
-                        className="group relative cursor-pointer rounded-xl overflow-hidden border border-white/10 hover:border-[#0D6E6E] transition-all"
+                        aria-label={`Select image ${index + 1}`}
+                        className="group relative w-full cursor-pointer rounded-xl overflow-hidden border border-border hover:border-brand transition-all text-left"
                         onClick={() => {
                           setFeaturedImage(url)
                           setShowMediaLibrary(false)
@@ -848,15 +869,15 @@ export default function EditorClient() {
                       >
                         <img src={url} alt={`Media ${index + 1}`} className="w-full h-32 object-cover" />
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                          <span className="text-white font-bold text-sm">Select Image</span>
+                          <span className="!text-white font-bold text-sm">Select Image</span>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                   
-                  <div className="p-8 border-t border-white/5 bg-black/20">
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm text-slate-500">
+                  <div className="p-4 sm:p-8 border-t border-border-subtle bg-surface-muted">
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                      <p className="text-xs sm:text-sm text-content-muted">
                         Images from Unsplash. Attribution not required but appreciated.
                       </p>
                       <button
@@ -864,7 +885,7 @@ export default function EditorClient() {
                           setFeaturedImage("")
                           setShowMediaLibrary(false)
                         }}
-                        className="px-4 py-2 text-sm text-slate-400 hover:text-white transition-all"
+                        className="px-4 py-2 text-sm text-content-secondary hover:text-content-primary transition-all"
                       >
                         Clear Selection
                       </button>
@@ -875,38 +896,39 @@ export default function EditorClient() {
             )}
           </div>
           </aside>
+          </>
         )}
 
         {/* MAIN VISUAL CANVAS / EDITOR SURFACE */}
-        <main className="flex-1 flex flex-col overflow-y-auto bg-[#0F1117] relative scroll-smooth no-scrollbar">
-          <div className="max-w-4xl mx-auto w-full px-6 md:px-12 py-16 space-y-12">
+        <main className="flex-1 flex flex-col overflow-y-auto bg-surface relative scroll-smooth no-scrollbar">
+          <div className="max-w-4xl mx-auto w-full px-3 sm:px-6 md:px-12 py-8 md:py-16 space-y-8 md:space-y-12">
             {/* Contextual Top-Bar Tip */}
-            <div className="flex items-center justify-between pb-4 border-b border-white/5">
-              <span className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em] flex items-center gap-2">
+            <div className="flex items-center justify-between pb-4 border-b border-border-subtle">
+              <span className="text-[9px] font-bold text-content-muted uppercase tracking-[0.2em] flex items-center gap-2">
                 <Type className="w-3 h-3" /> Rich Text Engine (Pro)
               </span>
-              <span className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em]">Typographic Perfection Active</span>
+              <span className="text-[9px] font-bold text-content-muted uppercase tracking-[0.2em]">Typographic Perfection Active</span>
             </div>
 
             <div className="space-y-4">
-               <label className="section-label text-slate-700">Expert Summary (Excerpt)</label>
+               <label className="section-label text-content-primary">Expert Summary (Excerpt)</label>
                <textarea 
                   value={excerpt}
                   onChange={(e) => setExcerpt(e.target.value)}
                   placeholder="Draft your lead abstract here for maximum corporate impact..."
-                  className="w-full bg-transparent border-none text-2xl font-medium text-slate-400 placeholder:text-slate-800 focus:outline-none resize-none h-auto min-h-[100px]"
+                  className="w-full bg-transparent border-none text-2xl font-medium text-content-secondary placeholder:text-content-muted focus:outline-none resize-none h-auto min-h-[100px]"
                   rows={2}
                />
             </div>
             
             <div className="space-y-6 flex-1 flex flex-col">
                 <div className="flex items-center justify-between">
-                  <label className="section-label text-slate-700">Primary Document Body</label>
-                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{contentType} MODE</span>
+                  <label className="section-label text-content-primary">Primary Document Body</label>
+                  <span className="text-[10px] font-bold text-content-muted uppercase tracking-widest">{contentType} MODE</span>
                 </div>
                 
                 {contentType === 'BLOCKS' ? (
-                  <div className="flex-1 rounded-2xl overflow-hidden border border-[#2D3748] min-h-[600px] shadow-2xl relative">
+                  <div className="flex-1 rounded-2xl overflow-hidden border border-border min-h-[600px] shadow-2xl relative">
                     <BlockEditor initialBlocks={blocks} onChange={setBlocks} />
                   </div>
                 ) : (
@@ -919,15 +941,15 @@ export default function EditorClient() {
           
           {/* Visual Preview Overlay (Elementor Style) */}
           {previewMode && (
-            <div className="absolute inset-0 bg-[#0F1117] z-[100] overflow-y-auto p-12 anim-fade">
-               <div className="max-w-4xl mx-auto space-y-12">
-                 <button onClick={() => setPreviewMode(false)} className="fixed top-6 right-12 z-[110] bg-white text-black px-6 py-2 rounded-full font-bold shadow-2xl hover:scale-105 transition-all">Close Preview</button>
+            <div className="absolute inset-0 bg-surface z-[100] overflow-y-auto p-4 sm:p-12 anim-fade">
+               <div className="max-w-4xl mx-auto space-y-8 sm:space-y-12">
+                 <button onClick={() => setPreviewMode(false)} className="fixed top-4 right-4 sm:top-6 sm:right-12 z-[110] bg-primary text-primary-foreground px-4 sm:px-6 py-2 rounded-full font-bold shadow-2xl hover:scale-105 transition-all">Close Preview</button>
                  <div className="space-y-4">
-                   <div className="h-px w-20 bg-[#0D6E6E]" />
-                   <h1 className="text-6xl font-extrabold text-white tracking-tight leading-[1.1]">{title || "Untitled Elite Report"}</h1>
-                   <p className="text-2xl text-slate-500 font-serif leading-relaxed italic border-l-4 border-[#0D6E6E] pl-6 py-2">{excerpt || "Awaiting abstract draft..."}</p>
+                   <div className="h-px w-20 bg-primary" />
+                   <h1 className="text-3xl sm:text-4xl lg:text-6xl font-extrabold text-content-primary tracking-tight leading-[1.1]">{title || "Untitled Elite Report"}</h1>
+                   <p className="text-lg sm:text-2xl text-content-muted font-serif leading-relaxed italic border-l-4 border-brand pl-4 sm:pl-6 py-2">{excerpt || "Awaiting abstract draft..."}</p>
                  </div>
-                 <div className="mt-12 bg-[#1A1F2E] p-8 rounded-3xl border border-white/5">
+                 <div className="mt-12 bg-surface p-4 sm:p-8 rounded-3xl border border-border-subtle">
                    <ContentRenderer content={content} contentType={contentType} blocks={blocks} />
                  </div>
                </div>
@@ -938,45 +960,52 @@ export default function EditorClient() {
 
       {/* Template Selection Modal */}
       {showTemplates && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[200] flex items-center justify-center p-6 anim-fade">
-          <div className="bg-[#1A1F2E] border border-[#2D3748] rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-8 border-b border-white/5 flex items-center justify-between">
+        <div
+          className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[200] flex items-center justify-center p-2 sm:p-6 anim-fade"
+          role="presentation"
+          onMouseDown={(event) => { if (event.target === event.currentTarget) setShowTemplates(false) }}
+        >
+          <div ref={templateDialogRef} className="bg-surface border border-border rounded-2xl sm:rounded-3xl max-w-4xl w-full max-h-[96vh] sm:max-h-[90vh] overflow-hidden flex flex-col" role="dialog" aria-modal="true" aria-labelledby="cms-templates-title" tabIndex={-1}>
+            <div className="p-4 sm:p-8 border-b border-border-subtle flex items-center justify-between">
               <div>
-                <h2 className="text-2xl font-bold text-white">Content Templates</h2>
-                <p className="text-slate-500 mt-2">Jumpstart your content with professionally designed templates</p>
+                <h2 id="cms-templates-title" className="text-lg sm:text-2xl font-bold text-content-primary">Content Templates</h2>
+                <p className="text-content-muted mt-2">Jumpstart your content with professionally designed templates</p>
               </div>
               <button
                 onClick={() => setShowTemplates(false)}
-                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
+                className="p-3 rounded-xl bg-surface-muted hover:bg-accent text-content-secondary hover:text-content-primary transition-all"
                 title="Close"
+                aria-label="Close templates"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="p-8 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="p-4 sm:p-8 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
               {contentTemplates.map(template => (
-                <div
+                <button
+                  type="button"
                   key={template.id}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-[#0D6E6E]/30 hover:bg-white/10 transition-all group cursor-pointer"
+                  aria-label={`Use ${template.name} template`}
+                  className="w-full bg-surface-muted border border-border rounded-2xl p-4 sm:p-6 hover:border-brand/30 hover:bg-accent transition-all group cursor-pointer text-left"
                   onClick={() => handleApplyTemplate(template.id)}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <div className="flex items-center gap-3 mb-2">
                         <span className="text-2xl">{template.icon}</span>
-                        <h3 className="text-lg font-bold text-white">{template.name}</h3>
+                        <h3 className="text-lg font-bold text-content-primary">{template.name}</h3>
                       </div>
-                      <p className="text-sm text-slate-400">{template.description}</p>
+                      <p className="text-sm text-content-secondary">{template.description}</p>
                     </div>
-                    <span className="px-3 py-1 bg-[#0D6E6E]/20 text-[#0D6E6E] text-xs font-bold rounded-full uppercase tracking-wider">
+                    <span className="px-3 py-1 bg-brand/20 text-brand text-xs font-bold rounded-full uppercase tracking-wider">
                       {template.type}
                     </span>
                   </div>
                   
                   <div className="space-y-4">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-500">Difficulty</span>
+                      <span className="text-content-muted">Difficulty</span>
                       <span className={`font-bold ${
                         template.difficulty === 'BEGINNER' ? 'text-emerald-400' :
                         template.difficulty === 'INTERMEDIATE' ? 'text-blue-400' :
@@ -987,19 +1016,19 @@ export default function EditorClient() {
                     </div>
                     
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-500">Reading Time</span>
-                      <span className="font-bold text-white">{template.estimatedReadingTime} min</span>
+                      <span className="text-content-muted">Reading Time</span>
+                      <span className="font-bold text-content-primary">{template.estimatedReadingTime} min</span>
                     </div>
                     
                     <div className="flex items-center justify-between text-xs">
-                      <span className="text-slate-500">Target Audience</span>
+                      <span className="text-content-muted">Target Audience</span>
                       <span className="font-bold text-purple-400">{template.targetAudience.length} groups</span>
                     </div>
                     
-                    <div className="pt-4 border-t border-white/5">
+                    <div className="pt-4 border-t border-border-subtle">
                       <div className="flex flex-wrap gap-2">
                         {template.tags.slice(0, 3).map(tag => (
-                          <span key={tag} className="px-2 py-1 bg-white/5 rounded-lg text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                          <span key={tag} className="px-2 py-1 bg-surface-muted rounded-lg text-[10px] font-bold text-content-secondary uppercase tracking-wider">
                             {tag}
                           </span>
                         ))}
@@ -1007,15 +1036,15 @@ export default function EditorClient() {
                     </div>
                   </div>
                   
-                  <button className="w-full mt-6 py-3 bg-[#0D6E6E] text-white font-bold rounded-xl hover:bg-[#0F9E9E] transition-all group-hover:scale-[1.02]">
+                  <span className="mt-6 flex w-full items-center justify-center py-3 bg-primary text-primary-foreground font-bold rounded-xl transition-all group-hover:bg-primary-hover">
                     Use This Template
-                  </button>
-                </div>
+                  </span>
+                </button>
               ))}
             </div>
             
-            <div className="p-8 border-t border-white/5 bg-black/20">
-              <p className="text-sm text-slate-500 text-center">
+            <div className="p-4 sm:p-8 border-t border-border-subtle bg-surface-muted">
+              <p className="text-sm text-content-muted text-center">
                 Templates provide structure and best practices. You can customize all content after selection.
               </p>
             </div>

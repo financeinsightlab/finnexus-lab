@@ -270,7 +270,7 @@ export default function FinanceTermsCarousel({
           {showExploreLink && (
             <Link
               href="/finance-terms"
-              className="inline-flex min-h-10 shrink-0 items-center gap-2 self-start rounded-xl border border-border bg-card/80 px-4 py-2 text-xs font-bold text-foreground shadow-sm transition-all hover:border-teal-500/50 hover:text-teal-600 dark:hover:text-teal-400 sm:self-auto"
+              className="inline-flex min-h-10 shrink-0 items-center gap-2 self-start rounded-xl border border-border bg-card/80 px-4 py-2 text-xs font-bold text-foreground shadow-sm transition-all hover:border-teal-500/50 hover:text-brand-hover dark:hover:text-brand-hover sm:self-auto"
             >
               <span>Explore full glossary</span>
               <ExternalLink className="h-3.5 w-3.5" aria-hidden="true" />
@@ -295,7 +295,7 @@ export default function FinanceTermsCarousel({
                 }}
                 className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
                   activeCategory === cat
-                    ? 'bg-gradient-to-r from-teal-600 to-cyan-600 text-white shadow-md shadow-teal-500/20'
+                    ? 'bg-primary text-primary-foreground shadow-md shadow-teal-500/20'
                     : 'border border-border bg-card/70 text-muted-foreground hover:border-teal-500/40 hover:text-foreground'
                 }`}
               >
@@ -348,7 +348,7 @@ export default function FinanceTermsCarousel({
             onClick={previous}
             disabled={slides.length < 2}
             aria-label="Previous finance term slide"
-            className="absolute -left-3 sm:-left-6 top-1/2 -translate-y-1/2 z-30 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border-2 border-teal-500/40 bg-background/95 text-foreground shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:border-teal-500 hover:bg-teal-600 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+            className="absolute -left-3 sm:-left-6 top-1/2 -translate-y-1/2 z-30 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border-2 border-teal-500/40 bg-background/95 text-foreground shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:border-teal-500 hover:bg-primary-hover hover:text-primary-foreground active:scale-95 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
           >
             <ArrowLeft className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -359,7 +359,7 @@ export default function FinanceTermsCarousel({
             onClick={next}
             disabled={slides.length < 2}
             aria-label="Next finance term slide"
-            className="absolute -right-3 sm:-right-6 top-1/2 -translate-y-1/2 z-30 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border-2 border-teal-500/40 bg-background/95 text-foreground shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:border-teal-500 hover:bg-teal-600 hover:text-white active:scale-95 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
+            className="absolute -right-3 sm:-right-6 top-1/2 -translate-y-1/2 z-30 flex h-11 w-11 sm:h-12 sm:w-12 items-center justify-center rounded-full border-2 border-teal-500/40 bg-background/95 text-foreground shadow-2xl backdrop-blur-md transition-all hover:scale-110 hover:border-teal-500 hover:bg-primary-hover hover:text-primary-foreground active:scale-95 disabled:pointer-events-none disabled:opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-500"
           >
             <ArrowRight className="h-5 w-5" aria-hidden="true" />
           </button>
@@ -431,7 +431,7 @@ export default function FinanceTermsCarousel({
               {/* ── Everything on Slide — 3 Distinct Intuitive Detail Panels with Unique Colors ── */}
               <div className="mt-6 grid gap-5 md:grid-cols-3">
                 {/* 1. Simple Meaning (Emerald / Mint Theme) */}
-                <div className="group/box rounded-2xl border-2 border-emerald-500/35 bg-gradient-to-br from-emerald-500/15 via-emerald-500/[0.04] to-card/90 p-5 shadow-lg shadow-emerald-500/5 backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/70 hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1 dark:from-emerald-950/40 dark:via-emerald-900/15 dark:to-[#0b1329]/90">
+                <div className="group/box rounded-2xl border-2 border-emerald-500/35 bg-gradient-to-br from-emerald-500/15 via-emerald-500/[0.04] to-card/90 dark:from-success-muted/75 dark:via-success-muted/25 dark:to-card/90 p-5 shadow-lg shadow-emerald-500/5 backdrop-blur-xl transition-all duration-300 hover:border-emerald-500/70 hover:shadow-xl hover:shadow-emerald-500/15 hover:-translate-y-1">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
                       <Sparkles className="h-4 w-4" />
@@ -447,7 +447,7 @@ export default function FinanceTermsCarousel({
                 </div>
 
                 {/* 2. Real-World Practical Example (Cyan / Sky Theme) */}
-                <div className="group/box rounded-2xl border-2 border-cyan-500/35 bg-gradient-to-br from-cyan-500/15 via-sky-500/[0.04] to-card/90 p-5 shadow-lg shadow-cyan-500/5 backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/70 hover:shadow-xl hover:shadow-cyan-500/15 hover:-translate-y-1 dark:from-cyan-950/40 dark:via-sky-900/15 dark:to-[#0b1329]/90">
+                <div className="group/box rounded-2xl border-2 border-cyan-500/35 bg-gradient-to-br from-cyan-500/15 via-sky-500/[0.04] to-card/90 dark:from-info-muted/75 dark:via-info-muted/25 dark:to-card/90 p-5 shadow-lg shadow-cyan-500/5 backdrop-blur-xl transition-all duration-300 hover:border-cyan-500/70 hover:shadow-xl hover:shadow-cyan-500/15 hover:-translate-y-1">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 text-cyan-600 dark:text-cyan-400">
                       <TrendingUp className="h-4 w-4" />
@@ -463,7 +463,7 @@ export default function FinanceTermsCarousel({
                 </div>
 
                 {/* 3. Interview-Ready Answer (Royal Purple / Violet Theme) */}
-                <div className="group/box rounded-2xl border-2 border-purple-500/35 bg-gradient-to-br from-purple-500/15 via-fuchsia-500/[0.04] to-card/90 p-5 shadow-lg shadow-purple-500/5 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/70 hover:shadow-xl hover:shadow-purple-500/15 hover:-translate-y-1 dark:from-purple-950/40 dark:via-purple-900/15 dark:to-[#0b1329]/90">
+                <div className="group/box rounded-2xl border-2 border-purple-500/35 bg-gradient-to-br from-purple-500/15 via-fuchsia-500/[0.04] to-card/90 dark:from-accent-violet-muted/75 dark:via-accent-violet-muted/25 dark:to-card/90 p-5 shadow-lg shadow-purple-500/5 backdrop-blur-xl transition-all duration-300 hover:border-purple-500/70 hover:shadow-xl hover:shadow-purple-500/15 hover:-translate-y-1">
                   <div className="flex items-center justify-between gap-2">
                     <div className="flex items-center gap-1.5 text-purple-600 dark:text-purple-400">
                       <HelpCircle className="h-4 w-4" />

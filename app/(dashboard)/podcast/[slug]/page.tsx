@@ -98,7 +98,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
   const FormatIcon = formatIcon(episode.format);
 
   return (
-    <div className="min-h-screen bg-cinema-black text-white">
+    <div className="min-h-screen bg-cinema-black text-content-primary">
       <JsonLd data={buildEpisodeSchema(episode)} />
 
       {/* ═══════════ HEADER ═══════════ */}
@@ -109,7 +109,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
         <div className="wrap max-w-4xl relative z-10">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-            <Link href="/podcast" className="inline-flex items-center gap-1.5 hover:text-cinema-cyan transition-colors">
+            <Link href="/podcast" className="inline-flex items-center gap-1.5 hover:text-brand transition-colors">
               <ArrowLeft className="w-4 h-4" /> Podcast
             </Link>
             <span className="text-gray-600">/</span>
@@ -166,7 +166,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
                     <Link
                       key={tag}
                       href={`/podcast?format=All#episodes`}
-                      className="text-xs px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-cinema-cyan hover:border-cinema-cyan/40 transition-colors"
+                      className="text-xs px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-brand hover:border-cinema-cyan/40 transition-colors"
                     >
                       #{tag}
                     </Link>
@@ -232,7 +232,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
         {/* Show notes + transcript */}
         <div className="mt-10">
           <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">Show Notes & Transcript</h2>
-          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-blockquote:text-gray-400 prose-blockquote:border-cinema-cyan prose-li:text-gray-300 prose-hr:border-white/10">
+          <div className="prose prose-lg max-w-none prose-headings:text-content-primary prose-p:text-content-secondary prose-strong:text-content-primary prose-blockquote:text-content-secondary prose-blockquote:border-brand prose-li:text-content-secondary prose-hr:border-border">
             {episode.content ? (
               <MDXRemote source={episode.content} />
             ) : (

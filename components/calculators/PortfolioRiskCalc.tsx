@@ -7,7 +7,7 @@ import Link from 'next/link';
    Matches lecture: F04 · Risk & Return Foundations */
 
 const inp =
-  'w-full bg-white/5 border border-white/10 rounded-xl px-3.5 py-2.5 text-white text-sm font-mono focus:outline-none focus:border-teal-500/50 transition-colors';
+  'w-full bg-surface border border-input rounded-xl px-3.5 py-2.5 text-content-primary text-sm font-mono focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-colors';
 const lbl = 'text-[11px] font-bold uppercase tracking-widest text-gray-400 mb-1.5 block';
 
 function portfolioStats(w1: number, e1: number, e2: number, s1: number, s2: number, rho: number) {
@@ -40,7 +40,7 @@ export default function PortfolioRiskCalc() {
         <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-teal-300 bg-teal-500/10 border border-teal-500/25 rounded-full px-3 py-1">
           PGDM Finance Lab · F04 Unit 3
         </span>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-white">Portfolio Risk & Return Lab</h1>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-content-primary">Portfolio Risk & Return Lab</h1>
         <p className="text-sm text-gray-400 max-w-xl mx-auto">
           Two-asset Markowitz engine from{' '}
           <Link href="/pgdm/security-analysis-portfolio-management/risk-return-foundations" className="text-teal-300 hover:underline">
@@ -91,7 +91,7 @@ export default function PortfolioRiskCalc() {
           <p className="text-2xl font-mono font-bold text-violet-300">{sp.toFixed(2)}%</p>
           <p className="text-[11px] text-gray-500 font-mono mt-2">naive average would be {naive.toFixed(2)}%</p>
         </div>
-        <div className={`rounded-2xl border p-5 ${saving > 0.05 ? 'border-emerald-500/30 bg-emerald-500/[0.07]' : 'border-white/10 bg-cinema-graphite/70'}`}>
+        <div className={`rounded-2xl border p-5 ${saving > 0.05 ? 'border-success/30 bg-success-muted' : 'border-white/10 bg-cinema-graphite/70'}`}>
           <p className="text-[10px] font-bold uppercase tracking-widest text-emerald-300 mb-1">Diversification saving</p>
           <p className="text-2xl font-mono font-bold text-emerald-300">{saving.toFixed(2)} pts</p>
           <p className="text-[11px] text-gray-500 mt-2">{saving > 0.05 ? 'risk removed at zero return cost — the free lunch' : 'no benefit at ρ = 1'}</p>
@@ -103,7 +103,7 @@ export default function PortfolioRiskCalc() {
         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-4">
           The frontier — σ as you sweep weight A from 0% → 100% (ρ = {rho.toFixed(2)})
         </p>
-        <div className="relative h-44 rounded-xl bg-white/[0.02] border border-white/8 overflow-hidden">
+        <div className="relative h-44 rounded-xl bg-surface-muted border border-border overflow-hidden">
           {/* axes */}
           <div className="absolute inset-4">
             {sweep.map((p, i) => {
@@ -113,7 +113,7 @@ export default function PortfolioRiskCalc() {
               return (
                 <div
                   key={i}
-                  className={`absolute rounded-full transition-all duration-300 ${isCur ? 'w-3.5 h-3.5 bg-teal-400 shadow-[0_0_14px_rgba(45,212,191,0.8)] -translate-x-1/2 -translate-y-1/2 z-10' : 'w-2 h-2 bg-white/25 -translate-x-1/2 -translate-y-1/2'}`}
+                  className={`absolute rounded-full transition-all duration-300 ${isCur ? 'w-3.5 h-3.5 bg-teal-400 shadow-[0_0_14px_rgba(45,212,191,0.8)] -translate-x-1/2 -translate-y-1/2 z-10' : 'w-2 h-2 bg-content-muted/50 -translate-x-1/2 -translate-y-1/2'}`}
                   style={{ left: `${x}%`, top: `${y}%` }}
                   title={`${Math.round(p.w2 * 100)}% A → σ ${p.sp.toFixed(1)}%, E[R] ${p.er.toFixed(1)}%`}
                 />
@@ -126,10 +126,10 @@ export default function PortfolioRiskCalc() {
         </div>
         <div className="grid grid-cols-4 sm:grid-cols-6 gap-2 mt-4">
           {sweep.filter((_, i) => i % 2 === 0).map((p, i) => (
-            <div key={i} className="rounded-lg bg-white/[0.03] border border-white/8 px-2 py-1.5 text-center">
+            <div key={i} className="rounded-lg bg-surface border border-border px-2 py-1.5 text-center">
               <p className="text-[10px] font-mono text-gray-500">{Math.round(p.w2 * 100)}% A</p>
               <p className="text-[11px] font-mono text-gray-300">σ {p.sp.toFixed(1)}</p>
-              <p className="text-[10px] font-mono text-teal-300/80">R {p.er.toFixed(1)}</p>
+              <p className="text-[10px] font-mono text-brand">R {p.er.toFixed(1)}</p>
             </div>
           ))}
         </div>

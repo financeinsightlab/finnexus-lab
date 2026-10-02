@@ -49,9 +49,9 @@ export async function GlobalForecastingTicker() {
   const tickerItems = [...predictions, ...predictions, ...predictions]
 
   return (
-    <div className="w-full bg-[#0f1c2d] border-y border-white/5 py-4 overflow-hidden flex flex-col relative">
-      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-[#0f1c2d] to-transparent z-10 pointer-events-none" />
-      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-[#0f1c2d] to-transparent z-10 pointer-events-none" />
+    <div className="w-full bg-surface-raised border-y border-white/5 py-4 overflow-hidden flex flex-col relative">
+      <div className="absolute left-0 top-0 bottom-0 w-24 bg-gradient-to-r from-surface-raised to-transparent z-10 pointer-events-none" />
+      <div className="absolute right-0 top-0 bottom-0 w-24 bg-gradient-to-l from-surface-raised to-transparent z-10 pointer-events-none" />
 
       <div className="flex items-center gap-3 px-6 mb-3">
         <span className="relative flex h-2.5 w-2.5">

@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import CopyButton from '@/components/ui/CopyButton';
 import HeroBackground from '@/components/ui/HeroBackground';
@@ -78,17 +78,17 @@ const BIOS = {
 
 function getBadgeColor(type: string) {
   switch (type) {
-    case 'podcast': return 'bg-purple-100 text-purple-800 border-purple-200';
-    case 'conference': return 'bg-amber-100 text-amber-800 border-amber-200';
-    default: return 'bg-blue-100 text-blue-800 border-blue-200';
+    case 'podcast': return 'bg-accent-violet-muted text-accent-violet border-accent-violet/30';
+    case 'conference': return 'bg-warning-muted text-warning border-warning/30';
+    default: return 'bg-info-muted text-info border-info/30';
   }
 }
 
 export default function SpeakingPage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-background">
       {/* Header */}
-      <header className="bg-gradient-to-r from-brand-navy to-slate-900 py-20 relative overflow-hidden">
+      <header className="bg-brand-navy py-20 relative overflow-hidden">
         <HeroBackground />
         <div className="absolute inset-0 bg-pattern opacity-50" />
         <div className="wrap relative z-10 text-center">
@@ -121,21 +121,21 @@ export default function SpeakingPage() {
 
             <div className="space-y-6">
               {/* Short Bio */}
-              <div className="card p-6 border border-gray-100 shadow-sm rounded-2xl bg-white hover:border-teal-100 transition-colors">
+              <div className="card p-6 rounded-2xl hover:border-brand/40 transition-colors">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Short Bio (50 Words)</p>
                 <p className="text-brand-slate leading-relaxed">{BIOS.short}</p>
                 <CopyButton text={BIOS.short} />
               </div>
 
               {/* Medium Bio */}
-              <div className="card p-6 border border-gray-100 shadow-sm rounded-2xl bg-white hover:border-teal-100 transition-colors">
+              <div className="card p-6 rounded-2xl hover:border-brand/40 transition-colors">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Medium Bio (100 Words)</p>
                 <p className="text-brand-slate leading-relaxed">{BIOS.medium}</p>
                 <CopyButton text={BIOS.medium} />
               </div>
 
               {/* Long Bio */}
-              <div className="card p-6 border border-gray-100 shadow-sm rounded-2xl bg-white hover:border-teal-100 transition-colors">
+              <div className="card p-6 rounded-2xl hover:border-brand/40 transition-colors">
                 <p className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Long Bio (200 Words)</p>
                 <div className="text-brand-slate leading-relaxed space-y-3">
                   {BIOS.long.split('\n\n').map((paragraph, i) => (
@@ -149,7 +149,7 @@ export default function SpeakingPage() {
 
           {/* Expertise */}
           <aside>
-            <div className="card p-8 bg-brand-slate/5 border-none shadow-none rounded-2xl sticky top-24">
+            <div className="card p-8 bg-surface-muted border-none shadow-none rounded-2xl sticky top-24">
               <h3 className="text-xl font-bold text-brand-navy mb-6">Expertise Areas</h3>
               <ul className="space-y-6">
                 {EXPERTISE_AREAS.map((area, idx) => (
@@ -158,7 +158,7 @@ export default function SpeakingPage() {
                        <span className="text-brand-teal mt-0.5">•</span>
                        {area.title}
                     </h4>
-                    <p className="text-sm text-brand-slate pl-4 leading-relaxed bg-white/50 rounded-lg p-2">
+                    <p className="text-sm text-brand-slate pl-4 leading-relaxed bg-surface rounded-lg p-2">
                       {area.desc}
                     </p>
                   </li>
@@ -170,17 +170,17 @@ export default function SpeakingPage() {
       </section>
 
       {/* Media Mentions */}
-      <section className="py-16 md:py-24 bg-brand-silver border-y border-gray-200">
+      <section className="py-16 md:py-24 bg-surface-muted border-y border-gray-200">
         <div className="wrap max-w-4xl">
           <div className="text-center mb-12">
             <h2 className="text-3xl font-bold text-brand-navy mb-4">In the Media</h2>
             <p className="text-brand-slate">Recent coverage, interviews, and panel appearances.</p>
           </div>
 
-          <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden p-2">
+          <div className="bg-surface rounded-3xl shadow-sm border border-border-subtle overflow-hidden p-2">
             <ul className="divide-y divide-gray-100">
               {MEDIA_MENTIONS.map((mention, idx) => (
-                <li key={idx} className="p-6 md:p-8 hover:bg-slate-50 transition-colors group">
+                <li key={idx} className="p-6 md:p-8 hover:bg-surface-muted transition-colors group">
                   <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
@@ -191,7 +191,7 @@ export default function SpeakingPage() {
                       </div>
                       <Link 
                         href={mention.url} 
-                        className="text-lg font-medium text-brand-slate group-hover:text-brand-teal transition-colors"
+                        className="text-lg font-medium text-brand-slate group-hover:text-brand transition-colors"
                       >
                         {mention.articleTitle}
                       </Link>

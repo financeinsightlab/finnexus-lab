@@ -127,17 +127,17 @@ export default function PlacementPrepClient() {
   }, [startDate]);
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
+    <div className="min-h-screen bg-gray-50 dark:bg-surface-muted">
       {/* Hero header */}
       <header className="relative overflow-hidden bg-brand-navy border-b border-white/5 py-14">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
-              <div className="text-xs uppercase tracking-widest text-[#0D6E6E] font-semibold">
+              <div className="text-xs uppercase tracking-widest text-brand font-semibold">
                 Placement Preparation Tracker
               </div>
               <h1 className="text-3xl sm:text-4xl font-bold mt-1 text-white">
-                🎯 Road to <span className="text-[#0D6E6E]">15 LPA+</span>
+                🎯 Road to <span className="text-brand">15 LPA+</span>
               </h1>
               <p className="text-sm text-slate-300 mt-2">
                 60-day expert plan • Finance (Major) + Business Analytics (Minor)
@@ -151,7 +151,7 @@ export default function PlacementPrepClient() {
                     year: "numeric",
                   })}{" "}
                   • Placement target:{" "}
-                  <b className="text-[#0D6E6E]">{placementDate}</b>
+                  <b className="text-brand">{placementDate}</b>
                 </p>
               )}
             </div>
@@ -207,7 +207,7 @@ export default function PlacementPrepClient() {
             <DayQuote day={currentDay} />
             <StatsCards completedIds={completedIds} currentDay={currentDay} />
 
-            <div className="bg-white dark:bg-[#1A1F2E] rounded-2xl shadow-md border border-gray-200 dark:border-white/5 p-4 mb-6">
+            <div className="bg-white dark:bg-surface rounded-2xl shadow-md border border-gray-200 dark:border-white/5 p-4 mb-6">
               <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
                 <div>
                   <div className="text-xs uppercase tracking-wider text-slate-500 font-semibold">
@@ -233,12 +233,12 @@ export default function PlacementPrepClient() {
                     onChange={(e) =>
                       setCurrentDay(Math.max(1, Math.min(60, Number(e.target.value) || 1)))
                     }
-                    className="w-16 text-center px-2 py-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-[#0f1522] text-slate-800 dark:text-white font-semibold"
+                    className="w-16 text-center px-2 py-2 rounded-lg border border-gray-300 dark:border-white/10 bg-white dark:bg-surface text-slate-800 dark:text-white font-semibold"
                   />
                   <button
                     onClick={() => setCurrentDay((d) => Math.min(60, d + 1))}
                     disabled={currentDay === 60}
-                    className="px-3 py-2 rounded-lg bg-[#0D6E6E] hover:bg-[#0a5858] text-white disabled:opacity-40 text-sm font-semibold"
+                    className="px-3 py-2 rounded-lg bg-primary hover:bg-primary-hover text-primary-foreground disabled:opacity-40 text-sm font-semibold"
                   >
                     Next →
                   </button>
@@ -260,11 +260,11 @@ export default function PlacementPrepClient() {
                         title={`Day ${d.day} — ${done}/${total}`}
                         className={`w-7 h-7 rounded-md text-[10px] font-bold flex items-center justify-center transition ${
                           isCurrent
-                            ? "bg-[#0D6E6E] text-white ring-2 ring-[#0D6E6E] ring-offset-1 ring-offset-white dark:ring-offset-[#1A1F2E]"
+                            ? "bg-primary text-primary-foreground ring-2 ring-brand ring-offset-1 ring-offset-surface"
                             : allDone
-                            ? "bg-emerald-500 text-white"
+                            ? "bg-success text-primary-foreground"
                             : partial
-                            ? "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300"
+                            ? "bg-success-muted text-success dark:bg-success-muted dark:text-success"
                             : "bg-gray-100 text-gray-500 hover:bg-gray-200 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10"
                         }`}
                       >
@@ -283,7 +283,7 @@ export default function PlacementPrepClient() {
                       onClick={() => setViewMode(m)}
                       className={`px-3 py-1.5 text-xs font-bold rounded-md transition capitalize ${
                         viewMode === m
-                          ? "bg-white dark:bg-[#0f1522] text-slate-800 dark:text-white shadow"
+                          ? "bg-white dark:bg-surface text-slate-800 dark:text-white shadow"
                           : "text-slate-500 dark:text-slate-400"
                       }`}
                     >
@@ -324,7 +324,7 @@ export default function PlacementPrepClient() {
 
             <div className="space-y-4">
               {filteredDays.length === 0 && (
-                <div className="text-center py-12 text-slate-500 bg-white dark:bg-[#1A1F2E] rounded-2xl border border-gray-200 dark:border-white/5">
+                <div className="text-center py-12 text-slate-500 bg-white dark:bg-surface rounded-2xl border border-gray-200 dark:border-white/5">
                   No tasks match this filter.
                 </div>
               )}
@@ -369,7 +369,7 @@ function GlobalNotes() {
   if (!mounted) return null;
 
   return (
-    <div className="rounded-2xl bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-white/5 shadow-sm p-4 mb-6">
+    <div className="rounded-2xl bg-white dark:bg-surface border border-gray-200 dark:border-white/5 shadow-sm p-4 mb-6">
       <div className="flex items-center justify-between gap-3 flex-wrap mb-2">
         <div>
           <div className="text-xs uppercase tracking-wider text-slate-500 font-bold">
@@ -387,7 +387,7 @@ function GlobalNotes() {
         value={notes}
         onChange={(e) => setNotes(e.target.value)}
         placeholder="Example: Need to add HDFC Bank stock pitch to portfolio. Ask mentor about DCF assumptions. Revise NPA and CASA before banking interview..."
-        className="w-full min-h-40 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#0f1522] px-4 py-3 text-sm text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#0D6E6E] focus:border-[#0D6E6E] resize-y"
+        className="w-full min-h-40 rounded-xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-surface px-4 py-3 text-sm text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-brand focus:border-brand resize-y"
       />
       <div className="text-[11px] text-slate-500 mt-2">
         This note is separate from task completion. Resetting progress will not clear this note.
@@ -456,10 +456,10 @@ function DayQuote({ day }: { day: number }) {
   };
 
   return (
-    <div className="rounded-2xl bg-gradient-to-br from-brand-navy via-brand-slate to-[#0f1522] text-white p-5 mb-6 shadow-lg border border-white/10">
+    <div className="rounded-2xl bg-brand-navy text-white p-5 mb-6 shadow-lg border border-white/10">
       <div className="flex items-start justify-between gap-4 flex-wrap">
         <div className="flex-1 min-w-[250px]">
-          <div className="text-xs uppercase tracking-widest text-[#0D6E6E] font-bold">
+          <div className="text-xs uppercase tracking-widest text-brand font-bold">
             Unique Quote for Day {day}
           </div>
           <div className="text-xl sm:text-2xl font-bold mt-2 leading-snug">
@@ -469,7 +469,7 @@ function DayQuote({ day }: { day: number }) {
         </div>
         <button
           onClick={copyQuote}
-          className="text-xs font-bold px-3 py-2 rounded-xl bg-white text-brand-navy hover:bg-[#0D6E6E] hover:text-white transition shadow-sm"
+          className="text-xs font-bold px-3 py-2 rounded-xl bg-white text-brand-navy hover:bg-primary hover:text-primary-foreground transition shadow-sm"
         >
           {copied ? "✓ Copied" : "Copy for upload"}
         </button>
@@ -522,7 +522,7 @@ function StatsCards({
 
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4 mb-6">
-      <div className="rounded-2xl bg-gradient-to-br from-brand-navy to-brand-slate text-white p-5 shadow-lg">
+      <div className="rounded-2xl bg-brand-navy text-white p-5 shadow-lg">
         <div className="text-xs uppercase tracking-wider opacity-80">Overall Progress</div>
         <div className="text-4xl font-bold mt-1">{percent}%</div>
         <div className="text-sm mt-1 opacity-90">
@@ -530,17 +530,17 @@ function StatsCards({
         </div>
         <div className="mt-3 h-2 bg-white/20 rounded-full overflow-hidden">
           <div
-            className="h-full bg-[#0D6E6E] rounded-full transition-all"
+            className="h-full bg-primary rounded-full transition-all"
             style={{ width: `${percent}%` }}
           />
         </div>
       </div>
 
       <div
-        className={`rounded-2xl p-5 shadow-lg text-white ${
+        className={`rounded-2xl p-5 shadow-lg border ${
           onTrack
-            ? "bg-gradient-to-br from-emerald-500 to-teal-600"
-            : "bg-gradient-to-br from-orange-500 to-rose-600"
+            ? "bg-success-muted text-success border-success/30"
+            : "bg-error-muted text-error border-error/30"
         }`}
       >
         <div className="text-xs uppercase tracking-wider opacity-80">Status</div>
@@ -553,23 +553,23 @@ function StatsCards({
         </div>
       </div>
 
-      <div className="rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 text-white p-5 shadow-lg">
+      <div className="rounded-2xl bg-warning-muted text-warning border border-warning/30 p-5 shadow-lg">
         <div className="text-xs uppercase tracking-wider opacity-80">Day Streak</div>
         <div className="text-4xl font-bold mt-1">🔥 {streak}</div>
         <div className="text-sm mt-2 opacity-95">consecutive full days</div>
         <div className="text-xs mt-2 opacity-80">Don't break the chain!</div>
       </div>
 
-      <div className="rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 text-white p-5 shadow-lg">
+      <div className="rounded-2xl bg-surface-raised text-content-primary border border-border-subtle p-5 shadow-lg">
         <div className="text-xs uppercase tracking-wider opacity-80">Days Until Placement</div>
         <div className="text-4xl font-bold mt-1">{Math.max(0, 60 - currentDay + 1)}</div>
         <div className="text-sm mt-2 opacity-95">
-          Goal: <span className="font-bold text-[#0D6E6E]">15 LPA+</span>
+          Goal: <span className="font-bold text-brand">15 LPA+</span>
         </div>
         <div className="text-xs mt-1 opacity-70">You got this 💪</div>
       </div>
 
-      <div className="sm:col-span-2 lg:col-span-4 rounded-2xl bg-white dark:bg-[#1A1F2E] p-5 shadow-md border border-gray-200 dark:border-white/5">
+      <div className="sm:col-span-2 lg:col-span-4 rounded-2xl bg-white dark:bg-surface p-5 shadow-md border border-gray-200 dark:border-white/5">
         <div className="text-sm font-semibold text-slate-700 dark:text-slate-200 mb-3">
           📚 Category-wise Progress
         </div>
@@ -623,25 +623,25 @@ function DayCard({
 
   return (
     <div
-      className={`rounded-2xl border bg-white dark:bg-[#1A1F2E] shadow-sm overflow-hidden transition-all ${
+      className={`rounded-2xl border bg-white dark:bg-surface shadow-sm overflow-hidden transition-all ${
         isToday
-          ? "border-[#0D6E6E] ring-2 ring-[#0D6E6E]/30"
+          ? "border-brand ring-2 ring-brand/30"
           : "border-gray-200 dark:border-white/5"
       } ${allDone ? "opacity-80" : ""}`}
     >
       <div
         className={`px-5 py-4 ${
           isToday
-            ? "bg-gradient-to-r from-[#0D6E6E]/10 to-brand-slate/10 dark:from-[#0D6E6E]/20 dark:to-brand-navy/20"
-            : "bg-gray-50 dark:bg-[#0f1522]"
+            ? "bg-gradient-to-r from-brand/10 to-surface-muted/60 dark:from-brand/15 dark:to-surface-raised/80"
+            : "bg-gray-50 dark:bg-surface"
         } border-b border-gray-200 dark:border-white/5`}
       >
         <div className="flex items-start justify-between gap-3 flex-wrap">
           <div>
             <div className="flex items-center gap-2 flex-wrap">
               <span
-                className={`inline-flex items-center justify-center w-10 h-10 rounded-xl font-bold text-white ${
-                  isToday ? "bg-[#0D6E6E]" : allDone ? "bg-emerald-500" : "bg-slate-400"
+                className={`inline-flex items-center justify-center w-10 h-10 rounded-xl font-bold ${
+                  isToday ? "bg-primary text-primary-foreground" : allDone ? "bg-success text-primary-foreground" : "bg-surface-muted text-content-secondary"
                 }`}
               >
                 {allDone ? "✓" : day.day}
@@ -655,12 +655,12 @@ function DayCard({
                 </div>
               </div>
               {isToday && (
-                <span className="text-[10px] uppercase font-bold tracking-wider bg-[#0D6E6E] text-white px-2 py-1 rounded-full">
+                <span className="text-[10px] uppercase font-bold tracking-wider bg-primary text-primary-foreground px-2 py-1 rounded-full">
                   Today
                 </span>
               )}
               {allDone && !isToday && (
-                <span className="text-[10px] uppercase font-bold tracking-wider bg-emerald-500 text-white px-2 py-1 rounded-full">
+                <span className="text-[10px] uppercase font-bold tracking-wider bg-success text-primary-foreground px-2 py-1 rounded-full">
                   Done
                 </span>
               )}
@@ -676,7 +676,7 @@ function DayCard({
         <div className="mt-3 h-1.5 bg-gray-200 dark:bg-white/10 rounded-full overflow-hidden">
           <div
             className={`h-full rounded-full transition-all ${
-              allDone ? "bg-emerald-500" : "bg-[#0D6E6E]"
+              allDone ? "bg-success" : "bg-primary"
             }`}
             style={{ width: `${pct}%` }}
           />
@@ -728,7 +728,7 @@ function TaskCard({
       className={`rounded-xl border overflow-hidden transition-all ${
         completed
           ? "bg-gray-50 dark:bg-white/[0.02] border-gray-200 dark:border-white/5"
-          : "bg-white dark:bg-[#0f1522] border-gray-200 dark:border-white/5 hover:border-[#0D6E6E]/50 hover:shadow-sm"
+          : "bg-white dark:bg-surface border-gray-200 dark:border-white/5 hover:border-brand/50 hover:shadow-sm"
       }`}
     >
       <div className="flex items-start gap-3 p-3">
@@ -737,7 +737,7 @@ function TaskCard({
             type="checkbox"
             checked={completed}
             onChange={onToggle}
-            className="w-5 h-5 rounded accent-[#0D6E6E] cursor-pointer"
+            className="w-5 h-5 rounded accent-brand cursor-pointer"
           />
         </label>
         <div className="flex-1 min-w-0">
@@ -764,14 +764,14 @@ function TaskCard({
             {task.detail}
           </div>
           {task.resource && (
-            <div className="text-[11px] text-[#0D6E6E] mt-1 font-medium">
+            <div className="text-[11px] text-brand mt-1 font-medium">
               📖 Resource: {task.resource}
             </div>
           )}
           <button
             type="button"
             onClick={() => setExpanded((v) => !v)}
-            className="mt-2 text-[11px] text-[#0D6E6E] bg-[#0D6E6E]/10 hover:bg-[#0D6E6E]/20 font-bold px-2.5 py-1 rounded-lg border border-[#0D6E6E]/30 transition"
+            className="mt-2 text-[11px] text-brand bg-brand/10 hover:bg-primary/20 font-bold px-2.5 py-1 rounded-lg border border-brand/30 transition"
           >
             {expanded ? "▲ Hide Study Material & Sources" : "▼ Show Study Material & Sources"}
           </button>
@@ -779,7 +779,7 @@ function TaskCard({
       </div>
 
       {expanded && (
-        <div className="border-t border-[#0D6E6E]/20 bg-gradient-to-br from-[#0D6E6E]/5 via-white to-white dark:from-[#0D6E6E]/10 dark:via-[#0f1522] dark:to-[#0f1522] p-4 space-y-4">
+        <div className="border-t border-brand/20 bg-gradient-to-br from-brand-muted/40 via-surface to-surface-raised dark:from-brand-muted/35 dark:via-surface-raised dark:to-surface-raised p-4 space-y-4">
           <Section label="💡 Concept" color="sky">
             <p className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap">
               {content.concept}
@@ -788,7 +788,7 @@ function TaskCard({
 
           {content.formulas && (
             <Section label="🧮 Key Formulas" color="emerald">
-              <pre className="text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap bg-emerald-50/60 dark:bg-emerald-950/20 p-3 rounded-lg border border-emerald-200 dark:border-emerald-900/40 font-sans">
+              <pre className="text-sm text-content-secondary leading-relaxed whitespace-pre-wrap bg-success-muted p-3 rounded-lg border border-success/25 font-sans">
                 {content.formulas}
               </pre>
             </Section>
@@ -800,12 +800,12 @@ function TaskCard({
                 {content.qa.map((item, i) => (
                   <div
                     key={i}
-                    className="rounded-lg border border-gray-200 dark:border-white/5 overflow-hidden bg-white dark:bg-[#1A1F2E]"
+                    className="rounded-lg border border-gray-200 dark:border-white/5 overflow-hidden bg-white dark:bg-surface"
                   >
-                    <div className="px-3 py-2 bg-amber-50 dark:bg-amber-950/20 text-sm font-bold text-amber-900 dark:text-amber-200">
+                    <div className="px-3 py-2 bg-warning-muted text-sm font-bold text-warning">
                       {item.q}
                     </div>
-                    <div className="px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap border-t border-amber-100 dark:border-amber-900/30">
+                    <div className="px-3 py-2.5 text-sm text-content-secondary leading-relaxed whitespace-pre-wrap border-t border-warning/20">
                       <span className="inline-block px-1.5 py-0.5 text-[10px] uppercase tracking-wider bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-200 rounded font-bold mr-2 mb-1">
                         Answer
                       </span>
@@ -829,7 +829,7 @@ function TaskCard({
                 value={taskNote}
                 onChange={(e) => setTaskNote(e.target.value)}
                 placeholder="Write your personal notes, doubts, formulas, solved mistakes, interview points, or project ideas for this task. These notes auto-save and will not be deleted when you close the browser."
-                className="w-full min-h-36 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-[#0f1522] px-3 py-2 text-sm text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-[#0D6E6E] focus:border-[#0D6E6E] resize-y"
+                className="w-full min-h-36 rounded-lg border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-surface px-3 py-2 text-sm text-slate-700 dark:text-slate-200 outline-none focus:ring-2 focus:ring-brand focus:border-brand resize-y"
               />
               <div className="text-[11px] text-slate-500 mt-2">
                 Auto-saved locally in your browser under this exact task.
@@ -857,7 +857,7 @@ function TaskCard({
                         href={s.url}
                         target="_blank"
                         rel="noreferrer"
-                        className="text-[11px] text-indigo-700 dark:text-indigo-400 hover:text-indigo-900 dark:hover:text-indigo-300 hover:underline mt-1 inline-block break-all font-medium"
+                        className="text-[11px] text-indigo-700 dark:text-indigo-400 hover:text-accent-violet dark:hover:text-accent-violet hover:underline mt-1 inline-block break-all font-medium"
                       >
                         🔗 {s.url}
                       </a>
@@ -924,7 +924,7 @@ function LearningMaterial({
           className={`px-4 py-2 rounded-xl text-sm font-bold transition ${
             activeCategory === "All"
               ? "bg-brand-navy text-white shadow-lg"
-              : "bg-white dark:bg-[#1A1F2E] text-slate-600 dark:text-slate-300 border border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
+              : "bg-white dark:bg-surface text-slate-600 dark:text-slate-300 border border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
           }`}
         >
           📚 All ({ALL_MODULES.length})
@@ -943,7 +943,7 @@ function LearningMaterial({
               className={`px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-1.5 ${
                 active
                   ? `${meta.bg} ${meta.color} ring-2 ${meta.ring} shadow-lg`
-                  : "bg-white dark:bg-[#1A1F2E] text-slate-600 dark:text-slate-300 border border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
+                  : "bg-white dark:bg-surface text-slate-600 dark:text-slate-300 border border-gray-200 dark:border-white/5 hover:bg-gray-50 dark:hover:bg-white/5"
               }`}
             >
               <span>{meta.icon}</span> {cat} ({count})
@@ -954,7 +954,7 @@ function LearningMaterial({
 
       <div className="space-y-3">
         {filteredModules.length === 0 && (
-          <div className="text-center py-12 text-slate-500 bg-white dark:bg-[#1A1F2E] rounded-2xl border border-gray-200 dark:border-white/5">
+          <div className="text-center py-12 text-slate-500 bg-white dark:bg-surface rounded-2xl border border-gray-200 dark:border-white/5">
             No content in this category yet.
           </div>
         )}
@@ -982,7 +982,7 @@ function ModuleCard({
 }) {
   const meta = CATEGORY_META[module.category as keyof typeof CATEGORY_META];
   return (
-    <div className="rounded-2xl border-2 border-gray-200 dark:border-white/5 bg-white dark:bg-[#1A1F2E] shadow-sm overflow-hidden transition-all hover:shadow-md">
+    <div className="rounded-2xl border-2 border-gray-200 dark:border-white/5 bg-white dark:bg-surface shadow-sm overflow-hidden transition-all hover:shadow-md">
       <button
         onClick={onToggle}
         className="w-full text-left px-5 py-4 flex items-start justify-between gap-3 hover:bg-gray-50 dark:hover:bg-white/[0.02] transition"
@@ -1015,7 +1015,7 @@ function ModuleCard({
         <div
           className={`flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-transform ${
             open
-              ? "rotate-180 bg-[#0D6E6E]/20 text-[#0D6E6E]"
+              ? "rotate-180 bg-brand/20 text-brand"
               : "bg-gray-100 dark:bg-white/5 text-slate-600 dark:text-slate-300"
           }`}
         >
@@ -1065,7 +1065,7 @@ function LearningSection({ item }: { item: LearningItem }) {
 
   return (
     <div className="rounded-xl border border-gray-100 dark:border-white/5 bg-gray-50/50 dark:bg-white/[0.02] overflow-hidden">
-      <div className="px-4 py-2.5 bg-white dark:bg-[#0f1522] border-b border-gray-100 dark:border-white/5 flex items-center justify-between gap-2 flex-wrap">
+      <div className="px-4 py-2.5 bg-white dark:bg-surface border-b border-gray-100 dark:border-white/5 flex items-center justify-between gap-2 flex-wrap">
         <h4 className="font-bold text-slate-800 dark:text-white text-sm">{item.title}</h4>
         <span
           className={`text-[10px] uppercase tracking-wider font-bold px-2 py-0.5 rounded-full ${t.bg} ${t.color}`}
@@ -1084,12 +1084,12 @@ function LearningSection({ item }: { item: LearningItem }) {
             {item.qa.map((qa, i) => (
               <div
                 key={i}
-                className="rounded-lg border border-gray-200 dark:border-white/5 overflow-hidden bg-white dark:bg-[#1A1F2E]"
+                className="rounded-lg border border-gray-200 dark:border-white/5 overflow-hidden bg-white dark:bg-surface"
               >
-                <div className="px-3 py-2 bg-amber-50 dark:bg-amber-950/20 text-sm font-bold text-amber-900 dark:text-amber-200">
+                <div className="px-3 py-2 bg-warning-muted text-sm font-bold text-warning">
                   {qa.q}
                 </div>
-                <div className="px-3 py-2.5 text-sm text-slate-700 dark:text-slate-200 leading-relaxed whitespace-pre-wrap border-t border-amber-100 dark:border-amber-900/30">
+                <div className="px-3 py-2.5 text-sm text-content-secondary leading-relaxed whitespace-pre-wrap border-t border-warning/20">
                   {qa.a}
                 </div>
               </div>
@@ -1105,8 +1105,8 @@ function LearningSection({ item }: { item: LearningItem }) {
 function PortfolioLab() {
   return (
     <div className="space-y-6">
-      <section className="rounded-2xl bg-gradient-to-br from-brand-navy via-brand-slate to-[#0f1522] text-white p-6 shadow-lg">
-        <div className="text-xs uppercase tracking-widest text-[#0D6E6E] font-bold">
+      <section className="rounded-2xl bg-brand-navy text-white p-6 shadow-lg">
+        <div className="text-xs uppercase tracking-widest text-brand font-bold">
           Portfolio Upgrade Lab
         </div>
         <h2 className="text-2xl sm:text-3xl font-bold mt-2">Make your portfolio recruiter-ready</h2>
@@ -1116,7 +1116,7 @@ function PortfolioLab() {
         </p>
       </section>
 
-      <section className="rounded-2xl bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-white/5 shadow-sm p-5">
+      <section className="rounded-2xl bg-white dark:bg-surface border border-gray-200 dark:border-white/5 shadow-sm p-5">
         <div className="flex items-start justify-between gap-3 flex-wrap mb-4">
           <div>
             <div className="text-xs uppercase tracking-wider text-slate-500 font-bold">
@@ -1144,7 +1144,7 @@ function PortfolioLab() {
         </div>
       </section>
 
-      <section className="rounded-2xl bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-white/5 shadow-sm p-5">
+      <section className="rounded-2xl bg-white dark:bg-surface border border-gray-200 dark:border-white/5 shadow-sm p-5">
         <div className="flex items-center justify-between gap-3 flex-wrap mb-4">
           <div>
             <div className="text-xs uppercase tracking-wider text-slate-500 font-bold">
@@ -1154,7 +1154,7 @@ function PortfolioLab() {
               Do 3 strong projects before placements, not 10 weak ones
             </h3>
           </div>
-          <div className="text-xs font-bold text-[#0D6E6E] bg-[#0D6E6E]/10 px-3 py-1.5 rounded-full">
+          <div className="text-xs font-bold text-brand bg-brand/10 px-3 py-1.5 rounded-full">
             Priority: Project 1 + 2 + 6
           </div>
         </div>
@@ -1178,7 +1178,7 @@ function PortfolioLab() {
                 {project.tools.map((tool) => (
                   <span
                     key={tool}
-                    className="text-[11px] font-bold bg-white dark:bg-[#0f1522] border border-gray-200 dark:border-white/10 text-slate-700 dark:text-slate-200 px-2 py-1 rounded-lg"
+                    className="text-[11px] font-bold bg-white dark:bg-surface border border-gray-200 dark:border-white/10 text-slate-700 dark:text-slate-200 px-2 py-1 rounded-lg"
                   >
                     {tool}
                   </span>
@@ -1198,7 +1198,7 @@ function PortfolioLab() {
         </div>
       </section>
 
-      <section className="rounded-2xl bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-white/5 shadow-sm p-5">
+      <section className="rounded-2xl bg-white dark:bg-surface border border-gray-200 dark:border-white/5 shadow-sm p-5">
         <div className="text-xs uppercase tracking-wider text-slate-500 font-bold">
           Future-Ready Skill Stack
         </div>
@@ -1215,7 +1215,7 @@ function PortfolioLab() {
               <p className="text-sm text-slate-700 dark:text-slate-200 mt-2">
                 <b>Why it matters:</b> {item.why}
               </p>
-              <p className="text-xs text-fuchsia-800 dark:text-fuchsia-200 bg-white dark:bg-[#0f1522] border border-fuchsia-200 dark:border-fuchsia-900/40 rounded-lg px-2 py-1.5 mt-3">
+              <p className="text-xs text-fuchsia-800 dark:text-fuchsia-200 bg-white dark:bg-surface border border-fuchsia-200 dark:border-fuchsia-900/40 rounded-lg px-2 py-1.5 mt-3">
                 <b>Proof to show:</b> {item.proof}
               </p>
             </div>
@@ -1260,7 +1260,7 @@ function PortfolioLab() {
         <div className="mt-5">
           <Link
             href="/study"
-            className="inline-flex items-center gap-2 text-sm font-bold text-[#0D6E6E] hover:underline"
+            className="inline-flex items-center gap-2 text-sm font-bold text-brand hover:underline"
           >
             ← Back to Study Material
           </Link>
@@ -1298,7 +1298,7 @@ function AuditList({
 
 function MiniList({ title, items }: { title: string; items: string[] }) {
   return (
-    <div className="rounded-lg bg-white dark:bg-[#0f1522] border border-gray-200 dark:border-white/10 p-3">
+    <div className="rounded-lg bg-white dark:bg-surface border border-gray-200 dark:border-white/10 p-3">
       <div className="text-xs uppercase tracking-wider font-bold text-slate-500 mb-2">{title}</div>
       <ul className="space-y-1.5 text-sm text-slate-700 dark:text-slate-200 list-disc list-inside">
         {items.map((item) => (

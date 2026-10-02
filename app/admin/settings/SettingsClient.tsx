@@ -109,17 +109,17 @@ function FeaturedPostsTab({ allPosts, featuredResearchIds, featuredInsightIds, o
     selected: string[]; setSelected: (v: string[]) => void
     section: string; max: number
   }) => (
-    <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
+    <div className="bg-surface rounded-2xl border border-border p-6 shadow-xl">
       <div className="flex items-start justify-between mb-6">
         <div>
           <h3 className="text-base font-bold text-white">{label}</h3>
-          <p className="text-xs text-slate-500 mt-1">{description}</p>
-          <p className="text-[10px] text-[#0D6E6E] mt-1">{selected.length}/{max} selected</p>
+          <p className="text-xs text-content-muted mt-1">{description}</p>
+          <p className="text-[10px] text-brand mt-1">{selected.length}/{max} selected</p>
         </div>
         <button
           onClick={() => save(section, selected)}
           disabled={saving === section}
-          className="flex items-center gap-2 px-4 py-2 bg-[#0D6E6E] text-white text-xs font-bold rounded-xl hover:bg-[#0B5E5E] transition-all disabled:opacity-50"
+          className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl hover:bg-primary-hover transition-all disabled:opacity-50"
         >
           {saving === section ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
           Save
@@ -129,19 +129,19 @@ function FeaturedPostsTab({ allPosts, featuredResearchIds, featuredInsightIds, o
       {/* Order preview */}
       {selected.length > 0 && (
         <div className="mb-5 space-y-2">
-          <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">Display Order</p>
+          <p className="text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Display Order</p>
           {selected.map((id, idx) => {
             const post = posts.find(p => p.id === id)
             if (!post) return null
             return (
-              <div key={id} className="flex items-center gap-3 bg-[#0D6E6E]/10 border border-[#0D6E6E]/20 px-3 py-2 rounded-xl">
-                <span className="text-[10px] font-bold text-[#0D6E6E] w-4">{idx + 1}</span>
-                <GripVertical className="w-3.5 h-3.5 text-slate-600" />
-                <span className="text-xs text-white flex-1 truncate">{post.title}</span>
+              <div key={id} className="flex items-center gap-3 bg-brand/10 border border-brand/20 px-3 py-2 rounded-xl">
+                <span className="text-[10px] font-bold text-brand w-4">{idx + 1}</span>
+                <GripVertical className="w-3.5 h-3.5 text-content-muted" />
+                <span className="text-xs text-content-primary flex-1 truncate">{post.title}</span>
                 <div className="flex gap-1">
-                  <button onClick={() => moveUp(selected, setSelected, id)} className="p-1 hover:text-white text-slate-500 transition-colors"><ChevronUp className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => moveDown(selected, setSelected, id)} className="p-1 hover:text-white text-slate-500 transition-colors"><ChevronDown className="w-3.5 h-3.5" /></button>
-                  <button onClick={() => setSelected(selected.filter(x => x !== id))} className="p-1 hover:text-red-400 text-slate-500 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => moveUp(selected, setSelected, id)} className="p-1 hover:text-content-primary text-content-muted transition-colors"><ChevronUp className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => moveDown(selected, setSelected, id)} className="p-1 hover:text-content-primary text-content-muted transition-colors"><ChevronDown className="w-3.5 h-3.5" /></button>
+                  <button onClick={() => setSelected(selected.filter(x => x !== id))} className="p-1 hover:text-error text-content-muted transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
               </div>
             )
@@ -152,7 +152,7 @@ function FeaturedPostsTab({ allPosts, featuredResearchIds, featuredInsightIds, o
       {/* Post list */}
       <div className="space-y-2 max-h-80 overflow-y-auto pr-1">
         {posts.length === 0 ? (
-          <p className="text-slate-600 text-sm text-center py-6">No published {label.toLowerCase()} found in the database.<br />Import MDX files first.</p>
+          <p className="text-content-muted text-sm text-center py-6">No published {label.toLowerCase()} found in the database.<br />Import MDX files first.</p>
         ) : posts.map(post => {
           const isSelected = selected.includes(post.id)
           return (
@@ -161,19 +161,19 @@ function FeaturedPostsTab({ allPosts, featuredResearchIds, featuredInsightIds, o
               onClick={() => toggle(selected, setSelected, post.id, max)}
               className={`w-full flex items-start gap-3 p-3 rounded-xl text-left transition-all border ${
                 isSelected
-                  ? "bg-[#0D6E6E]/10 border-[#0D6E6E]/30 text-white"
-                  : "bg-white/5 border-white/5 text-slate-400 hover:bg-white/10 hover:text-white"
+                  ? "bg-brand/10 border-brand/30 text-white"
+                  : "bg-surface-muted border-border-subtle text-content-secondary hover:bg-accent hover:text-content-primary"
               } ${!isSelected && selected.length >= max ? "opacity-30 cursor-not-allowed" : ""}`}
             >
-              <div className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded-md border flex items-center justify-center transition-all ${isSelected ? "bg-[#0D6E6E] border-[#0D6E6E]" : "border-slate-600"}`}>
+              <div className={`mt-0.5 flex-shrink-0 w-4 h-4 rounded-md border flex items-center justify-center transition-all ${isSelected ? "bg-primary border-brand" : "border-slate-600"}`}>
                 {isSelected && <Check className="w-2.5 h-2.5 text-white" />}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-xs font-semibold truncate leading-snug">{post.title}</p>
-                {post.excerpt && <p className="text-[10px] text-slate-600 mt-0.5 line-clamp-1">{post.excerpt}</p>}
+                {post.excerpt && <p className="text-[10px] text-content-muted mt-0.5 line-clamp-1">{post.excerpt}</p>}
               </div>
               {isSelected && (
-                <span className="text-[9px] font-bold text-[#0D6E6E] bg-[#0D6E6E]/10 px-1.5 py-0.5 rounded-md">
+                <span className="text-[9px] font-bold text-brand bg-brand/10 px-1.5 py-0.5 rounded-md">
                   #{selected.indexOf(post.id) + 1}
                 </span>
               )}
@@ -248,17 +248,17 @@ function HeroStatsTab({ initialStats, onSave }: {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
+      <div className="bg-surface rounded-2xl border border-border p-6 shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-base font-bold text-white">Hero Stat Cards</h3>
-            <p className="text-xs text-slate-500 mt-1">The 4 numbers shown at the bottom of the hero section</p>
+            <p className="text-xs text-content-muted mt-1">The 4 numbers shown at the bottom of the hero section</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={addStat} className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 text-slate-400 hover:text-white text-xs font-bold rounded-xl transition-all">
+            <button onClick={addStat} className="flex items-center gap-2 px-3 py-2 bg-surface-muted border border-border text-content-secondary hover:text-content-primary text-xs font-bold rounded-xl transition-all">
               <Plus className="w-3.5 h-3.5" /> Add Stat
             </button>
-            <button onClick={save} disabled={saving} className="flex items-center gap-2 px-4 py-2 bg-[#0D6E6E] text-white text-xs font-bold rounded-xl hover:bg-[#0B5E5E] transition-all disabled:opacity-50">
+            <button onClick={save} disabled={saving} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl hover:bg-primary-hover transition-all disabled:opacity-50">
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
               Save Changes
             </button>
@@ -267,31 +267,31 @@ function HeroStatsTab({ initialStats, onSave }: {
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {stats.filter(s => s.enabled).map(stat => (
-            <div key={stat.id + '-preview'} className="bg-[#0D0F14] border border-white/10 rounded-xl p-4 text-center">
+            <div key={stat.id + '-preview'} className="bg-surface border border-border rounded-xl p-4 text-center">
               <p className="text-2xl font-bold text-white">{stat.title}</p>
-              <p className="text-xs text-slate-400 mt-1">{stat.subtitle}</p>
+              <p className="text-xs text-content-secondary mt-1">{stat.subtitle}</p>
             </div>
           ))}
         </div>
 
         <div className="space-y-3">
           {stats.map((stat, idx) => (
-            <div key={stat.id} className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3">
-              <GripVertical className="w-4 h-4 text-slate-600 flex-shrink-0" />
-              <span className="text-xs text-slate-500 w-4 font-bold">{idx + 1}</span>
+            <div key={stat.id} className="flex items-center gap-3 bg-surface-muted border border-border rounded-xl px-4 py-3">
+              <GripVertical className="w-4 h-4 text-content-muted flex-shrink-0" />
+              <span className="text-xs text-content-muted w-4 font-bold">{idx + 1}</span>
               <input
                 value={stat.title}
                 onChange={e => update(stat.id, "title", e.target.value)}
-                className="flex-1 bg-transparent text-white text-sm font-bold focus:outline-none border-b border-transparent focus:border-[#0D6E6E] transition-all"
+                className="flex-1 bg-transparent text-white text-sm font-bold focus:outline-none border-b border-transparent focus:border-brand transition-all"
                 placeholder="Value (e.g. 10+)"
               />
               <input
                 value={stat.subtitle ?? ""}
                 onChange={e => update(stat.id, "subtitle", e.target.value)}
-                className="flex-1 bg-transparent text-slate-400 text-sm focus:outline-none border-b border-transparent focus:border-[#0D6E6E] transition-all"
+                className="flex-1 bg-transparent text-content-secondary text-sm focus:outline-none border-b border-transparent focus:border-brand transition-all"
                 placeholder="Label (e.g. Reports)"
               />
-              <button onClick={() => remove(stat.id)} className="p-1.5 text-slate-600 hover:text-red-400 transition-colors">
+              <button onClick={() => remove(stat.id)} className="p-1.5 text-content-muted hover:text-error transition-colors">
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
@@ -333,17 +333,17 @@ function TrackersTab({ initialTrackers, onSave }: {
 
   return (
     <div className="space-y-6">
-      <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
+      <div className="bg-surface rounded-2xl border border-border p-6 shadow-xl">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h3 className="text-base font-bold text-white">Sector Intelligence Trackers</h3>
-            <p className="text-xs text-slate-500 mt-1">The tracker cards shown on the homepage</p>
+            <p className="text-xs text-content-muted mt-1">The tracker cards shown on the homepage</p>
           </div>
           <div className="flex gap-2">
-            <button onClick={addTracker} className="flex items-center gap-2 px-3 py-2 bg-white/5 border border-white/10 text-slate-400 hover:text-white text-xs font-bold rounded-xl transition-all">
+            <button onClick={addTracker} className="flex items-center gap-2 px-3 py-2 bg-surface-muted border border-border text-content-secondary hover:text-content-primary text-xs font-bold rounded-xl transition-all">
               <Plus className="w-3.5 h-3.5" /> Add Tracker
             </button>
-            <button onClick={save} disabled={saving} className="flex items-center gap-2 px-4 py-2 bg-[#0D6E6E] text-white text-xs font-bold rounded-xl hover:bg-[#0B5E5E] transition-all disabled:opacity-50">
+            <button onClick={save} disabled={saving} className="flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-bold rounded-xl hover:bg-primary-hover transition-all disabled:opacity-50">
               {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Save className="w-3.5 h-3.5" />}
               Save Changes
             </button>
@@ -352,8 +352,8 @@ function TrackersTab({ initialTrackers, onSave }: {
 
         <div className="space-y-3">
           {trackers.map((tracker, idx) => (
-            <div key={tracker.id} className="grid grid-cols-12 gap-3 items-center bg-white/5 border border-white/10 rounded-xl px-4 py-3">
-              <div className="col-span-1 text-slate-600"><GripVertical className="w-4 h-4" /></div>
+            <div key={tracker.id} className="grid grid-cols-12 gap-3 items-center bg-surface-muted border border-border rounded-xl px-4 py-3">
+              <div className="col-span-1 text-content-muted"><GripVertical className="w-4 h-4" /></div>
               <div className="col-span-1">
                 <input
                   value={tracker.icon ?? ""}
@@ -366,7 +366,7 @@ function TrackersTab({ initialTrackers, onSave }: {
                 <input
                   value={tracker.title}
                   onChange={e => update(tracker.id, "title", e.target.value)}
-                  className="w-full bg-transparent text-white text-sm font-bold focus:outline-none border-b border-transparent focus:border-[#0D6E6E] transition-all"
+                  className="w-full bg-transparent text-white text-sm font-bold focus:outline-none border-b border-transparent focus:border-brand transition-all"
                   placeholder="Sector name"
                 />
               </div>
@@ -374,7 +374,7 @@ function TrackersTab({ initialTrackers, onSave }: {
                 <input
                   value={tracker.subtitle ?? ""}
                   onChange={e => update(tracker.id, "subtitle", e.target.value)}
-                  className="w-full bg-transparent text-slate-400 text-xs focus:outline-none border-b border-transparent focus:border-[#0D6E6E] transition-all"
+                  className="w-full bg-transparent text-content-secondary text-xs focus:outline-none border-b border-transparent focus:border-brand transition-all"
                   placeholder="Key metric: e.g. GMV Growth: 42% YoY"
                 />
               </div>
@@ -382,18 +382,18 @@ function TrackersTab({ initialTrackers, onSave }: {
                 <input
                   value={tracker.link ?? ""}
                   onChange={e => update(tracker.id, "link", e.target.value)}
-                  className="w-full bg-transparent text-[#0D6E6E] text-xs font-mono focus:outline-none border-b border-transparent focus:border-[#0D6E6E] transition-all"
+                  className="w-full bg-transparent text-brand text-xs font-mono focus:outline-none border-b border-transparent focus:border-brand transition-all"
                   placeholder="/tracker/slug"
                 />
               </div>
               <div className="col-span-1 flex items-center gap-1">
                 <button
                   onClick={() => update(tracker.id, "enabled", !tracker.enabled)}
-                  className={`p-1.5 rounded-lg transition-all ${tracker.enabled ? "text-emerald-400 bg-emerald-500/10" : "text-slate-600 bg-white/5"}`}
+                  className={`p-1.5 rounded-lg transition-all ${tracker.enabled ? "text-emerald-400 bg-emerald-500/10" : "text-content-muted bg-surface-muted"}`}
                 >
                   {tracker.enabled ? <Eye className="w-3.5 h-3.5" /> : <EyeOff className="w-3.5 h-3.5" />}
                 </button>
-                <button onClick={() => remove(tracker.id)} className="p-1.5 text-slate-600 hover:text-red-400 transition-colors">
+                <button onClick={() => remove(tracker.id)} className="p-1.5 text-content-muted hover:text-error transition-colors">
                   <Trash2 className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -450,15 +450,15 @@ function SectionsTab({ sectionConfigs, onToggle }: {
           const enabled = configs[section.key] ?? true
           const isSaving = saving === section.key
           return (
-            <div key={section.key} className="bg-[#1A1F2E] border border-[#2D3748] rounded-2xl p-5 flex items-center justify-between gap-4 shadow-xl">
+            <div key={section.key} className="bg-surface border border-border rounded-2xl p-5 flex items-center justify-between gap-4 shadow-xl">
               <div>
                 <p className="text-sm font-bold text-white">{section.label}</p>
-                <p className="text-xs text-slate-500 mt-0.5">{section.description}</p>
+                <p className="text-xs text-content-muted mt-0.5">{section.description}</p>
               </div>
               <button
                 onClick={() => toggle(section.key)}
                 disabled={isSaving}
-                className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-all duration-300 ${enabled ? "bg-[#0D6E6E]" : "bg-white/10"}`}
+                className={`relative flex-shrink-0 w-12 h-6 rounded-full transition-all duration-300 ${enabled ? "bg-primary" : "bg-surface-muted"}`}
               >
                 {isSaving
                   ? <Loader2 className="w-3.5 h-3.5 absolute inset-0 m-auto animate-spin text-white" />
@@ -516,7 +516,7 @@ export default function SettingsClient(props: Props) {
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 md:p-10 shadow-xl border border-white/5">
+      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 md:p-10 shadow-xl border border-border-subtle">
         <HeroBackground />
         <div className="relative z-10">
           <span className="section-label text-teal-400">Platform Control</span>
@@ -528,15 +528,15 @@ export default function SettingsClient(props: Props) {
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap gap-2 bg-[#1A1F2E] p-2 rounded-2xl border border-[#2D3748] w-fit">
+      <div className="flex flex-wrap gap-2 bg-surface p-2 rounded-2xl border border-border w-fit">
         {TABS.map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold transition-all ${
               activeTab === tab.id
-                ? "bg-[#0D6E6E] text-white shadow-lg shadow-[#0D6E6E]/20"
-                : "text-slate-500 hover:text-white"
+                ? "bg-primary text-primary-foreground shadow-lg shadow-[#0D6E6E]/20"
+                : "text-content-muted hover:text-content-primary"
             }`}
           >
             <tab.icon className="w-4 h-4" />

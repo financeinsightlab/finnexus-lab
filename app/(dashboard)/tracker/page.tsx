@@ -39,15 +39,15 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 dark:bg-[#0a1120] dark:text-slate-100">
+    <div className="min-h-screen bg-white text-slate-900 dark:bg-background dark:text-slate-100">
       <JsonLd data={jsonLd} />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#0f1c2d] text-white">
+      <section className="relative overflow-hidden bg-surface-raised text-content-primary">
         <div className="absolute inset-0 opacity-30" style={{ background: 'radial-gradient(800px 400px at 20% -10%, rgba(13,110,110,0.5), transparent), radial-gradient(700px 400px at 90% 0%, rgba(37,99,235,0.35), transparent)' }} />
         <div className="relative max-w-7xl mx-auto px-6 py-16 md:py-20">
           <nav className="text-xs text-slate-400 mb-6">
-            <Link href="/" className="hover:text-teal-400">Home</Link><span className="mx-2">/</span><span className="text-slate-200">Sector Trackers</span>
+            <Link href="/" className="hover:text-brand-hover">Home</Link><span className="mx-2">/</span><span className="text-slate-200">Sector Trackers</span>
           </nav>
           <p className="section-label text-teal-400 mb-4 flex items-center gap-2">
             <span className="relative flex h-2 w-2"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" /><span className="relative inline-flex rounded-full h-2 w-2 bg-teal-500" /></span>
@@ -57,7 +57,7 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
           <p className="text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed">Quarter-keyed data and site-defined indicators across supported Indian sectors. Values may be actuals or projections as labeled; this is not an intraday feed, and refresh timing is not guaranteed.</p>
           <div className="mt-7">
             <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">View by year &amp; quarter — <span className="text-teal-400">{quarter.label}</span> ({quarter.kind})</p>
-            <QuarterSelector base="/tracker" activeKey={quarter.key} light />
+            <QuarterSelector base="/tracker" activeKey={quarter.key} />
           </div>
         </div>
       </section>
@@ -77,8 +77,8 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
               return (
                 <ScrollReveal key={h.slug} delay={i * 50}>
                   <Link href={`/tracker/${h.slug}?q=${quarter.key}`} id={`tracker-card-${h.slug}`}
-                    className="group flex flex-col h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300">
-                    <div className="relative h-48 w-full overflow-hidden bg-[#0b1623]">
+                    className="group flex flex-col h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised overflow-hidden shadow-sm hover:shadow-2xl hover:-translate-y-1.5 transition-all duration-300">
+                    <div className="relative h-48 w-full overflow-hidden bg-surface">
                       <SectorVideo slug={h.slug} priority={i < 4} />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-transparent" />
                       <span className="absolute top-3 right-3 inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-white backdrop-blur bg-black/40">
@@ -106,13 +106,13 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
       </section>
 
       {/* Methodology */}
-      <section className="py-16 md:py-20 bg-slate-50 dark:bg-[#0d1526]">
+      <section className="py-16 md:py-20 bg-slate-50 dark:bg-surface">
         <div className="max-w-7xl mx-auto px-6">
           <ScrollReveal><SectionHeader label="Data notes" title="How to read each tracker" subtitle="These views are based on stored, quarter-keyed data; individual source and refresh details are not available for every metric." align="center" /></ScrollReveal>
           <div className="mt-12 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
             {METHODOLOGY.map((m, i) => (
               <ScrollReveal key={m.step} delay={i * 70}>
-                <div className="relative h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6">
+                <div className="relative h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6">
                   <span className="absolute top-5 right-6 text-4xl font-extrabold text-slate-100 dark:text-white/5">{m.step}</span>
                   <div className="text-3xl mb-4">{m.icon}</div>
                   <h3 className="text-base font-bold text-slate-900 dark:text-white mb-2">{m.title}</h3>
@@ -130,7 +130,7 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
       <RelatedContentSection sourceType="PAGE" sourceSlug="tracker" linkKind="CTA" />
 
       {/* CTA */}
-      <section className="py-16 md:py-20 relative overflow-hidden bg-[#0f1c2d] text-white">
+      <section className="py-16 md:py-20 relative overflow-hidden bg-surface-raised text-content-primary">
         <div className="absolute inset-0 opacity-25" style={{ background: 'radial-gradient(700px 300px at 80% 100%, rgba(13,110,110,0.6), transparent)' }} />
         <div className="relative max-w-7xl mx-auto px-6 text-center">
           <ScrollReveal>

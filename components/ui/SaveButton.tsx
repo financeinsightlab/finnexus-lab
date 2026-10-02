@@ -80,7 +80,7 @@ export default function SaveButton({ slug, type, title = '' }: SaveButtonProps) 
       onClick={handleSave}
       disabled={loading}
       className={`flex items-center gap-1.5 text-sm font-medium transition-colors ${
-        saved ? 'text-brand-teal hover:text-teal-700' : 'text-gray-500 hover:text-gray-800'
+        saved ? 'text-brand-teal hover:text-brand-hover' : 'text-gray-500 hover:text-content-primary'
       }`}
     >
       {loading ? (

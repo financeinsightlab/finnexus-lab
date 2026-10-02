@@ -44,15 +44,15 @@ export default async function CertificateDetailPage({ params }: Props) {
     const pathwayJsonLd = buildCertificatePathwayJsonLd(certificate);
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#0a1120]">
+        <div className="min-h-screen bg-slate-50 dark:bg-background">
             <JsonLd data={pathwayJsonLd} />
-            <header className="relative overflow-hidden bg-[#0f1c2d] text-white">
+            <header className="relative overflow-hidden bg-surface-raised text-content-primary">
                 <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-teal-500/20 blur-[100px]" />
                 <div className="relative mx-auto max-w-4xl px-6 py-14">
                     <nav className="mb-6 flex flex-wrap items-center gap-2 text-sm text-slate-400">
-                        <Link href="/" className="transition-colors hover:text-white">Home</Link>
+                        <Link href="/" className="transition-colors hover:text-content-primary">Home</Link>
                         <span>/</span>
-                        <Link href="/certificates" className="transition-colors hover:text-white">Certificate pathways</Link>
+                        <Link href="/certificates" className="transition-colors hover:text-content-primary">Certificate pathways</Link>
                         <span>/</span>
                         <span className="text-teal-300">{certificate.title}</span>
                     </nav>
@@ -63,13 +63,13 @@ export default async function CertificateDetailPage({ params }: Props) {
                         <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200">
                             {certificate.level}
                         </span>
-                        <span className="rounded-full bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-200">
+                        <span className="rounded-full bg-warning-muted px-3 py-1 text-xs font-semibold text-warning">
                             Pathway catalogue
                         </span>
                     </div>
                     <h1 className="mt-5 text-3xl font-bold leading-tight md:text-4xl">{certificate.title} pathway</h1>
-                    <p className="mt-4 max-w-2xl text-lg text-white/70">{certificate.summary}</p>
-                    <p className="mt-4 max-w-2xl rounded-xl border border-amber-300/20 bg-amber-300/5 p-4 text-sm text-amber-100/80">
+                    <p className="mt-4 max-w-2xl text-lg text-content-secondary">{certificate.summary}</p>
+                    <p className="mt-4 max-w-2xl rounded-xl border border-warning/25 bg-warning-muted p-4 text-sm text-content-secondary">
                         This is a pathway catalogue listing, not an issued credential. Course completion records are separate, private, unsigned records earned only where a course has published lesson criteria and a final test; no public or cryptographic verification is provided.
                     </p>
                 </div>
@@ -77,7 +77,7 @@ export default async function CertificateDetailPage({ params }: Props) {
 
             <main className="mx-auto grid max-w-4xl gap-8 px-6 py-12 md:grid-cols-3">
                 <div className="space-y-8 md:col-span-2">
-                    <section className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#111c31]">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-surface-raised">
                         <h2 className="text-lg font-bold text-slate-900 dark:text-white">Pathway outline</h2>
                         <ul className="mt-4 space-y-3 text-sm text-slate-600 dark:text-slate-300">
                             <li className="flex items-start gap-3">
@@ -97,7 +97,7 @@ export default async function CertificateDetailPage({ params }: Props) {
                         </ul>
                     </section>
 
-                    <section className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#111c31]">
+                    <section className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-surface-raised">
                         <h2 className="text-lg font-bold text-slate-900 dark:text-white">Skills covered by this pathway</h2>
                         <div className="mt-4 flex flex-wrap gap-2">
                             {certificate.skills.map((skill) => (
@@ -119,7 +119,7 @@ export default async function CertificateDetailPage({ params }: Props) {
                                     <Link
                                         key={item.slug}
                                         href={`/certificates/${item.slug}`}
-                                        className="group rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-[#111c31]"
+                                        className="group rounded-2xl border border-slate-200 bg-white p-4 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-surface-raised"
                                     >
                                         <p className="text-sm font-semibold text-slate-900 dark:text-white">{item.title}</p>
                                         <p className="mt-1 text-xs text-slate-400">{item.level}</p>

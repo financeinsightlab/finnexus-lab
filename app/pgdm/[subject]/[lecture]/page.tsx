@@ -48,7 +48,7 @@ function RichText({ text }: { text: string }) {
     <>
       {parts.map((p, i) =>
         i % 2 === 1 ? (
-          <strong key={i} className="text-white font-semibold">{p}</strong>
+          <strong key={i} className="text-content-primary font-semibold">{p}</strong>
         ) : (
           <span key={i}>{p}</span>
         )
@@ -58,10 +58,10 @@ function RichText({ text }: { text: string }) {
 }
 
 const CALLOUT_STYLE = {
-  note: { icon: Lightbulb, cls: 'border-blue-500/30 bg-blue-500/[0.07]', label: 'Note', labelCls: 'text-blue-300' },
-  warning: { icon: AlertTriangle, cls: 'border-red-500/30 bg-red-500/[0.07]', label: 'Watch out', labelCls: 'text-red-300' },
-  excel: { icon: Table2, cls: 'border-emerald-500/30 bg-emerald-500/[0.07]', label: 'Excel craft', labelCls: 'text-emerald-300' },
-  exam: { icon: GraduationCap, cls: 'border-amber-500/30 bg-amber-500/[0.07]', label: 'Exam edge', labelCls: 'text-amber-300' },
+  note: { icon: Lightbulb, cls: 'border-info/30 bg-info-muted', label: 'Note', labelCls: 'text-info' },
+  warning: { icon: AlertTriangle, cls: 'border-warning/30 bg-warning-muted', label: 'Watch out', labelCls: 'text-warning' },
+  excel: { icon: Table2, cls: 'border-success/30 bg-success-muted', label: 'Excel craft', labelCls: 'text-success' },
+  exam: { icon: GraduationCap, cls: 'border-brand/30 bg-brand-muted', label: 'Exam edge', labelCls: 'text-brand' },
 } as const;
 
 export default async function LecturePage({ params }: PageProps) {
@@ -75,7 +75,7 @@ export default async function LecturePage({ params }: PageProps) {
     accent === 'teal'
       ? 'bg-teal-500/10 text-teal-300 border-teal-500/25'
       : 'bg-cinema-violet/10 text-violet-300 border-cinema-violet/25';
-  const num = accent === 'teal' ? 'from-teal-500 to-emerald-500' : 'from-violet-500 to-indigo-500';
+  const num = accent === 'teal' ? 'from-teal-700 to-emerald-700' : 'from-violet-700 to-indigo-700';
 
   const BASE = 'https://kunwaranalytics.in';
   const lectureSchemas = [
@@ -115,9 +115,9 @@ export default async function LecturePage({ params }: PageProps) {
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-teal-500/10 rounded-full blur-3xl" />
         <div className="relative z-10 max-w-[860px] mx-auto px-6">
           <nav className="flex flex-wrap items-center gap-1.5 text-xs text-gray-500 mb-5 font-medium">
-            <Link href="/pgdm" className="hover:text-teal-300 transition-colors">PGDM</Link>
+            <Link href="/pgdm" className="hover:text-brand-hover transition-colors">PGDM</Link>
             <ChevronRight className="w-3 h-3" />
-            <Link href={`/pgdm/${subject.slug}`} className="hover:text-teal-300 transition-colors truncate max-w-[240px]">
+            <Link href={`/pgdm/${subject.slug}`} className="hover:text-brand-hover transition-colors truncate max-w-[240px]">
               {subject.code} {subject.name}
             </Link>
             <ChevronRight className="w-3 h-3" />
@@ -199,7 +199,7 @@ export default async function LecturePage({ params }: PageProps) {
               </p>
             ))}
             {sec.bullets && (
-              <ul className="space-y-2 rounded-2xl border border-white/8 bg-white/[0.02] p-5">
+              <ul className="space-y-2 rounded-2xl border border-border bg-surface-muted p-5">
                 {sec.bullets.map((b, j) => (
                   <li key={j} className="flex gap-3 text-[13.5px] text-gray-300 leading-relaxed">
                     <span className={`shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${num}`} />
@@ -295,7 +295,7 @@ export default async function LecturePage({ params }: PageProps) {
                           <div className="min-w-0">
                             <p className="text-[13px] text-gray-300 leading-relaxed">{s.text}</p>
                             {s.calc && (
-                              <p className="text-[12.5px] font-mono text-teal-200/90 bg-teal-500/[0.06] border border-teal-500/15 rounded-lg px-3 py-1.5 mt-1 break-words">
+                              <p className="text-[12.5px] font-mono text-brand bg-teal-500/[0.06] border border-teal-500/15 rounded-lg px-3 py-1.5 mt-1 break-words">
                                 {s.calc}
                               </p>
                             )}
@@ -325,7 +325,7 @@ export default async function LecturePage({ params }: PageProps) {
               {lecture.caseStudy.body.map((p, i) => (
                 <p key={i} className="text-[14px] text-gray-300 leading-[1.85]">{p}</p>
               ))}
-              <div className="rounded-xl bg-white/[0.03] border border-white/8 p-4">
+              <div className="rounded-xl bg-surface-muted border border-border p-4">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-violet-300 mb-2">Your task</p>
                 <ol className="space-y-1.5">
                   {lecture.caseStudy.questions.map((q, i) => (
@@ -403,7 +403,7 @@ export default async function LecturePage({ params }: PageProps) {
                 <Link
                   key={i}
                   href={t.href}
-                  className="text-[12.5px] font-semibold text-teal-200 bg-teal-500/10 border border-teal-500/25 rounded-xl px-4 py-2 hover:bg-teal-500/20 transition-colors"
+                  className="text-[12.5px] font-semibold text-brand bg-brand-muted border border-teal-500/25 rounded-xl px-4 py-2 hover:bg-teal-500/20 transition-colors"
                 >
                   {t.label} →
                 </Link>
@@ -423,10 +423,10 @@ export default async function LecturePage({ params }: PageProps) {
 
         {/* ── NEXT ── */}
         <nav className="flex items-center justify-between pt-6 border-t border-white/5">
-          <Link href={`/pgdm/${subject.slug}`} className="text-xs text-gray-500 hover:text-teal-300 transition-colors font-medium">
+          <Link href={`/pgdm/${subject.slug}`} className="text-xs text-gray-500 hover:text-brand-hover transition-colors font-medium">
             ← All {subject.code} lectures
           </Link>
-          <Link href="/pgdm" className="text-xs text-gray-500 hover:text-teal-300 transition-colors font-medium">
+          <Link href="/pgdm" className="text-xs text-gray-500 hover:text-brand-hover transition-colors font-medium">
             Specialization tracks →
           </Link>
         </nav>

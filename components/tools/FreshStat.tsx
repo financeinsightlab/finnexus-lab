@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useId, useState, useRef } from 'react';
 import { computeFreshness, type FreshnessStatus } from '@/lib/freshness';
 
 // ─── Usage in MDX ─────────────────────────────────────────────────────────────
@@ -21,20 +21,20 @@ const STATUS_STYLES: Record<FreshnessStatus, {
   dot: string; badge: string; label: string; icon: string;
 }> = {
   fresh: {
-    dot:   '#22c55e',
-    badge: 'rgba(34,197,94,0.12)',
+    dot:   'hsl(var(--success))',
+    badge: 'hsl(var(--success-muted))',
     label: 'text-green-700',
     icon:  '🟢',
   },
   aging: {
-    dot:   '#f59e0b',
-    badge: 'rgba(245,158,11,0.12)',
+    dot:   'hsl(var(--warning))',
+    badge: 'hsl(var(--warning-muted))',
     label: 'text-amber-700',
     icon:  '⚠️',
   },
   stale: {
-    dot:   '#ef4444',
-    badge: 'rgba(239,68,68,0.12)',
+    dot:   'hsl(var(--error))',
+    badge: 'hsl(var(--error-muted))',
     label: 'text-red-700',
     icon:  '🔴',
   },
@@ -60,6 +60,7 @@ export default function FreshStat({
   const { daysOld, status } = computeFreshness(date, halfLifeDays);
   const cfg = STATUS_STYLES[status];
   const [showTooltip, setShowTooltip] = useState(false);
+  const tooltipId = useId();
   const wrapperRef = useRef<HTMLSpanElement>(null);
 
   const badgeText =
@@ -72,21 +73,24 @@ export default function FreshStat({
   return (
     <span
       ref={wrapperRef}
+      tabIndex={0}
+      aria-describedby={showTooltip ? tooltipId : undefined}
       style={{ position: 'relative', display: 'inline' }}
       onMouseEnter={() => setShowTooltip(true)}
       onMouseLeave={() => setShowTooltip(false)}
       onFocus={() => setShowTooltip(true)}
       onBlur={() => setShowTooltip(false)}
+      onKeyDown={(event) => { if (event.key === 'Escape') setShowTooltip(false); }}
     >
       {/* The actual value */}
       <strong
         style={{
           background:
             status === 'stale'
-              ? 'rgba(239,68,68,0.08)'
+              ? 'hsl(var(--error-muted) / .62)'
               : status === 'aging'
-                ? 'rgba(245,158,11,0.08)'
-                : 'rgba(34,197,94,0.06)',
+                ? 'hsl(var(--warning-muted) / .62)'
+                : 'hsl(var(--success-muted) / .62)',
           borderRadius: '4px',
           padding: '0 4px',
           borderBottom: `2px solid ${cfg.dot}`,
@@ -131,6 +135,7 @@ export default function FreshStat({
       {/* Hover Tooltip */}
       {showTooltip && (
         <span
+          id={tooltipId}
           role="tooltip"
           style={{
             position: 'absolute',
@@ -140,11 +145,11 @@ export default function FreshStat({
             zIndex: 9999,
             minWidth: '240px',
             maxWidth: '320px',
-            background: '#1e293b',
-            border: '1px solid #334155',
+            background: 'hsl(var(--surface-overlay))',
+            border: '1px solid hsl(var(--border))',
             borderRadius: '10px',
             padding: '12px 14px',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.4)',
+            boxShadow: '0 10px 30px rgb(var(--shadow-rgb) / .32)',
             display: 'flex',
             flexDirection: 'column',
             gap: '6px',
@@ -168,30 +173,30 @@ export default function FreshStat({
                 display: 'block',
                 width: '12px',
                 height: '12px',
-                background: '#1e293b',
-                border: '1px solid #334155',
+                background: 'hsl(var(--surface-overlay))',
+                border: '1px solid hsl(var(--border))',
                 transform: 'rotate(45deg) translate(0%, -50%)',
                 marginLeft: '0',
               }}
             />
           </span>
 
-          <span style={{ fontSize: '11px', fontWeight: 700, color: '#94a3b8', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '11px', fontWeight: 700, color: 'hsl(var(--content-muted))', letterSpacing: '0.05em' }}>
             DATA FRESHNESS
           </span>
-          <span style={{ fontSize: '13px', fontWeight: 600, color: '#e2e8f0' }}>{value}</span>
-          <span style={{ fontSize: '11px', color: '#64748b' }}>
-            Valid as of: <strong style={{ color: '#94a3b8' }}>{formatDateShort(date)}</strong>
+          <span style={{ fontSize: '13px', fontWeight: 600, color: 'hsl(var(--content-primary))' }}>{value}</span>
+          <span style={{ fontSize: '11px', color: 'hsl(var(--content-muted))' }}>
+            Valid as of: <strong style={{ color: 'hsl(var(--content-secondary))' }}>{formatDateShort(date)}</strong>
           </span>
-          <span style={{ fontSize: '11px', color: '#64748b' }}>
-            Half-life: <strong style={{ color: '#94a3b8' }}>{halfLifeDays} days</strong>
+          <span style={{ fontSize: '11px', color: 'hsl(var(--content-muted))' }}>
+            Half-life: <strong style={{ color: 'hsl(var(--content-secondary))' }}>{halfLifeDays} days</strong>
           </span>
-          <span style={{ fontSize: '11px', color: '#64748b' }}>
+          <span style={{ fontSize: '11px', color: 'hsl(var(--content-muted))' }}>
             Age: <strong style={{ color: cfg.dot }}>{daysOld} days old</strong>
           </span>
           {source && (
-            <span style={{ fontSize: '11px', color: '#64748b' }}>
-              Source: <span style={{ color: '#cbd5e1' }}>{source}</span>
+            <span style={{ fontSize: '11px', color: 'hsl(var(--content-muted))' }}>
+              Source: <span style={{ color: 'hsl(var(--content-secondary))' }}>{source}</span>
             </span>
           )}
           {updateUrl && (
@@ -201,7 +206,7 @@ export default function FreshStat({
               rel="noopener noreferrer"
               style={{
                 fontSize: '11px',
-                color: '#0d6e6e',
+                color: 'hsl(var(--brand))',
                 fontWeight: 600,
                 textDecoration: 'none',
                 marginTop: '2px',

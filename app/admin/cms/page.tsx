@@ -91,11 +91,11 @@ export default async function CMSDashboard({
   ]
 
   const typeColors: Record<string, string> = {
-    RESEARCH: "bg-blue-500/10 text-blue-400",
-    INSIGHT: "bg-emerald-500/10 text-emerald-400",
-    CASE_STUDY: "bg-purple-500/10 text-purple-400",
-    MEDIA: "bg-pink-500/10 text-pink-400",
-    OTHER: "bg-slate-500/10 text-slate-400",
+    RESEARCH: "bg-info-muted text-info",
+    INSIGHT: "bg-success-muted text-success",
+    CASE_STUDY: "bg-accent-violet-muted text-accent-violet",
+    MEDIA: "bg-accent-violet-muted text-accent-violet",
+    OTHER: "bg-surface-muted text-content-secondary",
   }
 
   const buildUrl = (overrides: Record<string, string>) => {
@@ -112,13 +112,13 @@ export default async function CMSDashboard({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 md:p-10 shadow-xl border border-white/5">
+      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 md:p-10 shadow-xl border border-border-subtle">
         <HeroBackground />
         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <span className="section-label text-teal-400">Library Management</span>
-            <h1 className="text-3xl font-extrabold text-white mt-2">Content Repository</h1>
-            <p className="text-slate-300 text-sm mt-2 max-w-md">
+            <h1 className="text-3xl font-extrabold text-content-primary mt-2">Content Repository</h1>
+            <p className="text-content-secondary text-sm mt-2 max-w-md">
               All content — from MDX files and CMS entries — in one place.
             </p>
           </div>
@@ -140,71 +140,71 @@ export default async function CMSDashboard({
             href={buildUrl({ type: cat.value, page: "1" })}
             className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all border ${
               (type ?? "") === cat.value
-                ? "bg-[#0D6E6E]/20 border-[#0D6E6E]/50 text-[#0D6E6E]"
-                : "bg-white/5 border-white/10 text-slate-400 hover:text-white hover:bg-white/10"
+                ? "bg-brand/20 border-brand/50 text-brand"
+                : "bg-surface-muted border-border text-content-secondary hover:text-content-primary hover:bg-accent"
             }`}
           >
             {cat.label}
-            <span className="bg-white/10 px-1.5 py-0.5 rounded-md text-[9px]">{cat.count}</span>
+            <span className="bg-accent px-1.5 py-0.5 rounded-md text-[9px]">{cat.count}</span>
           </Link>
         ))}
       </div>
 
       {/* Search + Status Filter */}
-      <form method="GET" action="/admin/cms" className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-[#1A1F2E] p-4 rounded-2xl border border-[#2D3748]">
+      <form method="GET" action="/admin/cms" className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface p-4 rounded-2xl border border-border">
         <input type="hidden" name="type" value={type ?? ""} />
         <div className="md:col-span-2 relative group">
-          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#0D6E6E] transition-colors" />
+          <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-content-muted group-focus-within:text-brand transition-colors" />
           <input
             type="text"
             name="search"
             placeholder="Search by title or excerpt..."
             defaultValue={search}
-            className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white focus:outline-none focus:border-[#0D6E6E]/50 focus:bg-white/10 transition-all placeholder:text-slate-600"
+            className="w-full pl-11 pr-4 py-3 bg-surface-muted border border-border rounded-2xl text-sm text-content-primary focus:outline-none focus:border-brand/50 focus:bg-accent transition-all placeholder:text-content-muted"
           />
         </div>
         <div className="relative">
           <select
             name="status"
             defaultValue={status ?? ""}
-            className="appearance-none w-full bg-white/5 border border-white/10 rounded-2xl text-sm px-5 py-3 text-slate-300 outline-none focus:border-[#0D6E6E]/50 transition-all cursor-pointer"
+            className="appearance-none w-full bg-surface-muted border border-border rounded-2xl text-sm px-5 py-3 text-content-secondary outline-none focus:border-brand/50 transition-all cursor-pointer"
           >
             <option value="">All Status</option>
             <option value="published">Published</option>
             <option value="draft">Drafts</option>
           </select>
-          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 pointer-events-none" />
+          <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-content-muted pointer-events-none" />
         </div>
         <button type="submit" className="btn-primary">Search</button>
       </form>
 
       {/* Table */}
-      <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] overflow-hidden shadow-xl">
+      <div className="bg-surface rounded-2xl border border-border overflow-hidden shadow-xl">
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
-              <tr className="bg-white/5">
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Title</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Type</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Status</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Views</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Author</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest">Published</th>
-                <th className="px-6 py-4 text-[10px] font-bold text-slate-500 uppercase tracking-widest text-right">Actions</th>
+              <tr className="bg-surface-muted">
+                <th className="px-6 py-4 text-[10px] font-bold text-content-muted uppercase tracking-widest">Title</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-content-muted uppercase tracking-widest">Type</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-content-muted uppercase tracking-widest">Status</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-content-muted uppercase tracking-widest">Views</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-content-muted uppercase tracking-widest">Author</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-content-muted uppercase tracking-widest">Published</th>
+                <th className="px-6 py-4 text-[10px] font-bold text-content-muted uppercase tracking-widest text-right">Actions</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-white/5">
+            <tbody className="divide-y divide-border-subtle">
               {posts.length > 0 ? (
                 posts.map((post) => (
-                  <tr key={post.id} className="hover:bg-white/[0.02] transition-colors group">
+                  <tr key={post.id} className="hover:bg-surface-muted transition-colors group">
                     <td className="px-6 py-4">
                       <div className="max-w-xs md:max-w-sm">
-                        <p className="text-sm font-bold text-gray-900 dark:text-white group-hover:text-[#0D6E6E] transition-colors line-clamp-1">{post.title}</p>
-                        <p className="text-[10px] text-slate-600 font-mono mt-0.5 truncate">{post.slug}</p>
+                        <p className="text-sm font-bold text-content-primary group-hover:text-brand transition-colors line-clamp-1">{post.title}</p>
+                        <p className="text-[10px] text-content-muted font-mono mt-0.5 truncate">{post.slug}</p>
                       </div>
                     </td>
                     <td className="px-6 py-4">
-                      <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-lg ${typeColors[post.type] ?? "bg-slate-500/10 text-slate-400"}`}>
+                      <span className={`text-[9px] font-bold uppercase tracking-widest px-2 py-1 rounded-lg ${typeColors[post.type] ?? "bg-surface-muted text-content-secondary"}`}>
                         {post.type.replace("_", " ")}
                       </span>
                     </td>
@@ -222,13 +222,13 @@ export default async function CMSDashboard({
                       )}
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-sm font-bold text-white">{post.viewCount.toLocaleString()}</span>
+                      <span className="text-sm font-bold text-content-primary">{post.viewCount.toLocaleString()}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-xs text-slate-400">{post.author.name || "Unknown"}</span>
+                      <span className="text-xs text-content-secondary">{post.author.name || "Unknown"}</span>
                     </td>
                     <td className="px-6 py-4">
-                      <span className="text-xs text-slate-500">
+                      <span className="text-xs text-content-muted">
                         {post.publishedAt
                           ? new Date(post.publishedAt).toLocaleDateString(undefined, { dateStyle: "medium" })
                           : new Date(post.createdAt).toLocaleDateString(undefined, { dateStyle: "medium" })}
@@ -239,14 +239,14 @@ export default async function CMSDashboard({
                         <Link
                           href={`/${post.type.toLowerCase().replace("_", "-")}/${post.slug}`}
                           target="_blank"
-                          className="p-2 text-slate-500 hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-all"
+                          className="p-2 text-content-muted hover:text-content-primary bg-surface-muted hover:bg-accent rounded-xl transition-all"
                           title="View Live"
                         >
                           <Eye className="w-3.5 h-3.5" />
                         </Link>
                         <Link
                           href={`/admin/cms/edit/${post.id}`}
-                          className="p-2 text-slate-500 hover:text-[#0D6E6E] bg-white/5 hover:bg-[#0D6E6E]/10 rounded-xl transition-all"
+                          className="p-2 text-content-muted hover:text-brand bg-surface-muted hover:bg-brand-muted rounded-xl transition-all"
                           title="Edit"
                         >
                           <Edit2 className="w-3.5 h-3.5" />
@@ -260,12 +260,12 @@ export default async function CMSDashboard({
                 <tr>
                   <td colSpan={7} className="px-8 py-20 text-center">
                     <div className="flex flex-col items-center justify-center space-y-4 max-w-sm mx-auto">
-                      <div className="w-16 h-16 rounded-2xl bg-white/5 flex items-center justify-center text-slate-600 border border-white/5">
+                      <div className="w-16 h-16 rounded-2xl bg-surface-muted flex items-center justify-center text-content-muted border border-border-subtle">
                         <FileText className="w-8 h-8 opacity-20" />
                       </div>
                       <div>
-                        <h4 className="text-gray-900 dark:text-white font-bold">No content found</h4>
-                        <p className="text-slate-500 text-sm mt-1">
+                        <h4 className="text-content-primary font-bold">No content found</h4>
+                        <p className="text-content-muted text-sm mt-1">
                           {search ? `No results for "${search}"` : "Your content repository is empty."}
                         </p>
                       </div>
@@ -282,21 +282,21 @@ export default async function CMSDashboard({
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <div className="flex items-center justify-between px-6 py-4 border-t border-[#2D3748]">
-            <p className="text-xs text-slate-500">
-              Showing <span className="text-gray-900 dark:text-white font-bold">{skip + 1}–{Math.min(skip + pageSize, totalCount)}</span> of <span className="text-gray-900 dark:text-white font-bold">{totalCount}</span> entries
+          <div className="flex items-center justify-between px-6 py-4 border-t border-border">
+            <p className="text-xs text-content-muted">
+              Showing <span className="text-content-primary font-bold">{skip + 1}–{Math.min(skip + pageSize, totalCount)}</span> of <span className="text-content-primary font-bold">{totalCount}</span> entries
             </p>
             <div className="flex items-center gap-2">
               {page > 1 && (
-                <Link href={buildUrl({ page: String(page - 1) })} className="flex items-center gap-1.5 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all">
+                <Link href={buildUrl({ page: String(page - 1) })} className="flex items-center gap-1.5 px-3 py-2 bg-surface-muted border border-border rounded-xl text-xs font-bold text-content-secondary hover:text-content-primary transition-all">
                   <ChevronLeft className="w-3.5 h-3.5" /> Prev
                 </Link>
               )}
-              <span className="px-3 py-2 bg-[#0D6E6E]/10 border border-[#0D6E6E]/20 rounded-xl text-xs font-bold text-[#0D6E6E]">
+              <span className="px-3 py-2 bg-brand/10 border border-brand/20 rounded-xl text-xs font-bold text-brand">
                 {page} / {totalPages}
               </span>
               {page < totalPages && (
-                <Link href={buildUrl({ page: String(page + 1) })} className="flex items-center gap-1.5 px-3 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all">
+                <Link href={buildUrl({ page: String(page + 1) })} className="flex items-center gap-1.5 px-3 py-2 bg-surface-muted border border-border rounded-xl text-xs font-bold text-content-secondary hover:text-content-primary transition-all">
                   Next <ChevronRight className="w-3.5 h-3.5" />
                 </Link>
               )}

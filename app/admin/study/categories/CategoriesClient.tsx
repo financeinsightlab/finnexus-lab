@@ -114,8 +114,8 @@ export default function CategoriesClient({ categories }: Props) {
   }
 
   const inputClass =
-    'w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#0D6E6E]/50 transition-colors'
-  const labelClass = 'block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2'
+    'w-full px-4 py-2.5 bg-surface-muted border border-border rounded-xl text-sm text-content-primary placeholder:text-content-muted focus:outline-none focus:border-brand/50 transition-colors'
+  const labelClass = 'block text-xs font-bold text-content-secondary uppercase tracking-widest mb-2'
 
   return (
     <div className="max-w-4xl">
@@ -124,13 +124,13 @@ export default function CategoriesClient({ categories }: Props) {
         <div className="flex items-center gap-4">
           <Link
             href="/admin/study"
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all"
+            className="p-2 text-content-secondary hover:text-content-primary hover:bg-surface-muted rounded-lg transition-all"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">Study Categories</h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <h1 className="text-2xl font-bold text-content-primary">Study Categories</h1>
+            <p className="text-content-secondary text-sm mt-1">
               {categories.length} categor{categories.length === 1 ? 'y' : 'ies'} • Organize your study materials
             </p>
           </div>
@@ -141,7 +141,7 @@ export default function CategoriesClient({ categories }: Props) {
               resetForm()
               setShowForm(true)
             }}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#0D6E6E] text-white rounded-xl hover:bg-[#0B5A5A] transition-all text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-hover transition-all text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             New Category
@@ -151,10 +151,10 @@ export default function CategoriesClient({ categories }: Props) {
 
       {/* ─── Error ─── */}
       {error && (
-        <div className="mb-6 flex items-center gap-3 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+        <div className="mb-6 flex items-center gap-3 px-4 py-3 bg-error-muted border border-error/20 rounded-xl text-error text-sm">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span className="flex-1">{error}</span>
-          <button onClick={() => setError(null)} className="text-red-400/70 hover:text-red-400">
+          <button onClick={() => setError(null)} className="text-error/70 hover:text-error">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -162,12 +162,12 @@ export default function CategoriesClient({ categories }: Props) {
 
       {/* ─── Form ─── */}
       {showForm && (
-        <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 mb-8">
+        <div className="bg-surface border border-border-subtle rounded-2xl p-6 mb-8">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-sm font-bold text-white uppercase tracking-widest">
+            <h2 className="text-sm font-bold text-content-primary uppercase tracking-widest">
               {editingId ? 'Edit Category' : 'New Category'}
             </h2>
-            <button onClick={resetForm} className="text-slate-400 hover:text-white transition-colors">
+            <button onClick={resetForm} className="text-content-secondary hover:text-content-primary transition-colors">
               <X className="w-5 h-5" />
             </button>
           </div>
@@ -197,7 +197,7 @@ export default function CategoriesClient({ categories }: Props) {
                   placeholder="0"
                   className={inputClass}
                 />
-                <p className="text-xs text-slate-500 mt-1.5">Lower numbers appear first</p>
+                <p className="text-xs text-content-muted mt-1.5">Lower numbers appear first</p>
               </div>
             </div>
 
@@ -223,8 +223,8 @@ export default function CategoriesClient({ categories }: Props) {
                     onClick={() => setIcon(emoji)}
                     className={`w-11 h-11 flex items-center justify-center rounded-xl text-xl transition-all ${
                       icon === emoji
-                        ? 'bg-[#0D6E6E]/20 border-2 border-[#0D6E6E]'
-                        : 'bg-white/[0.03] border border-white/[0.08] hover:bg-white/[0.06]'
+                        ? 'bg-brand/20 border-2 border-brand'
+                        : 'bg-surface-muted border border-border hover:bg-surface-muted'
                     }`}
                   >
                     {emoji}
@@ -242,7 +242,7 @@ export default function CategoriesClient({ categories }: Props) {
                     type="button"
                     onClick={() => setColor(c)}
                     className={`w-9 h-9 rounded-xl transition-all ${
-                      color === c ? 'ring-2 ring-white ring-offset-2 ring-offset-[#0B0D13] scale-110' : 'hover:scale-105'
+                      color === c ? 'ring-2 ring-brand ring-offset-2 ring-offset-surface scale-110' : 'hover:scale-105'
                     }`}
                     style={{ backgroundColor: c }}
                     aria-label={`Color ${c}`}
@@ -255,14 +255,14 @@ export default function CategoriesClient({ categories }: Props) {
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-5 py-2.5 text-slate-300 hover:text-white text-sm font-medium transition-colors"
+                className="px-5 py-2.5 text-content-secondary hover:text-content-primary text-sm font-medium transition-colors"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isPending}
-                className="flex items-center gap-2 px-5 py-2.5 bg-[#0D6E6E] text-white rounded-xl hover:bg-[#0B5A5A] transition-all text-sm font-medium disabled:opacity-50"
+                className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-hover transition-all text-sm font-medium disabled:opacity-50"
               >
                 <Save className="w-4 h-4" />
                 {isPending ? 'Saving...' : editingId ? 'Update Category' : 'Create Category'}
@@ -274,15 +274,15 @@ export default function CategoriesClient({ categories }: Props) {
 
       {/* ─── Categories List ─── */}
       {categories.length === 0 && !showForm ? (
-        <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-12 text-center">
+        <div className="bg-surface border border-border-subtle rounded-2xl p-12 text-center">
           <FolderTree className="w-12 h-12 text-slate-600 mx-auto mb-4" />
-          <p className="text-slate-400 font-medium">No categories yet</p>
+          <p className="text-content-secondary font-medium">No categories yet</p>
           <p className="text-slate-600 text-sm mt-1 mb-4">
             Create categories to organize your study materials by topic.
           </p>
           <button
             onClick={() => setShowForm(true)}
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0D6E6E] text-white rounded-xl hover:bg-[#0B5A5A] transition-all text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-hover transition-all text-sm font-medium"
           >
             <Plus className="w-4 h-4" />
             Create First Category
@@ -293,7 +293,7 @@ export default function CategoriesClient({ categories }: Props) {
           {categories.map((cat) => (
             <div
               key={cat.id}
-              className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-5 flex items-center gap-4 hover:bg-white/[0.03] transition-colors"
+              className="bg-surface border border-border-subtle rounded-2xl p-5 flex items-center gap-4 hover:bg-surface-muted transition-colors"
             >
               {/* Icon */}
               <div
@@ -306,20 +306,20 @@ export default function CategoriesClient({ categories }: Props) {
               {/* Info */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-center gap-2">
-                  <h3 className="text-sm font-bold text-white">{cat.name}</h3>
-                  <span className="text-[10px] text-slate-500 bg-white/[0.05] px-2 py-0.5 rounded-md">
+                  <h3 className="text-sm font-bold text-content-primary">{cat.name}</h3>
+                  <span className="text-[10px] text-content-muted bg-surface-muted px-2 py-0.5 rounded-md">
                     /{cat.slug}
                   </span>
                 </div>
                 {cat.description && (
-                  <p className="text-xs text-slate-400 mt-0.5 line-clamp-1">{cat.description}</p>
+                  <p className="text-xs text-content-secondary mt-0.5 line-clamp-1">{cat.description}</p>
                 )}
                 <div className="flex items-center gap-3 mt-1.5">
-                  <span className="text-[10px] text-slate-500">
+                  <span className="text-[10px] text-content-muted">
                     {cat._count.materials} material{cat._count.materials !== 1 ? 's' : ''}
                   </span>
                   <span className="text-[10px] text-slate-600">•</span>
-                  <span className="text-[10px] text-slate-500">Order: {cat.order}</span>
+                  <span className="text-[10px] text-content-muted">Order: {cat.order}</span>
                 </div>
               </div>
 
@@ -327,7 +327,7 @@ export default function CategoriesClient({ categories }: Props) {
               <div className="flex items-center gap-2 shrink-0">
                 <button
                   onClick={() => startEdit(cat)}
-                  className="p-2 text-slate-400 hover:text-teal-400 hover:bg-white/[0.05] rounded-lg transition-all"
+                  className="p-2 text-content-secondary hover:text-brand hover:bg-surface-muted rounded-lg transition-all"
                   title="Edit"
                 >
                   <Edit2 className="w-4 h-4" />
@@ -335,7 +335,7 @@ export default function CategoriesClient({ categories }: Props) {
                 <button
                   onClick={() => handleDelete(cat)}
                   disabled={isPending}
-                  className="p-2 text-slate-400 hover:text-red-400 hover:bg-white/[0.05] rounded-lg transition-all disabled:opacity-50"
+                  className="p-2 text-content-secondary hover:text-error hover:bg-surface-muted rounded-lg transition-all disabled:opacity-50"
                   title="Delete"
                 >
                   <Trash2 className="w-4 h-4" />

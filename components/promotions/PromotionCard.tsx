@@ -210,7 +210,7 @@ export default function PromotionCard({
               </span>
             </div>
             <div className="flex items-center gap-2">
-              <span className="animate-card-cta-glow inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-600 px-3 py-1 text-xs font-bold text-white shadow-sm">
+              <span className="animate-card-cta-glow inline-flex items-center gap-1.5 rounded-xl bg-gradient-to-r from-teal-700 to-cyan-700 px-3 py-1 text-xs font-bold text-white shadow-sm">
                 <span>{promotion.ctaText}</span>
                 <span aria-hidden="true">→</span>
               </span>
@@ -329,7 +329,7 @@ export default function PromotionCard({
                 promotionId={promotion.id}
                 path={path}
                 href={promotion.href}
-                className="animate-card-cta-glow relative overflow-hidden group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 via-teal-600 to-cyan-600 px-4 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+                className="animate-card-cta-glow relative overflow-hidden group flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-700 via-teal-700 to-cyan-700 px-4 py-2.5 text-xs font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
               >
                 <span
                   aria-hidden="true"
@@ -392,7 +392,7 @@ export default function PromotionCard({
                     promotionId={promotion.id}
                     path={path}
                     href={promotion.href}
-                    className="animate-card-cta-glow relative overflow-hidden self-start inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 via-teal-600 to-cyan-600 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+                    className="animate-card-cta-glow relative overflow-hidden self-start inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-700 via-teal-700 to-cyan-700 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
                   >
                     <span
                       aria-hidden="true"
@@ -449,7 +449,7 @@ export default function PromotionCard({
                     promotionId={promotion.id}
                     path={path}
                     href={promotion.href}
-                    className="animate-card-cta-glow relative overflow-hidden self-start inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 via-teal-600 to-cyan-600 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+                    className="animate-card-cta-glow relative overflow-hidden self-start inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-teal-700 via-teal-700 to-cyan-700 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
                   >
                     <span
                       aria-hidden="true"
@@ -487,7 +487,7 @@ export default function PromotionCard({
                     promotionId={promotion.id}
                     path={path}
                     href={promotion.href}
-                    className="animate-card-cta-glow relative overflow-hidden inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-500 via-teal-600 to-cyan-600 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+                    className="animate-card-cta-glow relative overflow-hidden inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-teal-700 via-teal-700 to-cyan-700 px-6 py-2.5 text-sm font-bold text-white shadow-md transition-all hover:scale-[1.02] active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
                   >
                     <span
                       aria-hidden="true"

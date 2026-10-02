@@ -10,17 +10,26 @@ export const metadata: Metadata = {
 
 export default function ResumePage() {
   return (
-    <div className="min-h-screen bg-[#f1f5f9] pt-20 print:pt-0 font-sans">
+    <div className="min-h-screen bg-surface-muted pt-20 print:pt-0 font-sans">
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
-          body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+          body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff !important; }
           .resume-sidebar { background-color: #f8fafc !important; color: #334155 !important; }
-          .resume-main { background-color: #0f172a !important; color: #f8fafc !important; }
-          .section-line { border-color: #334155 !important; }
-          .resume-teal-text { color: #2dd4bf !important; }
-          .resume-border-box { border: 1px solid #334155 !important; }
+          .resume-main { background-color: #fff !important; color: #0f172a !important; }
+          .resume-main .text-white,
+          .resume-main .text-slate-100,
+          .resume-main .text-slate-200,
+          .resume-main .text-slate-300 { color: #334155 !important; }
+          .resume-main h1,
+          .resume-main h2,
+          .resume-main h3 { color: #0f172a !important; }
+          .resume-main .text-slate-400,
+          .resume-main .text-slate-500 { color: #64748b !important; }
+          .section-line { border-color: #cbd5e1 !important; }
+          .resume-teal-text { color: #0f766e !important; }
+          .resume-border-box { border: 1px solid #cbd5e1 !important; }
           .wrap { padding: 0 !important; width: 100% !important; max-width: none !important; }
-          .shadow-2xl { shadow: none !important; }
+          .shadow-2xl { box-shadow: none !important; }
         }
       `}} />
 
@@ -32,7 +41,7 @@ export default function ResumePage() {
         <div className="bg-white shadow-2xl rounded-2xl overflow-hidden print:shadow-none print:rounded-none max-w-[1000px] mx-auto flex flex-col md:flex-row border border-gray-100 print:border-0 min-h-[1200px]">
           
           {/* Left Column (Sidebar) - Light Style */}
-          <aside className="resume-sidebar md:w-[32%] bg-[#f8fafc] p-8 md:p-10 space-y-12 border-r border-gray-100 flex flex-col">
+          <aside className="resume-sidebar md:w-[32%] bg-surface-muted p-8 md:p-10 space-y-12 border-r border-gray-100 flex flex-col">
             
             {/* Profile Image */}
             <div className="relative w-48 h-48 mx-auto md:w-full md:h-auto md:aspect-square rounded-2xl overflow-hidden border-4 border-white shadow-xl mb-6">
@@ -83,22 +92,22 @@ export default function ResumePage() {
               </h2>
               <div className="space-y-6">
                 <div>
-                  <h3 className="font-black text-[#0f172a] text-[13px] leading-tight">PGDM — Finance & Business Analytics</h3>
+                  <h3 className="font-black text-content-primary text-[13px] leading-tight">PGDM — Finance & Business Analytics</h3>
                   <p className="text-brand-teal text-[12px] font-bold mt-1">Asian Business School</p>
                   <p className="text-[11px] text-slate-400 font-black mt-0.5 uppercase tracking-tighter">2025 – 2027</p>
                 </div>
                 <div>
-                  <h3 className="font-black text-[#0f172a] text-[13px] leading-tight font-serif italic placeholder:text-slate-400">BBA (69%)</h3>
+                  <h3 className="font-black text-content-primary text-[13px] leading-tight font-serif italic placeholder:text-slate-400">BBA (69%)</h3>
                   <p className="text-brand-teal text-[12px] font-bold mt-1">IIMT College, Greater Noida</p>
                   <p className="text-[11px] text-slate-400 font-black mt-0.5 uppercase tracking-tighter">2021 – 2024</p>
                 </div>
                 <div>
-                  <h3 className="font-black text-[#0f172a] text-[13px] leading-tight">Senior Secondary (12th) – 75%</h3>
+                  <h3 className="font-black text-content-primary text-[13px] leading-tight">Senior Secondary (12th) – 75%</h3>
                   <p className="text-brand-teal text-[12px] font-bold mt-1">Bihar Board</p>
                   <p className="text-[11px] text-slate-400 font-black mt-0.5 uppercase tracking-tighter">2019 – 2021</p>
                 </div>
                 <div>
-                  <h3 className="font-black text-[#0f172a] text-[13px] leading-tight">Secondary (10th)</h3>
+                  <h3 className="font-black text-content-primary text-[13px] leading-tight">Secondary (10th)</h3>
                   <p className="text-brand-teal text-[12px] font-bold mt-1 uppercase">CBSE Board</p>
                 </div>
               </div>
@@ -152,7 +161,7 @@ export default function ResumePage() {
           </aside>
 
           {/* Right Column (Main) - Dark Style */}
-          <main className="resume-main flex-1 bg-[#0f172a] text-white flex flex-col">
+          <main className="resume-main flex-1 bg-surface text-content-primary flex flex-col">
             
             {/* Header */}
             <header className="p-10 md:p-14 pb-6 md:pb-8">
@@ -172,7 +181,7 @@ export default function ResumePage() {
               <section>
                 <h2 className="text-[14px] font-black uppercase tracking-[0.3em] mb-6 flex items-center gap-4 text-slate-100">
                   Professional Summary
-                  <span className="section-line h-px flex-1 bg-slate-800" />
+                  <span className="section-line h-px flex-1 bg-border-subtle" />
                 </h2>
                 <p className="text-slate-300 leading-[1.8] text-sm md:text-[15px] font-medium text-justify">
                   Finance & Analytics professional with a strong academic foundation in financial analysis, business analytics, and corporate reporting. Independently built Kunwar Analytics — a full-stack financial intelligence SaaS platform for Indian markets — demonstrating expertise in product development, data architecture, and sector research. Proficient in Excel, Power BI, Tableau, Python, and modern full-stack technologies. Driven to deliver actionable, data-driven outcomes.
@@ -183,7 +192,7 @@ export default function ResumePage() {
               <section>
                 <h2 className="text-[14px] font-black uppercase tracking-[0.3em] mb-8 flex items-center gap-4 text-slate-100">
                   Projects & Experience
-                  <span className="section-line h-px flex-1 bg-slate-800" />
+                  <span className="section-line h-px flex-1 bg-border-subtle" />
                 </h2>
 
                 <div className="space-y-12">
@@ -270,7 +279,7 @@ export default function ResumePage() {
                 <section>
                   <h2 className="text-[12px] font-black uppercase tracking-[0.3em] mb-6 flex items-center gap-3 text-slate-100">
                     Core Skills
-                    <span className="section-line h-px flex-1 bg-slate-800" />
+                    <span className="section-line h-px flex-1 bg-border-subtle" />
                   </h2>
                   <ul className="space-y-3 text-[12px] text-slate-300 font-bold italic">
                     <li className="flex gap-2 items-center text-brand-teal">• <span className="text-slate-300">Financial Modeling & Valuation</span></li>
@@ -285,7 +294,7 @@ export default function ResumePage() {
                 <section>
                   <h2 className="text-[12px] font-black uppercase tracking-[0.3em] mb-6 flex items-center gap-3 text-slate-100">
                     Soft Skills
-                    <span className="section-line h-px flex-1 bg-slate-800" />
+                    <span className="section-line h-px flex-1 bg-border-subtle" />
                   </h2>
                   <ul className="grid grid-cols-2 gap-y-3 text-[12px] text-slate-300 font-bold italic">
                     <li className="text-brand-teal">• <span className="text-slate-300">Analytical Thinking</span></li>
@@ -301,7 +310,7 @@ export default function ResumePage() {
               </div>
 
               {/* Additional Information */}
-              <section className="resume-border-box border border-slate-700 p-6 rounded-xl bg-slate-900/50 shadow-inner">
+              <section className="resume-border-box border border-border-subtle p-6 rounded-xl bg-surface-muted shadow-inner">
                 <h2 className="text-[11px] font-black uppercase tracking-[0.4em] text-slate-500 mb-3 ml-1">
                   Additional Information
                 </h2>

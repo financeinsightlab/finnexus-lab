@@ -46,19 +46,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 const TRACK_STYLE = {
   CORE: {
     chip: 'bg-sky-500/10 text-sky-300 border-sky-500/25',
-    num: 'from-sky-500 to-blue-500',
+    num: 'from-sky-700 to-blue-700',
     gradient: 'from-sky-500/15 via-cinema-blue/10 to-transparent',
     ring: 'border-sky-500/25',
   },
   FINANCE: {
     chip: 'bg-teal-500/10 text-teal-300 border-teal-500/25',
-    num: 'from-teal-500 to-emerald-500',
+    num: 'from-teal-700 to-emerald-700',
     gradient: 'from-teal-500/15 via-cinema-cyan/10 to-transparent',
     ring: 'border-teal-500/25',
   },
   ANALYTICS: {
     chip: 'bg-cinema-violet/10 text-violet-300 border-cinema-violet/25',
-    num: 'from-violet-500 to-indigo-500',
+    num: 'from-violet-700 to-indigo-700',
     gradient: 'from-cinema-violet/15 via-indigo-500/10 to-transparent',
     ring: 'border-cinema-violet/25',
   },
@@ -94,7 +94,7 @@ export default async function SubjectPage({ params }: PageProps) {
         <div className="relative z-10 max-w-[1000px] mx-auto px-6">
           {/* breadcrumb */}
           <nav className="flex items-center gap-1.5 text-xs text-gray-500 mb-5 font-medium">
-            <Link href="/pgdm" className="hover:text-teal-300 transition-colors">PGDM</Link>
+            <Link href="/pgdm" className="hover:text-brand-hover transition-colors">PGDM</Link>
             <ChevronRight className="w-3 h-3" />
             <span className="text-gray-400">{subject.track === 'CORE' ? 'Semester III Core' : `${meta.label} ${meta.kind.toLowerCase()}`}</span>
           </nav>
@@ -246,7 +246,7 @@ export default async function SubjectPage({ params }: PageProps) {
                   </span>
                   <div className="flex-1 min-w-0">
                     <div className="flex flex-wrap items-center gap-2 mb-1">
-                      <h3 className={`font-bold leading-snug ${lec.status === 'live' ? 'text-white group-hover:text-teal-300' : 'text-gray-300'} transition-colors`}>
+                      <h3 className={`font-bold leading-snug ${lec.status === 'live' ? 'text-white group-hover:text-brand-hover' : 'text-gray-300'} transition-colors`}>
                         {lec.title}
                       </h3>
                       {lec.status === 'live' ? (
@@ -273,7 +273,7 @@ export default async function SubjectPage({ params }: PageProps) {
                       )}
                     </div>
                   </div>
-                  <ChevronRight className="shrink-0 w-4 h-4 text-gray-600 group-hover:text-teal-400 group-hover:translate-x-1 transition-all mt-3" />
+                  <ChevronRight className="shrink-0 w-4 h-4 text-gray-600 group-hover:text-brand-hover group-hover:translate-x-1 transition-all mt-3" />
                 </Link>
               ))}
             </div>
@@ -288,8 +288,8 @@ export default async function SubjectPage({ params }: PageProps) {
             </h2>
             <ul className="grid sm:grid-cols-2 gap-2.5">
               {subject.books.map((b, i) => (
-                <li key={i} className="text-[12.5px] text-gray-300 bg-white/[0.03] border border-white/5 rounded-xl px-3.5 py-2.5">
-                  <span className="text-white font-medium">{b.title}</span>
+                <li key={i} className="text-[12.5px] text-content-secondary bg-surface-muted border border-border-subtle rounded-xl px-3.5 py-2.5">
+                  <span className="text-content-primary font-medium">{b.title}</span>
                   <span className="text-gray-500"> — {b.author}</span>
                 </li>
               ))}

@@ -50,7 +50,7 @@ export default function LedgerFilters({ filters, sectors, rows }: LedgerFiltersP
     const chip = (active: boolean) =>
         `rounded-full border px-3 py-1.5 text-xs font-semibold transition-colors ${active
             ? 'border-teal-500/40 bg-teal-500/15 text-teal-300'
-            : 'border-white/10 bg-white/5 text-slate-300 hover:border-white/20 hover:text-white'
+            : 'border-white/10 bg-white/5 text-slate-300 hover:border-border-strong hover:text-content-primary'
         }`;
 
     return (
@@ -75,7 +75,7 @@ export default function LedgerFilters({ filters, sectors, rows }: LedgerFiltersP
                     <select
                         value={filters.sector ?? ''}
                         onChange={(event) => navigate({ sector: event.target.value || null })}
-                        className="rounded-lg border border-white/10 bg-[#0f1c2d] px-3 py-2 text-xs font-semibold text-slate-200 outline-none focus:border-teal-500/50"
+                        className="rounded-lg border border-white/10 bg-surface-raised px-3 py-2 text-xs font-semibold text-slate-200 outline-none focus:border-teal-500/50"
                     >
                         <option value="">All sectors</option>
                         {sectors.map((sector) => (
@@ -93,7 +93,7 @@ export default function LedgerFilters({ filters, sectors, rows }: LedgerFiltersP
                         onChange={(event) =>
                             navigate({ status: (event.target.value as PredictionStatus) || null })
                         }
-                        className="rounded-lg border border-white/10 bg-[#0f1c2d] px-3 py-2 text-xs font-semibold text-slate-200 outline-none focus:border-teal-500/50"
+                        className="rounded-lg border border-white/10 bg-surface-raised px-3 py-2 text-xs font-semibold text-slate-200 outline-none focus:border-teal-500/50"
                     >
                         {STATUS_OPTIONS.map((option) => (
                             <option key={option.label} value={option.value ?? ''}>

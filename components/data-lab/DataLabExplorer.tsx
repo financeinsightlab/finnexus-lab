@@ -66,12 +66,12 @@ export default function DataLabExplorer({ projects }: { projects: DataLabProject
               value={query}
               onChange={e => setQuery(e.target.value)}
               placeholder="Search projects, questions, tools…"
-              className="w-full rounded-xl bg-white/5 border border-white/10 pl-12 pr-4 py-3 text-white placeholder:text-gray-500 focus:outline-none focus:border-cinema-cyan/60 focus:ring-1 focus:ring-cinema-cyan/40 transition"
+              className="w-full rounded-xl bg-surface-muted border border-input pl-12 pr-4 py-3 text-content-primary placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
             />
             {query && (
               <button
                 onClick={() => setQuery('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition"
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-content-muted hover:text-content-primary transition"
                 aria-label="Clear search"
               >
                 <X className="w-4 h-4" />
@@ -82,7 +82,7 @@ export default function DataLabExplorer({ projects }: { projects: DataLabProject
           {/* Toggle filters (mobile) */}
           <button
             onClick={() => setShowFilters(v => !v)}
-            className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-gray-200 hover:border-cinema-cyan/50 transition md:hidden"
+            className="inline-flex items-center gap-2 rounded-xl bg-surface-muted border border-border px-4 py-3 text-sm text-content-secondary hover:border-brand/50 transition md:hidden"
           >
             <SlidersHorizontal className="w-4 h-4" /> Filters
             {(tool !== 'All' || sector !== 'All') && (
@@ -95,18 +95,18 @@ export default function DataLabExplorer({ projects }: { projects: DataLabProject
             <select
               value={tool}
               onChange={e => setTool(e.target.value)}
-              className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:border-cinema-cyan/60 transition cursor-pointer appearance-none pr-8"
+              className="rounded-xl bg-surface-muted border border-input px-4 py-3 text-sm text-content-primary focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition cursor-pointer appearance-none pr-8"
             >
-              <option value="All" className="bg-cinema-ink">All Tools</option>
-              {allTools.map(t => <option key={t} value={t} className="bg-cinema-ink">{t}</option>)}
+              <option value="All">All Tools</option>
+              {allTools.map(t => <option key={t} value={t}>{t}</option>)}
             </select>
             <select
               value={sector}
               onChange={e => setSector(e.target.value)}
-              className="rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm text-white focus:outline-none focus:border-cinema-cyan/60 transition cursor-pointer appearance-none pr-8"
+              className="rounded-xl bg-surface-muted border border-input px-4 py-3 text-sm text-content-primary focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition cursor-pointer appearance-none pr-8"
             >
-              <option value="All" className="bg-cinema-ink">All Sectors</option>
-              {allSectors.map(s => <option key={s} value={s} className="bg-cinema-ink">{s}</option>)}
+              <option value="All">All Sectors</option>
+              {allSectors.map(s => <option key={s} value={s}>{s}</option>)}
             </select>
           </div>
         </div>
@@ -117,13 +117,13 @@ export default function DataLabExplorer({ projects }: { projects: DataLabProject
             {tool !== 'All' && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cinema-cyan/15 text-cinema-cyan text-xs border border-cinema-cyan/30">
                 Tool: {tool}
-                <button onClick={() => setTool('All')} className="hover:text-white"><X className="w-3 h-3" /></button>
+                <button onClick={() => setTool('All')} className="hover:text-brand-hover"><X className="w-3 h-3" /></button>
               </span>
             )}
             {sector !== 'All' && (
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-cinema-violet/15 text-cinema-violet text-xs border border-cinema-violet/30">
                 Sector: {sector}
-                <button onClick={() => setSector('All')} className="hover:text-white"><X className="w-3 h-3" /></button>
+                <button onClick={() => setSector('All')} className="hover:text-brand-hover"><X className="w-3 h-3" /></button>
               </span>
             )}
           </div>
@@ -134,7 +134,7 @@ export default function DataLabExplorer({ projects }: { projects: DataLabProject
       <div className="flex items-center justify-between mt-8 mb-6 text-sm text-gray-400">
         <span className="inline-flex items-center gap-2">
           <FolderOpen className="w-4 h-4 text-cinema-cyan" />
-          <span className="text-white font-medium">{filtered.length}</span> project{filtered.length !== 1 ? 's' : ''} found
+          <span className="text-content-primary font-medium">{filtered.length}</span> project{filtered.length !== 1 ? 's' : ''} found
         </span>
       </div>
 
@@ -199,16 +199,16 @@ function ProjectCard({ project }: { project: DataLabProject }) {
         {/* Tools row */}
         <div className="absolute top-3 left-3 flex flex-wrap gap-1.5 max-w-[85%]">
           {project.tools.slice(0, 3).map(t => (
-            <span key={t} className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur text-[10px] font-medium text-gray-200 border border-white/10">
+            <span key={t} className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur text-[10px] font-medium !text-white border border-white/10">
               {t}
             </span>
           ))}
           {project.tools.length > 3 && (
-            <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur text-[10px] text-gray-300 border border-white/10">+{project.tools.length - 3}</span>
+            <span className="px-2 py-0.5 rounded-md bg-black/60 backdrop-blur text-[10px] !text-white border border-white/10">+{project.tools.length - 3}</span>
           )}
         </div>
         {/* Arrow */}
-        <div className="absolute bottom-3 right-3 w-9 h-9 rounded-xl bg-cinema-cyan/20 backdrop-blur flex items-center justify-center text-white border border-cinema-cyan/30 transition-all duration-300 group-hover:bg-cinema-cyan group-hover:shadow-cinema-md">
+        <div className="absolute bottom-3 right-3 w-9 h-9 rounded-xl bg-cinema-cyan/20 backdrop-blur flex items-center justify-center !text-white border border-cinema-cyan/30 transition-all duration-300 group-hover:bg-cinema-cyan group-hover:shadow-cinema-md">
           <ArrowUpRight className="w-4 h-4" />
         </div>
       </div>
@@ -221,7 +221,7 @@ function ProjectCard({ project }: { project: DataLabProject }) {
             <Clock className="w-3 h-3" /> {project.duration}
           </span>
         </div>
-        <h3 className="text-lg font-bold text-white leading-snug mb-2 group-hover:text-cinema-cyan transition-colors">
+        <h3 className="text-lg font-bold text-content-primary leading-snug mb-2 group-hover:text-brand transition-colors">
           {project.title}
         </h3>
         <p className="text-sm text-gray-400 leading-relaxed mb-4 line-clamp-2">

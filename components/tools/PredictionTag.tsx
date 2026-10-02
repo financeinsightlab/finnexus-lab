@@ -18,10 +18,10 @@ interface PredictionTagProps {
 }
 
 const STATUS_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
-  CONFIRMED: { label: 'CONFIRMED',  color: '#065f46', bg: '#d1fae5', border: '#6ee7b7' },
-  INCORRECT: { label: 'INCORRECT',  color: '#7f1d1d', bg: '#fee2e2', border: '#fca5a5' },
-  PARTIAL:   { label: 'PARTIAL',    color: '#78350f', bg: '#fef3c7', border: '#fcd34d' },
-  PENDING:   { label: 'PENDING',    color: '#78350f', bg: '#fef9c3', border: '#fde047' },
+  CONFIRMED: { label: 'CONFIRMED', color: 'hsl(var(--success))', bg: 'hsl(var(--success-muted))', border: 'hsl(var(--success) / .42)' },
+  INCORRECT: { label: 'INCORRECT', color: 'hsl(var(--error))', bg: 'hsl(var(--error-muted))', border: 'hsl(var(--error) / .42)' },
+  PARTIAL: { label: 'PARTIAL', color: 'hsl(var(--warning))', bg: 'hsl(var(--warning-muted))', border: 'hsl(var(--warning) / .42)' },
+  PENDING: { label: 'PENDING', color: 'hsl(var(--warning))', bg: 'hsl(var(--warning-muted))', border: 'hsl(var(--warning) / .42)' },
 };
 
 export default function PredictionTag({
@@ -43,9 +43,9 @@ export default function PredictionTag({
         display: 'inline-flex',
         flexDirection: 'column',
         gap: '8px',
-        background: 'linear-gradient(135deg, #fefce8 0%, #fff7ed 100%)',
-        border: '1px solid #fde68a',
-        borderLeft: '4px solid #f59e0b',
+        background: 'linear-gradient(135deg, hsl(var(--warning-muted)), hsl(var(--surface)))',
+        border: '1px solid hsl(var(--warning) / .35)',
+        borderLeft: '4px solid hsl(var(--warning))',
         borderRadius: '10px',
         padding: '12px 16px',
         margin: '12px 0',
@@ -60,8 +60,8 @@ export default function PredictionTag({
             display: 'inline-flex',
             alignItems: 'center',
             gap: '4px',
-            background: '#f59e0b',
-            color: 'white',
+            background: 'hsl(var(--warning))',
+            color: 'hsl(var(--content-inverse))',
             fontWeight: 700,
             fontSize: '10px',
             letterSpacing: '0.08em',
@@ -75,9 +75,9 @@ export default function PredictionTag({
           style={{
             fontSize: '10px',
             fontWeight: 600,
-            color: '#92400e',
-            background: '#fef3c7',
-            border: '1px solid #fde68a',
+            color: 'hsl(var(--warning))',
+            background: 'hsl(var(--warning-muted))',
+            border: '1px solid hsl(var(--warning) / .35)',
             padding: '1px 8px',
             borderRadius: '999px',
           }}
@@ -106,7 +106,7 @@ export default function PredictionTag({
       <span
         style={{
           fontStyle: 'italic',
-          color: '#1c1917',
+          color: 'hsl(var(--content-primary))',
           fontSize: '15px',
           lineHeight: 1.6,
           fontWeight: 500,
@@ -116,15 +116,15 @@ export default function PredictionTag({
       </span>
 
       {/* Resolve date */}
-      <span style={{ fontSize: '12px', color: '#6b7280' }}>
+      <span style={{ fontSize: '12px', color: 'hsl(var(--content-secondary))' }}>
         <span style={{ fontWeight: 600 }}>Resolves:</span>{' '}
         {formatDate(resolveDate)}
         {isPast ? (
-          <span style={{ color: '#ef4444', marginLeft: '8px', fontWeight: 600 }}>
+          <span style={{ color: 'hsl(var(--error))', marginLeft: '8px', fontWeight: 600 }}>
             · Resolved {Math.abs(daysRemaining)} days ago
           </span>
         ) : (
-          <span style={{ color: '#059669', marginLeft: '8px', fontWeight: 600 }}>
+          <span style={{ color: 'hsl(var(--success))', marginLeft: '8px', fontWeight: 600 }}>
             · {daysRemaining} days remaining
           </span>
         )}

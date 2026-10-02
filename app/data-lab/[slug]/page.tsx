@@ -334,9 +334,9 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
         <div className="wrap relative z-10 max-w-6xl pt-16 pb-12 md:pt-20">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-            <Link href="/" className="hover:text-white transition">Home</Link>
+            <Link href="/" className="hover:text-content-primary transition">Home</Link>
             <span>/</span>
-            <Link href="/data-lab" className="hover:text-white transition">Data Lab</Link>
+            <Link href="/data-lab" className="hover:text-content-primary transition">Data Lab</Link>
             <span>/</span>
             <span className="text-cinema-cyan">{project.sector}</span>
           </nav>
@@ -485,7 +485,7 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
 
           <div className="glass-cinema rounded-2xl border border-white/10 p-6 md:p-10 min-w-0">
             {project.content ? (
-              <div className="prose prose-lg max-w-none prose-invert prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-li:text-gray-300 prose-h2:mt-10 prose-h2:mb-4">
+              <div className="prose prose-lg max-w-none prose-headings:text-content-primary prose-p:text-content-secondary prose-strong:text-content-primary prose-li:text-content-secondary prose-h2:mt-10 prose-h2:mb-4">
                 <MDXRemote source={project.content} components={mdxComponents} />
               </div>
             ) : (
@@ -522,7 +522,7 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
                   </div>
                 </div>
                 <div className="p-5">
-                  <h3 className="text-base font-bold text-white leading-snug group-hover:text-cinema-cyan transition-colors">{r.title}</h3>
+                  <h3 className="text-base font-bold text-white leading-snug group-hover:text-brand-hover transition-colors">{r.title}</h3>
                 </div>
               </Link>
             ))}
@@ -543,10 +543,10 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
                   href={`/data-lab/${prev.slug}`}
                   className="glass-cinema group rounded-2xl border border-white/10 p-5 hover:border-white/25 transition-all hover:-translate-y-0.5"
                 >
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 uppercase tracking-wider mb-2 group-hover:text-cinema-cyan transition">
+                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 uppercase tracking-wider mb-2 group-hover:text-brand-hover transition">
                     <ChevronLeft className="w-3.5 h-3.5" /> Previous
                   </span>
-                  <div className="text-sm font-semibold text-white leading-snug group-hover:text-cinema-cyan transition-colors line-clamp-2">
+                  <div className="text-sm font-semibold text-white leading-snug group-hover:text-brand-hover transition-colors line-clamp-2">
                     {prev.title}
                   </div>
                 </Link>
@@ -556,10 +556,10 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
                   href={`/data-lab/${next.slug}`}
                   className="glass-cinema group rounded-2xl border border-white/10 p-5 text-right hover:border-white/25 transition-all hover:-translate-y-0.5"
                 >
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 uppercase tracking-wider mb-2 justify-end group-hover:text-cinema-cyan transition">
+                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 uppercase tracking-wider mb-2 justify-end group-hover:text-brand-hover transition">
                     Next <ChevronRight className="w-3.5 h-3.5" />
                   </span>
-                  <div className="text-sm font-semibold text-white leading-snug group-hover:text-cinema-cyan transition-colors line-clamp-2">
+                  <div className="text-sm font-semibold text-white leading-snug group-hover:text-brand-hover transition-colors line-clamp-2">
                     {next.title}
                   </div>
                 </Link>

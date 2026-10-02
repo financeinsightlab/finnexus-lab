@@ -351,7 +351,7 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
             <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
-              <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
+              <div className="bg-success text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-success">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/>
                 </svg>
@@ -392,7 +392,7 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                     
                     <tr className="hover:bg-blue-50/30 group bg-purple-50/10">
                       <ExcelRowIndex i="2" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-purple-50/20 pl-3 text-purple-800 font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">VC / Private Investors Unlocked</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-accent-violet-muted pl-3 text-accent-violet font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">VC / Private Investors Unlocked</td>
                       {calculations.rowInvestorTokens.map((val, idx) => (
                         <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-purple-700`}>
                           {val.toLocaleString()}
@@ -402,7 +402,7 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
 
                     <tr className="hover:bg-blue-50/30 group bg-red-50/10">
                       <ExcelRowIndex i="3" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-red-50/20 pl-3 text-red-800 font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Core Team Unlocked</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 bg-error-muted pl-3 text-error font-semibold sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.1)] group-hover:bg-blue-50/0">Core Team Unlocked</td>
                       {calculations.rowTeamTokens.map((val, idx) => (
                         <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono text-red-700`}>
                           {val.toLocaleString()}
@@ -415,12 +415,12 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                       <td colSpan={50} className="border border-gray-200 dark:border-slate-700 bg-gray-100/50 py-1 sticky left-6 z-20"></td>
                     </tr>
 
-                    <tr className="bg-[#eef3fb]">
+                    <tr className="bg-surface-muted">
                       <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Total Circulating Supply</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-info sticky left-6 z-20 shadow-inner">Total Circulating Supply</td>
                       {calculations.rowTotalCirculating.map((val, idx) => {
                         return (
-                          <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[13px] text-[#0b5c96] shadow-inner`}>
+                          <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[13px] text-info shadow-inner`}>
                             <span className="border-b-2 border-double border-current pb-0.5">
                               {val.toLocaleString()}
                             </span>
@@ -491,7 +491,7 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                     <button type="submit" disabled={loading} className="btn btn-primary w-full shadow-xl shadow-brand-teal/30">
                       {loading ? 'Verifying...' : 'Pay & Subscribe Access'}
                     </button>
-                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-gray-800">
+                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-content-primary">
                       Cancel
                     </button>
                   </form>

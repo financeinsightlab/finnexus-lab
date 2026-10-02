@@ -62,7 +62,7 @@ export default async function CheatSheetPage({ params }: PageProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-[#0a1120] text-slate-100">
+    <div className="min-h-screen bg-background text-content-primary">
       <JsonLd data={schemas} />
       {/* print overrides: force light-on-white, full width */}
       <style>{`@media print {
@@ -96,7 +96,7 @@ export default async function CheatSheetPage({ params }: PageProps) {
             const lec = lectures[i];
             const title = u.split('—')[1]?.split(':')[0]?.trim() || `Unit ${i + 1}`;
             return (
-              <section key={i} className="rounded-2xl border border-white/8 bg-white/[0.02] p-5">
+              <section key={i} className="rounded-2xl border border-border bg-surface p-5">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-teal-300 mb-1">
                   Unit {i + 1} · {title}
                 </p>
@@ -148,9 +148,9 @@ export default async function CheatSheetPage({ params }: PageProps) {
           })}
 
           <footer className="print-hide text-center text-xs text-slate-500">
-            <Link href="/pgdm" className="hover:text-teal-300">All subjects</Link> ·{' '}
-            <Link href={`/pgdm/${subject.slug}`} className="hover:text-teal-300">Subject page</Link> ·{' '}
-            <Link href="/tools" className="hover:text-teal-300">Calculators</Link>
+            <Link href="/pgdm" className="hover:text-brand-hover">All subjects</Link> ·{' '}
+            <Link href={`/pgdm/${subject.slug}`} className="hover:text-brand-hover">Subject page</Link> ·{' '}
+            <Link href="/tools" className="hover:text-brand-hover">Calculators</Link>
           </footer>
         </main>
       </div>

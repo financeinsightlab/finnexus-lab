@@ -7,6 +7,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import type { SearchItem, SearchResult } from '@/lib/search';
+import { useDialogAccessibility } from '@/components/ui/useDialogAccessibility';
 
 const STATIC_ACTIONS: SearchItem[] = [
     { kind: 'research', title: 'Dashboard', description: 'Your saved items and plan', url: '/dashboard', tags: ['account'], score: 1 },
@@ -50,6 +51,7 @@ export default function CommandPalette() {
     const [loading, setLoading] = useState(false);
     const [active, setActive] = useState(0);
     const inputRef = useRef<HTMLInputElement>(null);
+    const dialogRef = useDialogAccessibility(open, () => setOpen(false));
 
     // CommandPalette is triggered by the visible button below.
     // Ctrl+K is handled by Navbar which opens GlobalSearch instead.
@@ -135,11 +137,11 @@ export default function CommandPalette() {
                 type="button"
                 onClick={() => setOpen(true)}
                 aria-label="Open command palette"
-                className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white md:inline-flex"
+                className="hidden items-center gap-2 rounded-lg border border-border bg-surface-muted px-3 py-1.5 text-xs font-medium text-content-secondary transition-colors hover:border-border-strong hover:text-content-primary md:inline-flex"
             >
                 <span aria-hidden>🔍</span>
                 <span>Search…</span>
-                <kbd className="rounded border border-white/10 bg-black/30 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                <kbd className="rounded border border-border bg-surface-muted px-1.5 py-0.5 font-mono text-[10px] text-content-muted">
                     ⌘K
                 </kbd>
             </button>
@@ -151,14 +153,16 @@ export default function CommandPalette() {
                     role="presentation"
                 >
                     <div
-                        className="w-full max-w-xl overflow-hidden rounded-2xl border border-white/10 bg-[#0f1420] shadow-2xl"
+                        ref={dialogRef}
+                        className="w-full max-w-xl overflow-hidden rounded-2xl border border-border bg-surface-overlay shadow-2xl"
                         onClick={(event) => event.stopPropagation()}
                         role="dialog"
                         aria-modal="true"
                         aria-label="Command palette"
+                        tabIndex={-1}
                     >
-                        <div className="flex items-center gap-3 border-b border-white/10 px-4">
-                            <span aria-hidden className="text-slate-500">
+                        <div className="flex items-center gap-3 border-b border-border px-4">
+                            <span aria-hidden className="text-content-muted">
                                 🔍
                             </span>
                             <input
@@ -167,14 +171,14 @@ export default function CommandPalette() {
                                 onChange={(event) => setQuery(event.target.value)}
                                 onKeyDown={onInputKeyDown}
                                 placeholder="Search pages, research, lectures, tools…"
-                                className="w-full bg-transparent py-4 text-sm text-white outline-none placeholder:text-slate-500"
+                                className="w-full bg-transparent py-4 text-sm text-content-primary outline-none placeholder:text-content-muted"
                             />
-                            {loading && <span className="text-xs text-slate-500">…</span>}
+                            {loading && <span className="text-xs text-content-muted">…</span>}
                         </div>
 
                         <ul className="max-h-[52vh] overflow-y-auto py-2">
                             {rows.length === 0 ? (
-                                <li className="px-4 py-8 text-center text-sm text-slate-500">
+                                <li className="px-4 py-8 text-center text-sm text-content-muted">
                                     No matches. Try another term.
                                 </li>
                             ) : (
@@ -191,14 +195,14 @@ export default function CommandPalette() {
                                                 {GROUP_ICON[row.item.kind] ?? '📄'}
                                             </span>
                                             <span className="min-w-0 flex-1">
-                                                <span className="block truncate text-sm font-medium text-slate-100">
+                                                <span className="block truncate text-sm font-medium text-content-primary">
                                                     {row.item.title}
                                                 </span>
-                                                <span className="block truncate text-xs text-slate-500">
+                                                <span className="block truncate text-xs text-content-muted">
                                                     {row.item.description}
                                                 </span>
                                             </span>
-                                            <span className="shrink-0 text-[10px] uppercase tracking-widest text-slate-600">
+                                            <span className="shrink-0 text-[10px] uppercase tracking-widest text-content-muted">
                                                 {row.label}
                                             </span>
                                         </button>
@@ -207,7 +211,7 @@ export default function CommandPalette() {
                             )}
                         </ul>
 
-                        <div className="flex items-center justify-between border-t border-white/10 px-4 py-2 text-[10px] text-slate-500">
+                        <div className="flex items-center justify-between border-t border-border px-4 py-2 text-[10px] text-content-muted">
                             <span>↑↓ navigate · ↵ open · esc close</span>
                             <span>Kunwar Analytics</span>
                         </div>

@@ -17,7 +17,7 @@ const TRACK_STYLE = {
     gradient: 'from-sky-500/15 via-cinema-blue/10 to-transparent',
     ring: 'border-sky-500/25',
     chip: 'bg-sky-500/10 text-sky-300 border-sky-500/25',
-    num: 'from-sky-500 to-blue-500',
+    num: 'from-sky-700 to-blue-700',
     glow: 'hover:shadow-[0_0_44px_rgba(14,165,233,0.20)]',
   },
   FINANCE: {
@@ -25,7 +25,7 @@ const TRACK_STYLE = {
     gradient: 'from-teal-500/15 via-cinema-cyan/10 to-transparent',
     ring: 'border-teal-500/25',
     chip: 'bg-teal-500/10 text-teal-300 border-teal-500/25',
-    num: 'from-teal-500 to-emerald-500',
+    num: 'from-teal-700 to-emerald-700',
     glow: 'hover:shadow-[0_0_44px_rgba(13,110,110,0.20)]',
   },
   ANALYTICS: {
@@ -33,7 +33,7 @@ const TRACK_STYLE = {
     gradient: 'from-cinema-violet/15 via-indigo-500/10 to-transparent',
     ring: 'border-cinema-violet/25',
     chip: 'bg-cinema-violet/10 text-violet-300 border-cinema-violet/25',
-    num: 'from-violet-500 to-indigo-500',
+    num: 'from-violet-700 to-indigo-700',
     glow: 'hover:shadow-[0_0_44px_rgba(124,58,237,0.20)]',
   },
 } as const;
@@ -109,7 +109,7 @@ export default function PgdmPage() {
                   )}
                 </div>
 
-                <h3 className="text-base font-bold text-white leading-snug group-hover:text-teal-300 transition-colors">
+                <h3 className="text-base font-bold text-white leading-snug group-hover:text-brand-hover transition-colors">
                   {s.name}
                 </h3>
                 <p className="text-xs text-gray-400 mt-1.5 line-clamp-2 leading-relaxed">{s.tagline}</p>
@@ -134,7 +134,7 @@ export default function PgdmPage() {
                   </div>
                 </div>
 
-                <span className="absolute right-4 bottom-4 text-gray-600 group-hover:text-teal-400 group-hover:translate-x-1 transition-all">
+                <span className="absolute right-4 bottom-4 text-gray-600 group-hover:text-brand-hover group-hover:translate-x-1 transition-all">
                   <ArrowRight className="w-4 h-4" />
                 </span>
               </Link>

@@ -62,7 +62,7 @@ export default function HomeDataLabSection() {
                 </div>
                 <div className="p-6">
                   <span className="text-xs font-semibold text-cinema-cyan uppercase tracking-wider">{p.sector}</span>
-                  <h3 className="mt-2 text-lg font-bold text-white leading-snug group-hover:text-cinema-cyan transition-colors">
+                  <h3 className="mt-2 text-lg font-bold text-white leading-snug group-hover:text-brand-hover transition-colors">
                     {p.title}
                   </h3>
                   <div className="flex flex-wrap gap-2 mt-4">

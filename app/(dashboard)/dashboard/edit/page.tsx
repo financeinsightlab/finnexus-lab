@@ -60,7 +60,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="wrap py-10">
-      <div className="max-w-md mx-auto">
+      <div className="mx-auto max-w-md rounded-2xl border border-border-subtle bg-surface p-6 shadow-sm sm:p-8">
         <div className="mb-6">
           <h1 className="text-3xl font-extrabold text-brand-navy">Edit Profile</h1>
           <p className="text-brand-slate mt-2">Update your personal information</p>
@@ -68,38 +68,40 @@ export default function EditProfilePage() {
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            <div className="rounded-lg border border-error/30 bg-error-muted p-4 text-sm text-error" role="alert">
               {error}
             </div>
           )}
           {success && (
-            <div className="p-4 bg-green-50 border border-green-200 text-green-700 rounded-lg">
+            <div className="rounded-lg border border-success/30 bg-success-muted p-4 text-sm text-success" role="status">
               {success}
             </div>
           )}
 
           <div>
-            <label className="block text-sm font-medium text-brand-navy mb-2">
+            <label htmlFor="profile-name" className="mb-2 block text-sm font-medium text-content-primary">
               Name
             </label>
             <input
+              id="profile-name"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              className="input"
               placeholder="Your name"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-brand-navy mb-2">
+            <label htmlFor="profile-email" className="mb-2 block text-sm font-medium text-content-primary">
               Email
             </label>
             <input
+              id="profile-email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-teal-500"
+              className="input"
               placeholder="your@email.com"
             />
           </div>
@@ -108,13 +110,13 @@ export default function EditProfilePage() {
             <button
               type="submit"
               disabled={loading}
-              className="flex-1 bg-teal-600 text-white py-3 px-6 rounded-lg font-semibold hover:bg-teal-700 disabled:opacity-50"
+              className="btn-primary flex-1"
             >
               {loading ? 'Updating...' : 'Save Changes'}
             </button>
             <Link
               href="/dashboard"
-              className="flex-1 border border-gray-300 text-gray-700 py-3 px-6 rounded-lg font-semibold text-center hover:bg-gray-50"
+              className="btn-secondary flex-1"
             >
               Cancel
             </Link>

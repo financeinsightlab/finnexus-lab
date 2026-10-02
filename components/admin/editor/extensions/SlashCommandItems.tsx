@@ -120,9 +120,9 @@ export const CommandList = forwardRef<{ onKeyDown: (event: { event: KeyboardEven
   }))
 
   return (
-    <div className="bg-[#1A1F2E] border border-[#2D3748] rounded-2xl shadow-2xl overflow-hidden min-w-[280px] anim-fade-up">
-      <div className="p-2 border-b border-white/5 bg-white/5">
-        <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest px-2 py-1">Widget Library</p>
+    <div className="bg-surface border border-border rounded-2xl shadow-2xl overflow-hidden min-w-[280px] anim-fade-up">
+      <div className="p-2 border-b border-border-subtle bg-surface-muted">
+        <p className="text-[10px] font-bold text-content-muted uppercase tracking-widest px-2 py-1">Widget Library</p>
       </div>
       <div className="p-1 max-h-[400px] overflow-y-auto no-scrollbar">
         {props.items.length ? (
@@ -131,22 +131,22 @@ export const CommandList = forwardRef<{ onKeyDown: (event: { event: KeyboardEven
               key={index}
               onClick={() => selectItem(index)}
               className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all ${
-                index === selectedIndex ? "bg-[#0D6E6E] text-white" : "text-slate-400 hover:bg-white/5"
+                index === selectedIndex ? "bg-primary text-primary-foreground" : "text-content-secondary hover:bg-accent"
               }`}
             >
-              <div className={`p-2 rounded-lg ${index === selectedIndex ? "bg-white/20" : "bg-white/5 text-slate-500"}`}>
+              <div className={`p-2 rounded-lg ${index === selectedIndex ? "bg-primary-foreground/15" : "bg-surface-muted text-content-muted"}`}>
                 {item.icon}
               </div>
               <div>
                 <p className="text-xs font-bold">{item.title}</p>
-                <p className={`text-[10px] ${index === selectedIndex ? "text-white/70" : "text-slate-600"}`}>
+                <p className={`text-[10px] ${index === selectedIndex ? "text-primary-foreground/70" : "text-content-muted"}`}>
                   {item.description}
                 </p>
               </div>
             </button>
           ))
         ) : (
-          <div className="p-4 text-center text-xs text-slate-500">No widgets found</div>
+          <div className="p-4 text-center text-xs text-content-muted">No widgets found</div>
         )}
       </div>
     </div>

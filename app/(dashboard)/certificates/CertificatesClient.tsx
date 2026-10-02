@@ -51,14 +51,14 @@ export default function CertificatesClient({ certificates, categories }: Certifi
     );
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#0a1120]">
+        <div className="min-h-screen bg-slate-50 dark:bg-background">
             {/* Hero */}
-            <header className="relative overflow-hidden bg-[#0f1c2d] text-white">
+            <header className="relative overflow-hidden bg-surface-raised text-content-primary">
                 <div className="pointer-events-none absolute -top-24 -right-24 h-72 w-72 rounded-full bg-teal-500/20 blur-[100px]" />
                 <div className="pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-indigo-500/10 blur-[100px]" />
                 <div className="relative mx-auto max-w-6xl px-6 py-16">
                     <nav className="mb-6 flex items-center gap-2 text-sm text-slate-400">
-                        <Link href="/" className="transition-colors hover:text-white">Home</Link>
+                        <Link href="/" className="transition-colors hover:text-content-primary">Home</Link>
                         <span>/</span>
                         <span className="text-teal-300">Certificate pathways</span>
                     </nav>
@@ -68,14 +68,14 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                     <h1 className="max-w-3xl text-3xl font-bold leading-tight md:text-4xl">
                         Explore finance, analytics and strategy pathways
                     </h1>
-                    <p className="mt-5 max-w-2xl text-lg text-white/70">
+                    <p className="mt-5 max-w-2xl text-lg text-content-secondary">
                         These entries describe learning pathways and proposed assessments; they are not themselves credentials. Separately, an enabled course may issue a private, unsigned completion record after the published lesson criteria and final test are passed. No public credential verification is provided.
                     </p>
                 </div>
             </header>
 
             {/* Filters */}
-            <div className="sticky top-16 z-30 border-b border-slate-200 bg-white/85 backdrop-blur dark:border-white/10 dark:bg-[#0f1522]/85">
+            <div className="sticky top-16 z-30 border-b border-slate-200 bg-white/85 backdrop-blur dark:border-white/10 dark:bg-surface/85">
                 <div className="mx-auto flex max-w-6xl flex-wrap items-center gap-4 px-6 py-4">
                     <div className="flex flex-wrap items-center gap-2">
                         {(['All', ...categories] as const).map((item) => (
@@ -83,8 +83,8 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                                 key={item}
                                 onClick={() => setCategory(item)}
                                 className={`rounded-full border px-4 py-1.5 text-sm font-medium transition-all ${category === item
-                                        ? 'border-teal-500 bg-teal-500 text-white shadow-sm shadow-teal-500/30'
-                                        : 'border-slate-200 text-slate-600 hover:border-teal-400 hover:text-teal-600 dark:border-white/10 dark:text-slate-300 dark:hover:text-teal-300'
+                                        ? 'border-primary bg-primary text-primary-foreground shadow-sm shadow-brand/30'
+                                        : 'border-slate-200 text-slate-600 hover:border-teal-400 hover:text-brand-hover dark:border-white/10 dark:text-slate-300 dark:hover:text-brand-hover'
                                     }`}
                             >
                                 {item}
@@ -99,7 +99,7 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                             id="level-filter"
                             value={level}
                             onChange={(event) => setLevel(event.target.value as 'All' | CertificateLevel)}
-                            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-[#0f1522] dark:text-slate-200"
+                            className="rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-sm text-slate-700 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-surface dark:text-slate-200"
                         >
                             {(['All', ...LEVELS] as const).map((item) => (
                                 <option key={item} value={item}>{item}</option>
@@ -118,7 +118,7 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                         {filtered.map((certificate) => (
                             <article
                                 key={certificate.slug}
-                                className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-[#111c31]"
+                                className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-6 transition-all hover:-translate-y-0.5 hover:shadow-lg dark:border-white/10 dark:bg-surface-raised"
                             >
                                 <div className="mb-4 flex flex-wrap items-center gap-2">
                                     <span className={`rounded-full border px-3 py-1 text-xs font-semibold ${CATEGORY_STYLE[certificate.category]}`}>
@@ -156,14 +156,14 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                                 <div className="mt-6 flex items-center justify-between border-t border-slate-100 pt-4 dark:border-white/10">
                                     <Link
                                         href={certificate.track.href}
-                                        className="inline-flex items-center gap-1 text-sm font-semibold text-teal-600 hover:text-teal-700 dark:text-teal-400"
+                                        className="inline-flex items-center gap-1 text-sm font-semibold text-teal-600 hover:text-brand-hover dark:text-teal-400"
                                     >
                                         {certificate.track.label}
                                         <span className="transition-transform group-hover:translate-x-0.5">→</span>
                                     </Link>
                                     <Link
                                         href={`/certificates/${certificate.slug}`}
-                                        className="text-xs font-medium text-slate-400 transition-colors hover:text-teal-500"
+                                        className="text-xs font-medium text-slate-400 transition-colors hover:text-brand-hover"
                                     >
                                         Pathway details →
                                     </Link>

@@ -168,19 +168,19 @@ export default function AdminMessagesPage() {
   return (
     <div className="space-y-8">
       {/* Header Banner */}
-      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 shadow-xl border border-white/5">
+      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 shadow-xl border border-border-subtle">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
             <div className="flex items-center gap-2">
-              <span className="section-label text-teal-400">Admin Inbox</span>
-              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-500/20 text-teal-300 border border-teal-500/30">
+              <span className="section-label text-brand">Admin Inbox</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand/20 text-brand border border-brand/30">
                 <Mail className="w-3 h-3" /> kunwaranalytics@gmail.com
               </span>
             </div>
             <h1 className="text-3xl font-extrabold text-white mt-2 leading-tight">
               Contact Form Inquiries
             </h1>
-            <p className="text-slate-300 mt-2 max-w-xl text-sm">
+            <p className="text-content-secondary mt-2 max-w-xl text-sm">
               Contact-form messages appear here. Replies are saved and may trigger an in-app notification for registered users; email delivery is not configured, so replies are not emailed.
             </p>
           </div>
@@ -198,50 +198,50 @@ export default function AdminMessagesPage() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="bg-white dark:bg-[#1A1F2E] p-6 rounded-2xl border border-gray-200 dark:border-[#2D3748] shadow-sm">
+        <div className="bg-surface p-6 rounded-2xl border border-border shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Total Inquiries</span>
-            <div className="p-2.5 rounded-xl bg-blue-500/10 text-blue-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-content-muted">Total Inquiries</span>
+            <div className="p-2.5 rounded-xl bg-info-muted text-info">
               <Inbox className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-extrabold text-gray-900 dark:text-white mt-3">{stats.total}</p>
-          <p className="text-xs text-slate-500 mt-1">Received from /contact</p>
+          <p className="text-3xl font-extrabold text-content-primary mt-3">{stats.total}</p>
+          <p className="text-xs text-content-muted mt-1">Received from /contact</p>
         </div>
 
-        <div className="bg-white dark:bg-[#1A1F2E] p-6 rounded-2xl border border-gray-200 dark:border-[#2D3748] shadow-sm">
+        <div className="bg-surface p-6 rounded-2xl border border-border shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-amber-500">Awaiting Reply</span>
-            <div className="p-2.5 rounded-xl bg-amber-500/10 text-amber-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-warning">Awaiting Reply</span>
+            <div className="p-2.5 rounded-xl bg-warning-muted text-warning">
               <Clock className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-extrabold text-amber-500 mt-3">{stats.unread}</p>
-          <p className="text-xs text-slate-500 mt-1">Pending user replies</p>
+          <p className="text-3xl font-extrabold text-warning mt-3">{stats.unread}</p>
+          <p className="text-xs text-content-muted mt-1">Pending user replies</p>
         </div>
 
-        <div className="bg-white dark:bg-[#1A1F2E] p-6 rounded-2xl border border-gray-200 dark:border-[#2D3748] shadow-sm">
+        <div className="bg-surface p-6 rounded-2xl border border-border shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-500">Replies Saved</span>
-            <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
+            <span className="text-xs font-bold uppercase tracking-wider text-success">Replies Saved</span>
+            <div className="p-2.5 rounded-xl bg-success-muted text-success">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
-          <p className="text-3xl font-extrabold text-emerald-500 mt-3">{stats.replied}</p>
-          <p className="text-xs text-slate-500 mt-1">In-app notifications may be sent; no email is sent</p>
+          <p className="text-3xl font-extrabold text-success mt-3">{stats.replied}</p>
+          <p className="text-xs text-content-muted mt-1">In-app notifications may be sent; no email is sent</p>
         </div>
       </div>
 
       {/* Controls & Search */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Filter Tabs */}
-        <div className="flex items-center p-1 bg-gray-100 dark:bg-[#1A1F2E] rounded-xl border border-gray-200 dark:border-[#2D3748] self-start">
+        <div className="flex items-center p-1 bg-surface-muted rounded-xl border border-border self-start">
           <button
             onClick={() => setFilter('ALL')}
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filter === 'ALL'
-                ? 'bg-[#0D6E6E] text-white shadow'
-                : 'text-slate-600 dark:text-slate-400 hover:text-white'
+                ? 'bg-primary text-primary-foreground shadow'
+                : 'text-content-muted hover:text-content-primary'
             }`}
           >
             All ({stats.total})
@@ -250,8 +250,8 @@ export default function AdminMessagesPage() {
             onClick={() => setFilter('UNREAD')}
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filter === 'UNREAD'
-                ? 'bg-amber-600 text-white shadow'
-                : 'text-slate-600 dark:text-slate-400 hover:text-white'
+                ? 'bg-warning text-content-inverse shadow'
+                : 'text-content-muted hover:text-content-primary'
             }`}
           >
             Unread ({stats.unread})
@@ -260,8 +260,8 @@ export default function AdminMessagesPage() {
             onClick={() => setFilter('REPLIED')}
             className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filter === 'REPLIED'
-                ? 'bg-emerald-600 text-white shadow'
-                : 'text-slate-600 dark:text-slate-400 hover:text-white'
+                ? 'bg-success text-content-inverse shadow'
+                : 'text-content-muted hover:text-content-primary'
             }`}
           >
             Replied ({stats.replied})
@@ -270,13 +270,13 @@ export default function AdminMessagesPage() {
 
         {/* Search */}
         <div className="relative sm:w-72">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-content-secondary" />
           <input
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search sender, email, subject..."
-            className="w-full pl-10 pr-4 py-2 text-sm bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-[#2D3748] rounded-xl text-gray-900 dark:text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-[#0D6E6E]"
+            className="w-full pl-10 pr-4 py-2 text-sm bg-surface border border-border rounded-xl text-content-primary placeholder:text-content-muted focus:outline-none focus:ring-2 focus:ring-brand"
           />
         </div>
       </div>
@@ -284,17 +284,17 @@ export default function AdminMessagesPage() {
       {/* Messages List */}
       <div className="space-y-4">
         {loading ? (
-          <div className="p-12 text-center bg-white dark:bg-[#1A1F2E] rounded-2xl border border-gray-200 dark:border-[#2D3748]">
-            <RefreshCw className="w-8 h-8 text-[#0D6E6E] animate-spin mx-auto mb-3" />
-            <p className="text-sm text-slate-500">Loading inquiries from database...</p>
+          <div className="p-12 text-center bg-surface rounded-2xl border border-border">
+            <RefreshCw className="w-8 h-8 text-brand animate-spin mx-auto mb-3" />
+            <p className="text-sm text-content-muted">Loading inquiries from database...</p>
           </div>
         ) : filteredInquiries.length === 0 ? (
-          <div className="p-16 text-center bg-white dark:bg-[#1A1F2E] rounded-2xl border border-gray-200 dark:border-[#2D3748]">
-            <div className="w-14 h-14 rounded-2xl bg-teal-500/10 text-[#0D6E6E] flex items-center justify-center mx-auto mb-4">
+          <div className="p-16 text-center bg-surface rounded-2xl border border-border">
+            <div className="w-14 h-14 rounded-2xl bg-brand-muted text-brand flex items-center justify-center mx-auto mb-4">
               <Inbox className="w-7 h-7" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white">No inquiries found</h3>
-            <p className="text-sm text-slate-500 mt-1">
+            <h3 className="text-lg font-bold text-content-primary">No inquiries found</h3>
+            <p className="text-sm text-content-muted mt-1">
               {search ? 'Try modifying your search keywords.' : 'When someone fills the contact form, it will show up here.'}
             </p>
           </div>
@@ -306,35 +306,35 @@ export default function AdminMessagesPage() {
             return (
               <div
                 key={inquiry.id}
-                className="bg-white dark:bg-[#1A1F2E] rounded-2xl border border-gray-200 dark:border-[#2D3748] p-6 shadow-sm transition-all hover:border-[#0D6E6E]/40"
+                className="bg-surface rounded-2xl border border-border p-6 shadow-sm transition-all hover:border-brand/40"
               >
                 {/* Header row */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
                   <div className="flex items-start gap-4">
-                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-base flex-shrink-0 shadow-md">
+                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-primary-foreground font-bold text-base flex-shrink-0 shadow-md">
                       {inquiry.name?.[0]?.toUpperCase() || 'U'}
                     </div>
                     <div>
                       <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-bold text-gray-900 dark:text-white text-base">
+                        <h3 className="font-bold text-content-primary text-base">
                           {inquiry.name}
                         </h3>
                         <a
                           href={`mailto:${inquiry.email}`}
-                          className="text-xs text-[#0D6E6E] hover:underline font-mono"
+                          className="text-xs text-brand hover:underline font-mono"
                         >
                           {inquiry.email}
                         </a>
                       </div>
 
-                      <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-slate-500">
+                      <div className="flex flex-wrap items-center gap-3 mt-1 text-xs text-content-muted">
                         {inquiry.organisation && (
-                          <span className="flex items-center gap-1 font-medium text-slate-400">
+                          <span className="flex items-center gap-1 font-medium text-content-secondary">
                             <Building className="w-3.5 h-3.5" /> {inquiry.organisation}
                           </span>
                         )}
                         {inquiry.budget && (
-                          <span className="flex items-center gap-1 font-medium text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
+                          <span className="flex items-center gap-1 font-medium text-success bg-success-muted px-2 py-0.5 rounded-md">
                             <DollarSign className="w-3 h-3" /> Budget: {inquiry.budget}
                           </span>
                         )}
@@ -352,11 +352,11 @@ export default function AdminMessagesPage() {
                   {/* Status Badge */}
                   <div className="flex items-center gap-3 self-start">
                     {isReplied ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-success-muted text-success border border-success/20">
                         <CheckCircle2 className="w-3.5 h-3.5" /> Replied
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-warning-muted text-warning border border-warning/20">
                         <Clock className="w-3.5 h-3.5 animate-pulse" /> New / Unread
                       </span>
                     )}
@@ -364,29 +364,29 @@ export default function AdminMessagesPage() {
                 </div>
 
                 {/* Subject badge and message content */}
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/5 space-y-2">
-                  <div className="inline-block px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <div className="mt-4 pt-4 border-t border-border-subtle space-y-2">
+                  <div className="inline-block px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide bg-info-muted text-info border border-info/20">
                     Subject: {inquiry.subject}
                   </div>
-                  <div className="p-4 rounded-xl bg-gray-50 dark:bg-[#121622] text-sm text-gray-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed border border-gray-200 dark:border-white/5">
+                  <div className="p-4 rounded-xl bg-surface-muted text-sm text-content-secondary whitespace-pre-wrap leading-relaxed border border-border-subtle">
                     {inquiry.message}
                   </div>
                 </div>
 
                 {/* If already replied, display the reply thread */}
                 {isReplied && inquiry.replyText && (
-                  <div className="mt-4 p-4 rounded-xl bg-teal-500/5 border border-teal-500/20 space-y-2">
+                  <div className="mt-4 p-4 rounded-xl bg-brand-muted/60 border border-brand/20 space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="font-bold text-teal-400 flex items-center gap-1.5">
+                      <span className="font-bold text-brand flex items-center gap-1.5">
                         <CheckCircle2 className="w-4 h-4" /> Admin Reply (Dispatched via kunwaranalytics@gmail.com):
                       </span>
                       {inquiry.repliedAt && (
-                        <span className="text-slate-500">
+                        <span className="text-content-muted">
                           {new Date(inquiry.repliedAt).toLocaleString()}
                         </span>
                       )}
                     </div>
-                    <p className="text-sm text-slate-300 whitespace-pre-wrap">
+                    <p className="text-sm text-content-secondary whitespace-pre-wrap">
                       {inquiry.replyText}
                     </p>
                   </div>
@@ -394,7 +394,7 @@ export default function AdminMessagesPage() {
 
                 {/* Action buttons */}
                 <div className="mt-4 flex items-center justify-between pt-2">
-                  <div className="text-xs text-slate-500">
+                  <div className="text-xs text-content-muted">
                     ID: <span className="font-mono text-[10px]">{inquiry.id}</span>
                   </div>
 
@@ -408,10 +408,10 @@ export default function AdminMessagesPage() {
                     }}
                     className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                       isReplying
-                        ? 'bg-slate-700 text-white'
+                        ? 'bg-surface-muted text-content-primary'
                         : isReplied
-                        ? 'bg-white/5 hover:bg-white/10 text-slate-300'
-                        : 'bg-[#0D6E6E] hover:bg-[#0b5c5c] text-white shadow-md'
+                        ? 'bg-surface-muted hover:bg-accent text-content-secondary'
+                        : 'bg-primary hover:bg-primary-hover text-primary-foreground shadow-md'
                     }`}
                   >
                     <MessageSquare className="w-3.5 h-3.5" />
@@ -421,21 +421,21 @@ export default function AdminMessagesPage() {
 
                 {/* Inline Reply Composer */}
                 {isReplying && (
-                  <div className="mt-5 p-5 rounded-2xl bg-gray-50 dark:bg-[#121622] border border-[#0D6E6E]/40 space-y-4 anim-fade-up">
+                  <div className="mt-5 p-5 rounded-2xl bg-surface-muted border border-brand/40 space-y-4 anim-fade-up">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                      <h4 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                        <Send className="w-4 h-4 text-[#0D6E6E]" />
+                      <h4 className="text-sm font-bold text-content-primary flex items-center gap-2">
+                        <Send className="w-4 h-4 text-brand" />
                         Compose Reply to {inquiry.name} ({inquiry.email})
                       </h4>
-                      <span className="text-xs text-slate-400">
-                        From: <strong className="text-teal-400">kunwaranalytics@gmail.com</strong>
+                      <span className="text-xs text-content-secondary">
+                        From: <strong className="text-brand">kunwaranalytics@gmail.com</strong>
                       </span>
                     </div>
 
                     {/* Quick Response Templates */}
                     <div className="space-y-1.5">
-                      <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1">
-                        <Sparkles className="w-3 h-3 text-amber-400" /> Quick Templates:
+                      <span className="text-[11px] font-bold text-content-muted uppercase tracking-wider flex items-center gap-1">
+                        <Sparkles className="w-3 h-3 text-warning" /> Quick Templates:
                       </span>
                       <div className="flex flex-wrap gap-2">
                         {TEMPLATES.map((tmpl, idx) => (
@@ -443,7 +443,7 @@ export default function AdminMessagesPage() {
                             key={idx}
                             type="button"
                             onClick={() => applyTemplate(tmpl.text, inquiry)}
-                            className="px-3 py-1 rounded-lg text-xs bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-white/10 hover:border-[#0D6E6E] text-slate-700 dark:text-slate-300 font-medium transition-all"
+                            className="px-3 py-1 rounded-lg text-xs bg-surface border border-border hover:border-brand text-content-primary font-medium transition-all"
                           >
                             {tmpl.label}
                           </button>
@@ -456,11 +456,11 @@ export default function AdminMessagesPage() {
                       value={replyText}
                       onChange={(e) => setReplyText(e.target.value)}
                       placeholder="Type your reply message here..."
-                      className="w-full p-4 text-sm bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-[#2D3748] rounded-xl text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-[#0D6E6E] font-sans leading-relaxed"
+                      className="w-full p-4 text-sm bg-surface border border-border rounded-xl text-content-primary focus:outline-none focus:ring-2 focus:ring-brand font-sans leading-relaxed"
                     />
 
                     {notificationStatus && notificationStatus.id === inquiry.id && (
-                      <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
+                      <div className="p-3 rounded-xl bg-success-muted border border-success/20 text-success text-xs flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                         {notificationStatus.message}
                       </div>
@@ -470,7 +470,7 @@ export default function AdminMessagesPage() {
                       <button
                         type="button"
                         onClick={() => setActiveReplyId(null)}
-                        className="px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+                        className="px-4 py-2 text-xs font-semibold text-content-secondary hover:text-content-primary transition-colors"
                       >
                         Cancel
                       </button>
@@ -478,7 +478,7 @@ export default function AdminMessagesPage() {
                         type="button"
                         disabled={sendingReply || !replyText.trim()}
                         onClick={() => handleSendReply(inquiry)}
-                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#0D6E6E] hover:bg-[#0b5c5c] text-white font-bold text-xs shadow-lg transition-all disabled:opacity-50"
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs shadow-lg transition-all disabled:opacity-50"
                       >
                         {sendingReply ? (
                           <>

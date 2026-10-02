@@ -69,6 +69,9 @@ export default function AskKunwarBubble() {
     const [hasOpened, setHasOpened] = useState(false);
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const panelRef = useRef<HTMLDivElement>(null);
+    const openerRef = useRef<HTMLButtonElement>(null);
+    const wasOpenRef = useRef(false);
 
     // Auto-scroll to latest message
     useEffect(() => {
@@ -77,11 +80,55 @@ export default function AskKunwarBubble() {
         }
     }, [messages, open]);
 
-    // Focus input when opened
+    // Focus the chat input when opened, keep keyboard navigation inside the modal,
+    // and restore focus to its trigger when it closes.
     useEffect(() => {
-        if (open) {
-            setTimeout(() => inputRef.current?.focus(), 100);
+        if (!open) {
+            if (wasOpenRef.current) {
+                wasOpenRef.current = false;
+                requestAnimationFrame(() => openerRef.current?.focus());
+            }
+            return;
         }
+
+        wasOpenRef.current = true;
+        const focusTimer = window.setTimeout(() => inputRef.current?.focus(), 100);
+        const panel = panelRef.current;
+        if (!panel) return () => window.clearTimeout(focusTimer);
+
+        const onKeyDown = (event: KeyboardEvent) => {
+            if (event.key === 'Escape') {
+                event.preventDefault();
+                setOpen(false);
+                return;
+            }
+            if (event.key !== 'Tab') return;
+
+            const focusable = Array.from(panel.querySelectorAll<HTMLElement>(
+                'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])'
+            )).filter((element) => element.offsetParent !== null);
+            if (focusable.length === 0) {
+                event.preventDefault();
+                panel.focus();
+                return;
+            }
+
+            const first = focusable[0];
+            const last = focusable[focusable.length - 1];
+            if (event.shiftKey && (document.activeElement === first || !panel.contains(document.activeElement))) {
+                event.preventDefault();
+                last.focus();
+            } else if (!event.shiftKey && (document.activeElement === last || !panel.contains(document.activeElement))) {
+                event.preventDefault();
+                first.focus();
+            }
+        };
+
+        document.addEventListener('keydown', onKeyDown);
+        return () => {
+            window.clearTimeout(focusTimer);
+            document.removeEventListener('keydown', onKeyDown);
+        };
     }, [open]);
 
     const handleOpen = () => {
@@ -184,7 +231,7 @@ export default function AskKunwarBubble() {
                     key={tokens.length}
                     href={url}
                     onClick={() => setOpen(false)}
-                    className="text-teal-400 font-semibold underline underline-offset-2 hover:text-teal-300"
+                    className="text-brand font-semibold underline underline-offset-2 hover:text-brand-hover"
                 >
                     {label}
                 </Link>
@@ -205,11 +252,11 @@ export default function AskKunwarBubble() {
             <span key={baseKey}>
                 {parts.map((part, i) => {
                     if (part.startsWith('**') && part.endsWith('**')) {
-                        return <strong key={i} className="font-bold text-white">{part.slice(2, -2)}</strong>;
+                        return <strong key={i} className="font-bold text-content-primary">{part.slice(2, -2)}</strong>;
                     }
                     if (part.startsWith('`') && part.endsWith('`')) {
                         return (
-                            <code key={i} className="px-1.5 py-0.5 rounded bg-white/10 font-mono text-teal-300 text-xs">
+                            <code key={i} className="px-1.5 py-0.5 rounded bg-accent font-mono text-brand text-xs">
                                 {part.slice(1, -1)}
                             </code>
                         );
@@ -227,15 +274,17 @@ export default function AskKunwarBubble() {
                 {/* Tooltip label when not yet opened */}
                 {!hasOpened && !open && (
                     <div className="pointer-events-none animate-bounce-gentle">
-                        <div className="flex items-center gap-2 rounded-2xl bg-[#0f1c2d] border border-teal-500/30 px-4 py-2.5 shadow-xl shadow-black/40">
-                            <span className="text-sm font-semibold text-white">Ask Kunwar AI</span>
+                        <div className="flex items-center gap-2 rounded-2xl bg-surface-raised border border-border-strong px-4 py-2.5 shadow-xl shadow-black/40">
+                            <span className="text-sm font-semibold text-content-primary">Ask Kunwar AI</span>
                             <span className="text-base">📊</span>
                         </div>
-                        <div className="w-3 h-3 bg-[#0f1c2d] border-b border-r border-teal-500/30 rotate-45 ml-auto mr-5 -mt-1.5" />
+                        <div className="w-3 h-3 bg-surface-raised border-b border-r border-border-strong rotate-45 ml-auto mr-5 -mt-1.5" />
                     </div>
                 )}
 
                 <button
+                    ref={openerRef}
+                    type="button"
                     onClick={() => open ? setOpen(false) : handleOpen()}
                     className="group relative flex h-14 w-14 items-center justify-center rounded-full shadow-2xl shadow-teal-500/30 transition-all duration-300 hover:scale-110 active:scale-95"
                     style={{
@@ -250,7 +299,7 @@ export default function AskKunwarBubble() {
                         />
                     )}
 
-                    <span className="text-2xl transition-transform duration-300" style={{ transform: open ? 'rotate(90deg)' : 'none' }}>
+                    <span className="text-2xl text-white transition-transform duration-300" style={{ transform: open ? 'rotate(90deg)' : 'none' }}>
                         {open ? '✕' : '🤖'}
                     </span>
 
@@ -264,38 +313,56 @@ export default function AskKunwarBubble() {
                 </button>
             </div>
 
+            {/* Modal backdrop */}
+            {open && (
+                <button
+                    type="button"
+                    aria-label="Close Ask Kunwar dialog"
+                    onClick={() => setOpen(false)}
+                    className="fixed inset-0 z-[198] bg-black/40 backdrop-blur-[2px]"
+                />
+            )}
+
             {/* Chat panel */}
             <div
-                className={`fixed bottom-24 right-6 z-[199] w-[360px] max-w-[calc(100vw-1.5rem)] flex flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0b1520] shadow-2xl shadow-black/60 transition-all duration-300 ${open ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
+                ref={panelRef}
+                className={`fixed bottom-24 right-6 z-[199] w-[360px] max-w-[calc(100vw-1.5rem)] flex flex-col overflow-hidden rounded-2xl border border-border bg-surface-overlay shadow-2xl shadow-black/60 transition-all duration-300 ${open ? 'opacity-100 translate-y-0 pointer-events-auto' : 'opacity-0 translate-y-4 pointer-events-none'}`}
                 style={{ maxHeight: 'min(520px, calc(100dvh - 8rem))' }}
+                role="dialog"
+                aria-modal="true"
+                aria-hidden={!open}
+                aria-label="Ask Kunwar assistant"
+                inert={!open}
+                tabIndex={-1}
             >
                 {/* Header */}
-                <div className="shrink-0 flex items-center justify-between gap-3 border-b border-white/10 px-4 py-3"
-                    style={{ background: 'linear-gradient(135deg, #0a1f30 0%, #0d2040 100%)' }}>
+                <div className="shrink-0 flex items-center justify-between gap-3 border-b border-border bg-surface-muted px-4 py-3">
                     <div className="flex items-center gap-3">
                         <div className="flex h-9 w-9 items-center justify-center rounded-xl text-xl"
                             style={{ background: 'linear-gradient(135deg, #0d9488, #7c3aed)' }}>
                             🤖
                         </div>
                         <div>
-                            <p className="text-sm font-bold text-white">Ask Kunwar</p>
+                            <p className="text-sm font-bold text-content-primary">Ask Kunwar</p>
                             <div className="flex items-center gap-1.5">
                                 <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                                <p className="text-[10px] text-emerald-400 font-medium">AI Research Assistant</p>
+                                <p className="text-[10px] text-success font-medium">AI Research Assistant</p>
                             </div>
                         </div>
                     </div>
                     <div className="flex items-center gap-2">
                         <Link
                             href="/ask"
-                            className="rounded-lg px-2 py-1 text-[10px] font-semibold text-teal-400 border border-teal-500/30 hover:bg-teal-500/10 transition-colors"
+                            className="rounded-lg px-2 py-1 text-[10px] font-semibold text-brand border border-brand/30 hover:bg-brand-muted transition-colors"
                             onClick={() => setOpen(false)}
                         >
                             Full page →
                         </Link>
                         <button
+                            type="button"
                             onClick={() => setOpen(false)}
-                            className="flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-white/10 hover:text-white transition-colors"
+                            className="flex h-7 w-7 items-center justify-center rounded-lg text-content-muted hover:bg-accent hover:text-content-primary transition-colors"
+                            aria-label="Close Ask Kunwar dialog"
                         >
                             <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -315,8 +382,8 @@ export default function AskKunwarBubble() {
                                 </div>
                             )}
                             <div className={`max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm leading-relaxed ${msg.role === 'user'
-                                ? 'bg-teal-600 text-white rounded-br-sm'
-                                : 'bg-white/8 border border-white/10 text-slate-200 rounded-bl-sm'
+                                ? 'bg-primary text-primary-foreground rounded-br-sm'
+                                : 'bg-surface-muted border border-border text-content-secondary rounded-bl-sm'
                                 }`}>
                                 {msg.isLoading ? (
                                     <TypingDots />
@@ -324,13 +391,13 @@ export default function AskKunwarBubble() {
                                     <>
                                         <p className="whitespace-pre-line">{renderText(msg.text)}</p>
                                         {msg.citations && msg.citations.length > 0 && (
-                                            <div className="mt-3 space-y-1.5 border-t border-white/10 pt-2">
-                                                <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Sources</p>
+                                            <div className="mt-3 space-y-1.5 border-t border-border pt-2">
+                                                <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted">Sources</p>
                                                 {msg.citations.slice(0, 3).map((c) => {
                                                     const href = safeAskHref(c.url);
                                                     const content = (
                                                         <>
-                                                            <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-teal-900/60 text-[9px] font-bold text-teal-400">
+                                                            <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-brand-muted text-[9px] font-bold text-brand">
                                                                 {c.index}
                                                             </span>
                                                             <span className="line-clamp-1">{c.title}</span>
@@ -341,12 +408,12 @@ export default function AskKunwarBubble() {
                                                             key={c.index}
                                                             href={href}
                                                             onClick={() => setOpen(false)}
-                                                            className="flex items-start gap-2 rounded-lg border border-white/5 bg-white/5 p-2 text-xs text-slate-300 transition hover:border-teal-500/30 hover:text-teal-300"
+                                                            className="flex items-start gap-2 rounded-lg border border-border-subtle bg-surface-muted p-2 text-xs text-content-secondary transition hover:border-brand/40 hover:text-brand-hover"
                                                         >
                                                             {content}
                                                         </Link>
                                                     ) : (
-                                                        <div key={c.index} className="flex items-start gap-2 rounded-lg border border-white/5 bg-white/5 p-2 text-xs text-slate-300">
+                                                        <div key={c.index} className="flex items-start gap-2 rounded-lg border border-border-subtle bg-surface-muted p-2 text-xs text-content-secondary">
                                                             {content}
                                                         </div>
                                                     );
@@ -354,7 +421,7 @@ export default function AskKunwarBubble() {
                                             </div>
                                         )}
                                         {msg.provider && (
-                                            <p className="mt-2 text-[10px] text-slate-500">Method: {PROVIDER_LABELS[msg.provider] ?? 'Source-grounded answer'}</p>
+                                            <p className="mt-2 text-[10px] text-content-muted">Method: {PROVIDER_LABELS[msg.provider] ?? 'Source-grounded answer'}</p>
                                         )}
                                     </>
                                 )}
@@ -370,7 +437,7 @@ export default function AskKunwarBubble() {
                                     key={q}
                                     type="button"
                                     onClick={() => void sendMessage(q.replace(/^[^\w]+/, '').trim())}
-                                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-slate-300 transition hover:border-teal-500/40 hover:bg-teal-900/20 hover:text-teal-300 text-left"
+                                    className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] text-content-secondary transition hover:border-brand/50 hover:bg-brand-muted hover:text-brand-hover text-left"
                                 >
                                     {q}
                                 </button>
@@ -381,20 +448,20 @@ export default function AskKunwarBubble() {
                 </div>
 
                 {/* Input */}
-                <form onSubmit={handleSubmit} className="shrink-0 border-t border-white/10 p-3">
-                    <div className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 pr-2 transition-colors focus-within:border-teal-500/50">
+                <form onSubmit={handleSubmit} className="shrink-0 border-t border-border p-3">
+                    <div className="flex items-center gap-2 rounded-xl border border-border bg-surface-muted pr-2 transition-colors focus-within:border-brand">
                         <input
                             ref={inputRef}
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                             placeholder="Ask about features, pricing, tools, research…"
                             disabled={loading}
-                            className="flex-1 bg-transparent py-3 pl-3.5 text-sm text-white placeholder:text-slate-600 outline-none disabled:opacity-50"
+                            className="flex-1 bg-transparent py-3 pl-3.5 text-sm text-content-primary placeholder:text-content-muted outline-none disabled:opacity-50"
                         />
                         <button
                             type="submit"
                             disabled={loading || !input.trim()}
-                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-teal-400 transition hover:bg-teal-500/20 disabled:opacity-40"
+                            className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-brand transition hover:bg-brand-muted disabled:opacity-40"
                             aria-label="Send"
                         >
                             {loading ? (
@@ -409,7 +476,7 @@ export default function AskKunwarBubble() {
                             )}
                         </button>
                     </div>
-                    <p className="mt-1.5 text-center text-[10px] text-slate-600">
+                    <p className="mt-1.5 text-center text-[10px] text-content-muted">
                         Answers are grounded in available Kunwar Analytics site sources; provider availability may vary.
                     </p>
                 </form>

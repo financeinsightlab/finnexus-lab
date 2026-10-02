@@ -9,8 +9,8 @@ export const metadata: Metadata = {
 
 export default function SecurityPage() {
   return (
-    <main className="min-h-screen bg-slate-50 py-16 dark:bg-[#0a1120]">
-      <article className="prose prose-lg mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 dark:border-white/10 dark:bg-[#111c31] dark:prose-invert">
+    <main className="min-h-screen bg-slate-50 py-16 dark:bg-background">
+      <article className="prose prose-lg mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 dark:border-white/10 dark:bg-surface-raised dark:prose-invert">
         <p className="text-sm uppercase tracking-widest text-teal-600">Platform information</p>
         <h1>Security information</h1>
         <p>Last updated: October 2, 2026</p>

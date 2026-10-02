@@ -89,12 +89,12 @@ export default function PodcastClient({ episodes, initialFormat = 'All' }: Podca
             placeholder="Search episodes, guests, topics…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-9 py-3 bg-cinema-charcoal border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-cinema-cyan/60 focus:ring-1 focus:ring-cinema-cyan/40 transition-all"
+            className="w-full pl-10 pr-9 py-3 bg-surface border border-input rounded-xl text-sm text-content-primary placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-all"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-content-muted hover:text-content-primary cursor-pointer"
               title="Clear search"
             >
               <X className="w-4 h-4" />
@@ -114,7 +114,7 @@ export default function PodcastClient({ episodes, initialFormat = 'All' }: Podca
               className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
                 format === f
                   ? 'bg-cinema-cyan text-cinema-black border-cinema-cyan shadow-glow-cyan'
-                  : 'bg-cinema-charcoal text-gray-300 border-white/10 hover:border-cinema-cyan/50 hover:text-white'
+                  : 'bg-surface text-content-secondary border-border hover:border-brand/50 hover:text-content-primary'
               }`}
             >
               {f}
@@ -135,7 +135,7 @@ export default function PodcastClient({ episodes, initialFormat = 'All' }: Podca
         <div className="text-center mt-10">
           <button
             onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cinema-charcoal border border-white/10 text-sm font-semibold text-white hover:border-cinema-cyan/50 hover:text-cinema-cyan transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-surface border border-border text-sm font-semibold text-content-primary hover:border-brand/50 hover:text-brand transition-all cursor-pointer"
           >
             <ChevronDown className="w-4 h-4" />
             Load more ({filtered.length - visibleCount} remaining)
@@ -147,7 +147,7 @@ export default function PodcastClient({ episodes, initialFormat = 'All' }: Podca
       {filtered.length === 0 && (
         <div className="text-center py-16 glass-cinema rounded-2xl border border-white/10">
           <div className="text-5xl mb-4">🎙️</div>
-          <p className="text-lg font-semibold text-white mb-1">No episodes found</p>
+          <p className="text-lg font-semibold text-content-primary mb-1">No episodes found</p>
           <p className="text-gray-400">
             {hasActiveFilters
               ? 'Try adjusting your search or filters.'

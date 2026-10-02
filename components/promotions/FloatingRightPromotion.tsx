@@ -200,7 +200,7 @@ export default function FloatingRightPromotion() {
               }
             }}
             title="Expand partner showcase"
-            className="animate-cta-continuous group flex items-center gap-2.5 rounded-full border-2 border-teal-500/50 bg-card/95 py-2 px-3.5 shadow-2xl backdrop-blur-xl dark:border-teal-400/40 dark:bg-[#0c1222]/95 transition-all hover:scale-105 hover:border-teal-400 cursor-pointer"
+            className="animate-cta-continuous group flex items-center gap-2.5 rounded-full border-2 border-teal-500/50 bg-card/95 py-2 px-3.5 shadow-2xl backdrop-blur-xl dark:border-teal-400/40 dark:bg-surface-overlay/95 transition-all hover:scale-105 hover:border-teal-400 cursor-pointer"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -219,13 +219,13 @@ export default function FloatingRightPromotion() {
                 Partner
               </span>
             </div>
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 group-hover:bg-teal-500 group-hover:text-white transition-colors ml-0.5">
+            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-teal-500/20 text-teal-600 dark:text-teal-400 group-hover:bg-brand group-hover:text-primary-foreground transition-colors ml-0.5">
               <ChevronUp className="h-3 w-3" />
             </span>
           </div>
         ) : (
           /* ── 2. EXPANDED FULL CARD: Top-tier Glassmorphic Browser Showcase ── */
-          <div className="w-[calc(100vw-2rem)] max-w-[330px] sm:max-w-[340px] relative overflow-hidden rounded-3xl border-2 border-teal-500/40 bg-card/95 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.4),0_0_30px_rgba(13,148,136,0.2)] backdrop-blur-2xl dark:border-teal-400/35 dark:bg-[#0c1322]/95 transition-all hover:border-teal-500/70">
+          <div className="w-[calc(100vw-2rem)] max-w-[330px] sm:max-w-[340px] relative overflow-hidden rounded-3xl border-2 border-teal-500/40 bg-card/95 p-4 shadow-[0_20px_50px_rgba(0,0,0,0.4),0_0_30px_rgba(13,148,136,0.2)] backdrop-blur-2xl dark:border-teal-400/35 dark:bg-surface-overlay/95 transition-all hover:border-teal-500/70">
             {/* Subtle Ambient Pulse behind card */}
             <div className="pointer-events-none absolute -top-12 -right-12 h-32 w-32 rounded-full bg-teal-500/20 blur-3xl animate-pulse" />
             <div className="pointer-events-none absolute -bottom-12 -left-12 h-32 w-32 rounded-full bg-cyan-500/15 blur-3xl" />
@@ -259,7 +259,7 @@ export default function FloatingRightPromotion() {
                   onClick={handleDismiss}
                   aria-label="Close promotion"
                   title="Close for this session"
-                  className="flex h-6 w-6 items-center justify-center rounded-lg border border-border/70 bg-background/80 text-muted-foreground hover:bg-red-500/10 hover:text-red-500 hover:border-red-500/30 transition-colors"
+                  className="flex h-6 w-6 items-center justify-center rounded-lg border border-border/70 bg-background/80 text-muted-foreground hover:bg-red-500/10 hover:text-error hover:border-red-500/30 transition-colors"
                 >
                   <X className="h-3.5 w-3.5" />
                 </button>
@@ -294,7 +294,7 @@ export default function FloatingRightPromotion() {
                 </button>
               </div>
             ) : hasImage ? (
-              <div className="my-2.5 overflow-hidden rounded-2xl border border-white/10 dark:border-teal-500/25 bg-slate-950/80 shadow-md group/preview">
+              <div className="my-2.5 overflow-hidden rounded-2xl border border-white/10 dark:border-teal-500/25 bg-brand-navy shadow-md group/preview">
                 {/* Browser Window Mockup Chrome Header */}
                 <div className="flex items-center justify-between border-b border-white/10 bg-slate-900/90 px-2.5 py-1 text-[10px]">
                   <div className="flex items-center gap-1.5">
@@ -361,7 +361,7 @@ export default function FloatingRightPromotion() {
                 onClick={handleCtaClick}
                 target="_blank"
                 rel="sponsored nofollow noopener noreferrer"
-                className="animate-cta-continuous relative overflow-hidden group flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-600 px-4 py-2.5 text-xs font-black text-white shadow-xl transition-all hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+                className="animate-cta-continuous relative overflow-hidden group flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-700 via-emerald-700 to-cyan-700 px-4 py-2.5 text-xs font-black text-white shadow-xl transition-all hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
               >
                 {/* Continuous Light Sweep Sheen */}
                 <span

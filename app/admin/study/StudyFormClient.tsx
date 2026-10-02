@@ -104,8 +104,8 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
   }
 
   const inputClass =
-    'w-full px-4 py-2.5 bg-white/[0.03] border border-white/[0.08] rounded-xl text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-[#0D6E6E]/50 transition-colors'
-  const labelClass = 'block text-xs font-bold text-slate-400 uppercase tracking-widest mb-2'
+    'w-full px-4 py-2.5 bg-surface-muted border border-border rounded-xl text-sm text-content-primary placeholder:text-content-muted focus:outline-none focus:border-brand/50 transition-colors'
+  const labelClass = 'block text-xs font-bold text-content-secondary uppercase tracking-widest mb-2'
 
   return (
     <div className="max-w-4xl">
@@ -114,15 +114,15 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
         <div className="flex items-center gap-4">
           <Link
             href="/admin/study"
-            className="p-2 text-slate-400 hover:text-white hover:bg-white/[0.05] rounded-lg transition-all"
+            className="p-2 text-content-secondary hover:text-content-primary hover:bg-surface-muted rounded-lg transition-all"
           >
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-white">
+            <h1 className="text-2xl font-bold text-content-primary">
               {mode === 'create' ? 'New Study Material' : 'Edit Study Material'}
             </h1>
-            <p className="text-slate-400 text-sm mt-1">
+            <p className="text-content-secondary text-sm mt-1">
               {mode === 'create' ? 'Create a new learning resource' : 'Update existing material'}
             </p>
           </div>
@@ -131,21 +131,21 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
 
       {/* ─── Error ─── */}
       {error && (
-        <div className="mb-6 flex items-center gap-3 px-4 py-3 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm">
+        <div className="mb-6 flex items-center gap-3 px-4 py-3 bg-error-muted border border-error/20 rounded-xl text-error text-sm">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </div>
       )}
 
       {categories.length === 0 ? (
-        <div className="bg-amber-500/10 border border-amber-500/20 rounded-xl p-6 text-center">
-          <p className="text-amber-400 font-medium">No categories exist yet</p>
-          <p className="text-slate-400 text-sm mt-1 mb-4">
+        <div className="bg-warning-muted border border-warning/20 rounded-xl p-6 text-center">
+          <p className="text-warning font-medium">No categories exist yet</p>
+          <p className="text-content-secondary text-sm mt-1 mb-4">
             You need at least one category before creating study materials.
           </p>
           <Link
             href="/admin/study/categories"
-            className="inline-flex items-center gap-2 px-4 py-2.5 bg-[#0D6E6E] text-white rounded-xl hover:bg-[#0B5A5A] transition-all text-sm font-medium"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-hover transition-all text-sm font-medium"
           >
             Create a Category
           </Link>
@@ -153,8 +153,8 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
       ) : (
         <div className="space-y-6">
           {/* ─── Basic Info ─── */}
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 space-y-5">
-            <h2 className="text-sm font-bold text-white uppercase tracking-widest">Basic Information</h2>
+          <div className="bg-surface border border-border-subtle rounded-2xl p-6 space-y-5">
+            <h2 className="text-sm font-bold text-content-primary uppercase tracking-widest">Basic Information</h2>
 
             <div>
               <label className={labelClass} htmlFor="title">Title *</label>
@@ -193,7 +193,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                   className={inputClass}
                 >
                   {categories.map((cat) => (
-                    <option key={cat.id} value={cat.id} className="bg-[#1A1F2E]">
+                    <option key={cat.id} value={cat.id} className="bg-surface">
                       {cat.icon} {cat.name}
                     </option>
                   ))}
@@ -209,7 +209,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                   className={inputClass}
                 >
                   {TYPES.map((t) => (
-                    <option key={t.value} value={t.value} className="bg-[#1A1F2E]">
+                    <option key={t.value} value={t.value} className="bg-surface">
                       {t.label}
                     </option>
                   ))}
@@ -227,7 +227,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                   className={inputClass}
                 >
                   {DIFFICULTIES.map((d) => (
-                    <option key={d.value} value={d.value} className="bg-[#1A1F2E]">
+                    <option key={d.value} value={d.value} className="bg-surface">
                       {d.label}
                     </option>
                   ))}
@@ -258,13 +258,13 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                 placeholder="e.g. dcf, valuation, beginners"
                 className={inputClass}
               />
-              <p className="text-xs text-slate-500 mt-1.5">Separate tags with commas. Used for search and filtering.</p>
+              <p className="text-xs text-content-muted mt-1.5">Separate tags with commas. Used for search and filtering.</p>
             </div>
           </div>
 
           {/* ─── Content ─── */}
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 space-y-5">
-            <h2 className="text-sm font-bold text-white uppercase tracking-widest">Content (Markdown / MDX)</h2>
+          <div className="bg-surface border border-border-subtle rounded-2xl p-6 space-y-5">
+            <h2 className="text-sm font-bold text-content-primary uppercase tracking-widest">Content (Markdown / MDX)</h2>
             <div>
               <label className={labelClass} htmlFor="content">Body *</label>
               <textarea
@@ -276,15 +276,15 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                 placeholder={`# Introduction\n\nWrite your study material content here using Markdown...\n\n## Key Concepts\n\n- Point one\n- Point two\n\n## Example\n\n\`\`\`python\n# code example\n\`\`\``}
                 className={`${inputClass} font-mono text-xs leading-relaxed`}
               />
-              <p className="text-xs text-slate-500 mt-1.5">
+              <p className="text-xs text-content-muted mt-1.5">
                 Supports Markdown syntax: headings, lists, code blocks, links, images, blockquotes.
               </p>
             </div>
           </div>
 
           {/* ─── Media & Resources ─── */}
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 space-y-5">
-            <h2 className="text-sm font-bold text-white uppercase tracking-widest">Media & Resources</h2>
+          <div className="bg-surface border border-border-subtle rounded-2xl p-6 space-y-5">
+            <h2 className="text-sm font-bold text-content-primary uppercase tracking-widest">Media & Resources</h2>
 
             <div>
               <label className={labelClass} htmlFor="coverImage">Cover Image URL</label>
@@ -296,7 +296,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                 placeholder="https://..."
                 className={inputClass}
               />
-              <p className="text-xs text-slate-500 mt-1.5">Optional. Shown on the material card and detail page.</p>
+              <p className="text-xs text-content-muted mt-1.5">Optional. Shown on the material card and detail page.</p>
             </div>
 
             <div>
@@ -309,13 +309,13 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                 placeholder="https://..."
                 className={inputClass}
               />
-              <p className="text-xs text-slate-500 mt-1.5">Optional. Link to a PDF, video, or external resource.</p>
+              <p className="text-xs text-content-muted mt-1.5">Optional. Link to a PDF, video, or external resource.</p>
             </div>
           </div>
 
           {/* ─── Publishing ─── */}
-          <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl p-6 space-y-5">
-            <h2 className="text-sm font-bold text-white uppercase tracking-widest">Publishing Options</h2>
+          <div className="bg-surface border border-border-subtle rounded-2xl p-6 space-y-5">
+            <h2 className="text-sm font-bold text-content-primary uppercase tracking-widest">Publishing Options</h2>
 
             <div className="flex flex-col gap-4">
               <label className="flex items-center gap-3 cursor-pointer">
@@ -323,11 +323,11 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                   type="checkbox"
                   checked={featured}
                   onChange={(e) => setFeatured(e.target.checked)}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#0D6E6E] focus:ring-[#0D6E6E]/50"
+                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-brand focus:ring-brand/50"
                 />
                 <div>
-                  <span className="text-sm text-white font-medium">Featured material</span>
-                  <span className="block text-xs text-slate-500">Show this in the featured section on the study page</span>
+                  <span className="text-sm text-content-primary font-medium">Featured material</span>
+                  <span className="block text-xs text-content-muted">Show this in the featured section on the study page</span>
                 </div>
               </label>
 
@@ -336,11 +336,11 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
                   type="checkbox"
                   checked={published}
                   onChange={(e) => setPublished(e.target.checked)}
-                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-[#0D6E6E] focus:ring-[#0D6E6E]/50"
+                  className="w-4 h-4 rounded border-white/20 bg-white/5 text-brand focus:ring-brand/50"
                 />
                 <div>
-                  <span className="text-sm text-white font-medium">Published</span>
-                  <span className="block text-xs text-slate-500">Make this visible to the public</span>
+                  <span className="text-sm text-content-primary font-medium">Published</span>
+                  <span className="block text-xs text-content-muted">Make this visible to the public</span>
                 </div>
               </label>
             </div>
@@ -350,7 +350,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
           <div className="flex items-center justify-end gap-3 pt-2">
             <Link
               href="/admin/study"
-              className="px-5 py-2.5 text-slate-300 hover:text-white text-sm font-medium transition-colors"
+              className="px-5 py-2.5 text-content-secondary hover:text-content-primary text-sm font-medium transition-colors"
             >
               Cancel
             </Link>
@@ -358,7 +358,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
               type="button"
               onClick={() => handleSave(false)}
               disabled={isPending}
-              className="flex items-center gap-2 px-5 py-2.5 bg-white/[0.05] border border-white/[0.08] text-white rounded-xl hover:bg-white/[0.08] transition-all text-sm font-medium disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 bg-surface-muted border border-border text-content-primary rounded-xl hover:bg-surface-muted transition-all text-sm font-medium disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {isPending ? 'Saving...' : 'Save'}
@@ -367,7 +367,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
               type="button"
               onClick={() => handleSave(true)}
               disabled={isPending}
-              className="flex items-center gap-2 px-5 py-2.5 bg-[#0D6E6E] text-white rounded-xl hover:bg-[#0B5A5A] transition-all text-sm font-medium disabled:opacity-50"
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-hover transition-all text-sm font-medium disabled:opacity-50"
             >
               <Eye className="w-4 h-4" />
               {isPending ? 'Publishing...' : published ? 'Save & Publish' : 'Publish'}

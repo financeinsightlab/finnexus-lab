@@ -58,13 +58,13 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
     ];
 
     return (
-        <div className="min-h-screen bg-[#0B0D13] text-slate-200">
+        <div className="min-h-screen bg-surface-muted text-slate-200">
             <JsonLd data={jsonLd} />
 
-            <header className="relative overflow-hidden border-b border-white/5 bg-[#0f1c2d] py-14">
+            <header className="relative overflow-hidden border-b border-white/5 bg-surface-raised py-14">
                 <div className="relative z-10 mx-auto max-w-[1400px] px-6">
                     <nav className="mb-6 flex items-center gap-2 text-sm text-slate-400">
-                        <Link href="/predictions" className="hover:text-teal-400">
+                        <Link href="/predictions" className="hover:text-brand-hover">
                             Predictions
                         </Link>
                         <span aria-hidden>/</span>
@@ -172,7 +172,7 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
                                                 <td className="px-4 py-4">
                                                     <Link
                                                         href={`/predictions/${prediction.slug}`}
-                                                        className="font-medium text-slate-100 hover:text-teal-400"
+                                                        className="font-medium text-slate-100 hover:text-brand-hover"
                                                     >
                                                         {prediction.claim}
                                                     </Link>

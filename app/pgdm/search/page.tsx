@@ -70,7 +70,7 @@ export default async function SearchPage({
   }, {});
 
   return (
-    <div className="min-h-screen bg-[#0a1120] text-slate-100">
+    <div className="min-h-screen bg-background text-slate-100">
       <main className="max-w-3xl mx-auto px-6 py-12 space-y-8">
         <header className="space-y-3 text-center">
           <Link href="/pgdm" className="text-xs text-teal-300 hover:underline">← PGDM curriculum</Link>
@@ -85,11 +85,11 @@ export default async function SearchPage({
             name="q"
             defaultValue={q}
             placeholder="e.g. elasticity, VaR, entropy, DSCR, attribution, k-means…"
-            className="flex-1 rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:border-teal-500/50"
+            className="flex-1 rounded-xl border border-border bg-surface-raised px-4 py-3 text-sm text-content-primary placeholder:text-content-muted focus:outline-none focus-visible:border-brand"
           />
           <button
             type="submit"
-            className="rounded-xl border border-teal-500/30 bg-teal-500/10 px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-teal-300 hover:bg-teal-500/20 transition-colors"
+            className="rounded-xl border border-brand/30 bg-brand-muted px-5 py-3 text-[11px] font-bold uppercase tracking-widest text-brand hover:bg-brand/15 transition-colors"
           >
             Search
           </button>
@@ -103,7 +103,7 @@ export default async function SearchPage({
                 <Link
                   key={t}
                   href={`/pgdm/search?q=${encodeURIComponent(t)}`}
-                  className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-slate-300 hover:border-teal-500/40 hover:text-teal-300 transition-colors"
+                  className="rounded-full border border-border bg-surface-raised px-3 py-1.5 text-xs text-content-secondary hover:border-brand/40 hover:text-brand transition-colors"
                 >
                   {t}
                 </Link>
@@ -126,9 +126,9 @@ export default async function SearchPage({
                   <Link
                     key={i}
                     href={`/pgdm/${h.subject.slug}/${h.lecture.slug}`}
-                    className="block rounded-xl border border-white/8 bg-white/[0.02] p-4 hover:border-teal-500/30 transition-colors"
+                    className="block rounded-xl border border-border-subtle bg-surface p-4 hover:border-brand/30 transition-colors"
                   >
-                    <p className="text-sm font-semibold text-white">
+                    <p className="text-sm font-semibold text-content-primary">
                       Lecture {h.lecture.number} — {h.lecture.title}
                       <span className="ml-2 text-[9px] font-bold uppercase tracking-widest text-violet-300">{h.field}</span>
                     </p>

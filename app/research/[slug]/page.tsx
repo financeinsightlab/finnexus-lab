@@ -136,7 +136,7 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
             <div className="flex items-center justify-between gap-4 mb-8">
               <Link
                 href="/research"
-                className="inline-flex items-center gap-2 text-sm text-cinema-cyan hover:text-white transition-colors group"
+                className="inline-flex items-center gap-2 text-sm text-cinema-cyan hover:text-brand-hover transition-colors group"
               >
                 <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
                 Back to Research Library
@@ -187,7 +187,7 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
         {/* ── 3D COVER IMAGE HERO BANNER ── */}
         {coverImage && (
           <div className="wrap max-w-5xl -mt-8 relative z-20">
-            <div className="overflow-hidden rounded-3xl shadow-2xl border border-white/15 bg-[#080D1A]">
+            <div className="overflow-hidden rounded-3xl shadow-2xl border border-white/15 bg-surface-muted">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={coverImage}
@@ -290,7 +290,7 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
                           </div>
                         )}
                         <p className="text-[10px] text-cinema-cyan font-mono mb-1">{rel.sector}</p>
-                        <h4 className="text-xs font-semibold text-white group-hover:text-cinema-cyan transition-colors line-clamp-2 leading-snug">
+                        <h4 className="text-xs font-semibold text-white group-hover:text-brand-hover transition-colors line-clamp-2 leading-snug">
                           {rel.title}
                         </h4>
                       </Link>
@@ -300,7 +300,7 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
               )}
 
               {/* Research Desk Citation Notice */}
-              <div className="p-4 rounded-2xl bg-[#0B101D] border border-white/10 text-[11px] text-gray-400 space-y-2">
+              <div className="p-4 rounded-2xl bg-surface-overlay border border-white/10 text-[11px] text-gray-400 space-y-2">
                 <p className="font-semibold text-gray-200">How to cite this report:</p>
                 <p className="font-mono text-[10px] text-gray-400 bg-white/5 p-2 rounded-lg border border-white/5 break-words">
                   Kunwar Analytics (2026). &quot;{title}&quot;. Kunwar Strategic Industries Desk. https://kunwaranalytics.in/research/{slug}

@@ -100,7 +100,7 @@ export default async function StudyMaterialPage({ params }: PageProps) {
   const categoryColor = material.category.color || '#0D6E6E'
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
+    <div className="min-h-screen bg-gray-50 dark:bg-surface-muted">
       {/* JSON-LD structured data for SEO + GEO */}
       <JsonLd data={articleJsonLd} />
       <JsonLd data={crumbs} />
@@ -110,7 +110,7 @@ export default async function StudyMaterialPage({ params }: PageProps) {
         <div className="max-w-4xl mx-auto px-6">
           <Link
             href="/study"
-            className="inline-flex items-center gap-2 text-slate-400 hover:text-teal-400 transition-colors text-sm mb-6"
+            className="inline-flex items-center gap-2 text-slate-400 hover:text-brand-hover transition-colors text-sm mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to Study Material
@@ -118,11 +118,11 @@ export default async function StudyMaterialPage({ params }: PageProps) {
 
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-xs text-slate-500 mb-4">
-            <Link href="/" className="hover:text-teal-400">Home</Link>
+            <Link href="/" className="hover:text-brand-hover">Home</Link>
             <span>/</span>
-            <Link href="/study" className="hover:text-teal-400">Study</Link>
+            <Link href="/study" className="hover:text-brand-hover">Study</Link>
             <span>/</span>
-            <Link href={`/study?category=${material.category.slug}`} className="hover:text-teal-400">
+            <Link href={`/study?category=${material.category.slug}`} className="hover:text-brand-hover">
               {material.category.name}
             </Link>
           </nav>
@@ -186,7 +186,7 @@ export default async function StudyMaterialPage({ params }: PageProps) {
               href={material.resourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 bg-teal-500 text-white rounded-xl font-bold text-sm hover:bg-teal-400 transition-colors"
+              className="inline-flex items-center gap-2 mt-6 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl font-bold text-sm hover:bg-primary-hover transition-colors"
             >
               <ExternalLink className="w-4 h-4" />
               Access Resource
@@ -210,7 +210,7 @@ export default async function StudyMaterialPage({ params }: PageProps) {
       {related.length > 0 && (
         <section className="max-w-[1400px] mx-auto px-6 py-12 border-t border-gray-200 dark:border-white/5">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-            <BookOpen className="w-6 h-6 text-[#0D6E6E]" />
+            <BookOpen className="w-6 h-6 text-brand" />
             Related Study Materials
           </h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -218,12 +218,12 @@ export default async function StudyMaterialPage({ params }: PageProps) {
               <Link
                 key={m.id}
                 href={`/study/${m.slug}`}
-                className="group bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-[#2D3748] rounded-2xl p-5 hover:border-[#0D6E6E]/50 transition-all"
+                className="group bg-white dark:bg-surface border border-gray-200 dark:border-border rounded-2xl p-5 hover:border-brand/50 transition-all"
               >
                 <span className="text-[10px] font-bold uppercase tracking-wider text-teal-500">
                   {m.category.icon} {m.category.name}
                 </span>
-                <h3 className="text-base font-bold text-gray-900 dark:text-white mt-2 mb-2 line-clamp-2 group-hover:text-[#0D6E6E] transition-colors">
+                <h3 className="text-base font-bold text-gray-900 dark:text-white mt-2 mb-2 line-clamp-2 group-hover:text-brand transition-colors">
                   {m.title}
                 </h3>
                 <p className="text-sm text-gray-600 dark:text-slate-400 line-clamp-2">

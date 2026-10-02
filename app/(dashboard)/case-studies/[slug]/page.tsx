@@ -49,11 +49,11 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     if (!dbPost.published) notFound();
 
     return (
-      <div className="min-h-screen bg-cinema-black text-white">
+      <div className="min-h-screen bg-cinema-black text-content-primary">
         <header className="relative aurora-bg overflow-hidden pt-10 pb-14">
           <div className="absolute inset-0 opacity-[0.04] bg-grid pointer-events-none" />
           <div className="wrap max-w-4xl relative z-10">
-            <Link href="/case-studies" className="inline-flex items-center gap-1.5 text-sm text-cinema-cyan hover:text-white transition-colors mb-8">
+            <Link href="/case-studies" className="inline-flex items-center gap-1.5 text-sm text-cinema-cyan hover:text-content-primary transition-colors mb-8">
               <ChevronLeft className="w-4 h-4" /> All Case Studies
             </Link>
             <span className="px-3 py-1 bg-cinema-cyan/10 text-cinema-cyan text-xs font-bold rounded-full uppercase tracking-widest border border-cinema-cyan/30">
@@ -101,7 +101,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   };
 
   return (
-    <div className="min-h-screen bg-cinema-black text-white">
+    <div className="min-h-screen bg-cinema-black text-content-primary">
       <JsonLd data={episodeSchema} />
 
       {/* ═══════════ HEADER ═══════════ */}
@@ -111,9 +111,9 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
         <div className="wrap max-w-6xl relative z-10">
           <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-            <Link href="/" className="hover:text-cinema-cyan transition-colors">Home</Link>
+            <Link href="/" className="hover:text-brand transition-colors">Home</Link>
             <span className="text-gray-600">/</span>
-            <Link href="/case-studies" className="hover:text-cinema-cyan transition-colors">Case Studies</Link>
+            <Link href="/case-studies" className="hover:text-brand transition-colors">Case Studies</Link>
             <span className="text-gray-600">/</span>
             <span className="text-cinema-cyan">{caseStudy.engagementType}</span>
           </nav>
@@ -228,7 +228,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
       {/* ═══════════ BODY ═══════════ */}
       <div className="wrap max-w-4xl py-12 md:py-16">
-        <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-strong:text-white prose-em:text-gray-200 prose-li:text-gray-300 prose-hr:border-white/10 prose-blockquote:text-gray-400 prose-blockquote:border-cinema-cyan prose-table:text-gray-300 prose-th:text-white prose-thead:border-white/20 prose-td:border-white/10">
+        <div className="prose prose-lg max-w-none prose-headings:text-content-primary prose-headings:font-bold prose-p:text-content-secondary prose-strong:text-content-primary prose-em:text-content-primary prose-li:text-content-secondary prose-hr:border-border prose-blockquote:text-content-secondary prose-blockquote:border-brand prose-table:text-content-secondary prose-th:text-content-primary prose-thead:border-border prose-td:border-border-subtle">
           {caseStudy.content ? (
             <MDXRemote source={caseStudy.content} />
           ) : (
@@ -266,7 +266,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                   </div>
                   <div className="p-5">
                     <span className="text-[10px] font-bold uppercase tracking-wider text-cinema-cyan">{s.engagementType}</span>
-                    <h3 className="font-bold text-white text-sm leading-snug mt-1.5 line-clamp-2 group-hover:text-cinema-cyan transition-colors">
+                    <h3 className="font-bold text-white text-sm leading-snug mt-1.5 line-clamp-2 group-hover:text-brand transition-colors">
                       {s.title}
                     </h3>
                   </div>

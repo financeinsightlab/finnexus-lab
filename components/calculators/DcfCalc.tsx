@@ -304,14 +304,14 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Terminal Gr</label>
                   <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-blue-50/50" step="0.1" value={ltGrowth} onChange={e => setLtGrowth(e.target.value)} />
+                    <input type="number" className="input w-full pr-7 bg-info-muted/50" step="0.1" value={ltGrowth} onChange={e => setLtGrowth(e.target.value)} />
                     <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                   </div>
                 </div>
                 <div>
                   <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">WACC (Disc)</label>
                   <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-blue-50/50" step="0.1" value={wacc} onChange={e => setWacc(e.target.value)} />
+                    <input type="number" className="input w-full pr-7 bg-info-muted/50" step="0.1" value={wacc} onChange={e => setWacc(e.target.value)} />
                     <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                   </div>
                 </div>
@@ -350,7 +350,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
             {/* KPI Cards */}
             <div className="grid md:grid-cols-3 gap-6">
               <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-blue-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
+                <div className="absolute top-0 right-0 w-16 h-16 bg-info-muted rounded-bl-full -mr-4 -mt-4 z-0"></div>
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1 relative z-10">Target Equity Value</p>
                 <h4 className={`text-4xl tracking-tighter font-bold relative z-10 ${calculations.modelError ? 'text-red-500' : 'text-brand-navy dark:text-white'}`}>
                   {calculations.modelError ? 'Error (Check WACC)' : `$${(calculations.equityValue / 1000000).toFixed(2)}M`}
@@ -358,8 +358,8 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2 relative z-10">Market Cap (EV + Cash - Debt)</p>
               </div>
 
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-green-100 ring-2 ring-green-500/10 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-green-500"></div>
+              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-success/25 ring-2 ring-green-500/10 relative overflow-hidden">
+                <div className="absolute top-0 left-0 w-1 h-full bg-success"></div>
                 <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Implied Share Price</p>
                 <h4 className={`text-4xl tracking-tighter font-bold ${calculations.modelError ? 'text-red-500' : 'text-green-600'}`}>
                   {calculations.modelError ? 'N/A' : `$${calculations.sharePrice.toFixed(2)}`}
@@ -380,7 +380,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
             <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 relative z-10 w-full">
               <h3 className="font-bold text-brand-navy dark:text-white mb-1 leading-tight uppercase tracking-wider text-sm flex items-center justify-between">
                 <span>Component Breakdown of Present Value (PV)</span>
-                <span className="text-[10px] bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100">Discounted Matrix</span>
+                <span className="text-[10px] bg-info-muted text-info px-2 py-0.5 rounded border border-info/25">Discounted Matrix</span>
               </h3>
               <p className="text-[11px] text-gray-500 mb-4 tracking-wide">
                 Visualizing how much of the intrinsic Enterprise Value arises from near-term execution (Years 1-5) versus far-future speculative Gordon Growth (Terminal Value).
@@ -389,11 +389,11 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={calculations.chartData} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
                     <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
-                    <XAxis dataKey="stage" axisLine={false} tickLine={false} tick={{fontSize: 11, fill: '#475569'}} />
+                    <XAxis dataKey="stage" axisLine={false} tickLine={false} tick={{fontSize: 11, fill: 'hsl(var(--content-muted))'}} />
                     <YAxis tickFormatter={(val) => `$${(val/1000000).toFixed(1)}M`} axisLine={false} tickLine={false} tick={{fontSize: 11}} width={60} />
                     <Tooltip 
                       formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Present Value ($)']}
-                      cursor={{fill: '#f8fafc'}}
+                      cursor={{fill: 'hsl(var(--surface-muted))'}}
                       contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
                     />
                     <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={60}>
@@ -411,7 +411,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
             <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
-              <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
+              <div className="bg-success text-primary-foreground px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-success">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/>
                 </svg>
@@ -420,7 +420,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
               
               <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
                 <span className="font-bold italic text-gray-400 select-none cursor-default px-1 hover:bg-gray-100 rounded">fx</span> 
-                <div className="bg-white dark:bg-slate-900 border border-blue-300 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
+                <div className="bg-white dark:bg-slate-900 border border-info/35 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
                   =SUM(PV_Explicit) + PV_Terminal
                 </div>
               </div>
@@ -443,62 +443,62 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                   <tbody className="text-gray-800">
                     
                     {/* Operating Metrics */}
-                    <tr className="hover:bg-blue-50/30 group">
+                    <tr className="hover:bg-info-muted/40 group">
                       <ExcelRowIndex i="1" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-white dark:bg-slate-900 text-black pl-3 group-hover:bg-blue-50/0">Topline Revenue</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-white dark:bg-slate-900 text-black pl-3 group-hover:bg-info-muted/0">Topline Revenue</td>
                       {calculations.rowRev.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50 font-bold' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-warning-muted font-bold' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
                     </tr>
                     
-                    <tr className="hover:bg-blue-50/30 group">
+                    <tr className="hover:bg-info-muted/40 group">
                       <ExcelRowIndex i="2" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-gray-700 group-hover:bg-blue-50/0">EBITDA</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-gray-700 group-hover:bg-info-muted/0">EBITDA</td>
                       {calculations.rowEbitda.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-warning-muted' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
                     </tr>
 
-                    <tr className="hover:bg-blue-50/30 group text-red-600">
+                    <tr className="hover:bg-info-muted/40 group text-red-600">
                       <ExcelRowIndex i="3" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 group-hover:bg-blue-50/0">Less: Operating Cash Taxes</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 group-hover:bg-info-muted/0">Less: Operating Cash Taxes</td>
                       {calculations.rowTax.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-warning-muted' : ''}`}>
                           {typeof val === 'number' ? `(${Math.abs(val).toLocaleString()})` : val}
                         </td>
                       ))}
                     </tr>
 
-                    <tr className="hover:bg-blue-50/30 group bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
+                    <tr className="hover:bg-info-muted/40 group bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="4" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white pl-3 font-semibold group-hover:bg-blue-50/0">Net Operating Profit (NOPAT)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white pl-3 font-semibold group-hover:bg-info-muted/0">Net Operating Profit (NOPAT)</td>
                       {calculations.rowNopat.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-semibold text-black ${idx===0 ? 'text-blue-700 bg-yellow-50' : 'border-t border-t-gray-400'}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-semibold text-black ${idx===0 ? 'text-blue-700 bg-warning-muted' : 'border-t border-t-gray-400'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
                     </tr>
 
-                    <tr className="hover:bg-blue-50/30 group text-red-600">
+                    <tr className="hover:bg-info-muted/40 group text-red-600">
                       <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 group-hover:bg-blue-50/0">Less: Reinvestment (Capex/NWC)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 group-hover:bg-info-muted/0">Less: Reinvestment (Capex/NWC)</td>
                       {calculations.rowCapex.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-warning-muted' : ''}`}>
                           {typeof val === 'number' ? `(${Math.abs(val).toLocaleString()})` : val}
                         </td>
                       ))}
                     </tr>
 
                     {/* UFCF */}
-                    <tr className="bg-blue-50/20 group">
+                    <tr className="bg-info-muted/30 group">
                       <ExcelRowIndex i="6" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-blue-50/30 text-brand-navy dark:text-white pl-3 uppercase tracking-wider text-[10px]">Unlevered Free Cash Flow</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-info-muted/40 text-brand-navy dark:text-white pl-3 uppercase tracking-wider text-[10px]">Unlevered Free Cash Flow</td>
                       {calculations.rowFcf.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-brand-navy dark:text-white bg-blue-50/30 ${idx===0 ? 'text-blue-700 bg-yellow-100' : 'border-t-2 border-t-gray-400'}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-brand-navy dark:text-white bg-info-muted/40 ${idx===0 ? 'text-blue-700 bg-warning-muted' : 'border-t-2 border-t-gray-400'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -515,11 +515,11 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                       ))}
                     </tr>
 
-                    <tr className="bg-yellow-50/30 group">
+                    <tr className="bg-warning-muted/35 group">
                       <ExcelRowIndex i="8" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-yellow-50/50 text-black pl-3 shadow-inner">Present Value (PV)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-warning-muted/55 text-black pl-3 shadow-inner">Present Value (PV)</td>
                       {calculations.rowPv.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-black border-t border-t-gray-300 ${idx===7 ? 'bg-teal-50 text-teal-900 border-2 border-teal-500 shadow-md transform scale-105 z-10 relative' : ''} ${idx===0 ? 'bg-yellow-50' : ''}`}>
+                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-black border-t border-t-gray-300 ${idx===7 ? 'bg-brand-muted text-brand border-2 border-teal-500 shadow-md transform scale-105 z-10 relative' : ''} ${idx===0 ? 'bg-warning-muted' : ''}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
                         </td>
                       ))}
@@ -528,7 +528,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     {/* Spacer Line */}
                     <tr>
                       <ExcelRowIndex i="9" />
-                      <td colSpan={8} className="border border-gray-200 dark:border-slate-700 bg-gray-100/50 py-1"></td>
+                      <td colSpan={8} className="border border-gray-200 dark:border-slate-700 bg-surface-muted/50 py-1"></td>
                     </tr>
 
                     {/* Valuation Bridge */}
@@ -557,39 +557,39 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="13" />
                       <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-green-700">Plus: Cash & Equivalents</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 bg-yellow-50">{Math.round(num(cashEq)).toLocaleString()}</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 bg-warning-muted">{Math.round(num(cashEq)).toLocaleString()}</td>
                       <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
 
                     <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="14" />
                       <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-red-600">Less: Total Outstanding Debt</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-yellow-50">({Math.round(num(totalDebt)).toLocaleString()})</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-warning-muted">({Math.round(num(totalDebt)).toLocaleString()})</td>
                       <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
 
                     <tr className="bg-[#e2f1e8]">
                       <ExcelRowIndex i="15" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0f5c2e]">Implied Equity Value</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-bold text-[14px] text-[#0f5c2e]">
-                        <span className="border-b-2 border-double border-[#0f5c2e] pb-0.5">
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-success">Implied Equity Value</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-bold text-[14px] text-success">
+                        <span className="border-b-2 border-double border-success pb-0.5">
                           {calculations.modelError ? 'Error' : Math.round(calculations.equityValue).toLocaleString()}
                         </span>
                       </td>
                       <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
                     </tr>
 
-                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50 border-t-2 border-t-white">
+                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50 border-t-2 border-t-border-strong">
                       <ExcelRowIndex i="16" />
                       <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 italic text-gray-500">Divided By: Fully Diluted Shares</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-yellow-50">{Math.round(num(shares)).toLocaleString()}</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-warning-muted">{Math.round(num(shares)).toLocaleString()}</td>
                       <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent border-t border-t-gray-200"></td>
                     </tr>
 
-                    <tr className="bg-[#eef3fb]">
+                    <tr className="bg-surface-muted">
                       <ExcelRowIndex i="17" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-blue-800 shadow-inner">Target Share Price</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[15px] text-blue-900 shadow-inner">
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-info shadow-inner">Target Share Price</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[15px] text-info shadow-inner">
                         <span className="border-b-4 border-double border-blue-900 pb-0.5 px-2 bg-white dark:bg-slate-900 rounded-sm shadow border">
                           {calculations.modelError ? 'Error' : `$${calculations.sharePrice.toFixed(2)}`}
                         </span>
@@ -599,7 +599,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
 
                     <tr>
                       <ExcelRowIndex i="18" />
-                      <td colSpan={8} className="border border-gray-300 bg-gray-100/80 py-0.5 text-[9px] italic text-gray-400 pl-4 border-t shadow-inner uppercase tracking-wider">Ready</td>
+                      <td colSpan={8} className="border border-gray-300 bg-surface-muted/80 py-0.5 text-[9px] italic text-gray-400 pl-4 border-t shadow-inner uppercase tracking-wider">Ready</td>
                     </tr>
                   </tbody>
                 </table>
@@ -626,7 +626,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
           {isLocked && (
             <div className="absolute inset-0 z-[100] flex flex-col items-center justify-center pt-20 bg-gray-900/10 backdrop-blur-sm -m-6 rounded-3xl">
               <div className="bg-white dark:bg-slate-900 p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-gray-100 flex flex-col items-center relative z-50">
-                <div className="w-16 h-16 bg-gold-100 text-gold-600 rounded-full flex items-center justify-center mb-6">
+                <div className="w-16 h-16 bg-warning-muted text-warning rounded-full flex items-center justify-center mb-6">
                   <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
                   </svg>
@@ -653,7 +653,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     <button type="submit" disabled={loading} className="btn btn-primary w-full shadow-xl shadow-brand-teal/30">
                       {loading ? 'Verifying...' : 'Pay & Subscribe Access'}
                     </button>
-                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-gray-800">
+                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-content-primary">
                       Cancel
                     </button>
                   </form>

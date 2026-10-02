@@ -48,7 +48,7 @@ export default function DashboardSidebar() {
     <motion.aside
       initial={false}
       animate={{ width: collapsed ? 80 : 272 }}
-      className="hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-white dark:bg-[#0a1120] border-r border-slate-200 dark:border-slate-800/50 z-40 transition-all duration-300"
+      className="hidden md:flex flex-col h-[calc(100vh-64px)] sticky top-16 bg-surface border-r border-border-subtle z-40 transition-all duration-300"
     >
       <div className="flex-1 min-h-0 overflow-y-auto py-6 px-3 custom-scrollbar">
 
@@ -58,11 +58,11 @@ export default function DashboardSidebar() {
             href="/dashboard"
             title={collapsed ? 'Dashboard' : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive('/dashboard')
-                ? 'bg-teal-500/10 text-teal-600 dark:text-teal-400'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50'
+                ? 'bg-brand-muted text-brand'
+                : 'text-content-secondary hover:bg-accent'
               }`}
           >
-            <LayoutDashboard size={20} className={`shrink-0 ${isActive('/dashboard') ? 'text-teal-500 dark:text-teal-400' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors'}`} />
+            <LayoutDashboard size={20} className={`shrink-0 ${isActive('/dashboard') ? 'text-brand' : 'text-content-muted group-hover:text-content-primary transition-colors'}`} />
             <AnimatePresence mode="wait">
               {!collapsed && (
                 <motion.span
@@ -82,7 +82,7 @@ export default function DashboardSidebar() {
         <div className={`flex ${collapsed ? 'justify-center' : 'justify-end'} mb-6`}>
           <button
             onClick={() => setCollapsed(!collapsed)}
-            className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800/50 text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+            className="p-1.5 rounded-lg bg-surface-muted text-content-muted hover:text-content-primary transition-colors"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
           >
             {collapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
@@ -104,11 +104,11 @@ export default function DashboardSidebar() {
                   href={cluster.href}
                   title={cluster.label}
                   className={`flex items-center justify-center px-3 py-2.5 rounded-xl transition-all duration-200 ${active
-                      ? 'bg-teal-500/10 text-teal-600 dark:text-teal-400'
-                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50'
+                      ? 'bg-brand-muted text-brand'
+                      : 'text-content-secondary hover:bg-accent'
                     }`}
                 >
-                  <Icon size={20} className={active ? 'text-teal-500 dark:text-teal-400' : 'text-slate-400'} />
+                  <Icon size={20} className={active ? 'text-brand' : 'text-content-muted'} />
                 </Link>
               ) : (
                 <>
@@ -116,16 +116,16 @@ export default function DashboardSidebar() {
                     onClick={() => toggle(cluster.id)}
                     aria-expanded={open}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${active
-                        ? 'text-teal-600 dark:text-teal-400'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800/50'
+                        ? 'text-brand'
+                        : 'text-content-secondary hover:bg-accent'
                       }`}
                   >
-                    <Icon size={20} className={`shrink-0 ${active ? 'text-teal-500 dark:text-teal-400' : 'text-slate-400 group-hover:text-slate-600 dark:group-hover:text-slate-300 transition-colors'}`} />
+                    <Icon size={20} className={`shrink-0 ${active ? 'text-brand' : 'text-content-muted group-hover:text-content-primary transition-colors'}`} />
                     <span className="font-medium text-sm whitespace-nowrap overflow-hidden text-left flex-1">
                       {cluster.label}
                     </span>
                     {childActive && <span className="w-1.5 h-1.5 rounded-full bg-teal-500" />}
-                    <ChevronDown size={16} className={`shrink-0 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+                    <ChevronDown size={16} className={`shrink-0 text-content-muted transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
                   </button>
 
                   <AnimatePresence initial={false}>
@@ -135,7 +135,7 @@ export default function DashboardSidebar() {
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
                         transition={{ duration: 0.2 }}
-                        className="overflow-hidden ml-4 mt-1 pl-3 border-l border-slate-200 dark:border-slate-800/60 space-y-0.5"
+                        className="overflow-hidden ml-4 mt-1 pl-3 border-l border-border-subtle space-y-0.5"
                       >
                         {cluster.items.map((item) => {
                           const itemActive = isActive(item.href);
@@ -144,8 +144,8 @@ export default function DashboardSidebar() {
                               key={`${cluster.id}-${item.href}`}
                               href={item.href}
                               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${itemActive
-                                  ? 'bg-teal-500/10 text-teal-600 dark:text-teal-400 font-medium'
-                                  : 'text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-white'
+                                  ? 'bg-brand-muted text-brand font-medium'
+                                  : 'text-content-muted hover:bg-accent hover:text-content-primary'
                                 }`}
                             >
                               <span className="text-sm leading-none">{item.icon}</span>

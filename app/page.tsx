@@ -172,7 +172,7 @@ export default async function HomePage() {
                       <div className="w-14 h-14 -mt-16 mb-5 rounded-2xl glass-cinema-light flex items-center justify-center text-3xl group-hover:scale-110 transition-transform duration-300 border border-white/10 shadow-lg shadow-black/40 relative">
                         {pillar.icon}
                       </div>
-                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-cinema-cyan transition-colors">
+                      <h3 className="text-xl font-bold text-white mb-3 group-hover:text-brand-hover transition-colors">
                         {pillar.title}
                       </h3>
                       <p className="text-sm text-gray-400 leading-relaxed flex-1">
@@ -233,7 +233,7 @@ export default async function HomePage() {
               <ScrollReveal key={tracker.sector} delay={i * 80}>
                 <GlassCard3D glow="cyan" className="h-full overflow-hidden">
                   <Link href={tracker.href} className="block h-full cursor-pointer">
-                    <div className="relative h-44 w-full overflow-hidden bg-[#0b1623]">
+                    <div className="relative h-44 w-full overflow-hidden bg-surface">
                       <SectorVideo slug={(tracker.href.split('/').pop() as string) ?? 'fintech'} priority={i < 2} />
                       <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                       <div className="pointer-events-none absolute bottom-3 left-4 flex items-center gap-2">

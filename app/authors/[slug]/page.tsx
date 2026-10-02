@@ -79,7 +79,7 @@ export default async function AuthorProfilePage({ params }: Props) {
     .slice(0, 2);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-background">
       {/* ─── Header ─── */}
       <section className="bg-brand-navy py-20">
         <div className="max-w-5xl mx-auto px-6">
@@ -187,12 +187,13 @@ export default async function AuthorProfilePage({ params }: Props) {
                     <li key={p.id} className="ml-5 relative">
                       {/* Timeline dot */}
                       <span
-                        className="absolute -left-[26px] top-0.5 w-4 h-4 rounded-full border-2 border-white flex items-center justify-center text-[10px]"
-                        style={{
-                          background:
-                            p.status === 'CONFIRMED' ? '#dcfce7' :
-                            p.status === 'INCORRECT' ? '#fee2e2' : '#fef3c7',
-                        }}
+                        className={`absolute -left-[26px] top-0.5 w-4 h-4 rounded-full border-2 border-background flex items-center justify-center text-[10px] ${
+                          p.status === 'CONFIRMED'
+                            ? 'bg-success-muted'
+                            : p.status === 'INCORRECT'
+                              ? 'bg-error-muted'
+                              : 'bg-warning-muted'
+                        }`}
                       >
                         {cfg.icon}
                       </span>

@@ -38,7 +38,7 @@ export default function ToolsPage() {
   return (
     <div className="min-h-screen">
       {/* Page Header */}
-      <header className="relative overflow-hidden bg-gradient-to-r from-brand-navy to-teal-800 py-20">
+      <header className="relative overflow-hidden bg-brand-navy py-20">
         <HeroBackground />
         <div className="wrap relative z-10">
           <p className="section-label text-teal-300 mb-5">Financial Tools</p>
@@ -86,7 +86,7 @@ export default function ToolsPage() {
             <div
               key={tool.id}
               onClick={() => router.push(`/tools/${tool.slug}`)}
-              className="card flex flex-col border border-gray-200 dark:border-white/10 rounded-xl hover:shadow-lg transition-all cursor-pointer overflow-hidden group bg-white dark:bg-[#111827]"
+              className="card flex flex-col border border-gray-200 dark:border-white/10 rounded-xl hover:shadow-lg transition-all cursor-pointer overflow-hidden group bg-white dark:bg-surface"
             >
               {/* ── Image Banner ── */}
               <div className="relative h-32 w-full border-b border-gray-200 dark:border-white/10">
@@ -101,8 +101,8 @@ export default function ToolsPage() {
                   }
                   alt={tool.title}
                   icon={tool.icon}
-                  gradientFrom="from-[#1a1f2e]"
-                  gradientTo="to-[#2d3748]"
+                  gradientFrom="from-surface-raised"
+                  gradientTo="to-surface-muted"
                   overlayOpacity="opacity-50"
                 />
               </div>
@@ -113,7 +113,7 @@ export default function ToolsPage() {
                   <span className="text-3xl">{tool.icon}</span>
                   <div className="flex gap-2">
                     <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                      tool.gated ? 'bg-gold-100 text-gold-800' : 'bg-green-100 text-green-800'
+                      tool.gated ? 'bg-warning-muted text-warning' : 'bg-success-muted text-success'
                     }`}>
                       {tool.gated ? 'Premium' : 'Free'}
                     </span>
@@ -149,7 +149,7 @@ export default function ToolsPage() {
                     ) : (
                       <button
                         onClick={(e) => { e.stopPropagation(); handleDownload(tool); }}
-                        className="text-sm font-medium text-brand-teal hover:text-brand-navy transition-colors"
+                        className="text-sm font-medium text-brand-teal hover:text-brand transition-colors"
                       >
                         View Tool →
                       </button>

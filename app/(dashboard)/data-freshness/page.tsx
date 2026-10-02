@@ -21,9 +21,9 @@ function getStatusLabel(status: ParsedFreshStat['status']) {
 
 function StatusBadge({ status }: { status: ParsedFreshStat['status'] }) {
   const styles = {
-    fresh: 'bg-green-100 text-green-800 border-green-200',
-    aging: 'bg-amber-100 text-amber-800 border-amber-200',
-    stale: 'bg-red-100  text-red-800   border-red-200',
+    fresh: 'bg-success-muted text-success border-success/30',
+    aging: 'bg-warning-muted text-warning border-warning/30',
+    stale: 'bg-error-muted text-error border-error/30',
   };
   return (
     <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold border ${styles[status]}`}>
@@ -145,9 +145,9 @@ export default async function DataFreshnessDashboard() {
 
         {/* --- SCROLLING TICKER --- */}
         {fresh.length > 0 && (
-          <div className="mt-16 w-full overflow-hidden bg-black/20 border-y border-white/5 relative flex">
-            <div className="absolute top-0 left-0 bottom-0 w-32 bg-gradient-to-r from-[#1A2B3D] to-transparent z-10"></div>
-            <div className="absolute top-0 right-0 bottom-0 w-32 bg-gradient-to-l from-[#1A2B3D] to-transparent z-10"></div>
+          <div className="mt-16 w-full overflow-hidden bg-surface-muted border-y border-border-subtle relative flex">
+            <div className="absolute top-0 left-0 bottom-0 w-32 bg-gradient-to-r from-surface-muted to-transparent z-10"></div>
+            <div className="absolute top-0 right-0 bottom-0 w-32 bg-gradient-to-l from-surface-muted to-transparent z-10"></div>
             
             <div className="whitespace-nowrap py-3 flex animate-marquee hover:animation-play-state-paused w-max">
               {[...fresh, ...fresh, ...fresh].map((row, i) => (
@@ -155,7 +155,7 @@ export default async function DataFreshnessDashboard() {
                   <span className="w-2 h-2 rounded-full bg-green-400 shadow-[0_0_8px_rgba(74,222,128,0.5)]"></span>
                   <span className="font-mono text-gray-100 font-bold tracking-tight">{row.stat}</span>
                   <span className="text-gray-500 text-xs">IN</span>
-                  <Link href={`/research/${row.reportSlug}`} className="text-teal-400 hover:text-teal-300 font-medium tracking-wide">
+                  <Link href={`/research/${row.reportSlug}`} className="text-teal-400 hover:text-brand-hover font-medium tracking-wide">
                     {row.reportTitle}
                   </Link>
                 </div>
@@ -276,7 +276,7 @@ function StatTable({ rows }: { rows: StatRow[] }) {
     <div className="card overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-100 bg-gray-50/50">
+          <tr className="border-b border-border-subtle bg-surface-muted">
             <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-500">Statistic</th>
             <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-500">Report</th>
             <th className="text-center px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-500">Age</th>
@@ -284,9 +284,9 @@ function StatTable({ rows }: { rows: StatRow[] }) {
             <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-500">Action</th>
           </tr>
         </thead>
-        <tbody className="divide-y divide-gray-50">
+        <tbody className="divide-y divide-border-subtle">
           {rows.map((row, i) => (
-            <tr key={i} className="hover:bg-gray-50/50 transition-colors">
+            <tr key={i} className="hover:bg-surface-muted transition-colors">
               <td className="px-4 py-3 font-semibold text-brand-navy max-w-[200px] truncate">
                 {row.stat}
               </td>

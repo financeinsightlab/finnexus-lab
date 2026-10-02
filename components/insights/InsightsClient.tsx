@@ -95,7 +95,7 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
       </header>
 
       {/* ── INTEGRATED FILTER CONTROLS ── */}
-      <section className="sticky top-16 z-30 bg-[#0B101D]/95 backdrop-blur-xl border-b border-white/10 shadow-xl">
+      <section className="sticky top-16 z-30 bg-surface-overlay/95 backdrop-blur-xl border-b border-white/10 shadow-xl">
         <div className="wrap max-w-6xl py-3.5 space-y-3">
           {/* Row 1: Search + Sort + Reset */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
@@ -107,12 +107,12 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
                 placeholder="Search strategic briefs, theses, catalysts..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="w-full pl-10 pr-9 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs text-white placeholder:text-gray-400 focus:outline-none focus:border-cinema-cyan focus:ring-1 focus:ring-cinema-cyan transition-all"
+                className="w-full pl-10 pr-9 py-2.5 bg-white/5 border border-white/10 rounded-xl text-xs text-content-primary placeholder:text-content-muted focus:outline-none focus:border-brand focus:ring-1 focus:ring-brand/30 transition-all"
               />
               {query && (
                 <button
                   onClick={() => setQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-content-muted hover:text-content-primary"
                   title="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -122,17 +122,17 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
 
             {/* Sort & Reset Buttons */}
             <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
-              <div className="flex items-center gap-1.5 bg-white/5 border border-white/10 rounded-xl px-3 py-1.5 text-xs text-gray-300">
+              <div className="flex items-center gap-1.5 bg-surface border border-border rounded-xl px-3 py-1.5 text-xs text-content-secondary">
                 <ArrowUpDown className="w-3.5 h-3.5 text-cinema-cyan" />
                 <span className="text-gray-400 hidden md:inline">Sort:</span>
                 <select
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value as any)}
-                  className="bg-transparent text-white text-xs font-semibold focus:outline-none cursor-pointer"
+                  className="bg-transparent text-content-primary text-xs font-semibold focus:outline-none cursor-pointer"
                 >
-                  <option value="date" className="bg-[#0E1526] text-white">Latest Published</option>
-                  <option value="readingTime" className="bg-[#0E1526] text-white">Shortest Read Time</option>
-                  <option value="title" className="bg-[#0E1526] text-white">Alphabetical (A-Z)</option>
+                  <option value="date" className="bg-surface text-content-primary">Latest Published</option>
+                  <option value="readingTime" className="bg-surface text-content-primary">Shortest Read Time</option>
+                  <option value="title" className="bg-surface text-content-primary">Alphabetical (A-Z)</option>
                 </select>
               </div>
 
@@ -158,14 +158,14 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
                   onClick={() => setCategory(c)}
                   className={`px-3 py-1.5 rounded-xl text-xs font-medium whitespace-nowrap transition-all flex items-center gap-1.5 cursor-pointer shrink-0 ${
                     active
-                      ? 'bg-cinema-cyan text-black font-bold shadow-md shadow-cinema-cyan/25'
-                      : 'bg-white/5 hover:bg-white/10 text-gray-300 border border-white/10'
+                      ? 'bg-brand text-primary-foreground font-bold shadow-md shadow-cinema-cyan/25'
+                      : 'bg-surface-muted hover:bg-accent text-content-secondary hover:text-content-primary border border-border'
                   }`}
                 >
                   <span>{c}</span>
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
-                      active ? 'bg-black/25 text-black' : 'bg-white/10 text-gray-400'
+                      active ? 'bg-primary-foreground/15 text-primary-foreground' : 'bg-surface-muted text-content-muted'
                     }`}
                   >
                     {count}
@@ -197,7 +197,7 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
             </p>
             <button
               onClick={clearAllFilters}
-              className="px-5 py-2.5 bg-cinema-cyan text-black text-xs font-bold rounded-xl hover:bg-cinema-cyan/90 transition-all cursor-pointer shadow-lg shadow-cinema-cyan/20"
+              className="px-5 py-2.5 bg-brand text-primary-foreground text-xs font-bold rounded-xl hover:bg-primary-hover transition-all cursor-pointer shadow-lg shadow-cinema-cyan/20"
             >
               Reset All Filters
             </button>

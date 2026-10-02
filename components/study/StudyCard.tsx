@@ -44,11 +44,11 @@ export default function StudyCard({ material }: StudyCardProps) {
     <TiltCard maxTilt={6} className="h-full rounded-2xl">
     <Link
       href={`/study/${material.slug}`}
-      className={`group bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-[#2D3748] rounded-2xl overflow-hidden hover:border-[#0D6E6E]/50 transition-all duration-300 flex flex-col h-full depth-2 hover:depth-3 ${material.featured ? 'shimmer-border' : ''}`}
+      className={`group bg-white dark:bg-surface border border-gray-200 dark:border-border rounded-2xl overflow-hidden hover:border-brand/50 transition-all duration-300 flex flex-col h-full depth-2 hover:depth-3 ${material.featured ? 'shimmer-border' : ''}`}
     >
       {/* Cover Image or Placeholder */}
       {material.coverImage ? (
-        <div className="relative h-40 overflow-hidden bg-gray-100 dark:bg-[#0f1522]">
+        <div className="relative h-40 overflow-hidden bg-gray-100 dark:bg-surface">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={material.coverImage}
@@ -57,7 +57,7 @@ export default function StudyCard({ material }: StudyCardProps) {
           />
         </div>
       ) : (
-        <div className="relative h-40 flex items-center justify-center bg-gradient-to-br from-[#1a1f2e] to-brand-teal/20 overflow-hidden">
+        <div className="relative h-40 flex items-center justify-center bg-gradient-to-br from-surface-raised to-brand-teal/10 overflow-hidden">
           <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
           <BookOpen className="w-12 h-12 text-brand-teal/30 z-10" />
           <span className="absolute top-3 left-3 text-2xl z-10 opacity-60">{material.category.icon || '📚'}</span>
@@ -81,7 +81,7 @@ export default function StudyCard({ material }: StudyCardProps) {
         </div>
 
         {/* Title */}
-        <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-[#0D6E6E] transition-colors">
+        <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 line-clamp-2 group-hover:text-brand transition-colors">
           {material.title}
         </h3>
 

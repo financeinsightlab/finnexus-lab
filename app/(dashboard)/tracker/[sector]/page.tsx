@@ -98,17 +98,17 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
   };
 
   return (
-    <div className="min-h-screen bg-white text-slate-900 dark:bg-[#0a1120] dark:text-slate-100">
+    <div className="min-h-screen bg-white text-slate-900 dark:bg-background dark:text-slate-100">
       <JsonLd data={[breadcrumbLd]} />
 
       {/* Hero */}
-      <section className="relative overflow-hidden text-white bg-[#0f1c2d]">
+      <section className="relative overflow-hidden text-content-primary bg-surface-raised">
         <div className="absolute inset-0 opacity-25" style={{ background: `radial-gradient(800px 320px at 15% -10%, ${t.coverGradient[0]}66, transparent), radial-gradient(700px 320px at 95% 0%, ${t.coverGradient[1]}55, transparent)` }} />
         <div className="relative max-w-7xl mx-auto px-6 pt-6 pb-14">
           <nav className="flex items-center gap-2 text-sm mb-8 flex-wrap">
-            <Link href="/tracker" className="inline-flex items-center gap-1.5 text-teal-400 hover:text-white font-semibold transition-colors">← All sector trackers</Link>
+            <Link href="/tracker" className="inline-flex items-center gap-1.5 text-teal-400 hover:text-brand-hover font-semibold transition-colors">← All sector trackers</Link>
             <span className="text-slate-600">|</span>
-            <Link href="/" className="text-slate-400 hover:text-teal-400 transition-colors">Home</Link><span className="text-slate-600">/</span><span className="text-slate-200">{t.name}</span>
+            <Link href="/" className="text-slate-400 hover:text-brand-hover transition-colors">Home</Link><span className="text-slate-600">/</span><span className="text-slate-200">{t.name}</span>
           </nav>
           <div className="grid lg:grid-cols-[1fr_300px] gap-10 items-start">
             <div>
@@ -117,10 +117,10 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
               <p className="text-lg md:text-xl text-slate-300 max-w-2xl leading-relaxed">{q.headline}</p>
               <div className="mt-6">
                 <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400 mb-2">Compare by year &amp; quarter — <span className="text-teal-400">{quarterRef.label}</span> ({quarterRef.kind})</p>
-                <QuarterSelector base={`/tracker/${sector}`} activeKey={quarterKey} light />
+                <QuarterSelector base={`/tracker/${sector}`} activeKey={quarterKey} />
               </div>
               <div className="flex flex-wrap gap-3 mt-6">
-                <span className="inline-flex items-center gap-2 text-xs font-semibold bg-teal-600/90 text-white px-3 py-1.5 rounded-full">{quarterRef.kind}: {quarterRef.label}</span>
+                <span className="inline-flex items-center gap-2 text-xs font-semibold bg-primary text-primary-foreground px-3 py-1.5 rounded-full">{quarterRef.kind}: {quarterRef.label}</span>
                 <span className="inline-flex items-center gap-2 text-xs font-semibold bg-white/10 text-slate-200 px-3 py-1.5 rounded-full">{quarterRef.kind} snapshot</span>
               </div>
               <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
@@ -144,7 +144,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
                 <p className="text-xs text-slate-400 mt-1">Site-defined indicator · {quarterRef.kind} {quarterRef.label}</p>
                 <Link href="/radar" className="text-xs text-teal-400 hover:underline inline-block mt-4">View full radar →</Link>
               </div>
-              <div className="relative rounded-2xl overflow-hidden border border-white/10 h-52 bg-[#0b1623]">
+              <div className="relative rounded-2xl overflow-hidden border border-white/10 h-52 bg-surface">
                 <SectorVideo slug={t.slug} priority />
                 <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                 <span className="pointer-events-none absolute bottom-3 left-4 text-[11px] font-bold uppercase tracking-widest text-white/90">▶ How {t.shortName} works</span>
@@ -155,10 +155,10 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       </section>
 
       {/* Sticky nav */}
-      <div className="sticky top-0 z-30 bg-white/90 dark:bg-[#0a1120]/90 backdrop-blur border-b border-slate-200 dark:border-white/10">
+      <div className="sticky top-0 z-30 bg-white/90 dark:bg-background/90 backdrop-blur border-b border-slate-200 dark:border-white/10">
         <div className="max-w-7xl mx-auto px-6 overflow-x-auto">
           <nav className="flex gap-1 py-3 whitespace-nowrap text-sm">
-            {sections.map((s) => <a key={s.id} href={`#${s.id}`} className="px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-slate-900 dark:hover:text-white font-medium transition-colors">{s.label}</a>)}
+            {sections.map((s) => <a key={s.id} href={`#${s.id}`} className="px-3 py-1.5 rounded-full text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-white/10 hover:text-content-primary dark:hover:text-white font-medium transition-colors">{s.label}</a>)}
           </nav>
         </div>
       </div>
@@ -173,7 +173,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="kpis">
             {q.keyMetrics.map((m, i) => (
               <ScrollReveal key={m.label} delay={i * 50}>
-                <div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-5">
+                <div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-5">
                   <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{m.label}</p>
                   <div className="mt-2 flex items-baseline gap-1"><span className="text-3xl font-extrabold text-slate-900 dark:text-white">{m.value}</span>{m.suffix && <span className="text-sm font-medium text-slate-400">{m.suffix}</span>}</div>
                   <div className="mt-1"><DirectionBadge change={m.change} changeType={m.changeType} /></div>
@@ -186,11 +186,11 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       </section>
 
       {/* Sub-sectors */}
-      <section id="mix" className="py-14 bg-slate-50 dark:bg-[#0d1526] scroll-mt-20">
+      <section id="mix" className="py-14 bg-slate-50 dark:bg-surface scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeader label="Composition" title="Sub-sector breakdown" subtitle="How the sector splits across segments, with share and growth." />
           <div className="mt-8 grid lg:grid-cols-[380px_1fr] gap-8">
-            <ScrollReveal><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6">
+            <ScrollReveal><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6">
               <SubSectorDonut data={t.subSectors} />
               <div className="mt-2 space-y-2">{t.subSectors.map((s, i) => (
                 <div key={s.name} className="flex items-center justify-between text-sm">
@@ -201,7 +201,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
             </div></ScrollReveal>
             <div className="grid gap-4 sm:grid-cols-2">
               {t.subSectors.map((s, i) => (
-                <ScrollReveal key={s.name} delay={i * 40}><div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-5">
+                <ScrollReveal key={s.name} delay={i * 40}><div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-5">
                   <div className="flex items-center justify-between"><h4 className="font-bold text-slate-900 dark:text-white">{s.name}</h4><span className="text-sm font-bold text-teal-600 dark:text-teal-400">{s.share}%</span></div>
                   <div className="flex gap-3 mt-1 text-xs text-slate-500 dark:text-slate-400"><span>Growth: <span className="font-semibold text-slate-700 dark:text-slate-200">{s.growth}</span></span>{s.cagr && <span>· CAGR <span className="font-semibold text-slate-700 dark:text-slate-200">{s.cagr}</span></span>}</div>
                   <div className="mt-3 pt-3 border-t border-slate-100 dark:border-white/10"><p className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 mb-1.5">Key players</p><div className="flex flex-wrap gap-1.5">{s.players.map((p) => <span key={p} className="text-xs bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-300 px-2 py-0.5 rounded-full">{p}</span>)}</div></div>
@@ -223,7 +223,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
               </tr></thead>
               <tbody>{t.competitive.map((c, i) => (
                 <tr key={c.player} className={`border-t border-slate-100 dark:border-white/10 ${i === 0 ? 'bg-teal-50/50 dark:bg-teal-500/5' : ''}`}>
-                  <td className="px-5 py-4"><span className={`inline-flex w-7 h-7 items-center justify-center rounded-full text-xs font-extrabold ${i === 0 ? 'bg-teal-600 text-white' : i === 1 ? 'bg-slate-700 text-white' : i === 2 ? 'bg-amber-500 text-white' : 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300'}`}>{c.rank}</span></td>
+                  <td className="px-5 py-4"><span className={`inline-flex w-7 h-7 items-center justify-center rounded-full text-xs font-extrabold ${i === 0 ? 'bg-primary text-primary-foreground' : i === 1 ? 'bg-surface-muted text-content-secondary' : i === 2 ? 'bg-warning text-primary-foreground' : 'bg-slate-200 text-slate-600 dark:bg-white/10 dark:text-slate-300'}`}>{c.rank}</span></td>
                   <td className="px-5 py-4 font-bold text-slate-900 dark:text-white">{c.player}</td>
                   <td className="px-5 py-4 text-slate-600 dark:text-slate-300 hidden md:table-cell">{c.metric}</td>
                   <td className="px-5 py-4 font-semibold text-slate-800 dark:text-slate-200">{c.value}</td>
@@ -237,18 +237,18 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       </section>
 
       {/* Trends */}
-      <section id="trends" className="py-14 bg-slate-50 dark:bg-[#0d1526] scroll-mt-20">
+      <section id="trends" className="py-14 bg-slate-50 dark:bg-surface scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeader label="Thematic Analysis" title="Market trends & catalysts" subtitle="The forces shaping the sector over the next 12 months." />
           <div className="mt-8 grid gap-5 md:grid-cols-2">
             {t.trends.map((trend, i) => (
-              <ScrollReveal key={trend.title} delay={i * 50}><div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6">
+              <ScrollReveal key={trend.title} delay={i * 50}><div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6">
                 <div className="flex items-start justify-between gap-3"><h4 className="font-bold text-slate-900 dark:text-white">{trend.title}</h4><ImpactBadge impact={trend.impact} /></div>
                 <p className="text-sm text-slate-600 dark:text-slate-300 mt-2 leading-relaxed">{trend.description}</p>
               </div></ScrollReveal>
             ))}
           </div>
-          <div className="mt-8 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6">
+          <div className="mt-8 rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6">
             <h3 className="font-bold text-slate-900 dark:text-white mb-4">What to watch</h3>
             <div className="flex flex-wrap gap-3">{t.catalysts.map((c) => (
               <span key={c.title} className="inline-flex items-center gap-2 rounded-full ring-1 px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-200 bg-white dark:bg-white/5">
@@ -267,7 +267,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
             {t.regulatory.map((r) => (
               <div key={r.title} className="relative pl-10 pb-8">
                 <span className={`absolute left-0 top-1 w-5 h-5 rounded-full ring-4 ${r.status === 'Implemented' ? 'bg-green-500 ring-green-100 dark:ring-green-500/20' : r.status === 'Pending' ? 'bg-amber-500 ring-amber-100 dark:ring-amber-500/20' : 'bg-blue-500 ring-blue-100 dark:ring-blue-500/20'}`} />
-                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-5">
+                <div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-5">
                   <div className="flex flex-wrap items-center justify-between gap-2"><h4 className="font-bold text-slate-900 dark:text-white">{r.title}</h4><StatusBadge status={r.status} /></div>
                   <p className="text-xs text-slate-400 mt-1">Timeline: {r.date}</p>
                   <p className="text-sm text-slate-600 dark:text-slate-300 mt-2">{r.description}</p>
@@ -279,7 +279,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       </section>
 
       {/* SWOT */}
-      <section id="swot" className="py-14 bg-slate-50 dark:bg-[#0d1526] scroll-mt-20">
+      <section id="swot" className="py-14 bg-slate-50 dark:bg-surface scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeader label="Strategic Assessment" title="SWOT analysis" subtitle="A balanced view of internal strengths and external factors." />
           <div className="mt-8 grid gap-5 md:grid-cols-2">
@@ -289,7 +289,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
               { title: 'Opportunities', color: 'text-blue-700 dark:text-blue-400', items: t.swot.opportunities, icon: '🚀' },
               { title: 'Threats', color: 'text-amber-700 dark:text-amber-400', items: t.swot.threats, icon: '🛑' },
             ].map((box, i) => (
-              <ScrollReveal key={box.title} delay={i * 40}><div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6">
+              <ScrollReveal key={box.title} delay={i * 40}><div className="h-full rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6">
                 <div className="flex items-center gap-2 mb-4"><span className="text-xl">{box.icon}</span><h3 className={`font-bold ${box.color}`}>{box.title}</h3></div>
                 <ul className="space-y-2.5">{box.items.map((item) => <li key={item} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300"><span className="mt-0.5 w-1.5 h-1.5 rounded-full bg-current opacity-50 flex-shrink-0" />{item}</li>)}</ul>
               </div></ScrollReveal>
@@ -303,26 +303,26 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeader label="Scenario estimate" title="Future outlook" subtitle={`Stored estimate for market size in 2027 (CAGR assumption ${t.outlook.cagr}); outcomes may differ.`} />
           <div className="mt-8 grid lg:grid-cols-[1fr_420px] gap-8">
-            <ScrollReveal><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6">
+            <ScrollReveal><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6">
               <div className="flex items-end justify-between mb-2"><p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Market size projection</p><p className="text-2xl font-extrabold text-teal-600 dark:text-teal-400">{t.outlook.marketSize2027}</p></div>
               <ProjectionChart data={t.outlook.projection} color={color} />
             </div></ScrollReveal>
             <div className="grid gap-5">
-              <ScrollReveal><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6"><p className="text-[11px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400 mb-3">Key drivers</p><ul className="space-y-2">{t.outlook.drivers.map((d) => <li key={d} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300"><span className="mt-0.5 text-green-600 dark:text-green-400">✓</span>{d}</li>)}</ul></div></ScrollReveal>
-              <ScrollReveal delay={60}><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6"><p className="text-[11px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mb-3">Key risks</p><ul className="space-y-2">{t.outlook.risks.map((r) => <li key={r} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300"><span className="mt-0.5 text-red-600 dark:text-red-400">✕</span>{r}</li>)}</ul></div></ScrollReveal>
+              <ScrollReveal><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6"><p className="text-[11px] font-bold uppercase tracking-wider text-green-600 dark:text-green-400 mb-3">Key drivers</p><ul className="space-y-2">{t.outlook.drivers.map((d) => <li key={d} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300"><span className="mt-0.5 text-green-600 dark:text-green-400">✓</span>{d}</li>)}</ul></div></ScrollReveal>
+              <ScrollReveal delay={60}><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6"><p className="text-[11px] font-bold uppercase tracking-wider text-red-600 dark:text-red-400 mb-3">Key risks</p><ul className="space-y-2">{t.outlook.risks.map((r) => <li key={r} className="flex items-start gap-2 text-sm text-slate-700 dark:text-slate-300"><span className="mt-0.5 text-red-600 dark:text-red-400">✕</span>{r}</li>)}</ul></div></ScrollReveal>
             </div>
           </div>
         </div>
       </section>
 
       {/* Pro metrics */}
-      <section id="pro" className="py-14 bg-slate-50 dark:bg-[#0d1526] scroll-mt-20">
+      <section id="pro" className="py-14 bg-slate-50 dark:bg-surface scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <SectionHeader label="Pro Access" title="Additional metrics" subtitle="Additional metrics and benchmark entries in this sector's stored tracker data." />
           {isPro ? (
             <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {t.proMetrics.map((m) => (
-                <div key={m.label} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-5">
+                <div key={m.label} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-5">
                   <div className="flex items-center justify-between"><p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{m.label}</p><span className={`text-sm font-bold ${trendBadge[m.trend]}`}>{m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '→'}</span></div>
                   <p className="mt-2 text-2xl font-extrabold text-slate-900 dark:text-white">{m.value}</p>
                   <p className="text-xs text-slate-400 mt-1">{m.note}</p>
@@ -330,7 +330,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
               ))}
             </div>
           ) : (
-            <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-white/10 dark:bg-[#111c31]">
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-white/10 dark:bg-surface-raised">
               <div className="text-4xl mb-3" aria-hidden>🔒</div>
               <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Unlock with Pro</h3>
               <p className="text-sm text-slate-600 dark:text-slate-300 mb-5">Pro access reveals the additional metrics and benchmark entries in this stored sector dataset. It does not include a live market-data feed.</p>
@@ -347,14 +347,14 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
 
       {/* Related research */}
       {related.length > 0 && (
-        <section className="py-14 bg-slate-50 dark:bg-[#0d1526]">
+        <section className="py-14 bg-slate-50 dark:bg-surface">
           <div className="max-w-7xl mx-auto px-6">
             <SectionHeader label="Research Library" title="Related research" />
             <div className="mt-8 grid gap-5 md:grid-cols-3">
               {related.map((post) => (
-                <Link key={post.slug} href={`/research/${post.slug}`} className="group rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all">
+                <Link key={post.slug} href={`/research/${post.slug}`} className="group rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-surface-raised p-6 hover:shadow-lg hover:-translate-y-0.5 transition-all">
                   <p className="text-xs font-bold text-teal-600 dark:text-teal-400 uppercase tracking-widest mb-2">{post.sector}</p>
-                  <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">{post.title}</h3>
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white leading-snug line-clamp-2 group-hover:text-brand-hover dark:group-hover:text-brand-hover transition-colors">{post.title}</h3>
                   <p className="text-xs text-slate-400 mt-2">{post.date.slice(0, 10)}</p>
                 </Link>
               ))}

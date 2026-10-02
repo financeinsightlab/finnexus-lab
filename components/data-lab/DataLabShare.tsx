@@ -45,7 +45,7 @@ export default function DataLabShare({ title, slug }: { title: string; slug: str
           target="_blank"
           rel="noopener noreferrer"
           aria-label={s.label}
-          className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-cinema-cyan hover:border-cinema-cyan/40 transition text-sm font-semibold"
+          className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-brand-hover hover:border-cinema-cyan/40 transition text-sm font-semibold"
         >
           {s.name}
         </a>
@@ -53,7 +53,7 @@ export default function DataLabShare({ title, slug }: { title: string; slug: str
       <button
         onClick={copy}
         aria-label="Copy link"
-        className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-cinema-cyan hover:border-cinema-cyan/40 transition"
+        className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-brand-hover hover:border-cinema-cyan/40 transition"
       >
         {copied ? <Check className="w-4 h-4 text-cinema-aurora" /> : <Link2 className="w-4 h-4" />}
       </button>

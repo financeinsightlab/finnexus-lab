@@ -283,7 +283,7 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
                       formatter={(value: any, name: any, props: any) => {
                         return [Number(value).toLocaleString(), 'Volume Count'];
                       }}
-                      cursor={{fill: '#f8fafc'}}
+                      cursor={{ fill: 'hsl(var(--surface-muted))' }}
                       contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                     />
                     <Bar dataKey="count" radius={[0, 4, 4, 0]} maxBarSize={50}>
@@ -301,7 +301,7 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
             <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
-              <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
+              <div className="bg-success text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-success">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/>
                 </svg>
@@ -365,13 +365,13 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
                       ))}
                     </tr>
 
-                    <tr className="bg-[#eef3fb]">
+                    <tr className="bg-surface-muted">
                       <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-[#0b5c96] sticky left-6 z-20 shadow-inner">Total Pipeline Gross Value</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-info sticky left-6 z-20 shadow-inner">Total Pipeline Gross Value</td>
                       {calculations.rowPipelineGross.map((val, idx) => (
-                        <td key={idx} className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[13px] text-[#0b5c96] shadow-inner">
+                        <td key={idx} className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[13px] text-info shadow-inner">
                           {idx === 2 ? (
-                            <span className="border-b-2 border-double border-[#0b5c96] pb-0.5">
+                            <span className="border-b-2 border-double border-info pb-0.5">
                               ${val.toLocaleString()}
                             </span>
                           ) : (
@@ -433,7 +433,7 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
                     <button type="submit" disabled={loading} className="btn btn-primary w-full shadow-lg shadow-brand-teal/30">
                       {loading ? 'Verifying...' : 'Pay & Subscribe Access'}
                     </button>
-                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-gray-800">
+                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-content-primary">
                       Cancel
                     </button>
                   </form>

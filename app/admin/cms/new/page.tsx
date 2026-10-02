@@ -9,7 +9,7 @@ export default async function NewPostPage() {
   if (!session?.user || !["ADMIN", "ANALYST"].includes(session.user.role as string)) redirect("/")
 
   return (
-    <div className="-m-8 h-screen bg-[#0B1C2C]">
+    <div className="-m-8 h-screen bg-background">
       <EditorClient />
     </div>
   )

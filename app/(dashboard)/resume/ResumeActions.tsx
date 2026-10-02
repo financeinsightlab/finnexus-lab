@@ -7,7 +7,7 @@ export default function ResumeActions() {
 
         <button
           onClick={() => window.print()}
-          className="text-brand-teal hover:text-brand-navy font-medium"
+          className="text-brand-teal hover:text-brand font-medium"
         >
           🖨️ Print Resume
         </button>

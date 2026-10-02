@@ -102,19 +102,19 @@ export default async function AdminUsersPage({
   return (
     <div className="space-y-8">
       {/* Header */}
-      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 md:p-10 shadow-xl border border-white/5">
+      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 md:p-10 shadow-xl border border-border-subtle">
         <HeroBackground />
         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <span className="section-label text-teal-400">Access Control</span>
-            <h1 className="text-3xl font-extrabold text-white mt-2">User Directory</h1>
-            <p className="text-slate-300 text-sm mt-2 max-w-md">
+            <h1 className="text-3xl font-extrabold text-content-primary mt-2">User Directory</h1>
+            <p className="text-content-secondary text-sm mt-2 max-w-md">
               Live view of all members, their sessions, subscriptions, and activity.
             </p>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-400/30 rounded-xl shadow-lg backdrop-blur-sm">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-            <span className="text-xs font-bold text-emerald-300">{onlineCount} Online Now</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-success-muted border border-success/30 rounded-xl shadow-lg backdrop-blur-sm">
+            <div className="w-2 h-2 rounded-full bg-success animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="text-xs font-bold text-success">{onlineCount} Online Now</span>
           </div>
         </div>
       </div>
@@ -127,35 +127,35 @@ export default async function AdminUsersPage({
           { label: "Active Subs", value: activeUsers, icon: ShieldCheck, color: "text-purple-400", bg: "bg-purple-500/10" },
           { label: "Pro Tier", value: proUsers, icon: Zap, color: "text-amber-400", bg: "bg-amber-500/10" },
         ].map((stat, i) => (
-          <div key={i} className="bg-[#1A1F2E] p-5 rounded-2xl border border-[#2D3748] shadow-xl">
+          <div key={i} className="bg-surface p-5 rounded-2xl border border-border shadow-xl">
             <div className="flex items-center gap-3 mb-2">
               <div className={`p-2 rounded-xl ${stat.bg} ${stat.color}`}>
                 <stat.icon className="w-4 h-4" />
               </div>
-              <p className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">{stat.label}</p>
+              <p className="text-[10px] uppercase font-bold text-content-muted tracking-widest">{stat.label}</p>
             </div>
-            <p className="text-3xl font-extrabold text-gray-900 dark:text-white tracking-tight">{stat.value}</p>
+            <p className="text-3xl font-extrabold text-content-primary tracking-tight">{stat.value}</p>
           </div>
         ))}
       </div>
 
       {/* Search & Filters */}
-      <form method="GET" action="/admin/users" className="bg-[#1A1F2E] p-5 rounded-2xl border border-[#2D3748] shadow-xl">
+      <form method="GET" action="/admin/users" className="bg-surface p-5 rounded-2xl border border-border shadow-xl">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="md:col-span-2 relative group">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500 group-focus-within:text-[#0D6E6E] transition-colors" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-content-muted group-focus-within:text-brand transition-colors" />
             <input
               type="text"
               name="search"
               placeholder="Filter by name or email..."
               defaultValue={params.search || ""}
-              className="w-full pl-11 pr-4 py-3 bg-white/5 border border-white/10 rounded-2xl text-sm text-white focus:outline-none focus:border-[#0D6E6E]/50 focus:bg-white/10 transition-all placeholder:text-slate-600"
+              className="w-full pl-11 pr-4 py-3 bg-surface-muted border border-border rounded-2xl text-sm text-content-primary focus:outline-none focus:border-brand/50 focus:bg-accent transition-all placeholder:text-content-muted"
             />
           </div>
           <select
             name="role"
             defaultValue={params.role || ""}
-            className="appearance-none bg-white/5 border border-white/10 rounded-2xl text-sm px-5 py-3 text-slate-300 outline-none focus:border-[#0D6E6E]/50 transition-all cursor-pointer"
+            className="appearance-none bg-surface-muted border border-border rounded-2xl text-sm px-5 py-3 text-content-secondary outline-none focus:border-brand/50 transition-all cursor-pointer"
           >
             <option value="">All Roles</option>
             <option value="ADMIN">ADMIN</option>
@@ -168,26 +168,26 @@ export default async function AdminUsersPage({
       </form>
 
       {/* Table */}
-      <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] overflow-hidden shadow-2xl">
+      <div className="bg-surface rounded-2xl border border-border overflow-hidden shadow-2xl">
         <UsersTableClient initialUsers={users} />
       </div>
 
       {/* Pagination */}
       <div className="flex flex-col sm:flex-row items-center justify-between gap-4 py-2 px-2">
-        <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">
-          Showing <span className="text-white">{Math.min(skip + 1, totalUsersCount)}–{Math.min(page * pageSize, totalUsersCount)}</span> of <span className="text-white">{totalUsersCount}</span> users
+        <p className="text-xs font-bold text-content-muted uppercase tracking-widest">
+          Showing <span className="text-content-primary">{Math.min(skip + 1, totalUsersCount)}–{Math.min(page * pageSize, totalUsersCount)}</span> of <span className="text-content-primary">{totalUsersCount}</span> users
         </p>
         <div className="flex items-center gap-2">
           {page > 1 && (
-            <Link href={buildUrl({ page: String(page - 1) })} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all">
+            <Link href={buildUrl({ page: String(page - 1) })} className="flex items-center gap-2 px-4 py-2 bg-surface-muted border border-border rounded-xl text-xs font-bold text-content-secondary hover:text-content-primary transition-all">
               <ChevronLeft className="w-4 h-4" /> Previous
             </Link>
           )}
-          <div className="flex items-center gap-1 px-4 py-2 bg-[#0D6E6E]/10 rounded-xl border border-[#0D6E6E]/20">
-            <span className="text-xs font-bold text-[#0D6E6E]">PAGE {page} / {totalPages || 1}</span>
+          <div className="flex items-center gap-1 px-4 py-2 bg-brand/10 rounded-xl border border-brand/20">
+            <span className="text-xs font-bold text-brand">PAGE {page} / {totalPages || 1}</span>
           </div>
           {page < totalPages && (
-            <Link href={buildUrl({ page: String(page + 1) })} className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-xs font-bold text-slate-400 hover:text-white transition-all">
+            <Link href={buildUrl({ page: String(page + 1) })} className="flex items-center gap-2 px-4 py-2 bg-surface-muted border border-border rounded-xl text-xs font-bold text-content-secondary hover:text-content-primary transition-all">
               Next <ChevronRight className="w-4 h-4" />
             </Link>
           )}

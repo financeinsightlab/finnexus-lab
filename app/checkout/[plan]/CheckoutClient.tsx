@@ -91,7 +91,7 @@ export default function CheckoutClient({
     }
 
     return (
-        <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-white/10 dark:bg-[#111c31] sm:p-8">
+        <div className="mx-auto max-w-2xl rounded-2xl border border-slate-200 bg-white p-6 text-center shadow-sm dark:border-white/10 dark:bg-surface-raised sm:p-8">
             <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 dark:text-teal-400">{planName}</p>
             <h1 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">
                 {amountLabel}<span className="text-base font-normal text-slate-500">{period}</span>
@@ -105,7 +105,7 @@ export default function CheckoutClient({
                     <p className="mt-6 text-sm text-slate-600 dark:text-slate-300">Sign in to continue to payment.</p>
                     <a
                         href={`/auth/signin?callbackUrl=/checkout/${plan.toLowerCase()}`}
-                        className="mt-6 inline-block rounded-lg bg-teal-600 px-6 py-2.5 text-sm font-semibold text-white transition hover:bg-teal-700"
+                        className="mt-6 inline-block rounded-lg bg-primary px-6 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover"
                     >
                         Sign in to upgrade
                     </a>
@@ -121,13 +121,13 @@ export default function CheckoutClient({
                             width={280}
                             height={280}
                         />
-                        <p className="mt-3 break-all rounded-lg bg-slate-50 px-3 py-2 text-center text-sm font-semibold text-teal-700 dark:bg-slate-800 dark:text-teal-300">
+                        <p className="mt-3 break-all rounded-lg bg-surface-muted px-3 py-2 text-center text-sm font-semibold text-brand">
                             UPI ID: {upiId}
                         </p>
                     </div>
 
                     <div>
-                        <div className="rounded-xl border border-teal-100 bg-teal-50 p-4 text-sm text-teal-900 dark:border-teal-900/30 dark:bg-teal-900/20 dark:text-teal-100">
+                        <div className="rounded-xl border border-brand/25 bg-brand-muted p-4 text-sm text-content-secondary">
                             Pay exactly <strong>{amountLabel}</strong> to the displayed UPI ID. After the transfer, enter the transaction reference shown by your UPI app. Do not upload or email a screenshot.
                         </div>
 
@@ -147,7 +147,7 @@ export default function CheckoutClient({
                                 pattern="[A-Za-z0-9-]{6,64}"
                                 required
                                 placeholder="Enter the UTR / transaction ID"
-                                className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2.5 text-sm text-slate-900 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-[#0a1120] dark:text-white"
+                                className="w-full rounded-lg border border-input bg-surface px-3 py-2.5 text-sm text-content-primary outline-none focus-visible:border-brand"
                             />
                             <p className="text-xs text-slate-500">Only the reference is stored so an administrator can match it to the transfer.</p>
                             {error && <p role="alert" className="text-sm text-rose-600 dark:text-rose-300">{error}</p>}
@@ -155,7 +155,7 @@ export default function CheckoutClient({
                             <button
                                 type="submit"
                                 disabled={submitting || transactionReference.trim().length < 6}
-                                className="w-full rounded-lg bg-teal-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-teal-700 disabled:cursor-not-allowed disabled:opacity-50"
+                                className="w-full rounded-lg bg-primary px-5 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-50"
                             >
                                 {submitting ? 'Submitting…' : 'Submit payment reference'}
                             </button>
@@ -177,7 +177,7 @@ export default function CheckoutClient({
                                 <li key={payment.id} className="rounded-xl border border-slate-200 p-4 dark:border-white/10">
                                     <div className="flex flex-wrap items-center justify-between gap-2">
                                         <p className="font-semibold text-slate-800 dark:text-slate-200">{payment.plan} · {new Intl.NumberFormat('en-IN', { style: 'currency', currency: payment.currency, maximumFractionDigits: 0 }).format(payment.amountMinor / 100)}</p>
-                                        <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${payment.status === 'APPROVED' ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300' : payment.status === 'REJECTED' ? 'bg-rose-500/10 text-rose-700 dark:text-rose-300' : 'bg-amber-500/10 text-amber-700 dark:text-amber-300'}`}>
+                                        <span className={`rounded-full px-2.5 py-1 text-xs font-bold ${payment.status === 'APPROVED' ? 'bg-success-muted text-success' : payment.status === 'REJECTED' ? 'bg-error-muted text-error' : 'bg-warning-muted text-warning'}`}>
                                             {payment.status}
                                         </span>
                                     </div>

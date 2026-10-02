@@ -39,9 +39,9 @@ export default function ResearchCard({ post }: ResearchCardProps) {
         className="group block h-full select-none cursor-pointer"
         aria-label={`Read research report: ${post.title}`}
       >
-        <article className="flex flex-col h-full overflow-hidden rounded-2xl bg-[#0E1626] border border-white/10 hover:border-cinema-cyan/40 shadow-lg hover:shadow-[0_8px_30px_rgba(13,110,110,0.15)] transition-all duration-300">
+        <article className="flex flex-col h-full overflow-hidden rounded-2xl bg-surface border border-white/10 hover:border-cinema-cyan/40 shadow-lg hover:shadow-[0_8px_30px_rgba(13,110,110,0.15)] transition-all duration-300">
           {/* ── Featured Image Banner ── */}
-          <div className="relative h-44 w-full overflow-hidden bg-[#0A101D] border-b border-white/10">
+          <div className="relative h-44 w-full overflow-hidden bg-surface border-b border-white/10">
             {post.coverImage ? (
               <img
                 src={post.coverImage}
@@ -58,19 +58,19 @@ export default function ResearchCard({ post }: ResearchCardProps) {
             
             {/* Sector Pill on Top of Image */}
             <div className="absolute top-3 left-3 z-10">
-              <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-black/60 backdrop-blur-md text-cinema-cyan border border-white/15 shadow-sm">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-black/60 backdrop-blur-md !text-white border border-white/15 shadow-sm">
                 {post.sector}
               </span>
             </div>
 
-            <div className="absolute bottom-2.5 right-3 z-10 text-[11px] font-mono text-gray-300 bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-md border border-white/10">
+            <div className="absolute bottom-2.5 right-3 z-10 text-[11px] font-mono !text-white bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-md border border-white/10">
               {post.pageCount} Pages
             </div>
           </div>
 
           {/* ── Body Content ── */}
           <div className="p-5 flex flex-col flex-1">
-            <h2 className="text-base md:text-lg font-bold text-white leading-snug mb-2 line-clamp-2 group-hover:text-cinema-cyan transition-colors duration-200">
+            <h2 className="text-base md:text-lg font-bold text-white leading-snug mb-2 line-clamp-2 group-hover:text-brand-hover transition-colors duration-200">
               {post.title}
             </h2>
             

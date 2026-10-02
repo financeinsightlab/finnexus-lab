@@ -18,40 +18,40 @@ const ENQUIRY_TOPICS: EnquiryTopic[] = [
     title: 'Market Research',
     description: 'Ask about the possibility of a scoped research project around a defined market or sector question.',
     contactTopic: 'Research Inquiry',
-    color: 'bg-blue-50 border-blue-100',
-    accent: 'text-blue-900',
+    color: 'bg-info-muted border-info/30',
+    accent: 'text-info',
   },
   {
     icon: '📐',
     title: 'Financial Modelling',
     description: 'Ask whether a modelling or valuation question could be considered for a future engagement.',
     contactTopic: 'Financial Modelling',
-    color: 'bg-teal-50 border-teal-100',
-    accent: 'text-teal-900',
+    color: 'bg-brand-muted border-brand/30',
+    accent: 'text-brand',
   },
   {
     icon: '🔍',
     title: 'Competitive Analysis',
     description: 'Discuss whether a bounded comparison or competitor-research question may be suitable.',
     contactTopic: 'Research Inquiry',
-    color: 'bg-amber-50 border-amber-100',
-    accent: 'text-amber-900',
+    color: 'bg-warning-muted border-warning/30',
+    accent: 'text-warning',
   },
   {
     icon: '📊',
     title: 'Data & Dashboards',
     description: 'Ask about a specific analytics or dashboard question; data, scope, and feasibility need separate review.',
     contactTopic: 'Data Analytics Project',
-    color: 'bg-purple-50 border-purple-100',
-    accent: 'text-purple-900',
+    color: 'bg-accent-violet-muted border-accent-violet/30',
+    accent: 'text-accent-violet',
   },
   {
     icon: '🧠',
     title: 'Strategy Research',
     description: 'Enquire about research related to a defined business question; this is not a promise of advisory work.',
     contactTopic: 'Research Inquiry',
-    color: 'bg-green-50 border-green-100',
-    accent: 'text-green-900',
+    color: 'bg-success-muted border-success/30',
+    accent: 'text-success',
   },
 ];
 
@@ -77,7 +77,7 @@ export default function ServicesPage() {
       </header>
 
       <section className="wrap py-20">
-        <div className="mb-10 rounded-2xl border border-amber-200 bg-amber-50 p-6 text-sm leading-relaxed text-amber-950">
+        <div className="mb-10 rounded-2xl border border-warning/30 bg-warning-muted p-6 text-sm leading-relaxed text-content-primary">
           Any potential engagement would require separate written agreement on scope, deliverables, fees, timing, and terms before work begins. Submitting an enquiry is not a booking or service-level commitment.
         </div>
 
@@ -85,15 +85,15 @@ export default function ServicesPage() {
           {ENQUIRY_TOPICS.map((topic) => (
             <div
               key={topic.title}
-              className="bg-white rounded-2xl border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group"
+              className="bg-surface rounded-2xl border border-border-subtle overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group"
             >
               <div className="relative h-40 w-full border-b border-gray-200">
                 <CardImageBanner
                   src={`/card-${topic.title.toLowerCase().replace(/\s+/g, '-')}.png`}
                   alt={topic.title}
                   icon={topic.icon}
-                  gradientFrom="from-[#1a1f2e]"
-                  gradientTo="to-[#2d3748]"
+                  gradientFrom="from-surface-raised"
+                  gradientTo="to-surface-muted"
                   overlayOpacity="opacity-20"
                   blendMode="mix-blend-luminosity"
                 />
@@ -105,7 +105,7 @@ export default function ServicesPage() {
                   {topic.title}
                 </h2>
                 <p className="text-sm text-brand-slate mb-8 flex-1">{topic.description}</p>
-                <div className="mt-auto pt-6 border-t border-black/10 text-center">
+                <div className="mt-auto pt-6 border-t border-border-subtle text-center">
                   <Link
                     href={`/contact?service=${encodeURIComponent(topic.contactTopic)}`}
                     className={`inline-block font-semibold ${topic.accent} hover:opacity-70 transition-opacity`}
@@ -119,7 +119,7 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="bg-brand-silver py-20">
+      <section className="bg-surface-muted py-20">
         <div className="wrap max-w-3xl text-center">
           <h2 className="text-3xl font-bold text-brand-navy mb-6">How an enquiry works</h2>
           <p className="text-brand-slate leading-relaxed">

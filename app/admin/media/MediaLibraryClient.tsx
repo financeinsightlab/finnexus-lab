@@ -217,7 +217,7 @@ export default function MediaLibraryClient() {
     if (mimeType.startsWith('video/')) return <Video className="w-5 h-5 text-purple-400" />
     if (mimeType.startsWith('audio/')) return <Music className="w-5 h-5 text-green-400" />
     if (mimeType.includes('pdf')) return <FileText className="w-5 h-5 text-red-400" />
-    return <FileText className="w-5 h-5 text-gray-400" />
+    return <FileText className="w-5 h-5 text-content-secondary" />
   }
 
   const filteredMedia = media.filter(item => {
@@ -232,14 +232,14 @@ export default function MediaLibraryClient() {
   const activeMedia = activeMediaId ? media.find(m => m.id === activeMediaId) : null
 
   return (
-    <div className="min-h-screen bg-[#0B0D13] text-white p-6 flex flex-col">
+    <div className="min-h-screen bg-surface-muted text-content-primary p-3 sm:p-6 flex flex-col">
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold">Media Library</h1>
-        <p className="text-gray-400 mt-2">Upload and manage your media files</p>
+        <p className="text-content-secondary mt-2">Upload and manage your media files</p>
       </div>
 
-      <div className="flex flex-1 gap-6 min-h-[500px]">
+      <div className="flex flex-1 flex-col lg:flex-row gap-4 lg:gap-6 min-h-[500px] min-w-0">
         {/* Main Content Area */}
         <div className="flex-1 flex flex-col min-w-0">
           
@@ -248,27 +248,27 @@ export default function MediaLibraryClient() {
             {...getRootProps()}
             className={`border-2 border-dashed rounded-xl p-8 mb-6 text-center cursor-pointer transition-all ${
               isDragActive
-                ? 'border-brand-teal bg-brand-teal/10'
-                : 'border-[#2D3748] hover:border-gray-500 bg-[#1A1F2E]'
+                ? 'border-brand bg-brand-muted'
+                : 'border-border hover:border-border-strong bg-surface'
             }`}
           >
             <input {...getInputProps()} />
-            <Upload className="w-12 h-12 mx-auto mb-4 text-gray-400" />
+            <Upload className="w-12 h-12 mx-auto mb-4 text-content-secondary" />
             <h3 className="text-xl font-semibold mb-2">
               {isDragActive ? 'Drop files here' : 'Drag & drop files here'}
             </h3>
-            <p className="text-gray-400 mb-4">or click to browse</p>
-            <p className="text-sm text-gray-500">Supports images, PDFs, and documents up to 10MB</p>
+            <p className="text-content-secondary mb-4">or click to browse</p>
+            <p className="text-sm text-content-muted">Supports images, PDFs, and documents up to 10MB</p>
             
             {uploading && (
               <div className="mt-6">
-                <div className="w-full bg-gray-800 rounded-full h-2">
+                <div className="w-full bg-surface-muted rounded-full h-2">
                   <div
-                    className="bg-brand-teal h-2 rounded-full transition-all duration-300"
+                    className="bg-brand h-2 rounded-full transition-all duration-300"
                     style={{ width: `${uploadProgress}%` }}
                   />
                 </div>
-                <p className="text-sm text-[#0D6E6E] mt-2 font-bold uppercase tracking-widest">Uploading... {Math.floor(uploadProgress)}%</p>
+                <p className="text-sm text-brand mt-2 font-bold uppercase tracking-widest">Uploading... {Math.floor(uploadProgress)}%</p>
               </div>
             )}
           </div>
@@ -277,24 +277,24 @@ export default function MediaLibraryClient() {
           <div className="flex flex-col md:flex-row gap-4 mb-6">
             <div className="flex-1">
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-content-secondary w-5 h-5" />
                 <input
                   type="text"
                   placeholder="Search media..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 bg-[#1A1F2E] border border-[#2D3748] rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-teal text-white"
+                  className="w-full pl-10 pr-4 py-2 bg-surface border border-border rounded-lg focus:outline-none focus:ring-2 focus:ring-brand text-content-primary"
                 />
               </div>
             </div>
 
             <div className="flex flex-wrap items-center gap-4">
               <div className="flex items-center gap-2">
-                <Filter className="w-5 h-5 text-gray-400" />
+                <Filter className="w-5 h-5 text-content-secondary" />
                 <select
                   value={filterType}
                   onChange={(e) => setFilterType(e.target.value)}
-                  className="bg-[#1A1F2E] border border-[#2D3748] rounded-lg px-3 py-2 text-white outline-none focus:border-[#0D6E6E]"
+                  className="bg-surface border border-border rounded-lg px-3 py-2 text-content-primary outline-none focus:border-brand"
                 >
                   <option value="all">All Types</option>
                   <option value="image">Images</option>
@@ -304,16 +304,16 @@ export default function MediaLibraryClient() {
               </div>
 
               {/* View Toggle */}
-              <div className="flex items-center gap-2 bg-[#1A1F2E] border border-[#2D3748] rounded-lg p-1">
+              <div className="flex items-center gap-2 bg-surface border border-border rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('grid')}
-                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-[#2D3748]' : 'text-gray-400'}`}
+                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-surface-muted' : 'text-content-secondary'}`}
                 >
                   <Grid className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-[#2D3748]' : 'text-gray-400'}`}
+                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-surface-muted' : 'text-content-secondary'}`}
                 >
                   <List className="w-5 h-5" />
                 </button>
@@ -322,19 +322,19 @@ export default function MediaLibraryClient() {
               {/* Bulk Actions */}
               {selectedMedia.length > 0 && (
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold bg-[#0D6E6E]/20 text-[#0D6E6E] px-3 py-1.5 rounded-lg border border-[#0D6E6E]/50">
+                  <span className="text-sm font-bold bg-brand/20 text-brand px-3 py-1.5 rounded-lg border border-brand/50">
                     {selectedMedia.length} selected
                   </span>
                   <button
                     onClick={handleClearSelection}
-                    className="p-1.5 bg-[#1A1F2E] hover:bg-white/10 rounded-lg text-gray-400 transition-colors"
+                    className="p-1.5 bg-surface hover:bg-accent rounded-lg text-content-secondary transition-colors"
                   >
                     <X className="w-5 h-5" />
                   </button>
                   {selectedMedia.length > 1 && (
                      <button
                         onClick={handleDeleteSelected}
-                        className="px-4 py-2 bg-red-600/20 text-red-500 hover:bg-red-600 hover:text-white rounded-lg transition-colors border border-red-500/50"
+                        className="px-4 py-2 bg-error-muted text-error hover:bg-error hover:text-content-inverse rounded-lg transition-colors border border-error/50"
                      >
                        Bulk Delete
                      </button>
@@ -345,41 +345,44 @@ export default function MediaLibraryClient() {
           </div>
 
           {/* Media Grid/List */}
-          <div className="flex-1 overflow-auto bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-2xl">
+          <div className="flex-1 overflow-auto bg-surface rounded-2xl border border-border p-6 shadow-2xl">
             {loading ? (
               <div className="text-center py-20">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand-teal"></div>
-                <p className="mt-4 text-gray-400 font-bold uppercase tracking-widest text-xs">Loading media repository...</p>
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand"></div>
+                <p className="mt-4 text-content-secondary font-bold uppercase tracking-widest text-xs">Loading media repository...</p>
               </div>
             ) : filteredMedia.length === 0 ? (
               <div className="text-center py-20 rounded-xl">
-                <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/10 shadow-lg">
-                  <ImageIcon className="w-10 h-10 text-gray-500" />
+                <div className="w-20 h-20 bg-surface-muted rounded-full flex items-center justify-center mx-auto mb-6 border border-border shadow-lg">
+                  <ImageIcon className="w-10 h-10 text-content-muted" />
                 </div>
                 <h3 className="text-xl font-bold mb-2">No media found</h3>
-                <p className="text-gray-500 text-sm">
+                <p className="text-content-muted text-sm">
                   {search || filterType !== 'all' ? 'Try changing your search or filter configuration' : 'Upload your first file to the global media pool'}
                 </p>
               </div>
             ) : viewMode === 'grid' ? (
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {filteredMedia.map((item) => (
-                  <div
+                  <button
+                    type="button"
                     key={item.id}
-                    className={`relative group bg-[#0F1117] rounded-2xl overflow-hidden border-2 transition-all cursor-pointer shadow-lg hover:shadow-xl hover:-translate-y-1 ${
-                      selectedMedia.includes(item.id) ? 'border-[#0D6E6E] ring-2 ring-[#0D6E6E]/30' : 'border-[#2D3748] hover:border-white/20'
+                    aria-pressed={selectedMedia.includes(item.id)}
+                    aria-label={`${selectedMedia.includes(item.id) ? 'Deselect' : 'Select'} ${item.originalName}`}
+                    className={`w-full text-left relative group bg-surface rounded-2xl overflow-hidden border-2 transition-all cursor-pointer shadow-lg hover:shadow-xl hover:-translate-y-1 ${
+                      selectedMedia.includes(item.id) ? 'border-brand ring-2 ring-brand/30' : 'border-border hover:border-border-strong'
                     }`}
                     onClick={(e) => toggleMediaSelection(item.id, e.shiftKey)}
                   >
                     <div className="absolute top-3 left-3 z-10">
                       <div className={`w-6 h-6 rounded-lg flex items-center justify-center transition-colors border ${
-                        selectedMedia.includes(item.id) ? 'bg-[#0D6E6E] border-[#0D6E6E]' : 'bg-black/50 border-white/20 group-hover:border-white/50'
+                        selectedMedia.includes(item.id) ? 'bg-primary border-brand' : 'bg-black/50 border-border-strong group-hover:border-border-strong'
                       }`}>
-                        {selectedMedia.includes(item.id) && <Check className="w-4 h-4 text-white font-bold" />}
+                        {selectedMedia.includes(item.id) && <Check className="w-4 h-4 text-primary-foreground font-bold" />}
                       </div>
                     </div>
 
-                    <div className="aspect-square relative bg-[#1A1F2E]">
+                    <div className="aspect-square relative bg-surface">
                       {item.mimeType.startsWith('image/') ? (
                         <Image
                           src={item.url}
@@ -390,34 +393,34 @@ export default function MediaLibraryClient() {
                         />
                       ) : (
                         <div className="w-full h-full flex flex-col items-center justify-center gap-3">
-                          <div className="p-4 bg-white/5 rounded-2xl border border-white/5">
+                          <div className="p-4 bg-surface-muted rounded-2xl border border-border-subtle">
                              {getFileIcon(item.mimeType)}
                           </div>
-                          <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md">
+                          <span className="text-[10px] font-bold text-content-muted uppercase tracking-widest bg-surface-muted px-2 py-1 rounded-md">
                             {item.mimeType.split('/')[1]}
                           </span>
                         </div>
                       )}
                     </div>
 
-                    <div className="p-4 border-t border-[#2D3748]">
-                      <p className="text-sm font-bold truncate group-hover:text-white transition-colors text-gray-300" title={item.originalName}>{item.originalName}</p>
+                    <div className="p-4 border-t border-border">
+                      <p className="text-sm font-bold truncate group-hover:text-brand transition-colors text-content-primary" title={item.originalName}>{item.originalName}</p>
                       <div className="flex justify-between items-center mt-2 opacity-70">
-                        <span className="text-[10px] font-bold bg-white/5 px-1.5 py-0.5 rounded text-gray-400">
+                        <span className="text-[10px] font-bold bg-surface-muted px-1.5 py-0.5 rounded text-content-secondary">
                           {formatFileSize(item.size)}
                         </span>
-                        <span className="text-[10px] uppercase text-gray-500 font-bold tracking-wider">
+                        <span className="text-[10px] uppercase text-content-muted font-bold tracking-wider">
                           {new Date(item.uploadedAt).toLocaleDateString(undefined, {month: 'short', day: 'numeric'})}
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </button>
                 ))}
               </div>
             ) : (
-              <div className="bg-[#0F1117] rounded-xl overflow-hidden border border-[#2D3748]">
+              <div className="bg-surface rounded-xl overflow-hidden border border-border">
                 <table className="w-full text-left">
-                  <thead className="bg-[#1A1F2E] border-b border-[#2D3748]">
+                  <thead className="bg-surface border-b border-border">
                     <tr>
                       <th className="p-4">
                         <input
@@ -430,26 +433,25 @@ export default function MediaLibraryClient() {
                           className="rounded bg-transparent border-gray-600"
                         />
                       </th>
-                      <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Name</th>
-                      <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Type</th>
-                      <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Size</th>
-                      <th className="py-4 px-4 text-xs font-bold text-gray-500 uppercase tracking-widest">Date Uploaded</th>
+                      <th className="py-4 px-4 text-xs font-bold text-content-muted uppercase tracking-widest">Name</th>
+                      <th className="py-4 px-4 text-xs font-bold text-content-muted uppercase tracking-widest">Type</th>
+                      <th className="py-4 px-4 text-xs font-bold text-content-muted uppercase tracking-widest">Size</th>
+                      <th className="py-4 px-4 text-xs font-bold text-content-muted uppercase tracking-widest">Date Uploaded</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-[#2D3748]">
+                  <tbody className="divide-y divide-border-subtle">
                     {filteredMedia.map((item) => (
                       <tr
                         key={item.id}
                         onClick={() => toggleMediaSelection(item.id)}
-                        className={`hover:bg-white/5 transition-colors cursor-pointer group ${
-                          selectedMedia.includes(item.id) ? 'bg-[#0D6E6E]/10' : ''
+                        className={`hover:bg-surface-muted transition-colors cursor-pointer group ${
+                          selectedMedia.includes(item.id) ? 'bg-brand/10' : ''
                         }`}
                       >
                         <td className="p-4">
                           <input
                             type="checkbox"
                             checked={selectedMedia.includes(item.id)}
-                            readOnly
                             onClick={(e) => e.stopPropagation()}
                             onChange={() => toggleMediaSelection(item.id)}
                             className="rounded"
@@ -457,7 +459,7 @@ export default function MediaLibraryClient() {
                         </td>
                         <td className="py-3 px-4">
                           <div className="flex items-center gap-4">
-                            <div className="w-12 h-12 bg-[#1A1F2E] rounded-xl flex items-center justify-center border border-[#2D3748] relative overflow-hidden flex-shrink-0">
+                            <div className="w-12 h-12 bg-surface rounded-xl flex items-center justify-center border border-border relative overflow-hidden flex-shrink-0">
                                {item.mimeType.startsWith('image/') ? (
                                   <Image src={item.url} alt={item.originalName} fill className="object-cover" />
                                ) : (
@@ -465,20 +467,20 @@ export default function MediaLibraryClient() {
                                )}
                             </div>
                             <div className="min-w-0">
-                              <p className="font-bold text-sm text-gray-200 group-hover:text-white transition-colors truncate">{item.originalName}</p>
-                              <p className="text-xs text-gray-500 truncate" title={item.url}>{item.url}</p>
+                              <p className="font-bold text-sm text-content-primary group-hover:text-brand transition-colors truncate">{item.originalName}</p>
+                              <p className="text-xs text-content-muted truncate" title={item.url}>{item.url}</p>
                             </div>
                           </div>
                         </td>
                         <td className="py-3 px-4">
-                          <span className="px-2.5 py-1 bg-white/5 border border-white/10 rounded-lg text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                          <span className="px-2.5 py-1 bg-surface-muted border border-border rounded-lg text-[10px] font-bold uppercase tracking-wider text-content-secondary">
                             {item.mimeType.split('/')[1] || item.mimeType}
                           </span>
                         </td>
-                        <td className="py-3 px-4 text-sm font-semibold text-gray-400">
+                        <td className="py-3 px-4 text-sm font-semibold text-content-secondary">
                           {formatFileSize(item.size)}
                         </td>
-                        <td className="py-3 px-4 text-sm font-semibold text-gray-400">
+                        <td className="py-3 px-4 text-sm font-semibold text-content-secondary">
                           {new Date(item.uploadedAt).toLocaleDateString(undefined, {dateStyle: 'medium'})}
                         </td>
                       </tr>
@@ -492,17 +494,17 @@ export default function MediaLibraryClient() {
 
         {/* Attachment Details Sidebar - Visible when exactly ONE item is selected */}
         {activeMedia && (
-          <div className="w-80 lg:w-96 bg-[#1A1F2E] border border-[#2D3748] flex flex-col rounded-2xl overflow-hidden shadow-2xl shrink-0 my-auto h-[min(calc(100vh-250px),800px)]">
-             <div className="p-5 border-b border-[#2D3748] bg-[#0F1117] flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-[#0D6E6E] uppercase tracking-[0.2em]">Attachment Details</h3>
-                <button onClick={handleClearSelection} className="p-1 hover:bg-white/10 rounded-lg text-gray-500">
+          <div className="w-full lg:w-96 bg-surface border border-border flex flex-col rounded-2xl overflow-hidden shadow-2xl shrink-0 my-0 lg:my-auto h-[min(60vh,600px)] lg:h-[min(calc(100vh-250px),800px)]">
+             <div className="p-5 border-b border-border bg-surface flex items-center justify-between">
+                <h3 className="text-xs font-extrabold text-brand uppercase tracking-[0.2em]">Attachment Details</h3>
+                <button onClick={handleClearSelection} className="p-1 hover:bg-accent rounded-lg text-content-muted">
                   <X className="w-4 h-4" />
                 </button>
              </div>
              
              <div className="flex-1 overflow-y-auto">
-               <div className="p-5 border-b border-[#2D3748] bg-[#1A1F2E]">
-                  <div className="aspect-video relative rounded-xl overflow-hidden bg-black/50 mb-4 border border-[#2D3748] shadow-inner">
+               <div className="p-5 border-b border-border bg-surface">
+                  <div className="aspect-video relative rounded-xl overflow-hidden bg-black/50 mb-4 border border-border shadow-inner">
                     {activeMedia.mimeType.startsWith('image/') ? (
                       <Image
                         src={activeMedia.url}
@@ -518,36 +520,36 @@ export default function MediaLibraryClient() {
                     )}
                   </div>
                   
-                  <div className="space-y-2 text-xs font-medium text-gray-400 bg-white/5 p-4 rounded-xl border border-white/5">
-                    <p className="flex justify-between"><span className="text-gray-500">Name:</span> <span className="truncate ml-2 text-gray-300 font-bold">{activeMedia.originalName}</span></p>
-                    <p className="flex justify-between"><span className="text-gray-500">Type:</span> <span className="text-gray-300">{activeMedia.mimeType}</span></p>
-                    <p className="flex justify-between"><span className="text-gray-500">Uploaded:</span> <span className="text-gray-300">{new Date(activeMedia.uploadedAt).toLocaleString()}</span></p>
-                    <p className="flex justify-between"><span className="text-gray-500">File size:</span> <span className="text-gray-300 font-mono">{formatFileSize(activeMedia.size)}</span></p>
+                  <div className="space-y-2 text-xs font-medium text-content-secondary bg-surface-muted p-4 rounded-xl border border-border-subtle">
+                    <p className="flex justify-between"><span className="text-content-muted">Name:</span> <span className="truncate ml-2 text-content-secondary font-bold">{activeMedia.originalName}</span></p>
+                    <p className="flex justify-between"><span className="text-content-muted">Type:</span> <span className="text-content-secondary">{activeMedia.mimeType}</span></p>
+                    <p className="flex justify-between"><span className="text-content-muted">Uploaded:</span> <span className="text-content-secondary">{new Date(activeMedia.uploadedAt).toLocaleString()}</span></p>
+                    <p className="flex justify-between"><span className="text-content-muted">File size:</span> <span className="text-content-secondary font-mono">{formatFileSize(activeMedia.size)}</span></p>
                     {activeMedia.width && activeMedia.height && (
-                      <p className="flex justify-between"><span className="text-gray-500">Dimensions:</span> <span className="text-gray-300 font-mono">{activeMedia.width} x {activeMedia.height}</span></p>
+                      <p className="flex justify-between"><span className="text-content-muted">Dimensions:</span> <span className="text-content-secondary font-mono">{activeMedia.width} x {activeMedia.height}</span></p>
                     )}
                   </div>
 
-                  <div className="mt-4 pt-4 border-t border-[#2D3748]">
-                    <button onClick={() => handleDeleteSelected()} className="flex items-center gap-2 text-red-400 hover:text-white hover:bg-red-500/20 px-3 py-2 rounded-lg text-xs font-bold transition-colors w-full justify-center border border-transparent hover:border-red-500/30">
+                  <div className="mt-4 pt-4 border-t border-border">
+                    <button onClick={() => handleDeleteSelected()} className="flex items-center gap-2 text-error hover:text-content-inverse hover:bg-error px-3 py-2 rounded-lg text-xs font-bold transition-colors w-full justify-center border border-transparent hover:border-error">
                       <Trash2 className="w-4 h-4" /> Permanently Delete
                     </button>
                   </div>
                </div>
 
-               <div className="p-5 space-y-5 bg-[#0F1117] h-full">
+               <div className="p-5 space-y-5 bg-surface h-full">
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Original File URL</label>
+                    <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Original File URL</label>
                     <div className="flex">
                       <input 
                         type="text" 
                         readOnly 
                         value={`${window.location.origin}${activeMedia.url}`}
-                        className="flex-1 bg-[#1A1F2E] border border-[#2D3748] border-r-0 rounded-l-lg px-3 py-2.5 text-xs text-gray-400 font-mono outline-none"
+                        className="flex-1 bg-surface border border-border border-r-0 rounded-l-lg px-3 py-2.5 text-xs text-content-secondary font-mono outline-none"
                       />
                       <button 
                         onClick={() => handleCopyUrl(activeMedia.url)}
-                        className="px-4 bg-[#2D3748] hover:bg-white/20 border border-[#2D3748] rounded-r-lg text-white transition-colors border-l-0"
+                        className="px-4 bg-surface-muted hover:bg-accent border border-border rounded-r-lg text-content-primary transition-colors border-l-0"
                         title="Copy URL"
                       >
                         <Copy className="w-4 h-4" />
@@ -556,56 +558,56 @@ export default function MediaLibraryClient() {
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Title</label>
+                    <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Title</label>
                     <input 
                       type="text" 
                       value={editForm.filename}
                       onChange={(e) => setEditForm({...editForm, filename: e.target.value})}
-                      className="w-full bg-[#1A1F2E] border border-[#2D3748] rounded-lg px-3 py-2.5 text-sm font-semibold text-white outline-none focus:border-[#0D6E6E] focus:ring-1 focus:ring-[#0D6E6E]" 
+                      className="w-full bg-surface border border-border rounded-lg px-3 py-2.5 text-sm font-semibold text-content-primary outline-none focus:border-brand focus:ring-1 focus:ring-brand"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Alt Text <span className="text-gray-600 font-normal normal-case ml-1">(Important for SEO)</span></label>
+                    <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Alt Text <span className="text-content-muted font-normal normal-case ml-1">(Important for SEO)</span></label>
                     <textarea 
                       rows={2}
                       value={editForm.altText}
                       onChange={(e) => setEditForm({...editForm, altText: e.target.value})}
                       placeholder="Describe the image..."
-                      className="w-full bg-[#1A1F2E] border border-[#2D3748] rounded-lg p-3 text-sm text-gray-300 outline-none focus:border-[#0D6E6E] resize-none" 
+                      className="w-full bg-surface border border-border rounded-lg p-3 text-sm text-content-secondary outline-none focus:border-brand resize-none"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Caption</label>
+                    <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Caption</label>
                     <textarea 
                       rows={2}
                       value={editForm.caption}
                       onChange={(e) => setEditForm({...editForm, caption: e.target.value})}
-                      className="w-full bg-[#1A1F2E] border border-[#2D3748] rounded-lg p-3 text-sm text-gray-300 outline-none focus:border-[#0D6E6E] resize-none" 
+                      className="w-full bg-surface border border-border rounded-lg p-3 text-sm text-content-secondary outline-none focus:border-brand resize-none"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2">Description</label>
+                    <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-2">Description</label>
                     <textarea 
                       rows={3}
                       value={editForm.description}
                       onChange={(e) => setEditForm({...editForm, description: e.target.value})}
-                      className="w-full bg-[#1A1F2E] border border-[#2D3748] rounded-lg p-3 text-sm text-gray-300 outline-none focus:border-[#0D6E6E] resize-none" 
+                      className="w-full bg-surface border border-border rounded-lg p-3 text-sm text-content-secondary outline-none focus:border-brand resize-none"
                     />
                   </div>
                </div>
              </div>
              
              {/* Save Button */}
-             <div className="p-4 border-t border-[#2D3748] bg-[#1A1F2E]">
+             <div className="p-4 border-t border-border bg-surface">
                <button 
                   onClick={() => handleSaveMetadata(activeMedia.id)} 
                   disabled={isSaving}
-                  className="w-full py-3 bg-[#0D6E6E] hover:bg-[#0F9E9E] rounded-xl text-sm font-bold text-white shadow-[0_0_20px_rgba(13,110,110,0.3)] transition-all flex items-center justify-center gap-2"
+                  className="w-full py-3 bg-primary hover:bg-primary-hover rounded-xl text-sm font-bold text-primary-foreground shadow-[0_0_20px_rgba(13,110,110,0.3)] transition-all flex items-center justify-center gap-2"
                 >
-                  {isSaving ? <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></span> : <Save className="w-4 h-4" />}
+                  {isSaving ? <span className="animate-spin rounded-full h-4 w-4 border-b-2 border-primary-foreground"></span> : <Save className="w-4 h-4" />}
                   {isSaving ? 'UPDATING METADATA...' : 'SAVE DETAILS'}
                 </button>
              </div>

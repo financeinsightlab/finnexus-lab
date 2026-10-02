@@ -116,7 +116,7 @@ function HitComponent({ hit }: { hit: AlgoliaHit }) {
             <span className="text-[11px] text-gray-400 font-mono">{formatDate(h.date)}</span>
             <Link
               href={h.url}
-              className="text-sm font-semibold text-brand-teal hover:text-brand-navy"
+              className="text-sm font-semibold text-brand-teal hover:text-content-primary"
             >
               Read Report →
             </Link>
@@ -147,7 +147,7 @@ function HitComponent({ hit }: { hit: AlgoliaHit }) {
             <span className="text-[11px] text-gray-400 font-mono">{formatDate(h.date)}</span>
             <Link
               href={h.url}
-              className="text-sm font-semibold text-brand-teal hover:text-brand-navy"
+              className="text-sm font-semibold text-brand-teal hover:text-content-primary"
             >
               Read →
             </Link>

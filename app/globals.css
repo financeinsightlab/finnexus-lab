@@ -4,27 +4,77 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Kunwar Analytics semantic color system.
+ * Components should reference these roles rather than inventing page colors.
+ */
 :root {
   color-scheme: light;
-  --background: 40 30% 98%;
+
+  /* Page and surface hierarchy */
+  --background: 42 36% 98%;
   --foreground: 222 39% 11%;
-  --card: 0 0% 100%;
-  --card-foreground: 222 39% 11%;
-  --popover: 0 0% 100%;
-  --popover-foreground: 222 39% 11%;
+  --surface: 0 0% 100%;
+  --surface-raised: 0 0% 100%;
+  --surface-muted: 210 30% 96%;
+  --surface-overlay: 0 0% 100%;
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface-overlay);
+  --popover-foreground: var(--foreground);
+
+  /* Text hierarchy */
+  --content-primary: 222 39% 11%;
+  --content-secondary: 215 20% 29%;
+  --content-muted: 215 16% 38%;
+  --content-disabled: 215 12% 48%;
+  --content-inverse: 0 0% 100%;
+
+  /* Interactive controls */
   --primary: 180 79% 24%;
+  --primary-hover: 180 78% 19%;
   --primary-foreground: 0 0% 100%;
+  --brand: 180 79% 24%;
+  --brand-hover: 180 78% 19%;
+  --brand-muted: 180 38% 93%;
   --secondary: 210 25% 94%;
   --secondary-foreground: 222 39% 15%;
+  --secondary-hover: 210 24% 89%;
   --muted: 210 25% 95%;
   --muted-foreground: 215 16% 38%;
   --accent: 180 28% 93%;
   --accent-foreground: 180 79% 19%;
+  --accent-muted: 180 32% 95%;
   --destructive: 350 66% 38%;
+  --destructive-hover: 350 66% 32%;
   --destructive-foreground: 0 0% 100%;
+
+  /* Status colors */
+  --success: 146 64% 29%;
+  --success-muted: 145 55% 94%;
+  --warning: 35 88% 33%;
+  --warning-muted: 38 85% 94%;
+  --error: 350 66% 38%;
+  --error-muted: 350 75% 95%;
+  --info: 214 80% 38%;
+  --info-muted: 212 80% 95%;
+  --accent-violet: 263 62% 45%;
+  --accent-violet-muted: 263 60% 96%;
+
+  /* Borders and keyboard focus */
+  --border-subtle: 214 22% 92%;
   --border: 214 22% 86%;
+  --border-strong: 214 18% 70%;
   --input: 214 22% 82%;
   --ring: 180 79% 24%;
+  --border-focus: 180 79% 24%;
+
+  /* Theme-aware overlays for legacy translucent utilities */
+  --surface-tint-rgb: 15 23 42;
+  --surface-tint-strong-rgb: 15 23 42;
+  --shadow-rgb: 15 23 42;
+
+  /* Legacy brand aliases are kept for existing content and CMS blocks. */
   --navy: #1A2B3C;
   --slate: #4A5568;
   --teal: #0D6E6E;
@@ -35,27 +85,65 @@
 
 .dark {
   color-scheme: dark;
-  --background: 220 37% 9%;
-  --foreground: 210 40% 96%;
-  --card: 220 32% 13%;
-  --card-foreground: 210 40% 96%;
-  --popover: 220 32% 13%;
-  --popover-foreground: 210 40% 96%;
-  --primary: 180 74% 38%;
-  --primary-foreground: 222 39% 8%;
-  --secondary: 220 25% 19%;
-  --secondary-foreground: 210 40% 96%;
-  --muted: 220 25% 17%;
-  --muted-foreground: 215 20% 70%;
-  --accent: 220 25% 21%;
-  --accent-foreground: 180 75% 78%;
-  --destructive: 350 60% 55%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 217 21% 26%;
-  --input: 217 21% 31%;
-  --ring: 180 74% 48%;
-}
 
+  /* Blue-slate surfaces retain depth without falling to pure black. */
+  --background: 220 34% 10%;
+  --foreground: 210 30% 96%;
+  --surface: 220 30% 13%;
+  --surface-raised: 220 28% 16%;
+  --surface-muted: 220 24% 18%;
+  --surface-overlay: 220 32% 14%;
+  --card: var(--surface);
+  --card-foreground: var(--foreground);
+  --popover: var(--surface-overlay);
+  --popover-foreground: var(--foreground);
+
+  --content-primary: 210 30% 96%;
+  --content-secondary: 215 20% 79%;
+  --content-muted: 215 17% 69%;
+  --content-disabled: 215 12% 56%;
+  --content-inverse: 222 39% 11%;
+
+  --primary: 180 74% 39%;
+  --primary-hover: 180 74% 46%;
+  --primary-foreground: 222 39% 8%;
+  --brand: 180 74% 49%;
+  --brand-hover: 180 74% 57%;
+  --brand-muted: 180 40% 19%;
+  --secondary: 220 25% 20%;
+  --secondary-foreground: 210 30% 96%;
+  --secondary-hover: 220 25% 25%;
+  --muted: 220 25% 17%;
+  --muted-foreground: 215 17% 69%;
+  --accent: 220 24% 22%;
+  --accent-foreground: 180 70% 78%;
+  --accent-muted: 220 24% 20%;
+  --destructive: 350 63% 55%;
+  --destructive-hover: 350 66% 61%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 145 60% 64%;
+  --success-muted: 145 45% 18%;
+  --warning: 42 95% 66%;
+  --warning-muted: 38 60% 19%;
+  --error: 350 82% 72%;
+  --error-muted: 350 50% 20%;
+  --info: 211 91% 72%;
+  --info-muted: 214 50% 20%;
+  --accent-violet: 263 82% 78%;
+  --accent-violet-muted: 263 42% 20%;
+
+  --border-subtle: 218 22% 21%;
+  --border: 217 21% 27%;
+  --border-strong: 215 17% 39%;
+  --input: 217 21% 31%;
+  --ring: 180 74% 50%;
+  --border-focus: 180 74% 50%;
+
+  --surface-tint-rgb: 255 255 255;
+  --surface-tint-strong-rgb: 255 255 255;
+  --shadow-rgb: 0 0 0;
+}
 .skip-link {
   position: fixed;
   left: 1rem;
@@ -186,34 +274,32 @@
    Pure CSS 3D utilities. No WebGL. GPU-composited only.
    ═══════════════════════════════════════════════════════════════ */
 
-/* ── Glassmorphism ── */
-.glass {
-  background: rgba(255, 255, 255, 0.06);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.04),
-    0 12px 28px rgba(0, 0, 0, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.15);
+/* ── Theme-aware glass and surface cards ── */
+.glass,
+.glass-light,
+.glass-cinema,
+.glass-cinema-light {
+  background: hsl(var(--surface) / 0.9);
+  border: 1px solid hsl(var(--border) / 0.82);
+  backdrop-filter: blur(18px) saturate(150%);
+  -webkit-backdrop-filter: blur(18px) saturate(150%);
+  box-shadow: 0 8px 28px rgb(var(--shadow-rgb) / 0.08),
+    inset 0 1px 0 hsl(var(--content-inverse) / 0.14);
 }
-.glass-light {
-  background: rgba(255, 255, 255, 0.7);
-  backdrop-filter: blur(16px) saturate(180%);
-  -webkit-backdrop-filter: blur(16px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.6);
-  box-shadow:
-    0 2px 4px rgba(0, 0, 0, 0.04),
-    0 8px 24px rgba(0, 0, 0, 0.08),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+
+.glass-cinema {
+  background: hsl(var(--surface) / 0.94);
+  backdrop-filter: blur(24px) saturate(165%);
+  -webkit-backdrop-filter: blur(24px) saturate(165%);
+  box-shadow: 0 12px 36px rgb(var(--shadow-rgb) / 0.11);
 }
-.dark .glass-light {
-  background: rgba(26, 31, 46, 0.6);
-  border-color: rgba(255, 255, 255, 0.08);
-  box-shadow:
-    0 4px 8px rgba(0, 0, 0, 0.3),
-    0 12px 28px rgba(0, 0, 0, 0.4),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+
+.glass-cinema-strong {
+  background: hsl(var(--surface-overlay) / 0.98);
+  border: 1px solid hsl(var(--border-strong) / 0.75);
+  backdrop-filter: blur(28px) saturate(170%);
+  -webkit-backdrop-filter: blur(28px) saturate(170%);
+  box-shadow: 0 24px 56px rgb(var(--shadow-rgb) / 0.2);
 }
 
 /* ── Depth-only shadows (apply on any element) ── */
@@ -239,7 +325,7 @@
 .aurora-bg {
   position: relative;
   overflow: hidden;
-  background: #1A2B3C;
+  background: hsl(var(--surface-muted));
 }
 .aurora-bg::before,
 .aurora-bg::after {
@@ -271,14 +357,14 @@
 
 /* ── 3D gradient text ── */
 .text-3d {
-  background: linear-gradient(135deg, #0D9E9E 0%, #92620A 100%);
+  background: linear-gradient(135deg, hsl(var(--brand)) 0%, hsl(var(--warning)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   filter: drop-shadow(0 2px 4px rgba(13,110,110,0.3));
 }
 .text-3d-light {
-  background: linear-gradient(135deg, #0D6E6E 0%, #1A5C3A 100%);
+  background: linear-gradient(135deg, hsl(var(--brand)) 0%, hsl(var(--success)) 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -427,21 +513,21 @@
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
-/* Frosted glass system */
-.glass-cinema {
-  background: rgba(18, 20, 25, 0.55); backdrop-filter: blur(24px) saturate(180%); -webkit-backdrop-filter: blur(24px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.08);
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.2);
-}
+/* Theme-aware frosted surfaces; brand lighting remains an accent, not a base color. */
+.glass-cinema,
 .glass-cinema-light {
-  background: rgba(255, 255, 255, 0.04); backdrop-filter: blur(20px) saturate(160%); -webkit-backdrop-filter: blur(20px) saturate(160%);
-  border: 1px solid rgba(255, 255, 255, 0.06);
-  box-shadow: 0 4px 24px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
+  background: hsl(var(--surface) / 0.94);
+  backdrop-filter: blur(22px) saturate(165%);
+  -webkit-backdrop-filter: blur(22px) saturate(165%);
+  border: 1px solid hsl(var(--border) / 0.86);
+  box-shadow: 0 12px 36px rgb(var(--shadow-rgb) / 0.1);
 }
 .glass-cinema-strong {
-  background: rgba(10, 11, 15, 0.75); backdrop-filter: blur(32px) saturate(200%); -webkit-backdrop-filter: blur(32px) saturate(200%);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 24px 64px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.1);
+  background: hsl(var(--surface-overlay) / 0.98);
+  backdrop-filter: blur(28px) saturate(175%);
+  -webkit-backdrop-filter: blur(28px) saturate(175%);
+  border: 1px solid hsl(var(--border-strong) / 0.78);
+  box-shadow: 0 24px 56px rgb(var(--shadow-rgb) / 0.18);
 }
 
 /* Light sweep */
@@ -463,14 +549,17 @@
 }
 .cinema-border-glow:hover::before { opacity: 1; }
 
-/* Gradient text */
-.cinema-text-gradient {
-  background: linear-gradient(135deg, #fff 0%, #94a3b8 50%, #64748b 100%);
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
+/* Theme-responsive headline gradients preserve the teal/cyan brand in both modes. */
+.cinema-text-gradient,
+.cinema-text-glow {
+  background: linear-gradient(135deg, hsl(var(--brand)) 0%, hsl(var(--accent-violet)) 52%, hsl(var(--info)) 100%);
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
 }
 .cinema-text-glow {
-  background: linear-gradient(135deg, #60a5fa 0%, #a78bfa 50%, #22d3ee 100%); background-size: 200% auto;
-  -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; color: transparent;
   animation: shimmerText 4s linear infinite;
 }
 
@@ -483,7 +572,7 @@
 
 /* Mesh gradient background */
 .cinema-mesh {
-  background-color: #050507;
+  background-color: transparent;
   background-image:
     radial-gradient(at 20% 20%, rgba(59,130,246,0.12) 0px, transparent 50%),
     radial-gradient(at 80% 10%, rgba(124,58,237,0.10) 0px, transparent 50%),
@@ -494,7 +583,7 @@
 
 /* Grid background */
 .cinema-grid {
-  background-image: linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+  background-image: linear-gradient(hsl(var(--border) / 0.22) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--border) / 0.22) 1px, transparent 1px);
   background-size: 60px 60px;
   mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
   -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
@@ -557,19 +646,48 @@
 
 @layer base {
   html {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-inter), Inter, sans-serif;
+    scroll-behavior: smooth;
+    background: hsl(var(--background));
   }
+
   body {
-    color: var(--slate);
-    background: #faf9f6;
+    color: hsl(var(--content-primary));
+    background: hsl(var(--background));
     @apply antialiased;
   }
-  .dark body {
-    background: #0a1120;
-    color: #CBD5E1;
+
+  h1, h2, h3, h4, h5, h6 {
+    color: hsl(var(--content-primary));
+    text-wrap: pretty;
   }
+
+  input:not([type="checkbox"]):not([type="radio"]):not([type="range"]):not([type="color"]),
+  textarea,
+  select {
+    color: hsl(var(--content-primary));
+    background-color: hsl(var(--surface));
+    border-color: hsl(var(--input));
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: hsl(var(--content-muted));
+    opacity: 1;
+  }
+
+  input[type="checkbox"],
+  input[type="radio"] {
+    accent-color: hsl(var(--brand));
+  }
+
+  :disabled {
+    cursor: not-allowed;
+  }
+
   ::selection {
-    background-color: rgba(13, 110, 110, 0.15);
+    background-color: hsl(var(--brand) / 0.2);
+    color: hsl(var(--content-primary));
   }
 }
 
@@ -577,12 +695,19 @@
   .wrap {
     @apply mx-auto px-4 sm:px-6 lg:px-10 max-w-[1280px];
   }
+
   .card {
-    @apply bg-white border border-gray-200 rounded-xl shadow-md hover:shadow-lg hover:-translate-y-0.5 transition-all;
+    @apply rounded-2xl border border-border-subtle bg-surface shadow-sm transition-[box-shadow,border-color,transform];
   }
+
+  .card:hover {
+    @apply border-border shadow-md;
+  }
+
   .research-card {
     @apply card relative;
   }
+
   .research-card::before {
     content: '';
     position: absolute;
@@ -590,103 +715,103 @@
     top: 0;
     bottom: 0;
     width: 3px;
-    background: var(--teal);
+    background: hsl(var(--brand));
     transform: scaleY(0);
     transition: transform 0.25s ease;
   }
+
   .research-card:hover::before {
     transform: scaleY(1);
   }
+
   .btn {
-    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg font-medium transition-all;
+    @apply inline-flex min-h-10 items-center justify-center gap-2 rounded-xl px-4 py-2 font-medium transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:pointer-events-none disabled:opacity-55;
   }
-   .btn-primary {
-  @apply bg-brand-navy text-white rounded-xl px-5 py-2.5 font-medium transition-all duration-200;
-  box-shadow: 0 4px 14px rgba(26, 43, 60, 0.35), inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  transform: translateZ(0);
-}
 
-.btn-primary:hover {
-  @apply bg-brand-teal;
-  box-shadow: 0 8px 24px rgba(13, 110, 110, 0.45), inset 0 1px 0 rgba(255, 255, 255, 0.18);
-  transform: translateY(-2px);
-}
+  .btn-primary {
+    @apply btn bg-primary text-primary-foreground shadow-sm hover:bg-primary-hover active:translate-y-px;
+  }
 
-.btn-primary:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(13, 110, 110, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.1);
-}
+  .btn-secondary {
+    @apply btn border border-border bg-secondary text-secondary-foreground hover:bg-secondary-hover;
+  }
+
+  .btn-destructive {
+    @apply btn bg-destructive text-destructive-foreground hover:bg-destructive-hover;
+  }
+
   .btn-outline {
-    @apply border border-brand-navy text-brand-navy hover:bg-brand-navy hover:text-white;
+    @apply btn border border-border-strong bg-surface text-content-primary hover:bg-surface-muted;
   }
+
   .btn-ghost {
-    @apply text-brand-teal hover:tracking-wider;
+    @apply btn bg-transparent text-content-secondary hover:bg-accent hover:text-content-primary;
   }
+
   .btn-white {
-    @apply bg-white text-brand-navy hover:bg-brand-teal hover:text-white;
+    @apply btn border border-border bg-surface text-content-primary hover:bg-surface-muted;
   }
+
   .btn-outline-white {
-    @apply border border-white/40 text-white hover:bg-white hover:text-brand-navy;
+    @apply btn border border-border-strong bg-transparent text-content-primary hover:bg-accent;
   }
+
   .section-label {
-    @apply text-xs font-bold uppercase tracking-widest text-brand-teal;
+    @apply text-xs font-bold uppercase tracking-widest text-brand;
   }
+
   .report-body {
-    font-family: 'Source Serif 4', serif;
-    @apply text-lg leading-relaxed text-brand-slate;
+    font-family: var(--font-serif), 'Source Serif 4', serif;
+    @apply text-lg leading-relaxed text-content-secondary;
   }
+
   .tag {
-    @apply inline-block text-[10px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-md;
+    @apply inline-block rounded-md px-2.5 py-1 text-[10px] font-bold uppercase tracking-widest;
   }
-  .tag-teal {
-    @apply bg-teal-100 text-teal-800;
-  }
-  .tag-navy {
-    @apply bg-blue-100 text-blue-800;
-  }
-  .tag-gold {
-    @apply bg-yellow-100 text-yellow-800;
-  }
-  .tag-green {
-    @apply bg-green-100 text-green-800;
-  }
-  .tag-silver {
-    @apply bg-gray-100 text-gray-800;
-  }
-  .tag-red {
-    @apply bg-red-100 text-red-800;
-  }
+
+  .tag-teal { background: hsl(var(--brand-muted)); color: hsl(var(--brand)); }
+  .tag-navy { background: hsl(var(--info) / 0.12); color: hsl(var(--info)); }
+  .tag-gold { background: hsl(var(--warning) / 0.12); color: hsl(var(--warning)); }
+  .tag-green { background: hsl(var(--success) / 0.12); color: hsl(var(--success)); }
+  .tag-silver { @apply bg-surface-muted text-content-secondary; }
+  .tag-red { background: hsl(var(--error) / 0.12); color: hsl(var(--error)); }
+
   .input {
-    @apply w-full px-4 py-3 rounded-lg border border-gray-300 transition-colors focus:border-teal-600 focus:ring-2 focus:ring-teal-600/20;
+    @apply w-full rounded-xl border border-input bg-surface px-4 py-3 text-content-primary transition-colors placeholder:text-content-muted focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20 disabled:cursor-not-allowed disabled:opacity-60;
   }
-  .search-input {
-    @apply input pl-10;
-  }
+
+  .search-input { @apply input pl-10; }
+
   .pill {
-    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium transition-colors;
+    @apply inline-flex items-center rounded-full px-3 py-1 text-sm font-medium transition-colors;
   }
+
   .pill-on {
-    @apply bg-brand-navy text-white border border-brand-navy;
+    @apply border border-primary bg-primary text-primary-foreground;
   }
+
   .pill-off {
-    @apply bg-white text-brand-slate border border-gray-300 hover:border-brand-navy hover:text-brand-navy;
+    @apply border border-border bg-surface text-content-secondary hover:border-brand hover:bg-brand-muted hover:text-brand;
   }
+
   .stat-card {
-    @apply bg-white/10 border border-white/10 backdrop-blur-md rounded-xl;
+    @apply rounded-xl border border-border-subtle bg-surface-raised/90 backdrop-blur-md;
   }
+
   .focus-ring {
-    @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teal-600;
+    @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring;
   }
+
   .bg-pattern {
     background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" fill="none" stroke="rgb(255 255 255 / 0.03)"><path d="m0 .5H32M32 31.5H0M.5 0v32m31-32v32"/></svg>');
     background-size: 60px 60px;
   }
+
   .bg-grid {
-    background-image: linear-gradient(to right, rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(to bottom, rgba(255,255,255,0.1) 1px, transparent 1px);
+    background-image: linear-gradient(to right, hsl(var(--border) / 0.24) 1px, transparent 1px), linear-gradient(to bottom, hsl(var(--border) / 0.24) 1px, transparent 1px);
     background-size: 60px 60px;
   }
 }
-
 #reading-progress {
   position: fixed;
   top: 0;
@@ -706,348 +831,22 @@
 .no-scrollbar::-webkit-scrollbar {
   display: none;
 }
-/* =========================
-   DARK MODE TOKENS
-========================= */
+/* Theme adapter for existing CMS and article components is defined at EOF. */
 
-/* ── Body ── */
-.dark body {
-  background: #0a1120;
-  color: #CBD5E1;
+/* Shared interaction defaults. Keep transitions scoped to interactive properties. */
+button {
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
 }
 
-/* ── Cards ── */
-.dark .card {
-  background: #1A1F2E;
-  border-color: #2D3748;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+a {
+  transition: color 160ms ease, background-color 160ms ease, border-color 160ms ease;
 }
 
-.dark .research-card {
-  background: #1A1F2E;
-  border-color: #2D3748;
-}
-
-/* ── Inputs ── */
-.dark .input {
-  background: #1A1F2E;
-  border-color: #374151;
-  color: #E2E8F0;
-}
-
-/* ── Pills ── */
-.dark .pill-off {
-  background: #1A1F2E;
-  border-color: #374151;
-  color: #CBD5E1;
-}
-
-.dark .pill-on {
-  background: #0D6E6E;
-  border-color: #0D6E6E;
-}
-
-/* ── Typography ── */
-.dark h1,
-.dark h2,
-.dark h3,
-.dark h4,
-.dark h5,
-.dark h6 {
-  color: #E2E8F0;
-}
-
-.dark p {
-  color: #94A3B8;
-}
-
-.dark .text-brand-navy {
-  color: #E2E8F0;
-}
-
-.dark .text-brand-slate {
-  color: #94A3B8;
-}
-
-.dark .text-gray-600 {
-  color: #94A3B8;
-}
-
-.dark .text-gray-700 {
-  color: #CBD5E1;
-}
-
-.dark .text-gray-800 {
-  color: #E2E8F0;
-}
-
-/* ── Backgrounds ── */
-.dark .bg-white {
-  background: #0F1117;
-}
-
-.dark .bg-gray-50 {
-  background: #111827;
-}
-
-.dark .bg-brand-silver {
-  background: #111827;
-}
-
-.dark .bg-brand-cream {
-  background: #0F1117;
-}
-
-/* ── Service / Pricing colored card backgrounds ── */
-.dark .bg-blue-50 {
-  background: rgba(37, 99, 235, 0.08);
-}
-
-.dark .bg-teal-50 {
-  background: rgba(13, 110, 110, 0.08);
-}
-
-.dark .bg-amber-50 {
-  background: rgba(146, 98, 10, 0.08);
-}
-
-.dark .bg-purple-50 {
-  background: rgba(139, 92, 246, 0.08);
-}
-
-.dark .bg-green-50 {
-  background: rgba(34, 197, 94, 0.08);
-}
-
-.dark .bg-emerald-50 {
-  background: rgba(16, 185, 129, 0.08);
-}
-
-.dark .bg-rose-50 {
-  background: rgba(244, 63, 94, 0.08);
-}
-
-/* ── Borders ── */
-.dark .border-gray-100,
-.dark .border-gray-200 {
-  border-color: #1F2937;
-}
-
-.dark .border-gray-300 {
-  border-color: #374151;
-}
-
-/* ── Specific section borders ── */
-.dark .border-blue-100 { border-color: rgba(37, 99, 235, 0.2); }
-.dark .border-teal-100 { border-color: rgba(13, 110, 110, 0.2); }
-.dark .border-amber-100 { border-color: rgba(146, 98, 10, 0.2); }
-.dark .border-purple-100 { border-color: rgba(139, 92, 246, 0.2); }
-.dark .border-green-100 { border-color: rgba(34, 197, 94, 0.2); }
-
-/* ── Tags ── */
-.dark .tag-teal { background: rgba(13, 110, 110, 0.15); color: #5EEAD4; }
-.dark .tag-navy { background: rgba(37, 99, 235, 0.15); color: #93C5FD; }
-.dark .tag-gold { background: rgba(146, 98, 10, 0.15); color: #FCD34D; }
-.dark .tag-green { background: rgba(34, 197, 94, 0.15); color: #86EFAC; }
-.dark .tag-silver { background: rgba(148, 163, 184, 0.15); color: #CBD5E1; }
-.dark .tag-red { background: rgba(239, 68, 68, 0.15); color: #FCA5A5; }
-
-/* ── Small bg / text tokens used by pricing cards ── */
-.dark .bg-teal-100 { background: rgba(13, 110, 110, 0.15); }
-.dark .text-teal-800 { color: #5EEAD4; }
-.dark .bg-amber-50 { background: rgba(146, 98, 10, 0.08); }
-.dark .text-amber-800 { color: #FCD34D; }
-
-/* ── Buttons ── */
-.dark .btn-primary {
-  background: #0D6E6E;
-  box-shadow: 0 4px 14px rgba(13, 110, 110, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.15);
-}
-
-.dark .btn-primary:hover {
-  background: #0F9E9E;
-  box-shadow: 0 8px 24px rgba(15, 158, 158, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+.card:hover,
+.research-card:hover {
   transform: translateY(-2px);
 }
 
-.dark .btn-outline {
-  border-color: #475569;
-  color: #CBD5E1;
-}
-
-.dark .btn-outline:hover {
-  background: #1F2937;
-  border-color: #94A3B8;
-  color: #E2E8F0;
-}
-
-/* ── Navbar ── */
-.dark header.bg-white\/95 {
-  background: rgba(15, 17, 23, 0.95) !important;
-}
-
-.dark header {
-  box-shadow: 0 2px 10px rgba(0,0,0,0.4);
-}
-
-/* ── Footer ── */
-.dark footer {
-  border-top: 1px solid #1F2937;
-}
-
-/* ── Section backgrounds ── */
-.dark section {
-  background: transparent;
-}
-
-/* ── Gradient backgrounds used in body sections ── */
-.dark .bg-gradient-to-b.from-slate-50 {
-  --tw-gradient-from: #111827;
-}
-
-/* ── Stat-card (homepage hero) ── */
-.dark .stat-card {
-  background: rgba(255, 255, 255, 0.06);
-  border-color: rgba(255, 255, 255, 0.08);
-}
-
-/* =========================
-   ADMIN & PREDICTIONS PANEL THEMING
-   
-   These override the hardcoded hex colors used across 
-   admin pages & predictions to make them theme-responsive.
-   In dark mode, the original colors show through unchanged.
-   In light mode, they get swapped for clean white/gray tones.
-========================= */
-
-/* ── Admin panel cards & sections ── */
-.bg-\[\#1A1F2E\] {
-  background: white;
-}
-.dark .bg-\[\#1A1F2E\] {
-  background: #1A1F2E;
-}
-
-.bg-\[\#1A1F2E\]\/80 {
-  background: rgba(255, 255, 255, 0.95);
-}
-.dark .bg-\[\#1A1F2E\]\/80 {
-  background: rgba(26, 31, 46, 0.8);
-}
-
-.bg-\[\#1A1F2E\]\/50 {
-  background: rgba(241, 245, 249, 0.8);
-}
-.dark .bg-\[\#1A1F2E\]\/50 {
-  background: rgba(26, 31, 46, 0.5);
-}
-
-/* ── Admin dark backgrounds ── */
-.bg-\[\#0F1117\] {
-  background: #f8fafc;
-}
-.dark .bg-\[\#0F1117\] {
-  background: #0F1117;
-}
-
-.bg-\[\#0B0D13\] {
-  background: #f1f5f9;
-}
-.dark .bg-\[\#0B0D13\] {
-  background: #0B0D13;
-}
-
-.bg-\[\#0f1522\] {
-  background: #ffffff;
-}
-.dark .bg-\[\#0f1522\] {
-  background: #0f1522;
-}
-
-.bg-\[\#0f1c2d\] {
-  background: #f1f5f9;
-}
-.dark .bg-\[\#0f1c2d\] {
-  background: #0f1c2d;
-}
-
-/* ── Admin borders ── */
-.border-\[\#2D3748\] {
-  border-color: #e2e8f0;
-}
-.dark .border-\[\#2D3748\] {
-  border-color: #2D3748;
-}
-
-/* ── Admin text colors (scoped to avoid breaking branded sections) ── */
-/* Note: admin panels get white backgrounds in light mode via the overrides above.
-   Text inside those panels uses dark heading/paragraph styles from the 
-   existing dark mode token system (.dark h1, .dark p, etc.).
-   We don't override .text-white globally as it would break hero sections & footer. */
-
-/* ── Predictions page backgrounds ── */
-.bg-\[\#1A2B3C\] {
-  background: #1A2B3C;
-}
-
-/* ── Admin subtle backgrounds ── */
-:not(.dark) .bg-white\/5 {
-  background: rgba(0, 0, 0, 0.03);
-}
-
-:not(.dark) .bg-white\/10 {
-  background: rgba(0, 0, 0, 0.05);
-}
-
-:not(.dark) .border-white\/5 {
-  border-color: rgba(0, 0, 0, 0.06);
-}
-
-:not(.dark) .border-white\/10 {
-  border-color: rgba(0, 0, 0, 0.1);
-}
-
-:not(.dark) .hover\:bg-white\/5:hover {
-  background: rgba(0, 0, 0, 0.04);
-}
-
-:not(.dark) .hover\:bg-white\/10:hover {
-  background: rgba(0, 0, 0, 0.06);
-}
-
-
-
-/* =========================
-   GLOBAL UI POLISH
-========================= */
-
-/* Smooth transitions everywhere */
-* {
-  transition: all 0.2s ease-in-out;
-}
-
-/* Better button feel */
-button {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
-}
-
-button:active {
-  transform: scale(0.97);
-}
-
-/* Link hover refinement */
-a {
-  transition: color 0.2s ease, background 0.2s ease;
-}
-
-/* Card hover effect */
-.card:hover,
-.research-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.25);
-}
-
-/* Subtle section spacing polish */
 section {
   scroll-margin-top: 80px;
 }
@@ -1905,3 +1704,496 @@ aside[aria-label="Mobile navigation"] {
  .prose ol a:hover {
    text-decoration: underline;
  }
+
+/*
+ * Global theme adapter for pre-token Tailwind utilities.
+ * Legacy neutral/status classes resolve to semantic roles, so older pages and
+ * CMS-authored markup inherit the same surface and contrast system as new UI.
+ * Brand gradients, imagery, chart series, and explicit inverse buttons remain
+ * intentionally color-specific.
+ */
+.text-brand-navy { color: hsl(var(--content-primary)); }
+.bg-brand-silver, .bg-brand-cream { background-color: hsl(var(--surface-muted)); }
+.bg-white { background-color: hsl(var(--surface)); }
+.bg-gray-50, .bg-slate-50, .bg-zinc-50, .bg-neutral-50, .bg-stone-50,
+.bg-gray-100, .bg-slate-100, .bg-zinc-100, .bg-neutral-100, .bg-stone-100 {
+  background-color: hsl(var(--surface-muted));
+}
+.bg-gray-200, .bg-slate-200, .bg-zinc-200, .bg-neutral-200, .bg-stone-200 {
+  background-color: hsl(var(--border-subtle));
+}
+.bg-gray-300, .bg-slate-300, .bg-zinc-300, .bg-neutral-300, .bg-stone-300 {
+  background-color: hsl(var(--border));
+}
+
+/* Pale status utilities are mapped in dark mode even when legacy markup lacks dark: variants. */
+html.dark .bg-teal-50, html.dark .bg-teal-100, html.dark .bg-cyan-50, html.dark .bg-cyan-100 { background-color: hsl(var(--brand-muted)); }
+html.dark .bg-emerald-50, html.dark .bg-emerald-100, html.dark .bg-green-50, html.dark .bg-green-100 { background-color: hsl(var(--success-muted)); }
+html.dark .bg-amber-50, html.dark .bg-amber-100, html.dark .bg-yellow-50, html.dark .bg-yellow-100, html.dark .bg-orange-50, html.dark .bg-orange-100 { background-color: hsl(var(--warning-muted)); }
+html.dark .bg-red-50, html.dark .bg-red-100, html.dark .bg-rose-50, html.dark .bg-rose-100 { background-color: hsl(var(--error-muted)); }
+html.dark .bg-blue-50, html.dark .bg-blue-100, html.dark .bg-sky-50, html.dark .bg-sky-100 { background-color: hsl(var(--info-muted)); }
+html.dark .bg-purple-50, html.dark .bg-purple-100, html.dark .bg-violet-50, html.dark .bg-violet-100, html.dark .bg-indigo-50, html.dark .bg-indigo-100 { background-color: hsl(var(--accent-violet-muted)); }
+
+/* Preserve alpha in legacy pastel/table utilities while translating them to semantic colors. */
+[class~="bg-gray-50/50"], [class~="bg-gray-100/50"] { background-color: hsl(var(--surface-muted) / 0.5); }
+[class~="bg-gray-50/70"] { background-color: hsl(var(--surface-muted) / 0.7); }
+[class~="bg-blue-50/10"] { background-color: hsl(var(--info-muted) / 0.1); }
+[class~="bg-blue-50/20"] { background-color: hsl(var(--info-muted) / 0.2); }
+[class~="bg-blue-50/30"] { background-color: hsl(var(--info-muted) / 0.3); }
+[class~="bg-blue-50/50"] { background-color: hsl(var(--info-muted) / 0.5); }
+[class~="bg-sky-50/20"] { background-color: hsl(var(--info-muted) / 0.2); }
+[class~="bg-green-50/20"] { background-color: hsl(var(--success-muted) / 0.2); }
+[class~="bg-green-50/30"] { background-color: hsl(var(--success-muted) / 0.3); }
+[class~="bg-red-50/10"] { background-color: hsl(var(--error-muted) / 0.1); }
+[class~="bg-purple-50/10"] { background-color: hsl(var(--accent-violet-muted) / 0.1); }
+[class~="bg-indigo-50/60"] { background-color: hsl(var(--accent-violet-muted) / 0.6); }
+[class~="bg-teal-50/10"] { background-color: hsl(var(--brand-muted) / 0.1); }
+[class~="bg-teal-50/20"] { background-color: hsl(var(--brand-muted) / 0.2); }
+[class~="bg-teal-50/30"] { background-color: hsl(var(--brand-muted) / 0.3); }
+[class~="bg-teal-50/50"] { background-color: hsl(var(--brand-muted) / 0.5); }
+[class~="bg-yellow-50/20"] { background-color: hsl(var(--warning-muted) / 0.2); }
+[class~="bg-yellow-50/30"] { background-color: hsl(var(--warning-muted) / 0.3); }
+[class~="hover:bg-blue-50/10"]:hover { background-color: hsl(var(--info-muted) / 0.1); }
+[class~="hover:bg-blue-50/30"]:hover { background-color: hsl(var(--info-muted) / 0.3); }
+
+html.dark [class~="dark:bg-white"],
+html.dark [class~="dark:bg-gray-50"], html.dark [class~="dark:bg-slate-50"],
+html.dark [class~="dark:bg-gray-900"], html.dark [class~="dark:bg-slate-900"],
+html.dark [class~="dark:bg-zinc-900"], html.dark [class~="dark:bg-neutral-900"],
+html.dark [class~="dark:bg-stone-900"], html.dark [class~="dark:bg-gray-950"],
+html.dark [class~="dark:bg-slate-950"], html.dark [class~="dark:bg-zinc-950"],
+html.dark [class~="dark:bg-neutral-950"], html.dark [class~="dark:bg-stone-950"] {
+  background-color: hsl(var(--surface));
+}
+html.dark [class~="dark:bg-gray-100"], html.dark [class~="dark:bg-slate-100"],
+html.dark [class~="dark:bg-zinc-100"], html.dark [class~="dark:bg-neutral-100"],
+html.dark [class~="dark:bg-stone-100"], html.dark [class~="dark:bg-gray-800"],
+html.dark [class~="dark:bg-slate-800"], html.dark [class~="dark:bg-zinc-800"],
+html.dark [class~="dark:bg-neutral-800"], html.dark [class~="dark:bg-stone-800"] {
+  background-color: hsl(var(--surface-raised));
+}
+html.dark [class~="dark:bg-gray-200"], html.dark [class~="dark:bg-slate-200"],
+html.dark [class~="dark:bg-zinc-200"], html.dark [class~="dark:bg-neutral-200"],
+html.dark [class~="dark:bg-stone-200"], html.dark [class~="dark:bg-gray-700"],
+html.dark [class~="dark:bg-slate-700"], html.dark [class~="dark:bg-zinc-700"],
+html.dark [class~="dark:bg-neutral-700"], html.dark [class~="dark:bg-stone-700"] {
+  background-color: hsl(var(--surface-muted));
+}
+
+.text-black, .text-gray-900, .text-gray-800, .text-gray-700,
+.text-slate-900, .text-slate-800, .text-slate-700,
+.text-zinc-900, .text-zinc-800, .text-zinc-700,
+.text-neutral-900, .text-neutral-800, .text-neutral-700,
+.text-stone-900, .text-stone-800, .text-stone-700,
+.text-gray-200, .text-gray-100, .text-slate-200, .text-slate-100,
+.text-zinc-200, .text-zinc-100, .text-neutral-200, .text-neutral-100,
+.text-stone-200, .text-stone-100 {
+  color: hsl(var(--content-primary));
+}
+.text-gray-600, .text-gray-500, .text-gray-400, .text-gray-300,
+.text-slate-600, .text-slate-500, .text-slate-400, .text-slate-300,
+.text-zinc-600, .text-zinc-500, .text-zinc-400, .text-zinc-300,
+.text-neutral-600, .text-neutral-500, .text-neutral-400, .text-neutral-300,
+.text-stone-600, .text-stone-500, .text-stone-400, .text-stone-300 {
+  color: hsl(var(--content-secondary));
+}
+.text-gray-500, .text-gray-400, .text-slate-500, .text-slate-400,
+.text-zinc-500, .text-zinc-400, .text-neutral-500, .text-neutral-400,
+.text-stone-500, .text-stone-400 {
+  color: hsl(var(--content-muted));
+}
+
+html.dark [class~="dark:text-black"],
+html.dark [class~="dark:text-gray-900"], html.dark [class~="dark:text-gray-800"],
+html.dark [class~="dark:text-gray-700"], html.dark [class~="dark:text-gray-600"],
+html.dark [class~="dark:text-slate-900"], html.dark [class~="dark:text-slate-800"],
+html.dark [class~="dark:text-slate-700"], html.dark [class~="dark:text-slate-600"],
+html.dark [class~="dark:text-zinc-900"], html.dark [class~="dark:text-zinc-800"],
+html.dark [class~="dark:text-zinc-700"], html.dark [class~="dark:text-zinc-600"],
+html.dark [class~="dark:text-neutral-900"], html.dark [class~="dark:text-neutral-800"],
+html.dark [class~="dark:text-neutral-700"], html.dark [class~="dark:text-neutral-600"],
+html.dark [class~="dark:text-stone-900"], html.dark [class~="dark:text-stone-800"],
+html.dark [class~="dark:text-stone-700"], html.dark [class~="dark:text-stone-600"],
+html.dark [class~="dark:text-gray-200"], html.dark [class~="dark:text-gray-100"],
+html.dark [class~="dark:text-slate-200"], html.dark [class~="dark:text-slate-100"] {
+  color: hsl(var(--content-primary));
+}
+html.dark [class~="dark:text-gray-500"], html.dark [class~="dark:text-gray-400"],
+html.dark [class~="dark:text-gray-300"], html.dark [class~="dark:text-slate-500"],
+html.dark [class~="dark:text-slate-400"], html.dark [class~="dark:text-slate-300"],
+html.dark [class~="dark:text-zinc-500"], html.dark [class~="dark:text-zinc-400"],
+html.dark [class~="dark:text-zinc-300"], html.dark [class~="dark:text-neutral-500"],
+html.dark [class~="dark:text-neutral-400"], html.dark [class~="dark:text-neutral-300"],
+html.dark [class~="dark:text-stone-500"], html.dark [class~="dark:text-stone-400"],
+html.dark [class~="dark:text-stone-300"] {
+  color: hsl(var(--content-muted));
+}
+
+.border-gray-100, .border-gray-200, .border-slate-100, .border-slate-200,
+.border-zinc-100, .border-zinc-200, .border-neutral-100, .border-neutral-200,
+.border-stone-100, .border-stone-200 {
+  border-color: hsl(var(--border-subtle));
+}
+.border-gray-300, .border-slate-300, .border-zinc-300, .border-neutral-300,
+.border-stone-300 {
+  border-color: hsl(var(--border));
+}
+.border-gray-400, .border-gray-500, .border-gray-600, .border-gray-700, .border-gray-800,
+.border-slate-400, .border-slate-500, .border-slate-600, .border-slate-700, .border-slate-800,
+.border-zinc-400, .border-zinc-500, .border-zinc-600, .border-zinc-700, .border-zinc-800,
+.border-neutral-400, .border-neutral-500, .border-neutral-600, .border-neutral-700, .border-neutral-800,
+.border-stone-400, .border-stone-500, .border-stone-600, .border-stone-700, .border-stone-800 {
+  border-color: hsl(var(--border-strong));
+}
+html.dark [class~="dark:border-gray-100"], html.dark [class~="dark:border-gray-200"],
+html.dark [class~="dark:border-slate-100"], html.dark [class~="dark:border-slate-200"],
+html.dark [class~="dark:border-zinc-100"], html.dark [class~="dark:border-zinc-200"],
+html.dark [class~="dark:border-neutral-100"], html.dark [class~="dark:border-neutral-200"],
+html.dark [class~="dark:border-stone-100"], html.dark [class~="dark:border-stone-200"],
+html.dark [class~="dark:border-gray-700"], html.dark [class~="dark:border-gray-800"],
+html.dark [class~="dark:border-gray-900"], html.dark [class~="dark:border-slate-700"],
+html.dark [class~="dark:border-slate-800"], html.dark [class~="dark:border-slate-900"],
+html.dark [class~="dark:border-zinc-700"], html.dark [class~="dark:border-zinc-800"],
+html.dark [class~="dark:border-neutral-700"], html.dark [class~="dark:border-neutral-800"],
+html.dark [class~="dark:border-stone-700"], html.dark [class~="dark:border-stone-800"] {
+  border-color: hsl(var(--border));
+}
+
+/* Colored label utilities are semanticized: text status follows the theme while charts retain their series colors. */
+.text-teal-300, .text-teal-400, .text-teal-500, .text-teal-600, .text-teal-700, .text-teal-800, .text-teal-900,
+.text-cyan-300, .text-cyan-400, .text-cyan-500, .text-cyan-600, .text-cyan-700, .text-cyan-800, .text-cyan-900,
+.text-brand-teal, .text-cinema-cyan {
+  color: hsl(var(--brand));
+}
+.text-emerald-300, .text-emerald-400, .text-emerald-500, .text-emerald-600, .text-emerald-700, .text-emerald-800, .text-emerald-900,
+.text-green-300, .text-green-400, .text-green-500, .text-green-600, .text-green-700, .text-green-800, .text-green-900,
+.text-brand-green, .text-cinema-aurora {
+  color: hsl(var(--success));
+}
+.text-amber-300, .text-amber-400, .text-amber-500, .text-amber-600, .text-amber-700, .text-amber-800, .text-amber-900,
+.text-yellow-300, .text-yellow-400, .text-yellow-500, .text-yellow-600, .text-yellow-700, .text-yellow-800, .text-yellow-900,
+.text-orange-300, .text-orange-400, .text-orange-500, .text-orange-600, .text-orange-700, .text-orange-800, .text-orange-900,
+.text-brand-gold, .text-cinema-amber {
+  color: hsl(var(--warning));
+}
+.text-red-300, .text-red-400, .text-red-500, .text-red-600, .text-red-700, .text-red-800, .text-red-900,
+.text-rose-300, .text-rose-400, .text-rose-500, .text-rose-600, .text-rose-700, .text-rose-800, .text-rose-900,
+.text-brand-red {
+  color: hsl(var(--error));
+}
+.text-blue-300, .text-blue-400, .text-blue-500, .text-blue-600, .text-blue-700, .text-blue-800, .text-blue-900,
+.text-sky-300, .text-sky-400, .text-sky-500, .text-sky-600, .text-sky-700, .text-sky-800, .text-sky-900,
+.text-info {
+  color: hsl(var(--info));
+}
+.text-purple-300, .text-purple-400, .text-purple-500, .text-purple-600, .text-purple-700, .text-purple-800, .text-purple-900,
+.text-violet-300, .text-violet-400, .text-violet-500, .text-violet-600, .text-violet-700, .text-violet-800, .text-violet-900,
+.text-indigo-300, .text-indigo-400, .text-indigo-500, .text-indigo-600, .text-indigo-700, .text-indigo-800, .text-indigo-900,
+.text-pink-300, .text-pink-400, .text-pink-500, .text-pink-600, .text-pink-700, .text-pink-800, .text-pink-900,
+.text-cinema-violet {
+  color: hsl(var(--accent-violet));
+}
+
+/* Full palette support for dark:* text colors and direct interaction states. */
+html.dark [class~="dark:text-teal-300"], html.dark [class~="dark:text-teal-400"],
+html.dark [class~="dark:text-teal-500"], html.dark [class~="dark:text-teal-600"],
+html.dark [class~="dark:text-teal-700"], html.dark [class~="dark:text-cyan-300"],
+html.dark [class~="dark:text-cyan-400"], html.dark [class~="dark:text-cyan-500"],
+html.dark [class~="dark:text-cyan-600"], html.dark [class~="dark:text-cyan-700"] { color: hsl(var(--brand)); }
+html.dark [class~="dark:text-emerald-300"], html.dark [class~="dark:text-emerald-400"],
+html.dark [class~="dark:text-emerald-500"], html.dark [class~="dark:text-emerald-600"],
+html.dark [class~="dark:text-green-300"], html.dark [class~="dark:text-green-400"],
+html.dark [class~="dark:text-green-500"], html.dark [class~="dark:text-green-600"] { color: hsl(var(--success)); }
+html.dark [class~="dark:text-amber-300"], html.dark [class~="dark:text-amber-400"],
+html.dark [class~="dark:text-amber-500"], html.dark [class~="dark:text-amber-600"],
+html.dark [class~="dark:text-yellow-300"], html.dark [class~="dark:text-yellow-400"],
+html.dark [class~="dark:text-yellow-500"], html.dark [class~="dark:text-yellow-600"] { color: hsl(var(--warning)); }
+html.dark [class~="dark:text-red-300"], html.dark [class~="dark:text-red-400"],
+html.dark [class~="dark:text-red-500"], html.dark [class~="dark:text-rose-300"],
+html.dark [class~="dark:text-rose-400"], html.dark [class~="dark:text-rose-500"] { color: hsl(var(--error)); }
+html.dark [class~="dark:text-blue-300"], html.dark [class~="dark:text-blue-400"],
+html.dark [class~="dark:text-blue-500"], html.dark [class~="dark:text-sky-300"],
+html.dark [class~="dark:text-sky-400"], html.dark [class~="dark:text-sky-500"] { color: hsl(var(--info)); }
+html.dark [class~="dark:text-purple-300"], html.dark [class~="dark:text-purple-400"],
+html.dark [class~="dark:text-purple-500"], html.dark [class~="dark:text-violet-300"],
+html.dark [class~="dark:text-violet-400"], html.dark [class~="dark:text-violet-500"] { color: hsl(var(--accent-violet)); }
+
+/* Pale status backgrounds and borders are legible but quiet in dark surfaces. */
+html.dark [class~="dark:bg-teal-50"], html.dark [class~="dark:bg-teal-100"],
+html.dark [class~="dark:bg-cyan-50"], html.dark [class~="dark:bg-cyan-100"] { background-color: hsl(var(--brand-muted)); }
+html.dark [class~="dark:bg-emerald-50"], html.dark [class~="dark:bg-emerald-100"],
+html.dark [class~="dark:bg-green-50"], html.dark [class~="dark:bg-green-100"] { background-color: hsl(var(--success-muted)); }
+html.dark [class~="dark:bg-amber-50"], html.dark [class~="dark:bg-amber-100"],
+html.dark [class~="dark:bg-yellow-50"], html.dark [class~="dark:bg-yellow-100"] { background-color: hsl(var(--warning-muted)); }
+html.dark [class~="dark:bg-red-50"], html.dark [class~="dark:bg-red-100"],
+html.dark [class~="dark:bg-rose-50"], html.dark [class~="dark:bg-rose-100"] { background-color: hsl(var(--error-muted)); }
+html.dark [class~="dark:bg-blue-50"], html.dark [class~="dark:bg-blue-100"] { background-color: hsl(var(--info-muted)); }
+html.dark [class~="dark:bg-purple-50"], html.dark [class~="dark:bg-purple-100"],
+html.dark [class~="dark:bg-violet-50"], html.dark [class~="dark:bg-violet-100"] { background-color: hsl(var(--accent-violet-muted)); }
+
+/* Translucent white utilities are often used on dark cards; make their light-mode equivalents visible. */
+html:not(.dark) [class~="bg-white/3"], html:not(.dark) [class~="bg-white/4"],
+html:not(.dark) [class~="bg-white/5"] { background-color: rgb(var(--surface-tint-rgb) / 0.035); }
+html:not(.dark) [class~="bg-white/10"] { background-color: rgb(var(--surface-tint-rgb) / 0.055); }
+html:not(.dark) [class~="bg-white/20"] { background-color: rgb(var(--surface-tint-rgb) / 0.09); }
+html:not(.dark) [class~="border-white/5"] { border-color: rgb(var(--surface-tint-rgb) / 0.075); }
+html:not(.dark) [class~="border-white/8"] { border-color: rgb(var(--surface-tint-rgb) / 0.09); }
+html:not(.dark) [class~="border-white/10"] { border-color: rgb(var(--surface-tint-rgb) / 0.12); }
+html:not(.dark) [class~="border-white/15"] { border-color: rgb(var(--surface-tint-rgb) / 0.16); }
+html:not(.dark) [class~="border-white/20"] { border-color: rgb(var(--surface-tint-rgb) / 0.2); }
+html:not(.dark) [class~="hover:bg-white/5"]:hover { background-color: rgb(var(--surface-tint-rgb) / 0.04); }
+html:not(.dark) [class~="hover:bg-white/10"]:hover { background-color: rgb(var(--surface-tint-rgb) / 0.065); }
+html:not(.dark) [class~="hover:bg-white/20"]:hover { background-color: rgb(var(--surface-tint-rgb) / 0.1); }
+
+/* Cinematic surfaces now resolve to the same semantic hierarchy as the rest of the site. */
+.bg-cinema-black { background-color: hsl(var(--background)); }
+.bg-cinema-ink { background-color: hsl(var(--surface-muted)); }
+.bg-cinema-charcoal { background-color: hsl(var(--surface)); }
+.bg-cinema-graphite { background-color: hsl(var(--surface-raised)); }
+.bg-cinema-slate { background-color: hsl(var(--surface-muted)); }
+.bg-cinema-steel { background-color: hsl(var(--border-subtle)); }
+[class~="bg-cinema-charcoal/40"] { background-color: hsl(var(--surface-muted) / 0.72); }
+[class~="bg-cinema-charcoal/60"] { background-color: hsl(var(--surface) / 0.9); }
+[class~="bg-cinema-charcoal/70"] { background-color: hsl(var(--surface) / 0.94); }
+[class~="bg-cinema-graphite/40"] { background-color: hsl(var(--surface-muted) / 0.76); }
+[class~="bg-cinema-graphite/60"] { background-color: hsl(var(--surface-raised) / 0.88); }
+[class~="bg-cinema-graphite/70"] { background-color: hsl(var(--surface-raised) / 0.94); }
+[class~="bg-cinema-ink/60"] { background-color: hsl(var(--surface-muted) / 0.86); }
+
+/* Brand-navy remains an intentional inverse brand panel, regardless of active theme. */
+.bg-brand-navy {
+  --surface-tint-rgb: 255 255 255;
+  --surface-tint-strong-rgb: 255 255 255;
+  --content-primary: 210 40% 96%;
+  --content-secondary: 215 20% 81%;
+  --content-muted: 215 17% 72%;
+  --content-inverse: 0 0% 100%;
+  --brand: 180 74% 55%;
+  --brand-hover: 180 74% 68%;
+  --brand-muted: 180 40% 19%;
+  --success: 145 60% 64%;
+  --success-muted: 145 45% 18%;
+  --warning: 42 95% 66%;
+  --warning-muted: 38 60% 19%;
+  --error: 350 82% 72%;
+  --error-muted: 350 50% 20%;
+  --info: 211 91% 72%;
+  --info-muted: 214 50% 20%;
+  --accent-violet: 263 82% 78%;
+  --accent-violet-muted: 263 42% 20%;
+}
+
+html:not(.dark) :is(.bg-cinema-black, .bg-cinema-ink, .bg-cinema-charcoal, .bg-cinema-graphite, .bg-cinema-slate) [class~="text-white"]:not([class*="bg-gradient-"]):not([class*="bg-teal-"]):not([class*="bg-emerald-"]):not([class*="bg-green-"]):not([class*="bg-blue-"]):not([class*="bg-purple-"]):not([class*="bg-violet-"]):not([class*="bg-amber-"]):not([class*="bg-red-"]):not([class*="bg-cinema-cyan"]),
+html:not(.dark) :is(.bg-cinema-black, .bg-cinema-ink, .bg-cinema-charcoal, .bg-cinema-graphite, .bg-cinema-slate)[class~="text-white"]:not([class*="bg-gradient-"]) {
+  color: hsl(var(--content-primary));
+}
+
+/* Theme-safe chart prose defaults, tables and CMS details. */
+.prose {
+  --tw-prose-body: hsl(var(--content-secondary));
+  --tw-prose-headings: hsl(var(--content-primary));
+  --tw-prose-lead: hsl(var(--content-secondary));
+  --tw-prose-links: hsl(var(--brand));
+  --tw-prose-bold: hsl(var(--content-primary));
+  --tw-prose-counters: hsl(var(--content-muted));
+  --tw-prose-bullets: hsl(var(--border-strong));
+  --tw-prose-hr: hsl(var(--border));
+  --tw-prose-quotes: hsl(var(--content-secondary));
+  --tw-prose-quote-borders: hsl(var(--border-strong));
+  --tw-prose-captions: hsl(var(--content-muted));
+  --tw-prose-code: hsl(var(--content-primary));
+  --tw-prose-pre-bg: hsl(var(--surface-muted));
+  --tw-prose-th-borders: hsl(var(--border));
+  --tw-prose-td-borders: hsl(var(--border-subtle));
+}
+.prose details {
+  color: hsl(var(--content-secondary));
+  border-color: hsl(var(--border));
+  background: hsl(var(--surface));
+}
+.prose details > summary { color: hsl(var(--content-primary)); }
+.prose details > summary > span:last-child { color: hsl(var(--brand)); }
+.prose figure img { border-color: hsl(var(--border)); }
+.prose figure figcaption { color: hsl(var(--content-muted)); }
+
+/* Admin uses the same semantic hierarchy; inverse text is retained on branded/colored actions. */
+.admin-theme { color: hsl(var(--content-primary)); }
+.admin-theme .text-white { color: hsl(var(--content-primary)); }
+.admin-theme .bg-brand-navy .text-white,
+.admin-theme .bg-brand-navy.text-white {
+  color: hsl(var(--content-primary));
+}
+.admin-theme [class*="bg-gradient-"] .text-white,
+.admin-theme .text-white[class*="bg-gradient-"],
+.admin-theme .text-white[class*="bg-primary"],
+.admin-theme .text-white[class*="bg-success"],
+.admin-theme .text-white[class*="bg-error"],
+.admin-theme .text-white[class*="bg-destructive"],
+.admin-theme .text-white[class*="bg-teal-"],
+.admin-theme .text-white[class*="bg-emerald-"],
+.admin-theme .text-white[class*="bg-green-"],
+.admin-theme .text-white[class*="bg-red-"],
+.admin-theme .text-white[class*="bg-blue-"],
+.admin-theme .text-white[class*="bg-amber-"],
+.admin-theme .text-white[class*="bg-purple-"],
+.admin-theme .text-white[class*="bg-indigo-"] {
+  color: hsl(var(--content-inverse));
+}
+.admin-theme [class*="bg-gradient-"] .text-white,
+.admin-theme [class*="bg-primary"] .text-white,
+.admin-theme [class*="bg-success"] .text-white,
+.admin-theme [class*="bg-error"] .text-white,
+.admin-theme [class*="bg-destructive"] .text-white,
+.admin-theme [class*="bg-teal-"] .text-white,
+.admin-theme [class*="bg-emerald-"] .text-white,
+.admin-theme [class*="bg-green-"] .text-white,
+.admin-theme [class*="bg-red-"] .text-white,
+.admin-theme [class*="bg-blue-"] .text-white,
+.admin-theme [class*="bg-amber-"] .text-white,
+.admin-theme [class*="bg-purple-"] .text-white,
+.admin-theme [class*="bg-indigo-"] .text-white {
+  color: hsl(var(--content-inverse));
+}
+
+/* Subtle, non-color-only focus indication for every keyboard-interactive control. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+}
+
+/* Theme-aware chart labels and tooltips, including calculators using Recharts defaults. */
+.recharts-default-tooltip {
+  background-color: hsl(var(--surface-overlay)) !important;
+  border: 1px solid hsl(var(--border)) !important;
+  border-radius: 0.75rem !important;
+  color: hsl(var(--content-primary)) !important;
+  box-shadow: 0 12px 32px rgb(var(--shadow-rgb) / 0.2) !important;
+}
+.recharts-default-tooltip .recharts-tooltip-label,
+.recharts-default-tooltip .recharts-tooltip-item,
+.recharts-default-tooltip .recharts-tooltip-item-name,
+.recharts-default-tooltip .recharts-tooltip-item-value,
+.recharts-legend-item-text {
+  color: hsl(var(--content-secondary)) !important;
+}
+.recharts-default-tooltip .recharts-tooltip-label {
+  color: hsl(var(--content-primary)) !important;
+}
+.recharts-cartesian-axis-tick-value {
+  fill: hsl(var(--content-muted)) !important;
+}
+.recharts-cartesian-grid line,
+.recharts-cartesian-axis-line,
+.recharts-cartesian-axis-tick-line {
+  stroke: hsl(var(--border-subtle)) !important;
+}
+
+/*
+ * Legacy white text is adapted only on semantic/cinematic surfaces. Explicit inverse
+ * surfaces and image gradients keep white foregrounds (the latter are also protected
+ * at their components with !text-white where copy sits over a photograph).
+ */
+html:not(.dark) :is(.glass, .glass-light, .glass-cinema, .glass-cinema-light, .glass-cinema-strong) [class~="text-white"]:not([class*="bg-gradient-"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not([class*="bg-success"]):not([class*="bg-error"]):not([class*="bg-destructive"]):not([class*="bg-teal-"]):not([class*="bg-cyan-"]):not([class*="bg-emerald-"]):not([class*="bg-green-"]):not([class*="bg-blue-"]):not([class*="bg-sky-"]):not([class*="bg-red-"]):not([class*="bg-rose-"]):not([class*="bg-amber-"]):not([class*="bg-yellow-"]):not([class*="bg-purple-"]):not([class*="bg-violet-"]):not([class*="bg-indigo-"]),
+html:not(.dark) :is(.bg-surface, .bg-surface-raised, .bg-surface-muted, .bg-surface-overlay, .bg-cinema-black, .bg-cinema-ink, .bg-cinema-charcoal, .bg-cinema-graphite, .bg-cinema-slate) [class~="text-white"]:not([class*="bg-gradient-"]):not([class*="bg-primary"]):not([class*="bg-brand"]):not([class*="bg-success"]):not([class*="bg-error"]):not([class*="bg-destructive"]):not([class*="bg-teal-"]):not([class*="bg-cyan-"]):not([class*="bg-emerald-"]):not([class*="bg-green-"]):not([class*="bg-blue-"]):not([class*="bg-sky-"]):not([class*="bg-red-"]):not([class*="bg-rose-"]):not([class*="bg-amber-"]):not([class*="bg-yellow-"]):not([class*="bg-purple-"]):not([class*="bg-violet-"]):not([class*="bg-indigo-"]) {
+  color: hsl(var(--content-primary));
+}
+
+/* Never turn inverse copy dark when it sits inside a branded control, gradient, or image card. */
+html:not(.dark) :is([class*="bg-gradient-"], .bg-brand-navy, .bg-primary, .bg-primary-hover, .bg-brand, .bg-success, .bg-error, .bg-destructive, [class*="bg-teal-"], [class*="bg-cyan-"], [class*="bg-emerald-"], [class*="bg-green-"], [class*="bg-blue-"], [class*="bg-sky-"], [class*="bg-red-"], [class*="bg-rose-"], [class*="bg-amber-"], [class*="bg-yellow-"], [class*="bg-purple-"], [class*="bg-violet-"], [class*="bg-indigo-"]) :is(.text-white, .text-primary-foreground),
+html:not(.dark) :is([class*="bg-gradient-"], .bg-brand-navy, .bg-primary, .bg-primary-hover, .bg-brand, .bg-success, .bg-error, .bg-destructive, [class*="bg-teal-"], [class*="bg-cyan-"], [class*="bg-emerald-"], [class*="bg-green-"], [class*="bg-blue-"], [class*="bg-sky-"], [class*="bg-red-"], [class*="bg-rose-"], [class*="bg-amber-"], [class*="bg-yellow-"], [class*="bg-purple-"], [class*="bg-violet-"], [class*="bg-indigo-"]) :is(.text-white, .text-primary-foreground) {
+  color: hsl(var(--content-inverse)) !important;
+}
+html:not(.dark) :is([class*="bg-gradient-"], .bg-brand-navy, .bg-primary, .bg-primary-hover, .bg-brand, .bg-success, .bg-error, .bg-destructive, [class*="bg-teal-"], [class*="bg-cyan-"], [class*="bg-emerald-"], [class*="bg-green-"], [class*="bg-blue-"], [class*="bg-sky-"], [class*="bg-red-"], [class*="bg-rose-"], [class*="bg-amber-"], [class*="bg-yellow-"], [class*="bg-purple-"], [class*="bg-violet-"], [class*="bg-indigo-"]).text-white,
+html:not(.dark) :is([class*="bg-gradient-"], .bg-brand-navy, .bg-primary, .bg-primary-hover, .bg-brand, .bg-success, .bg-error, .bg-destructive, [class*="bg-teal-"], [class*="bg-cyan-"], [class*="bg-emerald-"], [class*="bg-green-"], [class*="bg-blue-"], [class*="bg-sky-"], [class*="bg-red-"], [class*="bg-rose-"], [class*="bg-amber-"], [class*="bg-yellow-"], [class*="bg-purple-"], [class*="bg-violet-"], [class*="bg-indigo-"]).text-primary-foreground {
+  color: hsl(var(--content-inverse)) !important;
+}
+
+/* CMS-authored article widgets use the same surface, text, and status roles as the app. */
+.accent-box, .dark .accent-box {
+  background: hsl(var(--brand-muted) / 0.68);
+  border-left-color: hsl(var(--brand));
+  color: hsl(var(--content-secondary));
+}
+.warning-callout, .dark .warning-callout {
+  background: hsl(var(--warning-muted));
+  border-left-color: hsl(var(--warning));
+  color: hsl(var(--content-secondary));
+}
+:is(.data-chart-placeholder, .video-embed, .team-profile, .goal-tracker,
+    .image-gallery, .comparison-table, .process-flow, .data-visualization,
+    .chart-placeholder, .faq-section, .milestone-timeline, .competitive-analysis,
+    .case-study),
+.dark :is(.data-chart-placeholder, .video-embed, .team-profile, .goal-tracker,
+    .image-gallery, .comparison-table, .process-flow, .data-visualization,
+    .chart-placeholder, .faq-section, .milestone-timeline, .competitive-analysis,
+    .case-study) {
+  background-color: hsl(var(--surface-muted));
+  border-color: hsl(var(--border));
+  color: hsl(var(--content-secondary));
+}
+.data-chart-placeholder, .dark .data-chart-placeholder {
+  border-style: dashed;
+}
+.stat, .dark .stat, .tech-item, .dark .tech-item,
+.key-point, .dark .key-point, .milestone, .dark .milestone,
+.competitor, .dark .competitor {
+  background: hsl(var(--surface-raised));
+  color: hsl(var(--content-secondary));
+}
+.stat-card, .dark .stat-card, .financial-metric, .dark .financial-metric,
+.executive-summary, .dark .executive-summary {
+  background: linear-gradient(135deg, hsl(var(--brand) / 0.1), hsl(var(--brand) / 0.025));
+  border-color: hsl(var(--brand) / 0.25);
+}
+.comparison-table th, .dark .comparison-table th {
+  background: hsl(var(--brand-muted));
+  border-bottom-color: hsl(var(--brand));
+}
+.comparison-table td, .dark .comparison-table td,
+.faq-item, .dark .faq-item {
+  border-bottom-color: hsl(var(--border-subtle));
+}
+.progress-bar, .dark .progress-bar { background: hsl(var(--surface-muted)); }
+.progress-fill { background: linear-gradient(90deg, hsl(var(--brand)), hsl(var(--success))); }
+.quick-tip, .dark .quick-tip, .testimonial, .dark .testimonial {
+  background: hsl(var(--warning-muted));
+  border-left-color: hsl(var(--warning));
+  color: hsl(var(--content-secondary));
+}
+.risk-assessment, .dark .risk-assessment {
+  background: hsl(var(--error-muted));
+  border-color: hsl(var(--error) / 0.4);
+}
+.risk-item.high, .dark .risk-item.high {
+  background: hsl(var(--error-muted)); color: hsl(var(--error)); border-color: hsl(var(--error) / 0.4);
+}
+.risk-item.medium, .dark .risk-item.medium {
+  background: hsl(var(--warning-muted)); color: hsl(var(--warning)); border-color: hsl(var(--warning) / 0.4);
+}
+.risk-item.low, .dark .risk-item.low {
+  background: hsl(var(--success-muted)); color: hsl(var(--success)); border-color: hsl(var(--success) / 0.4);
+}
+:is(.stat-value, .metric-value, .stat-number, .competitor-name) {
+  color: hsl(var(--brand));
+}
+:is(.stat-label, .metric-label, .metric-period, .competitor-strength),
+.dark :is(.stat-label, .metric-label, .metric-period, .competitor-strength),
+.testimonial-author span, .dark .testimonial-author span {
+  color: hsl(var(--content-muted));
+}
+.metric-trend.positive, .dark .metric-trend.positive {
+  background: hsl(var(--success-muted));
+  color: hsl(var(--success));
+}
+.timeline, .dark .timeline { border-left-color: hsl(var(--brand)); }
+.timeline li::before { color: hsl(var(--brand)); }
+.faq-item:last-child { border-bottom: 0; }
+.gallery-grid img, .dark .gallery-grid img { border-color: hsl(var(--border)); }
+.milestone-date {
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+}

@@ -25,24 +25,24 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
     hint?: string
   ) => (
     <div>
-      <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">{label}</label>
+      <label className="block text-[10px] font-bold text-content-muted uppercase tracking-widest mb-1.5">{label}</label>
       {children}
-      {hint && <p className="text-[10px] text-slate-600 mt-1">{hint}</p>}
+      {hint && <p className="text-[10px] text-content-muted mt-1">{hint}</p>}
     </div>
   )
 
-  const inputCls = "w-full bg-[#0F1117] border border-[#2D3748] rounded-xl px-3 py-2 text-sm text-white outline-none focus:border-[#0D6E6E] transition-colors"
+  const inputCls = "w-full bg-surface border border-border rounded-xl px-3 py-2 text-sm text-content-primary outline-none focus:border-brand transition-colors"
   const textareaCls = `${inputCls} resize-none`
 
   const section = (title: string, children: React.ReactNode, defaultOpen = true) => (
-    <details className="group border border-[#2D3748] rounded-xl overflow-hidden mb-3" open={defaultOpen}>
-      <summary className="flex items-center justify-between p-3 bg-black/20 hover:bg-black/40 cursor-pointer select-none transition-colors">
-        <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">{title}</span>
-        <span className="text-slate-500 group-open:rotate-180 transition-transform">
+    <details className="group border border-border rounded-xl overflow-hidden mb-3" open={defaultOpen}>
+      <summary className="flex items-center justify-between p-3 bg-surface-muted hover:bg-accent cursor-pointer select-none transition-colors">
+        <span className="text-[10px] font-bold text-content-secondary uppercase tracking-widest">{title}</span>
+        <span className="text-content-muted group-open:rotate-180 transition-transform">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m6 9 6 6 6-6"/></svg>
         </span>
       </summary>
-      <div className="p-4 space-y-4 bg-[#1A1F2E] border-t border-[#2D3748]/50">
+      <div className="p-4 space-y-4 bg-surface border-t border-border/50">
         {children}
       </div>
     </details>
@@ -83,13 +83,13 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
                     <input className={`${inputCls} flex-1`} value={data.src || ''} onChange={e => onUpdate({ src: e.target.value })} placeholder="https://..." />
                     <button
                       onClick={() => setShowMedia(true)}
-                      className="px-3 py-2 bg-[#0D6E6E]/20 text-[#0D6E6E] rounded-xl hover:bg-[#0D6E6E] hover:text-white transition-all text-xs font-bold border border-[#0D6E6E]/30"
+                      className="px-3 py-2 bg-brand/20 text-brand rounded-xl hover:bg-primary-hover hover:text-primary-foreground transition-all text-xs font-bold border border-brand/30"
                     >
                       Library
                     </button>
                   </div>
                 )}
-                {data.src && <img src={data.src} alt="Preview" className="w-full h-32 object-cover rounded-xl border border-white/10" />}
+                {data.src && <img src={data.src} alt="Preview" className="w-full h-32 object-cover rounded-xl border border-border" />}
               </>
             )}
             {section('Display Data', 
@@ -174,20 +174,20 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
         return section('Metrics Grid Config', (
           <>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-[10px] uppercase font-bold text-slate-400">KPI Cards ({metrics.length})</span>
+              <span className="text-[10px] uppercase font-bold text-content-secondary">KPI Cards ({metrics.length})</span>
               <button
                 onClick={handleAddMetric}
-                className="px-2 py-1 bg-[#0D6E6E]/20 text-[#0D6E6E] rounded-lg text-xs font-bold flex items-center gap-1 border border-[#0D6E6E]/30 hover:bg-[#0D6E6E] hover:text-white transition-colors"
+                className="px-2 py-1 bg-brand/20 text-brand rounded-lg text-xs font-bold flex items-center gap-1 border border-brand/30 hover:bg-primary-hover hover:text-primary-foreground transition-colors"
               >
                 <Plus className="w-3 h-3" /> Add KPI
               </button>
             </div>
             <div className="space-y-3">
               {metrics.map((m, idx) => (
-                <div key={idx} className="p-3 bg-black/30 border border-[#2D3748] rounded-xl space-y-2">
+                <div key={idx} className="p-3 bg-surface-muted border border-border rounded-xl space-y-2">
                   <div className="flex justify-between items-center">
-                    <span className="text-[10px] font-mono text-[#0D6E6E] font-bold">KPI #{idx + 1}</span>
-                    <button onClick={() => handleRemoveMetric(idx)} className="text-red-400 hover:text-red-300 text-xs">
+                    <span className="text-[10px] font-mono text-brand font-bold">KPI #{idx + 1}</span>
+                    <button onClick={() => handleRemoveMetric(idx)} className="text-red-400 hover:text-error text-xs">
                       <Trash2 className="w-3 h-3" />
                     </button>
                   </div>
@@ -285,7 +285,7 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
                 step={8}
                 value={data.height || 48}
                 onChange={e => onUpdate({ height: parseInt(e.target.value) })}
-                className="w-full accent-[#0D6E6E]"
+                className="w-full accent-brand"
               />,
               `Current: ${data.height || 48}px`
             )
@@ -319,13 +319,13 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
               <input type="checkbox" checked={data.hasHeaderRow !== false} onChange={e => onUpdate({ hasHeaderRow: e.target.checked })} />
             )}
             
-            <div className="flex flex-col gap-2 mb-2 bg-black/20 p-2 rounded-xl">
-               <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest text-center">Structure Controls</span>
+            <div className="flex flex-col gap-2 mb-2 bg-surface-muted p-2 rounded-xl">
+               <span className="text-[10px] font-bold text-content-muted uppercase tracking-widest text-center">Structure Controls</span>
                <div className="grid grid-cols-2 gap-2">
-                 <button onClick={handleAddRow} className="px-2 py-1.5 bg-[#0D6E6E]/20 text-[#0D6E6E] text-[10px] uppercase font-bold tracking-widest rounded hover:bg-[#0D6E6E] hover:text-white transition-colors border border-[#0D6E6E]/30">+ Row</button>
-                 <button onClick={handleAddColumn} className="px-2 py-1.5 bg-[#0D6E6E]/20 text-[#0D6E6E] text-[10px] uppercase font-bold tracking-widest rounded hover:bg-[#0D6E6E] hover:text-white transition-colors border border-[#0D6E6E]/30">+ Column</button>
-                 <button onClick={handleRemoveRow} disabled={tableData.length <= 1} className="px-2 py-1.5 bg-red-500/10 text-red-400 text-[10px] uppercase font-bold tracking-widest rounded hover:bg-red-500 hover:text-white transition-colors border border-red-500/20 disabled:opacity-50">- Row</button>
-                 <button onClick={handleRemoveColumn} disabled={tableData[0].length <= 1} className="px-2 py-1.5 bg-red-500/10 text-red-400 text-[10px] uppercase font-bold tracking-widest rounded hover:bg-red-500 hover:text-white transition-colors border border-red-500/20 disabled:opacity-50">- Column</button>
+                 <button onClick={handleAddRow} className="px-2 py-1.5 bg-brand/20 text-brand text-[10px] uppercase font-bold tracking-widest rounded hover:bg-primary-hover hover:text-primary-foreground transition-colors border border-brand/30">+ Row</button>
+                 <button onClick={handleAddColumn} className="px-2 py-1.5 bg-brand/20 text-brand text-[10px] uppercase font-bold tracking-widest rounded hover:bg-primary-hover hover:text-primary-foreground transition-colors border border-brand/30">+ Column</button>
+                 <button onClick={handleRemoveRow} disabled={tableData.length <= 1} className="px-2 py-1.5 bg-error-muted text-error text-[10px] uppercase font-bold tracking-widest rounded hover:bg-error hover:text-content-inverse transition-colors border border-error/20 disabled:opacity-50">- Row</button>
+                 <button onClick={handleRemoveColumn} disabled={tableData[0].length <= 1} className="px-2 py-1.5 bg-error-muted text-error text-[10px] uppercase font-bold tracking-widest rounded hover:bg-error hover:text-content-inverse transition-colors border border-error/20 disabled:opacity-50">- Column</button>
                </div>
             </div>
 
@@ -348,11 +348,11 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
         ))
       }
       case 'divider':
-        return <p className="text-sm text-slate-500">No content settings for dividers.</p>
+        return <p className="text-sm text-content-muted">No content settings for dividers.</p>
       case 'columns':
-        return <p className="text-sm text-slate-500">Column block — edit content by clicking inside each column.</p>
+        return <p className="text-sm text-content-muted">Column block — edit content by clicking inside each column.</p>
       default:
-        return <p className="text-sm text-slate-500">No configurable fields for this block type.</p>
+        return <p className="text-sm text-content-muted">No configurable fields for this block type.</p>
     }
   }
 
@@ -370,7 +370,7 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
           )}
           {field('Text Color',
             <input type="color" value={attributes.textColor || '#ffffff'} onChange={e => onUpdate({}, { textColor: e.target.value })}
-              className="w-full h-10 rounded-xl border border-[#2D3748] bg-transparent cursor-pointer"
+              className="w-full h-10 rounded-xl border border-border bg-transparent cursor-pointer"
             />
           )}
         </>
@@ -380,7 +380,7 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
         <>
           {field('Background Color',
             <input type="color" value={attributes.backgroundColor || '#1A1F2E'} onChange={e => onUpdate({}, { backgroundColor: e.target.value })}
-              className="w-full h-10 rounded-xl border border-[#2D3748] bg-transparent cursor-pointer"
+              className="w-full h-10 rounded-xl border border-border bg-transparent cursor-pointer"
             />
           )}
           {field('Padding', 
@@ -399,20 +399,20 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
 
   return (
     <>
-      <div className="w-72 bg-[#1A1F2E] border-l border-[#2D3748] flex flex-col shrink-0 overflow-hidden">
+      <div className="w-full h-full bg-surface border-l border-border flex flex-col shrink-0 overflow-hidden">
         {/* Header */}
-        <div className="flex items-center justify-between p-4 border-b border-[#2D3748]">
+        <div className="flex items-center justify-between p-4 border-b border-border">
           <div>
-            <p className="text-[10px] font-extrabold text-[#0D6E6E] uppercase tracking-widest">Block Settings</p>
-            <p className="text-xs font-bold text-white mt-0.5 capitalize">{block.type} Block</p>
+            <p className="text-[10px] font-extrabold text-brand uppercase tracking-widest">Block Settings</p>
+            <p className="text-xs font-bold text-content-primary mt-0.5 capitalize">{block.type} Block</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/10 text-slate-500 hover:text-white transition-colors">
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-accent text-content-muted hover:text-content-primary transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Tabs */}
-        <div className="flex border-b border-[#2D3748] shrink-0">
+        <div className="flex border-b border-border shrink-0">
           {([
             { id: 'content', label: 'Content', Icon: Settings },
             { id: 'style', label: 'Style', Icon: Palette }
@@ -422,8 +422,8 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
               onClick={() => setTab(id)}
               className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs font-bold transition-all ${
                 tab === id
-                  ? 'text-[#0D6E6E] border-b-2 border-[#0D6E6E]'
-                  : 'text-slate-500 hover:text-white'
+                  ? 'text-brand border-b-2 border-brand'
+                  : 'text-content-muted hover:text-content-primary'
               }`}
             >
               <Icon className="w-3.5 h-3.5" />
@@ -438,10 +438,10 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
         </div>
 
         {/* Footer */}
-        <div className="p-4 border-t border-[#2D3748]">
+        <div className="p-4 border-t border-border">
           <button
             onClick={onDelete}
-            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-red-500/10 text-red-400 hover:bg-red-500 hover:text-white transition-all text-xs font-bold border border-red-500/20 hover:border-red-500"
+            className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-error-muted text-error hover:bg-error hover:text-content-inverse transition-all text-xs font-bold border border-error/20 hover:border-error"
           >
             <Trash2 className="w-4 h-4" />
             Delete Block

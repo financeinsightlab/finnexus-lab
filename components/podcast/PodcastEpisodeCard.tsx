@@ -51,7 +51,7 @@ export default function PodcastEpisodeCard({ episode, compact = false }: Podcast
         </div>
 
         <h3 className={`font-bold text-white mb-1.5 ${compact ? 'text-base' : 'text-lg md:text-xl'} leading-snug`}>
-          <Link href={`/podcast/${episode.slug}`} className="hover:text-cinema-cyan transition-colors">
+          <Link href={`/podcast/${episode.slug}`} className="hover:text-brand transition-colors">
             {episode.title}
           </Link>
         </h3>

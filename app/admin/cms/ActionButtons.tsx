@@ -18,7 +18,7 @@ export default function ActionButtons({ post }: ActionButtonsProps) {
     if (!confirm(`Are you sure you want to ${post.published ? "unpublish" : "publish"} this post?`)) {
       return
     }
-    
+
     startTransition(async () => {
       const formData = new FormData()
       formData.append("id", post.id)
@@ -30,7 +30,7 @@ export default function ActionButtons({ post }: ActionButtonsProps) {
     if (!confirm("Are you sure you want to delete this post?")) {
       return
     }
-    
+
     startTransition(async () => {
       const formData = new FormData()
       formData.append("id", post.id)
@@ -38,27 +38,29 @@ export default function ActionButtons({ post }: ActionButtonsProps) {
     })
   }
 
+  const actionClass = "inline-flex h-10 w-10 items-center justify-center rounded-xl border border-border bg-surface-muted text-content-muted transition-colors hover:bg-accent hover:text-content-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:cursor-not-allowed disabled:opacity-50 sm:opacity-0 sm:group-hover:opacity-100 sm:group-focus-within:opacity-100"
+
   return (
-    <div className="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-all translate-x-1 group-hover:translate-x-0">
+    <div className="flex items-center justify-end gap-2 transition-opacity">
       <button
+        type="button"
         onClick={handleTogglePublish}
         disabled={isPending}
-        className="p-2 text-slate-500 hover:text-emerald-400 bg-white/5 hover:bg-emerald-400/10 rounded-xl transition-all disabled:opacity-50"
+        className={`${actionClass} hover:border-success/40 hover:bg-success-muted hover:text-success`}
         title={post.published ? "Unpublish" : "Publish"}
+        aria-label={post.published ? "Unpublish post" : "Publish post"}
       >
-        {post.published ? (
-          <Clock className="w-4 h-4" />
-        ) : (
-          <CheckCircle2 className="w-4 h-4" />
-        )}
+        {post.published ? <Clock className="h-4 w-4" /> : <CheckCircle2 className="h-4 w-4" />}
       </button>
       <button
+        type="button"
         onClick={handleDelete}
         disabled={isPending}
-        className="p-2 text-slate-500 hover:text-red-400 bg-white/5 hover:bg-red-400/10 rounded-xl transition-all disabled:opacity-50"
+        className={`${actionClass} hover:border-error/40 hover:bg-error-muted hover:text-error`}
         title="Remove Archive"
+        aria-label="Delete post"
       >
-        <Trash2 className="w-4 h-4" />
+        <Trash2 className="h-4 w-4" />
       </button>
     </div>
   )

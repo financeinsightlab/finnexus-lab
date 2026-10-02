@@ -69,8 +69,7 @@ export default function DataLabCapabilities() {
             <ScrollReveal key={cap.title} delay={i * 80}>
               <div className="glass-cinema group h-full rounded-2xl border border-white/10 p-7 hover:border-white/25 transition-all duration-300 hover:-translate-y-1.5">
                 <div
-                  className="w-14 h-14 rounded-2xl flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
-                  style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.1)' }}
+                  className="w-14 h-14 rounded-2xl border border-border bg-surface-muted flex items-center justify-center mb-5 transition-transform duration-300 group-hover:scale-110"
                 >
                   <cap.icon className={`w-7 h-7 ${cap.color}`} />
                 </div>

@@ -47,7 +47,7 @@ const EMPTY: FormState = {
 };
 
 const inputClass = (invalid: boolean) =>
-  `w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:ring-2 dark:bg-[#0f1522] dark:text-white dark:placeholder:text-slate-500 ${invalid
+  `w-full rounded-xl border bg-white px-4 py-3 text-sm text-slate-900 outline-none transition-colors placeholder:text-slate-400 focus:ring-2 dark:bg-surface dark:text-white dark:placeholder:text-slate-500 ${invalid
     ? 'border-red-400 focus:border-red-500 focus:ring-red-500/20 dark:border-red-500/60'
     : 'border-slate-200 focus:border-teal-500 focus:ring-teal-500/20 dark:border-white/10'
   }`;
@@ -279,7 +279,7 @@ export default function ContactForm() {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <p className="text-xs text-slate-400">
-          By sending this you agree to our <a href="/privacy" className="underline hover:text-slate-600">privacy policy</a>.
+          By sending this you agree to our <a href="/privacy" className="underline hover:text-content-primary">privacy policy</a>.
         </p>
         <button
           type="submit"

@@ -26,10 +26,10 @@ interface PredictionsClientProps {
 }
 
 const STATUS_CONFIG = {
-  CONFIRMED: { label: 'Confirmed', bg: 'bg-green-500/10', text: 'text-green-400', border: 'border-green-500/20', dot: '🟢' },
-  INCORRECT: { label: 'Incorrect', bg: 'bg-red-500/10', text: 'text-red-400', border: 'border-red-500/20', dot: '🔴' },
-  PARTIAL: { label: 'Partial', bg: 'bg-amber-500/10', text: 'text-amber-400', border: 'border-amber-500/20', dot: '🟡' },
-  PENDING: { label: 'Pending', bg: 'bg-yellow-500/10', text: 'text-yellow-400', border: 'border-yellow-500/20', dot: '⏳' },
+  CONFIRMED: { label: 'Confirmed', bg: 'bg-success-muted', text: 'text-success', border: 'border-success/30', dot: '🟢' },
+  INCORRECT: { label: 'Incorrect', bg: 'bg-error-muted', text: 'text-error', border: 'border-error/30', dot: '🔴' },
+  PARTIAL: { label: 'Partial', bg: 'bg-warning-muted', text: 'text-warning', border: 'border-warning/30', dot: '🟡' },
+  PENDING: { label: 'Pending', bg: 'bg-info-muted', text: 'text-info', border: 'border-info/30', dot: '⏳' },
 } as const
 
 function slugify(str: string) {
@@ -58,7 +58,7 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
   const now = Date.now()
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
+    <div className="min-h-screen bg-surface-muted text-content-primary">
       {/* ─── Header Stats ─── */}
       <section className="relative overflow-hidden bg-brand-navy border-b border-white/5 py-14">
         <HeroBackground />
@@ -93,26 +93,26 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
       </section>
 
       {/* ─── Filters ─── */}
-      <section className="bg-[#0f1522] border-b border-white/5 py-6 sticky top-0 z-40">
+      <section className="bg-surface border-b border-border-subtle py-6 sticky top-0 z-40">
         <div className="max-w-[1400px] mx-auto px-6 flex flex-wrap gap-4 items-center">
           <div className="flex gap-2 flex-wrap">
             {['All', 'PENDING', 'CONFIRMED', 'INCORRECT', 'PARTIAL'].map((s) => (
               <button
                 key={s}
                 onClick={() => setActiveStatus(s)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${activeStatus === s ? 'bg-teal-500/20 text-teal-400 border-teal-500/30' : 'bg-transparent text-slate-400 border-white/10 hover:bg-white/5'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${activeStatus === s ? 'bg-brand-muted text-brand border-brand/30' : 'bg-transparent text-content-secondary border-border hover:bg-surface-raised'}`}
               >
                 {s === 'All' ? 'All Status' : STATUS_CONFIG[s as keyof typeof STATUS_CONFIG]?.label ?? s}
               </button>
             ))}
           </div>
-          <div className="h-4 border-l border-white/10 hidden md:block" />
+          <div className="h-4 border-l border-border-subtle hidden md:block" />
           <div className="flex gap-2 flex-wrap">
             {['All', ...sectors].map((sec) => (
               <button
                 key={sec}
                 onClick={() => setActiveSector(sec)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${activeSector === sec ? 'bg-purple-500/20 text-purple-400 border-purple-500/30' : 'bg-transparent text-slate-400 border-white/10 hover:bg-white/5'}`}
+                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all border ${activeSector === sec ? 'bg-accent-violet-muted text-accent-violet border-accent-violet/30' : 'bg-transparent text-content-secondary border-border hover:bg-surface-raised'}`}
               >
                 {sec}
               </button>
@@ -120,7 +120,7 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
           </div>
           <Link
             href={LEDGER_HREF}
-            className="ml-auto inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-teal-500/30 bg-teal-500/10 text-teal-300 hover:bg-teal-500/20"
+            className="ml-auto inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all border border-brand/30 bg-brand-muted text-brand hover:bg-brand/15"
           >
             📒 Public Ledger
           </Link>
@@ -132,7 +132,7 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
 
           {/* LEFT: OFFICIAL PREDICTIONS */}
           <div className="lg:col-span-3 space-y-8">
-            <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-content-primary flex items-center gap-2">
               🏛️ Official Forecasts <span className="text-sm font-medium text-slate-500 ml-2">({filteredOfficial.length})</span>
             </h2>
 
@@ -150,11 +150,11 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
                   const authorSlug = slugify(p.author.name ?? 'unknown')
 
                   return (
-                    <article key={p.id} className="bg-[#1A1F2E] border border-[#2D3748] rounded-2xl p-6 flex flex-col gap-4 shadow-xl hover:border-[#0D6E6E]/50 transition-colors">
+                    <article key={p.id} className="bg-surface border border-border rounded-2xl p-6 flex flex-col gap-4 shadow-xl hover:border-brand/50 transition-colors">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2">
                           <VerificationBadge role={p.author.role} customBadge={p.author.customBadge} />
-                          <span className="text-[10px] uppercase font-bold text-slate-500 tracking-wider bg-white/5 px-2 py-0.5 rounded-md border border-white/5">{p.sector}</span>
+                          <span className="text-[10px] uppercase font-bold text-content-muted tracking-wider bg-surface-muted px-2 py-0.5 rounded-md border border-border-subtle">{p.sector}</span>
                         </div>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
                           {cfg.dot} {cfg.label}
@@ -165,12 +165,12 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
                         &ldquo;{p.claim}&rdquo;
                       </p>
 
-                      <div className="flex items-center justify-between pt-4 border-t border-white/5 text-xs">
+                      <div className="flex items-center justify-between pt-4 border-t border-border-subtle text-xs">
                         <div className="flex items-center gap-2">
                           {p.author.id === 'private' ? (
                             <span className="font-bold text-slate-400">Private analyst</span>
                           ) : (
-                            <Link href={`/authors/${authorSlug}`} className="font-bold text-teal-400 hover:text-teal-300">
+                            <Link href={`/authors/${authorSlug}`} className="font-bold text-teal-400 hover:text-brand-hover">
                               {p.author.name}
                             </Link>
                           )}
@@ -194,45 +194,45 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
 
           {/* RIGHT: LIVE COMMUNITY FEED */}
           <div className="lg:col-span-1 space-y-6">
-            <h2 className="text-xl font-extrabold text-white flex items-center gap-2">
+            <h2 className="text-xl font-extrabold text-content-primary flex items-center gap-2">
               👥 Live Community Feed
             </h2>
 
             {/* Input Form */}
             {sessionStatus === 'loading' ? (
-              <div role="status" aria-label="Checking sign-in status" className="h-24 rounded-2xl bg-[#1A1F2E] border border-white/10 animate-pulse" />
+              <div role="status" aria-label="Checking sign-in status" className="h-24 rounded-2xl bg-surface border border-white/10 animate-pulse" />
             ) : isLoggedIn ? (
-              <form action={createCommunityPrediction} className="bg-[#1A1F2E] p-4 rounded-2xl border border-teal-500/30 shadow-[0_0_15px_rgba(13,110,110,0.15)] space-y-3">
+              <form action={createCommunityPrediction} className="bg-surface p-4 rounded-2xl border border-brand/30 shadow-[0_0_15px_rgba(13,110,110,0.15)] space-y-3">
                 <p className="text-xs font-bold text-teal-400 uppercase tracking-widest mb-2">Publish a Prediction</p>
                 <textarea
                   name="claim"
                   required
                   placeholder="Drop a live prediction..."
                   rows={2}
-                  className="w-full bg-[#0f1c2d] border border-[#2D3748] rounded-xl px-3 py-2 text-sm text-slate-300 placeholder-slate-600 focus:outline-none focus:border-teal-500 resize-none"
+                  className="w-full bg-surface-raised border border-border rounded-xl px-3 py-2 text-sm text-content-primary placeholder:text-content-muted focus:outline-none focus-visible:border-brand resize-none"
                 />
-                <button type="submit" className="w-full bg-teal-500 text-white font-bold py-2 rounded-xl text-xs hover:bg-teal-400 transition-colors">
+                <button type="submit" className="w-full bg-primary text-primary-foreground font-bold py-2 rounded-xl text-xs hover:bg-primary-hover transition-colors">
                   Send to Feed →
                 </button>
               </form>
             ) : (
-              <div className="bg-[#1A1F2E] p-4 rounded-2xl border border-white/10 text-center">
+              <div className="bg-surface p-4 rounded-2xl border border-border-subtle text-center">
                 <p className="text-xs text-slate-400">Log in to post directly to the live prediction feed.</p>
               </div>
             )}
 
             {/* Community Feed Scrolling Container */}
-            <div className="relative h-[800px] overflow-hidden bg-[#1A1F2E]/50 rounded-2xl border border-white/5 py-4 shrink-0">
+            <div className="relative h-[800px] overflow-hidden bg-surface-muted rounded-2xl border border-border-subtle py-4 shrink-0">
               {/* Fade out edges */}
-              <div className="absolute top-0 w-full h-10 bg-gradient-to-b from-[#0B0D13] to-transparent z-10 pointer-events-none" />
-              <div className="absolute bottom-0 w-full h-10 bg-gradient-to-t from-[#0B0D13] to-transparent z-10 pointer-events-none" />
+              <div className="absolute top-0 w-full h-10 bg-gradient-to-b from-surface-muted to-transparent z-10 pointer-events-none" />
+              <div className="absolute bottom-0 w-full h-10 bg-gradient-to-t from-surface-muted to-transparent z-10 pointer-events-none" />
 
-              <div className="flex flex-col gap-4 overflow-y-auto h-full px-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+              <div className="flex flex-col gap-4 overflow-y-auto h-full px-4 scrollbar-thin scrollbar-thumb-border-strong scrollbar-track-transparent">
                 {/* Scrollable List without duplicates */}
                 {communityPredictions.map((p) => (
-                  <div key={p.id} className="bg-white/5 border border-white/10 rounded-xl p-4 shrink-0 relative group">
+                  <div key={p.id} className="bg-surface-raised border border-border-subtle rounded-xl p-4 shrink-0 relative group">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-bold text-white text-xs">{p.author.name}</span>
+                      <span className="font-bold text-content-primary text-xs">{p.author.name}</span>
                       <VerificationBadge role={p.author.role} customBadge={p.author.customBadge} />
                     </div>
                     <p className="text-sm text-slate-300 italic mb-2">"{p.claim}"</p>
@@ -258,7 +258,7 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
                     )}
 
                     {/* Threaded discussion (Pillar D) */}
-                    <div className="mt-4 border-t border-white/5 pt-2">
+                    <div className="mt-4 border-t border-border-subtle pt-2">
                       <CommentsSection
                         predictionId={p.id}
                         isLoggedIn={isLoggedIn}

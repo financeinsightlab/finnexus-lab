@@ -213,7 +213,7 @@ export default async function DashboardPage() {
                   <h3 className="font-bold text-brand-navy">{activeCourse.course.title}</h3>
                   <span className="text-sm text-brand-slate">{activeCourse.progress.percent}%</span>
                 </div>
-                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-brand-silver">
+                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-surface-muted">
                   <div
                     className="h-full rounded-full bg-brand-teal"
                     style={{ width: `${activeCourse.progress.percent}%` }}
@@ -355,7 +355,7 @@ export default async function DashboardPage() {
                 className="h-14 w-14 rounded-full object-cover"
               />
             ) : (
-              <div className="h-14 w-14 rounded-full bg-brand-silver flex items-center justify-center text-brand-navy font-extrabold">
+              <div className="h-14 w-14 rounded-full bg-surface-muted flex items-center justify-center text-brand-navy font-extrabold">
                 {avatarInitials}
               </div>
             )}

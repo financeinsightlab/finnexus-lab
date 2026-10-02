@@ -51,7 +51,7 @@ const ROUTING = [
 
 export default function ContactPage() {
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0a1120]">
+    <div className="min-h-screen bg-slate-50 dark:bg-background">
       {/* Header */}
       <header className="relative overflow-hidden bg-brand-navy py-16">
         <HeroBackground />
