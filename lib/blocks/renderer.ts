@@ -54,12 +54,12 @@ function formatMathFormulas(html: string): string {
     }
 
     return `
-      <div class="my-5 px-5 py-4 rounded-2xl bg-[#090E18] border border-cinema-cyan/30 shadow-xl overflow-x-auto text-center">
+      <div class="my-5 px-5 py-4 rounded-2xl bg-[#090E18] border border-cinema-cyan/30 shadow-xl text-center">
         <div class="inline-flex items-center gap-1.5 mb-2 px-2 py-0.5 rounded-full bg-cinema-cyan/10 border border-cinema-cyan/25 text-[10px] font-mono font-bold text-cinema-cyan uppercase tracking-wider">
           <span class="w-1.5 h-1.5 rounded-full bg-cinema-cyan animate-pulse"></span>
           Mathematical Model
         </div>
-        <div class="text-white text-base md:text-lg py-1 overflow-x-auto flex justify-center">
+        <div class="horizontal-scroll-region min-w-0 max-w-full text-white text-base md:text-lg py-1 flex justify-start" role="region" aria-label="Scrollable mathematical formula" tabindex="0" data-lenis-prevent>
           ${renderedMath}
         </div>
       </div>
@@ -313,8 +313,8 @@ function renderConsultingTable(title: string, headers: string[], data: string[][
       `
           : ''
       }
-      <div class="overflow-x-auto">
-        <table class="w-full text-xs md:text-sm text-left border-collapse">
+      <div class="horizontal-scroll-region" role="region" aria-label="Scrollable data table; use horizontal scrolling to view all columns" tabindex="0" data-lenis-prevent>
+        <table class="w-full min-w-max text-xs md:text-sm text-left border-collapse">
           ${thead}
           <tbody class="divide-y divide-white/5">${tbody}</tbody>
         </table>
@@ -403,7 +403,7 @@ function renderBlock(block: Block): string {
             </div>
             <span class="text-[10px] font-mono text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">Architecture Blueprint</span>
           </div>
-          <div class="p-5 overflow-x-auto bg-[#070C18]">
+          <div class="horizontal-scroll-region p-5 bg-[#070C18]" role="region" aria-label="Scrollable code sample" tabindex="0" data-lenis-prevent>
             <pre class="font-mono text-xs md:text-sm text-emerald-300 leading-relaxed bg-transparent border-none p-0 m-0 whitespace-pre"><code>${escapeHtml(parsed.code)}</code></pre>
           </div>
         </div>

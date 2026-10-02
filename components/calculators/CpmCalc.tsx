@@ -132,7 +132,7 @@ export default function CpmCalc() {
       </div>
 
       {/* full table */}
-      <div className="rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5 overflow-x-auto">
+      <div className="horizontal-scroll-region rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5" role="region" aria-label="CPM schedule table" tabIndex={0} data-lenis-prevent>
         <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Schedule table</p>
         <table className="w-full text-[12.5px] font-mono">
           <thead>

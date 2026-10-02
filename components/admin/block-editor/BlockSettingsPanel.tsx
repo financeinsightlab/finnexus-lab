@@ -399,14 +399,14 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
 
   return (
     <>
-      <div className="w-72 bg-[#1A1F2E] border-l border-[#2D3748] flex flex-col shrink-0 overflow-hidden">
+      <div className="ui-scroll-region min-h-0 max-h-[45%] w-full shrink-0 overflow-hidden border-t border-[#2D3748] bg-[#1A1F2E] flex flex-col md:h-full md:max-h-none md:w-72 md:border-l md:border-t-0">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-[#2D3748]">
           <div>
             <p className="text-[10px] font-extrabold text-[#0D6E6E] uppercase tracking-widest">Block Settings</p>
             <p className="text-xs font-bold text-white mt-0.5 capitalize">{block.type} Block</p>
           </div>
-          <button onClick={onClose} className="p-2 rounded-lg hover:bg-white/10 text-slate-500 hover:text-white transition-colors">
+          <button onClick={onClose} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-white/10 hover:text-white" aria-label="Close block settings">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -433,7 +433,7 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
         </div>
 
         {/* Fields */}
-        <div className="flex-1 overflow-y-auto p-4 space-y-5">
+        <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 space-y-5" data-lenis-prevent>
           {tab === 'content' ? renderContentFields() : renderStyleFields()}
         </div>
 

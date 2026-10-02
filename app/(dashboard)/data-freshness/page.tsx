@@ -1,4 +1,4 @@
-﻿import type { Metadata } from 'next';
+import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllResearch } from '@/lib/content';
 import { parseFreshStats, calculateReportFreshness, type ParsedFreshStat } from '@/lib/freshness';
@@ -221,7 +221,7 @@ export default async function DataFreshnessDashboard() {
             </h2>
             <div className="card overflow-hidden divide-y divide-gray-100">
               {reportScores.map((p) => (
-                <div key={p.slug} className="flex items-center gap-4 px-6 py-4">
+                <div key={p.slug} className="flex min-w-0 flex-col gap-3 px-4 py-4 sm:flex-row sm:items-center sm:gap-4 sm:px-6">
                   <div
                     className="w-2.5 h-2.5 rounded-full flex-shrink-0"
                     style={{
@@ -232,11 +232,11 @@ export default async function DataFreshnessDashboard() {
                   />
                   <Link
                     href={`/research/${p.slug}`}
-                    className="flex-1 text-sm font-medium text-brand-navy hover:text-brand-teal transition-colors truncate"
+                    className="min-w-0 break-words text-sm font-medium text-brand-navy transition-colors hover:text-brand-teal sm:flex-1"
                   >
                     {p.title}
                   </Link>
-                  <div className="flex items-center gap-4 flex-shrink-0">
+                  <div className="flex w-full shrink-0 items-center justify-between gap-4 sm:w-auto sm:justify-start">
                     <div className="w-24">
                       <div className="h-1.5 bg-gray-100 rounded-full overflow-hidden">
                         <div
@@ -273,8 +273,8 @@ export default async function DataFreshnessDashboard() {
 
 function StatTable({ rows }: { rows: StatRow[] }) {
   return (
-    <div className="card overflow-x-auto">
-      <table className="w-full text-sm">
+    <div className="horizontal-scroll-region card" role="region" aria-label="Research data freshness table" tabIndex={0} data-lenis-prevent>
+      <table className="w-full min-w-[720px] text-sm">
         <thead>
           <tr className="border-b border-gray-100 bg-gray-50/50">
             <th className="text-left px-4 py-3 text-[10px] font-bold uppercase tracking-widest text-gray-500">Statistic</th>
@@ -287,13 +287,13 @@ function StatTable({ rows }: { rows: StatRow[] }) {
         <tbody className="divide-y divide-gray-50">
           {rows.map((row, i) => (
             <tr key={i} className="hover:bg-gray-50/50 transition-colors">
-              <td className="px-4 py-3 font-semibold text-brand-navy max-w-[200px] truncate">
+              <td className="max-w-[200px] break-words px-4 py-3 font-semibold text-brand-navy">
                 {row.stat}
               </td>
               <td className="px-4 py-3">
                 <Link
                   href={`/research/${row.reportSlug}`}
-                  className="text-brand-teal hover:underline text-xs leading-snug line-clamp-2"
+                  className="break-words text-xs leading-snug text-brand-teal hover:underline"
                 >
                   {row.reportTitle}
                 </Link>

@@ -14,6 +14,7 @@ import { activeStreak, computeCourseProgress, rankNextLessons } from '@/lib/lear
 import { getActivityDates, listEnrollments } from '@/lib/learning-store';
 import { getCourse, getCourses } from '@/lib/pgdm/learning-adapter';
 import { resolveLearningCourse } from '@/lib/learning-courses';
+import { isStructuredLearningCourse } from '@/lib/learning-course-catalog';
 import {
   collectFreshContent,
   insightToItem,
@@ -130,7 +131,14 @@ export default async function DashboardPage() {
     if (!course) return null;
     const progress = computeCourseProgress(course, toStates(course.slug));
     const nextLesson = course.lessons.find((lesson) => lesson.slug === progress.nextLessonSlug) ?? null;
-    return { course, progress, nextLesson, isPgdm: Boolean(getCourse(course.slug)) };
+    const isPgdm = Boolean(getCourse(course.slug));
+    return {
+      course,
+      progress,
+      nextLesson,
+      isPgdm,
+      isStructured: !isPgdm && isStructuredLearningCourse(course.slug),
+    };
   }));
   const courseProgress = resolvedCourseProgress.filter((value): value is NonNullable<typeof value> => value !== null);
 
@@ -139,6 +147,7 @@ export default async function DashboardPage() {
 
   const recommendationCourse = activeCourse?.course ?? getCourses()[0];
   const recommendationIsPgdm = activeCourse?.isPgdm ?? Boolean(recommendationCourse && getCourse(recommendationCourse.slug));
+  const recommendationIsStructured = activeCourse?.isStructured ?? Boolean(recommendationCourse && !recommendationIsPgdm && isStructuredLearningCourse(recommendationCourse.slug));
   const recommendations = recommendationCourse
     ? rankNextLessons(recommendationCourse, toStates(recommendationCourse.slug), {
       recentTags: recommendationCourse.tags,
@@ -146,9 +155,10 @@ export default async function DashboardPage() {
     })
     : [];
   const recommendationCourseSlug = recommendationCourse?.slug ?? '';
-  const courseHref = (courseSlug: string, lessonSlug?: string | null, pgdm = true) => {
-    if (!pgdm) return lessonSlug ? `/study/${courseSlug}/lessons/${lessonSlug}` : `/study/${courseSlug}`;
-    return lessonSlug ? `/pgdm/${courseSlug}/${lessonSlug}` : `/pgdm/${courseSlug}`;
+  const courseHref = (courseSlug: string, lessonSlug?: string | null, pgdm = true, structured = false) => {
+    if (pgdm) return lessonSlug ? `/pgdm/${courseSlug}/${lessonSlug}` : `/pgdm/${courseSlug}`;
+    if (structured) return lessonSlug ? `/study/course/${courseSlug}/${lessonSlug}` : `/study/course/${courseSlug}`;
+    return lessonSlug ? `/study/${courseSlug}/lessons/${lessonSlug}` : `/study/${courseSlug}`;
   };
 
   // ─── New since your last visit (Pillar F4) ──────────────────────────────────
@@ -198,10 +208,13 @@ export default async function DashboardPage() {
         <div className="card p-6 md:col-span-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <h2 className="font-extrabold text-brand-navy text-lg">Continue learning</h2>
-            <div className="flex items-center gap-3">
+            <div className="flex flex-wrap items-center gap-3">
               <span className="tag tag-teal">🔥 {streak}-day streak</span>
               <Link href="/pgdm" className="text-sm font-semibold text-brand-teal hover:underline">
-                Browse curriculum →
+                Browse PGDM curriculum →
+              </Link>
+              <Link href="/study/course" className="text-sm font-semibold text-brand-teal hover:underline">
+                Skill Academy &amp; Analyst Levels →
               </Link>
             </div>
           </div>
@@ -224,7 +237,7 @@ export default async function DashboardPage() {
                   complete
                 </p>
                 <Link
-                  href={courseHref(activeCourse.course.slug, activeCourse.nextLesson?.slug, activeCourse.isPgdm)}
+                  href={courseHref(activeCourse.course.slug, activeCourse.nextLesson?.slug, activeCourse.isPgdm, activeCourse.isStructured)}
                   className="btn btn-primary mt-4 inline-flex"
                 >
                   {activeCourse.nextLesson
@@ -247,7 +260,7 @@ export default async function DashboardPage() {
                     recommendations.map((rec) => (
                       <li key={rec.lesson.slug}>
                         <Link
-                          href={courseHref(recommendationCourseSlug, rec.lesson.slug, recommendationIsPgdm)}
+                          href={courseHref(recommendationCourseSlug, rec.lesson.slug, recommendationIsPgdm, recommendationIsStructured)}
                           className="font-semibold text-brand-navy hover:text-brand-teal line-clamp-1"
                         >
                           {rec.lesson.title}
@@ -265,11 +278,12 @@ export default async function DashboardPage() {
           ) : (
             <div className="mt-4">
               <p className="text-sm text-brand-slate">
-                No courses in progress yet. Start with the PGDM curriculum to build your streak.
+                No courses in progress yet. Choose a PGDM subject or an individual Skill Academy / Analyst course to begin.
               </p>
-              <Link href="/pgdm" className="btn btn-primary mt-4 inline-flex">
-                Start learning →
-              </Link>
+              <div className="mt-4 flex flex-wrap gap-3">
+                <Link href="/pgdm" className="btn btn-primary inline-flex">Browse PGDM →</Link>
+                <Link href="/study/course" className="btn btn-outline inline-flex">Browse Skill Academy &amp; Analyst Levels →</Link>
+              </div>
             </div>
           )}
 
@@ -278,7 +292,7 @@ export default async function DashboardPage() {
               {courseProgress.map((c) => (
                 <Link
                   key={c.course.slug}
-                  href={courseHref(c.course.slug, undefined, c.isPgdm)}
+                  href={courseHref(c.course.slug, undefined, c.isPgdm, c.isStructured)}
                   className="text-xs font-semibold text-brand-slate hover:text-brand-teal"
                 >
                   {c.course.title} · {c.progress.percent}%

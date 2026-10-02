@@ -102,7 +102,7 @@ export default function TimeValueCalc() {
 
       {mode === 'emi' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-3 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5">
+          <div className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5 sm:grid-cols-3">
             <Field label="Loan amount (₹)" value={principal} onChange={setPrincipal} step={100000} />
             <Field label="Annual rate (%)" value={annualRate} onChange={setAnnualRate} step={0.05} />
             <Field label="Tenure (years)" value={years} onChange={setYears} />
@@ -123,7 +123,8 @@ export default function TimeValueCalc() {
           </div>
           <div className="rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5">
             <p className="text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-3">Amortisation — first 6 months</p>
-            <table className="w-full text-[12px] font-mono">
+            <div className="horizontal-scroll-region" role="region" aria-label="Loan amortisation schedule" tabIndex={0} data-lenis-prevent>
+            <table className="w-full min-w-[520px] text-[12px] font-mono">
               <thead>
                 <tr className="text-gray-500 text-left">
                   <th className="pb-2">Month</th><th className="pb-2">EMI</th><th className="pb-2">Interest</th><th className="pb-2">Principal</th><th className="pb-2 text-right">Balance</th>
@@ -150,6 +151,7 @@ export default function TimeValueCalc() {
                 })()}
               </tbody>
             </table>
+            </div>
             <p className="text-[11px] text-gray-500 mt-3">Early EMIs are mostly interest — the annuity front-loads the lender&apos;s return. Prepay early, save more.</p>
           </div>
         </div>
@@ -157,7 +159,7 @@ export default function TimeValueCalc() {
 
       {mode === 'pv' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-3 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5">
+          <div className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5 sm:grid-cols-3">
             <Field label="Future cash flow (₹)" value={cash} onChange={setCash} step={100000} />
             <Field label="Discount rate (%)" value={discRate} onChange={setDiscRate} step={0.5} />
             <Field label="Years away" value={periods} onChange={setPeriods} />
@@ -179,7 +181,7 @@ export default function TimeValueCalc() {
 
       {mode === 'fv' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-3 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5">
+          <div className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5 sm:grid-cols-3">
             <Field label="Amount invested (₹)" value={cash} onChange={setCash} step={100000} />
             <Field label="Return rate (%)" value={discRate} onChange={setDiscRate} step={0.5} />
             <Field label="Years invested" value={periods} onChange={setPeriods} />
@@ -194,7 +196,7 @@ export default function TimeValueCalc() {
 
       {mode === 'gordon' && (
         <div className="space-y-6">
-          <div className="grid grid-cols-3 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5">
+          <div className="grid grid-cols-1 gap-4 rounded-2xl border border-white/10 bg-cinema-charcoal/60 p-5 sm:grid-cols-3">
             <Field label="Next-year cash flow C₁" value={c1} onChange={setC1} step={0.1} />
             <Field label="Discount rate / WACC (%)" value={waccG} onChange={setWaccG} step={0.5} />
             <Field label="Perpetual growth g (%)" value={g} onChange={setG} step={0.25} />

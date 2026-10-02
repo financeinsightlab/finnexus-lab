@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
 import dynamic from "next/dynamic"
 import Editor from "@/components/admin/Editor"
 import { updatePost, PostFormData } from "@/actions/cms-actions"
@@ -30,6 +30,7 @@ import React from "react"
 import { contentTemplates, applyTemplate } from "@/lib/templates"
 import { Block, markdownToBlocks } from "@/lib/blocks/registry"
 import ContentRenderer from "@/components/ContentRenderer"
+import { useModalAccessibility } from "@/components/ui/useModalAccessibility"
 
 const BlockEditor = dynamic(() => import('@/components/admin/block-editor/BlockEditor'), { ssr: false })
 
@@ -88,6 +89,17 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
   // Media Library
   const [showMediaLibrary, setShowMediaLibrary] = useState(false)
   const [mediaSearch, setMediaSearch] = useState("")
+  const mediaDialogRef = useRef<HTMLDivElement>(null)
+  const mediaCloseButtonRef = useRef<HTMLButtonElement>(null)
+  const templateDialogRef = useRef<HTMLDivElement>(null)
+  const templateCloseButtonRef = useRef<HTMLButtonElement>(null)
+
+  useModalAccessibility(showMediaLibrary, mediaDialogRef, () => setShowMediaLibrary(false), {
+    initialFocusRef: mediaCloseButtonRef,
+  })
+  useModalAccessibility(showTemplates, templateDialogRef, () => setShowTemplates(false), {
+    initialFocusRef: templateCloseButtonRef,
+  })
   
   // Scheduling
   const [schedulePublish, setSchedulePublish] = useState(false)
@@ -282,29 +294,30 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
   }
 
   return (
-    <div className="flex flex-col h-screen overflow-hidden bg-[#0B0D13]">
+    <div className="h-full min-h-0 min-w-0 flex flex-col overflow-hidden bg-[#0B0D13]">
       {/* Elementor-Style Floating Header */}
-      <header className="h-16 flex items-center justify-between px-6 bg-[#1A1F2E]/80 backdrop-blur-xl border-b border-white/5 z-[60] shrink-0">
-        <div className="flex items-center gap-4">
+      <header className="min-h-16 h-auto min-w-0 flex flex-wrap items-center justify-between gap-2 px-3 py-2 bg-[#1A1F2E]/80 backdrop-blur-xl border-b border-white/5 z-[60] shrink-0 sm:h-16 sm:flex-nowrap sm:gap-3 sm:px-6 sm:py-0">
+        <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-4">
           <Link href="/admin/cms" className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/5 hover:bg-white/10 transition-all text-slate-400">
             <ChevronLeft className="w-5 h-5" />
           </Link>
-          <div className="flex flex-col">
+          <div className="flex min-w-0 flex-col">
             <input 
               type="text" 
               placeholder="Post Title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="bg-transparent text-sm font-bold text-white placeholder:text-slate-600 focus:outline-none w-[200px] md:w-[350px]"
+              className="min-w-0 bg-transparent text-sm font-bold text-white placeholder:text-slate-600 focus:outline-none w-[min(34vw,350px)] sm:w-[350px]"
             />
             <span className="text-[10px] text-[#0D6E6E] font-bold uppercase tracking-widest mt-0.5">Editing Elite Report</span>
           </div>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 flex-wrap items-center justify-end gap-2 sm:flex-nowrap sm:gap-3">
           <button
             onClick={() => setShowTemplates(true)}
-            className="p-2.5 rounded-xl transition-all bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl transition-all bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white"
+            aria-label="Use content template"
             title="Use Template"
           >
             <Sparkles className="w-5 h-5" />
@@ -316,6 +329,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
               onClick={() => setContentType('MARKDOWN')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'MARKDOWN' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}
               title="Classic Markdown / Rich Text editor"
+              aria-label="Use Markdown editor"
             >
               <Type className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Markdown</span>
@@ -324,6 +338,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
               onClick={handleSwitchToBlocks}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'BLOCKS' ? 'bg-[#0D6E6E] text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
               title="Visual Block Builder"
+              aria-label="Use block editor"
             >
               <Blocks className="w-3.5 h-3.5" />
               <span className="hidden md:inline">Block Editor</span>
@@ -334,15 +349,16 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
             onClick={() => setPreviewMode(!previewMode)}
             className={`p-2.5 rounded-xl transition-all ${previewMode ? 'bg-[#0D6E6E] text-white shadow-[0_0_15px_rgba(13,110,110,0.5)]' : 'bg-white/5 text-slate-400 hover:text-white'}`}
             title="Toggle Visual Preview"
+            aria-label={previewMode ? "Close visual preview" : "Open visual preview"}
           >
             <Eye className="w-5 h-5" />
           </button>
           
-          <div className="hidden sm:flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               onClick={() => handleSave(false)}
               disabled={loading}
-              className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-bold text-slate-300 hover:text-white bg-white/5 transition-all disabled:opacity-50"
+              className="flex min-h-11 items-center gap-2 rounded-xl bg-white/5 px-3 text-sm font-bold text-slate-300 transition-all hover:text-white disabled:opacity-50 sm:px-5"
             >
               <Save className="w-4 h-4 text-emerald-500" />
               Save
@@ -350,7 +366,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
             <button
               onClick={() => handleSave(true)}
               disabled={loading}
-              className="btn-primary flex items-center gap-2 font-bold px-6 py-2.5 disabled:opacity-50"
+              className="btn-primary flex min-h-11 items-center gap-2 px-3 font-bold disabled:opacity-50 sm:px-6"
             >
               <Send className="w-4 h-4 rotate-12" />
               {loading ? "Publishing..." : "Publish Elite"}
@@ -359,9 +375,9 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
         </div>
       </header>
 
-      <div className="flex-1 flex overflow-hidden">
+      <div className="relative flex min-h-0 min-w-0 flex-1 overflow-hidden">
         {/* PANEL 1: SETTINGS SELECTOR (LEFT SLIM) */}
-        <aside className="w-16 bg-[#0B0D13] border-r border-white/5 flex flex-col items-center py-6 gap-6 shrink-0 z-50">
+        <aside className="ui-scroll-region min-h-0 max-h-full w-16 shrink-0 overflow-y-auto bg-[#0B0D13] border-r border-white/5 flex flex-col items-center py-6 gap-6 z-50" data-lenis-prevent aria-label="Editor settings tabs">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-3 text-slate-500 hover:text-white transition-all bg-white/5 rounded-2xl mb-4">
             {sidebarOpen ? <PanelLeftClose className="w-5 h-5"/> : <PanelLeftOpen className="w-5 h-5"/>}
           </button>
@@ -381,10 +397,12 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
 
         {/* PANEL 2: SETTINGS CONTENT (EXPANDED LEFT) */}
         {sidebarOpen && (
-          <aside className="w-80 bg-[#1A1F2E] border-r border-[#2D3748] p-8 overflow-y-auto no-scrollbar shrink-0 relative transition-all duration-300">
-            <button onClick={() => setSidebarOpen(false)} className="absolute top-4 right-4 p-2 bg-black/20 text-slate-400 hover:text-white rounded-lg">
-              <X className="w-4 h-4"/>
-            </button>
+          <aside className="ui-scroll-region absolute inset-y-0 left-16 right-0 z-[55] min-h-0 min-w-0 w-auto max-w-none overflow-y-auto bg-[#1A1F2E] border-r border-[#2D3748] p-4 sm:p-8 transition-all duration-300 md:static md:z-auto md:w-80 md:max-w-[calc(100vw-4rem)] md:shrink-0" data-lenis-prevent>
+            <div className="sticky top-0 z-10 -mx-4 flex justify-end border-b border-[#2D3748] bg-[#1A1F2E] px-4 py-2 sm:-mx-8 sm:px-8">
+              <button type="button" onClick={() => setSidebarOpen(false)} className="flex h-11 w-11 items-center justify-center rounded-lg bg-black/20 text-slate-400 hover:text-white" aria-label="Close editor settings">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
             <div className="space-y-8 anim-fade mt-4">
             {activeTab === "general" && (
               <div className="space-y-6">
@@ -810,25 +828,27 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
      
             {/* Media Library Modal */}
             {showMediaLibrary && (
-              <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[200] flex items-center justify-center p-6 anim-fade">
-                <div className="bg-[#1A1F2E] border border-[#2D3748] rounded-3xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-                  <div className="p-8 border-b border-white/5 flex items-center justify-between">
-                    <div>
-                      <h2 className="text-2xl font-bold text-white">Media Library</h2>
+              <div className="safe-area-overlay fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-xl anim-fade" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowMediaLibrary(false) }}>
+                <div ref={mediaDialogRef} className="viewport-dialog-panel ui-scroll-region flex h-full w-full max-w-5xl flex-col overflow-hidden rounded-3xl border border-[#2D3748] bg-[#1A1F2E]" role="dialog" aria-modal="true" aria-labelledby="cms-media-dialog-title" tabIndex={-1} data-lenis-prevent onMouseDown={(event) => event.stopPropagation()}>
+                  <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 p-4 sm:p-8">
+                    <div className="min-w-0">
+                      <h2 id="cms-media-dialog-title" className="text-xl font-bold text-white sm:text-2xl">Media Library</h2>
                       <p className="text-slate-500 mt-2">Select or search for images to use in your content</p>
                     </div>
                     <button
+                      ref={mediaCloseButtonRef}
+                      type="button"
                       onClick={() => setShowMediaLibrary(false)}
-                      className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
-                      title="Close"
+                      className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 text-slate-400 transition-all hover:bg-white/10 hover:text-white"
+                      aria-label="Close media library"
                     >
                       <X className="w-5 h-5" />
                     </button>
                   </div>
                   
-                  <div className="p-8 border-b border-white/5">
-                    <div className="flex gap-4">
-                      <div className="flex-1">
+                  <div className="shrink-0 border-b border-white/5 p-4 sm:p-8">
+                    <div className="flex flex-col gap-3 sm:flex-row">
+                      <div className="min-w-0 flex-1">
                         <input
                           type="text"
                           value={mediaSearch}
@@ -837,19 +857,19 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
                           className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-[#0D6E6E]/50"
                         />
                       </div>
-                      <button className="px-6 py-3 bg-[#0D6E6E] text-white font-bold rounded-xl hover:bg-[#0F9E9E] transition-all">
+                      <button className="min-h-11 shrink-0 rounded-xl bg-[#0D6E6E] px-4 py-3 font-bold text-white transition-all hover:bg-[#0F9E9E] sm:px-6">
                         Upload
                       </button>
                     </div>
-                    <div className="flex gap-4 mt-4">
-                      <button className="px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">All Images</button>
-                      <button className="px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Unsplash</button>
-                      <button className="px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Uploads</button>
-                      <button className="px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Recent</button>
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <button className="min-h-11 px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">All Images</button>
+                      <button className="min-h-11 px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Unsplash</button>
+                      <button className="min-h-11 px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Uploads</button>
+                      <button className="min-h-11 px-4 py-2 bg-white/5 rounded-lg text-sm text-slate-400 hover:text-white transition-all">Recent</button>
                     </div>
                   </div>
                   
-                  <div className="p-8 overflow-y-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto p-4 sm:p-8 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4" data-lenis-prevent>
                     {[
                       "https://images.unsplash.com/photo-1551288049-bebda4e38f71?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
                       "https://images.unsplash.com/photo-1552664730-d307ca884978?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
@@ -860,9 +880,11 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
                       "https://images.unsplash.com/photo-1556761175-4d6c8eafc3d3?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80",
                       "https://images.unsplash.com/photo-1556761175-b413da4baf72?ixlib=rb-4.0.3&auto=format&fit=crop&w=600&q=80"
                     ].map((url, index) => (
-                      <div
+                      <button
                         key={index}
-                        className="group relative cursor-pointer rounded-xl overflow-hidden border border-white/10 hover:border-[#0D6E6E] transition-all"
+                        type="button"
+                        aria-label={`Select media image ${index + 1}`}
+                        className="group relative w-full cursor-pointer overflow-hidden rounded-xl border border-white/10 text-left transition-all hover:border-[#0D6E6E] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D6E6E]"
                         onClick={() => {
                           setFeaturedImage(url)
                           setShowMediaLibrary(false)
@@ -872,21 +894,22 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
                         <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                           <span className="text-white font-bold text-sm">Select Image</span>
                         </div>
-                      </div>
+                      </button>
                     ))}
                   </div>
                   
-                  <div className="p-8 border-t border-white/5 bg-black/20">
-                    <div className="flex items-center justify-between">
+                  <div className="shrink-0 border-t border-white/5 bg-black/20 p-4 sm:p-8">
+                    <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
                       <p className="text-sm text-slate-500">
                         Images from Unsplash. Attribution not required but appreciated.
                       </p>
                       <button
+                        type="button"
                         onClick={() => {
                           setFeaturedImage("")
                           setShowMediaLibrary(false)
                         }}
-                        className="px-4 py-2 text-sm text-slate-400 hover:text-white transition-all"
+                        className="min-h-11 self-end px-4 py-2 text-sm text-slate-400 transition-all hover:text-white"
                       >
                         Clear Selection
                       </button>
@@ -900,7 +923,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
         )}
 
         {/* MAIN VISUAL CANVAS / EDITOR SURFACE */}
-        <main className="flex-1 flex flex-col overflow-y-auto bg-[#0F1117] relative scroll-smooth no-scrollbar">
+        <main className="ui-scroll-region min-h-0 min-w-0 flex-1 flex flex-col overflow-y-auto bg-[#0F1117] relative scroll-smooth">
           <div className="max-w-4xl mx-auto w-full px-6 md:px-12 py-16 space-y-12">
             {/* Contextual Top-Bar Tip */}
             <div className="flex items-center justify-between pb-4 border-b border-white/5">
@@ -941,18 +964,22 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
           
           {/* Visual Preview Overlay (Elementor Style) */}
           {previewMode && (
-            <div className="absolute inset-0 bg-[#0F1117] z-[100] overflow-y-auto p-12 anim-fade">
-               <div className="max-w-4xl mx-auto space-y-12">
-                 <button onClick={() => setPreviewMode(false)} className="fixed top-6 right-12 z-[110] bg-white text-black px-6 py-2 rounded-full font-bold shadow-2xl hover:scale-105 transition-all">Close Preview</button>
-                 <div className="space-y-4">
-                   <div className="h-px w-20 bg-[#0D6E6E]" />
-                   <h1 className="text-6xl font-extrabold text-white tracking-tight leading-[1.1]">{title || "Untitled Elite Report"}</h1>
-                   <p className="text-2xl text-slate-500 font-serif leading-relaxed italic border-l-4 border-[#0D6E6E] pl-6 py-2">{excerpt || "Awaiting abstract draft..."}</p>
-                 </div>
-                 <div className="mt-12 bg-[#1A1F2E] p-8 rounded-3xl border border-white/5">
-                   <ContentRenderer content={content} contentType={contentType} blocks={blocks} />
-                 </div>
-               </div>
+            <div className="absolute inset-0 z-[100] flex min-h-0 flex-col overflow-hidden bg-[#0F1117] anim-fade" role="region" aria-label="Article preview">
+              <div className="sticky top-0 z-[110] flex shrink-0 justify-end border-b border-white/5 bg-[#0F1117]/95 p-3 backdrop-blur-xl sm:p-4">
+                <button onClick={() => setPreviewMode(false)} className="min-h-11 rounded-full bg-white px-6 py-2 font-bold text-black shadow-2xl transition-all hover:scale-105">Close Preview</button>
+              </div>
+              <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto p-4 sm:p-12" data-lenis-prevent>
+                <div className="mx-auto min-w-0 max-w-4xl space-y-12">
+                  <div className="space-y-4">
+                    <div className="h-px w-20 bg-[#0D6E6E]" />
+                    <h1 className="break-words [overflow-wrap:anywhere] text-6xl font-extrabold leading-[1.1] tracking-tight text-white">{title || "Untitled Elite Report"}</h1>
+                    <p className="break-words text-2xl text-slate-500 font-serif leading-relaxed italic border-l-4 border-[#0D6E6E] pl-6 py-2">{excerpt || "Awaiting abstract draft..."}</p>
+                  </div>
+                  <div className="mt-12 rounded-3xl border border-white/5 bg-[#1A1F2E] p-4 sm:p-8">
+                    <ContentRenderer content={content} contentType={contentType} blocks={blocks} />
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </main>
@@ -960,28 +987,38 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
 
       {/* Template Selection Modal */}
       {showTemplates && (
-        <div className="fixed inset-0 bg-black/80 backdrop-blur-xl z-[200] flex items-center justify-center p-6 anim-fade">
-          <div className="bg-[#1A1F2E] border border-[#2D3748] rounded-3xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-            <div className="p-8 border-b border-white/5 flex items-center justify-between">
-              <div>
-                <h2 className="text-2xl font-bold text-white">Content Templates</h2>
+        <div className="safe-area-overlay fixed inset-0 z-[200] flex items-center justify-center bg-black/80 backdrop-blur-xl anim-fade" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setShowTemplates(false) }}>
+          <div ref={templateDialogRef} className="viewport-dialog-panel ui-scroll-region flex h-full w-full max-w-4xl flex-col overflow-hidden rounded-3xl border border-[#2D3748] bg-[#1A1F2E]" role="dialog" aria-modal="true" aria-labelledby="cms-template-dialog-title" tabIndex={-1} data-lenis-prevent onMouseDown={(event) => event.stopPropagation()}>
+            <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 p-4 sm:p-8">
+              <div className="min-w-0">
+                <h2 id="cms-template-dialog-title" className="text-xl font-bold text-white sm:text-2xl">Content Templates</h2>
                 <p className="text-slate-500 mt-2">Jumpstart your content with professionally designed templates</p>
               </div>
               <button
+                ref={templateCloseButtonRef}
+                type="button"
                 onClick={() => setShowTemplates(false)}
-                className="p-3 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all"
-                title="Close"
+                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/5 text-slate-400 transition-all hover:bg-white/10 hover:text-white"
+                aria-label="Close content templates"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
             
-            <div className="p-8 overflow-y-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto p-4 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6" data-lenis-prevent>
               {contentTemplates.map(template => (
                 <div
                   key={template.id}
-                  className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:border-[#0D6E6E]/30 hover:bg-white/10 transition-all group cursor-pointer"
+                  role="button"
+                  tabIndex={0}
+                  className="group w-full cursor-pointer rounded-2xl border border-white/10 bg-white/5 p-6 text-left transition-all hover:border-[#0D6E6E]/30 hover:bg-white/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D6E6E]"
                   onClick={() => handleApplyTemplate(template.id)}
+                  onKeyDown={(event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                      event.preventDefault()
+                      handleApplyTemplate(template.id)
+                    }
+                  }}
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
@@ -1029,15 +1066,15 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
                     </div>
                   </div>
                   
-                  <button className="w-full mt-6 py-3 bg-[#0D6E6E] text-white font-bold rounded-xl hover:bg-[#0F9E9E] transition-all group-hover:scale-[1.02]">
+                  <span className="mt-6 flex min-h-11 w-full items-center justify-center rounded-xl bg-[#0D6E6E] py-3 font-bold text-white transition-all group-hover:bg-[#0F9E9E]">
                     Use This Template
-                  </button>
+                  </span>
                 </div>
               ))}
             </div>
             
-            <div className="p-8 border-t border-white/5 bg-black/20">
-              <p className="text-sm text-slate-500 text-center">
+            <div className="shrink-0 border-t border-white/5 bg-black/20 p-4 sm:p-8">
+              <p className="break-words text-center text-sm text-slate-500">
                 Templates provide structure and best practices. You can customize all content after selection.
               </p>
             </div>

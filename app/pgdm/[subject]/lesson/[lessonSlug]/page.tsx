@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
+import { scrollableTableComponents } from '@/components/content/scrollableTableComponents';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import LessonCompletionControl from '@/components/learning/LessonCompletionControl';
@@ -71,7 +72,7 @@ export default async function PgdmCmsLessonPage({ params }: Props) {
       </header>
       <main className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
         <article className="prose prose-lg max-w-none rounded-2xl border border-border bg-card p-5 text-foreground dark:prose-invert sm:p-8">
-          <MDXRemote source={lesson.content} />
+          <MDXRemote source={lesson.content} components={scrollableTableComponents} />
         </article>
         <LessonCompletionControl courseSlug={courseSlug} lessonSlug={lessonSlug} returnTo={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} />
         <div className="flex flex-wrap gap-3">

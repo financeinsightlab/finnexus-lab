@@ -110,7 +110,7 @@ export default async function PodcastPage({
   const featured = episodes.find((e) => e.featured) ?? episodes[0];
 
   return (
-    <div className="min-h-screen bg-cinema-black text-white overflow-hidden">
+    <div className="min-h-screen min-w-0 bg-cinema-black text-white">
       <JsonLd data={podcastSeriesSchema} />
 
       {/* ═══════════ HERO ═══════════ */}

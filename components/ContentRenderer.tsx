@@ -3,6 +3,7 @@
 import React from "react"
 import { renderBlocks } from "@/lib/blocks/renderer"
 import { Block } from "@/lib/blocks/registry"
+import { wrapUncontainedTables } from "@/lib/scrollable-html"
 
 interface ContentRendererProps {
   content: string
@@ -24,6 +25,8 @@ const ContentRenderer = ({ content, contentType, blocks }: ContentRendererProps)
     }
   }
 
+  const scrollableHtmlResult = isBlocks ? htmlResult : wrapUncontainedTables(htmlResult)
+
   return (
     <div 
       className={`prose prose-lg max-w-none dark:prose-invert
@@ -34,7 +37,7 @@ const ContentRenderer = ({ content, contentType, blocks }: ContentRendererProps)
                  prose-blockquote:border-l-4 prose-blockquote:border-teal-500 prose-blockquote:bg-gray-50 dark:prose-blockquote:bg-white/5 prose-blockquote:p-6 prose-blockquote:rounded-r-xl prose-blockquote:italic
                  prose-li:text-gray-700 dark:prose-li:text-slate-300 prose-img:rounded-2xl prose-img:shadow-2xl
                  ${isBlocks ? 'block-editor-content' : ''}`}
-      dangerouslySetInnerHTML={{ __html: htmlResult }}
+      dangerouslySetInnerHTML={{ __html: scrollableHtmlResult }}
     />
   )
 }

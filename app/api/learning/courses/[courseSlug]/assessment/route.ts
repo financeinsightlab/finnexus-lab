@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { authorizeApi } from '@/lib/auth-guards';
 import { prisma } from '@/lib/prisma';
 import { resolveLearningCourse } from '@/lib/learning-courses';
+import { ensureBuiltInAssessment } from '@/lib/learning-assessment-seeds';
 import { logger } from '@/lib/logger';
 
 export const runtime = 'nodejs';
@@ -16,6 +17,7 @@ export async function GET(_request: Request, context: Context) {
   try {
     const course = await resolveLearningCourse(courseSlug);
     if (!course) return NextResponse.json({ error: 'Course not found' }, { status: 404, headers: { 'Cache-Control': 'no-store' } });
+    await ensureBuiltInAssessment(course);
     const assessment = await prisma.courseAssessment.findFirst({
       where: { courseSlug, published: true },
       select: {

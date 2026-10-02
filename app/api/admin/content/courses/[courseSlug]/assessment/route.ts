@@ -6,6 +6,7 @@ import { authorizeApi, STAFF_ROLES } from '@/lib/auth-guards';
 import { parseJsonBody, toInputJson } from '@/lib/validation';
 import { revalidateProductContent } from '@/lib/product-content-admin';
 import { getCourse } from '@/lib/pgdm/learning-adapter';
+import { isStructuredLearningCourse } from '@/lib/learning-course-catalog';
 import { logger } from '@/lib/logger';
 
 export const runtime = 'nodejs';
@@ -41,7 +42,7 @@ const assessmentSchema = z.object({
 });
 
 async function assertCourseExists(courseSlug: string) {
-  if (getCourse(courseSlug)) return true;
+  if (getCourse(courseSlug) || isStructuredLearningCourse(courseSlug)) return true;
   const material = await prisma.studyMaterial.findUnique({ where: { slug: courseSlug }, select: { type: true } });
   return material?.type === 'COURSE';
 }

@@ -274,7 +274,7 @@ export default async function AdminPredictionsPage() {
         {all.length === 0 ? (
           <p className="text-slate-500 text-sm">No predictions found.</p>
         ) : (
-          <div className="max-h-[500px] overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+          <div className="ui-scroll-region min-h-0 max-h-[min(31.25rem,65dvh)] overflow-y-auto space-y-4 pr-2 custom-scrollbar" data-lenis-prevent>
             {all.map((p) => (
               <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-white/5 rounded-xl border border-white/5">
                 <div className="flex-1">

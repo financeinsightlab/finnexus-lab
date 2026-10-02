@@ -9,6 +9,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 
 export interface FallbackHit {
     kind: string;
@@ -64,10 +65,11 @@ export default function GlobalSearchFallback({
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
+    const dialogRef = useRef<HTMLDivElement>(null);
 
-    useEffect(() => {
-        if (desktopAutofocus) inputRef.current?.focus();
-    }, [desktopAutofocus]);
+    useModalAccessibility(true, dialogRef, onClose, {
+        initialFocusRef: desktopAutofocus ? inputRef : undefined,
+    });
 
     useEffect(() => {
         const trimmed = query.trim();
@@ -118,11 +120,14 @@ export default function GlobalSearchFallback({
 
     return (
         <div
-            className="flex min-h-0 w-full min-w-0 max-w-xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0f1c2d] sm:max-h-[min(90vh,720px)]"
+            ref={dialogRef}
+            className="viewport-dialog-panel ui-scroll-region flex w-full min-w-0 max-w-xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0f1c2d]"
             style={panelStyle}
             role="dialog"
             aria-modal="true"
             aria-labelledby="global-search-title"
+            tabIndex={-1}
+            data-lenis-prevent
             onMouseDown={(e) => e.stopPropagation()}
         >
             <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-gray-100 bg-gradient-to-r from-brand-navy to-brand-slate px-3 py-3 sm:gap-3 sm:px-4 dark:border-white/10">
@@ -163,7 +168,7 @@ export default function GlobalSearchFallback({
                 </div>
             </form>
 
-            <div className="min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain">
+            <div className="ui-scroll-region min-h-0 min-w-0 flex-1 overflow-y-auto overflow-x-hidden overscroll-y-contain" data-lenis-prevent>
                 {error ? (
                     <p className="px-4 py-12 text-center text-sm text-red-600 dark:text-red-400">{error}</p>
                 ) : query.trim().length < 2 ? (
@@ -190,11 +195,11 @@ export default function GlobalSearchFallback({
                                         onClick={onClose}
                                         className="flex min-h-[44px] min-w-0 max-w-full flex-col justify-center gap-1 border-b border-gray-100 px-3 py-3 text-left last:border-b-0 hover:bg-brand-silver/60 dark:border-white/10 dark:hover:bg-white/5 sm:px-4"
                                     >
-                                        <span className="line-clamp-2 break-words font-semibold text-brand-navy dark:text-slate-100">
+                                        <span className="break-words font-semibold text-brand-navy dark:text-slate-100">
                                             {item.title}
                                         </span>
                                         {item.description ? (
-                                            <span className="line-clamp-2 text-sm text-brand-slate dark:text-slate-400">
+                                            <span className="break-words text-sm text-brand-slate dark:text-slate-400">
                                                 {item.description}
                                             </span>
                                         ) : null}

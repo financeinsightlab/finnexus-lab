@@ -95,7 +95,7 @@ export default function PaymentReviewClient({ initialPayments }: { initialPaymen
     }
 
     return (
-        <section className="space-y-8">
+        <section className="min-w-0 space-y-8">
             <header>
                 <p className="text-xs font-semibold uppercase tracking-[0.25em] text-teal-500">Billing review</p>
                 <h1 className="mt-2 text-3xl font-bold text-slate-900 dark:text-white">Manual UPI payments</h1>
@@ -145,7 +145,7 @@ export default function PaymentReviewClient({ initialPayments }: { initialPaymen
                                             {payment.status}
                                         </span>
                                     </div>
-                                    <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                                    <p className="mt-2 break-words text-sm text-slate-600 dark:text-slate-300">
                                         {payment.user?.name || 'Deleted account'}{payment.user?.email ? ` · ${payment.user.email}` : ''}
                                     </p>
                                 </div>
@@ -209,7 +209,7 @@ export default function PaymentReviewClient({ initialPayments }: { initialPaymen
                             )}
 
                             {payment.rejectionReason && (
-                                <p className="mt-4 rounded-lg bg-rose-500/5 px-4 py-3 text-sm text-rose-700 dark:text-rose-300">
+                                <p className="mt-4 break-words rounded-lg bg-rose-500/5 px-4 py-3 text-sm text-rose-700 dark:text-rose-300">
                                     Rejection reason: {payment.rejectionReason}
                                 </p>
                             )}
@@ -219,9 +219,9 @@ export default function PaymentReviewClient({ initialPayments }: { initialPaymen
                                 <ol className="mt-3 space-y-3">
                                     {payment.auditEvents.map((event, index) => (
                                         <li key={`${payment.id}-${index}`} className="border-l-2 border-teal-500/40 pl-3">
-                                            <p className="font-semibold text-slate-800 dark:text-slate-200">{event.action}: {event.fromStatus ?? '—'} → {event.toStatus}</p>
-                                            <p className="text-xs text-slate-500">{formatDate(event.createdAt)}{event.actor?.email ? ` · ${event.actor.email}` : ''}</p>
-                                            {event.reason && <p className="mt-1 text-slate-600 dark:text-slate-300">{event.reason}</p>}
+                                            <p className="break-words font-semibold text-slate-800 dark:text-slate-200">{event.action}: {event.fromStatus ?? '—'} → {event.toStatus}</p>
+                                            <p className="break-words text-xs text-slate-500">{formatDate(event.createdAt)}{event.actor?.email ? ` · ${event.actor.email}` : ''}</p>
+                                            {event.reason && <p className="mt-1 break-words text-slate-600 dark:text-slate-300">{event.reason}</p>}
                                         </li>
                                     ))}
                                 </ol>

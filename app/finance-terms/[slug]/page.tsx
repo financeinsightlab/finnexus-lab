@@ -90,7 +90,7 @@ export default async function FinanceTermDetailPage({ params }: Props) {
         {term.formula && (
           <section className="rounded-2xl border border-border bg-muted/50 p-6" aria-labelledby="formula-heading">
             <h2 id="formula-heading" className="text-xl font-bold text-foreground">Formula</h2>
-            <p className="mt-3 overflow-x-auto font-mono text-sm text-foreground">{term.formula}</p>
+            <p className="mt-3 break-words [overflow-wrap:anywhere] font-mono text-sm text-foreground">{term.formula}</p>
           </section>
         )}
         {term.keywords.length > 0 && (

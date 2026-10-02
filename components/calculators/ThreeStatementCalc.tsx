@@ -422,7 +422,7 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
                 ))}
               </div>
 
-              <div className="overflow-x-auto w-full">
+              <div className="horizontal-scroll-region w-full" role="region" aria-label="Three-statement financial model table" tabIndex={0} data-lenis-prevent>
                 {tabContent()}
               </div>
             </div>

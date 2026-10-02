@@ -62,7 +62,7 @@ export default function AdminLayoutClient({
     : "lg:ml-64"  // 256px when expanded
 
   return (
-    <div className="flex min-h-screen bg-gray-50 dark:bg-[#0F1117] text-gray-800 dark:text-slate-300 font-sans mt-16">
+    <div className="mt-16 flex min-h-[calc(100dvh-4rem)] min-w-0 bg-gray-50 font-sans text-gray-800 dark:bg-[#0F1117] dark:text-slate-300">
       <CollapsibleSidebar 
         userName={userName}
         userRole={userRole}
@@ -70,8 +70,8 @@ export default function AdminLayoutClient({
       />
 
       {/* Main Content Area - Dynamic margin based on sidebar state */}
-      <main className={`flex-1 ${contentMarginClass} p-6 md:p-10 transition-all duration-300`}>
-        <div className="max-w-6xl mx-auto anim-fade-up">
+      <main className={`min-w-0 flex-1 ${contentMarginClass} p-6 md:p-10 transition-all duration-300`}>
+        <div className="mx-auto min-w-0 max-w-6xl anim-fade-up">
           {children}
         </div>
       </main>
