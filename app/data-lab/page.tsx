@@ -40,7 +40,7 @@ export default function DataLabPage() {
   };
 
   return (
-    <div className="min-h-screen bg-cinema-ink">
+    <div className="min-h-screen bg-background text-foreground">
       <JsonLd data={catalogSchema} />
 
       {/* ===== 3D ANIMATED HERO ===== */}
@@ -56,24 +56,24 @@ export default function DataLabPage() {
       {featured && <DataLabSpotlight project={featured} />}
 
       {/* ===== EXPLORER ===== */}
-      <section id="explorer" className="relative overflow-hidden bg-cinema-ink scroll-mt-24">
-        <div className="absolute inset-0 cinema-grid opacity-15" />
-        <div className="wrap relative z-10 max-w-6xl pb-24">
+      <section id="explorer" className="relative scroll-mt-24 overflow-hidden bg-background">
+        <div className="absolute inset-0 hidden cinema-grid opacity-15 dark:block" />
+        <div className="content-page relative z-10 pb-24">
           <ScrollReveal>
             <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 pt-24">
               <div>
-                <span className="text-cinema-cyan text-sm font-semibold uppercase tracking-widest">
+                <span className="text-sm font-semibold uppercase tracking-widest text-primary">
                   The Collection
                 </span>
-                <h2 className="mt-3 text-3xl md:text-4xl font-bold text-white">
+                <h2 className="mt-3 text-3xl font-bold text-foreground md:text-4xl">
                   Explore Every Project
                 </h2>
-                <p className="mt-3 text-gray-400 max-w-2xl">
+                <p className="mt-3 max-w-2xl text-muted-foreground">
                   Search and filter the published project pages. Interactive views and file downloads differ by project.
                 </p>
               </div>
-              <div className="flex items-center gap-2 text-sm text-gray-400">
-                <Download className="w-4 h-4 text-cinema-aurora" />
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Download className="h-4 w-4 text-emerald-600 dark:text-cinema-aurora" />
                 Downloads are available on selected pages
               </div>
             </div>
@@ -83,34 +83,34 @@ export default function DataLabPage() {
       </section>
 
       {/* ===== REQUEST A PROJECT CTA ===== */}
-      <section id="interactive" className="relative overflow-hidden bg-cinema-black">
-        <div className="absolute inset-0 cinema-mesh opacity-40" />
-        <div className="absolute inset-0 cinema-noise" />
-        <div className="absolute top-0 left-1/3 w-96 h-96 rounded-full bg-cinema-glow-blue/20 blur-[120px]" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-cinema-violet/20 blur-[120px]" />
-        <div className="wrap relative z-10 max-w-4xl py-24 text-center">
+      <section id="interactive" className="relative overflow-hidden bg-muted/50">
+        <div className="absolute inset-0 hidden cinema-mesh opacity-40 dark:block" />
+        <div className="absolute inset-0 hidden cinema-noise dark:block" />
+        <div className="absolute left-1/3 top-0 h-96 w-96 rounded-full bg-blue-500/10 blur-[120px] dark:bg-cinema-glow-blue/20" />
+        <div className="absolute bottom-0 right-1/4 h-96 w-96 rounded-full bg-violet-500/10 blur-[120px] dark:bg-cinema-violet/20" />
+        <div className="content-page relative z-10 py-24 text-center">
           <span className="text-cinema-cyan text-sm font-semibold uppercase tracking-widest">
             Data-analysis enquiry
           </span>
-          <h2 className="mt-4 text-3xl md:text-5xl font-bold text-white">
+          <h2 className="mt-4 text-3xl font-bold text-foreground md:text-5xl">
             Ask about a <span className="cinema-text-glow">Data Lab</span> topic
           </h2>
-          <p className="mt-5 text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
+          <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-muted-foreground">
             You may enquire about a data or analysis question. A request does not confirm current capacity, availability, scope, price, or delivery; any potential work would require separate written agreement.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href="/contact?service=Data%20Analytics%20Project"
-              className="inline-flex items-center justify-center gap-2 rounded-xl bg-cinema-cyan px-7 py-3.5 text-base font-semibold text-cinema-ink hover:shadow-cinema-lg transition group"
+              className="group inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-7 py-3.5 text-base font-semibold text-primary-foreground shadow-sm transition hover:shadow-lg"
             >
               Submit an enquiry
-              <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
+              <ArrowUpRight className="h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </Link>
             <Link
               href="/tools"
-              className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/15 px-7 py-3.5 text-base font-medium text-white hover:border-cinema-cyan/50 transition"
+              className="inline-flex items-center justify-center gap-2 rounded-xl border border-border bg-card px-7 py-3.5 text-base font-medium text-foreground transition hover:border-primary/50"
             >
-              <ChartSpline className="w-4 h-4 text-cinema-cyan" />
+              <ChartSpline className="h-4 w-4 text-primary" />
               Explore All Tools
             </Link>
           </div>

@@ -127,7 +127,7 @@ export default function AutonomousWorkforceCalc({ slug, isPremiumUser }: { slug:
 
   return (
     <div className="min-h-screen bg-[#0a0a0f] py-10 relative text-gray-300 font-sans">
-      <div className="wrap max-w-7xl mx-auto">
+      <div className="content-page">
         
         {/* Futuristic Header */}
         <div className="mb-10 text-center lg:text-left relative">

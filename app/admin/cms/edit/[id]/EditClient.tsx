@@ -901,7 +901,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
 
         {/* MAIN VISUAL CANVAS / EDITOR SURFACE */}
         <main className="flex-1 flex flex-col overflow-y-auto bg-[#0F1117] relative scroll-smooth no-scrollbar">
-          <div className="max-w-4xl mx-auto w-full px-6 md:px-12 py-16 space-y-12">
+          <div className="content-page dark w-full py-16 space-y-12">
             {/* Contextual Top-Bar Tip */}
             <div className="flex items-center justify-between pb-4 border-b border-white/5">
               <span className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -942,7 +942,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
           {/* Visual Preview Overlay (Elementor Style) */}
           {previewMode && (
             <div className="absolute inset-0 bg-[#0F1117] z-[100] overflow-y-auto p-12 anim-fade">
-               <div className="max-w-4xl mx-auto space-y-12">
+               <div className="content-page dark space-y-12">
                  <button onClick={() => setPreviewMode(false)} className="fixed top-6 right-12 z-[110] bg-white text-black px-6 py-2 rounded-full font-bold shadow-2xl hover:scale-105 transition-all">Close Preview</button>
                  <div className="space-y-4">
                    <div className="h-px w-20 bg-[#0D6E6E]" />

@@ -1,5 +1,6 @@
 import { Shield, Lock, Eye, FileText } from 'lucide-react';
 import Link from 'next/link';
+import { ContentPage } from '@/components/content/ContentLayout';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -13,8 +14,8 @@ const updated = 'October 2, 2026';
 export default function PrivacyPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="wrap py-20">
-        <div className="mx-auto max-w-4xl">
+      <ContentPage width="reading" className="py-16 md:py-20">
+        <div>
           <header className="mb-8 flex items-center gap-4">
             <Shield className="h-12 w-12 text-brand-teal" />
             <div>
@@ -48,7 +49,7 @@ export default function PrivacyPage() {
             </div>
           </div>
 
-          <article className="prose prose-lg max-w-none rounded-2xl border border-gray-200 bg-white p-8">
+          <article className="cms-content prose-content rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
             <h2>1. Information handled by the service</h2>
             <ul>
               <li><strong>Account and profile:</strong> sign-in identifiers and the profile information you choose to provide. Profile details are displayed publicly only when the profile is marked public.</li>
@@ -94,7 +95,7 @@ export default function PrivacyPage() {
             <Link href="/" className="btn-primary">Return to platform</Link>
           </nav>
         </div>
-      </div>
+      </ContentPage>
     </main>
   );
 }

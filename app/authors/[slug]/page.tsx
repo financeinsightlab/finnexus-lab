@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import { ContentPage } from '@/components/content/ContentLayout';
 import { prisma } from '@/lib/prisma';
 import { getAuthorProfilePredictionSummary, getAnalystScore } from '@/lib/predictions';
 
@@ -82,7 +83,7 @@ export default async function AuthorProfilePage({ params }: Props) {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* ─── Header ─── */}
       <section className="bg-brand-navy py-20">
-        <div className="max-w-5xl mx-auto px-6">
+        <ContentPage className="relative">
           <Link href="/predictions" className="text-brand-teal text-sm hover:underline mb-8 block">
             ← Back to Predictions Board
           </Link>
@@ -123,10 +124,10 @@ export default async function AuthorProfilePage({ params }: Props) {
               </div>
             )}
           </div>
-        </div>
+        </ContentPage>
       </section>
 
-      <div className="max-w-5xl mx-auto px-6 py-12 grid gap-8 md:grid-cols-[1fr_320px]">
+      <ContentPage className="grid gap-8 py-12 md:grid-cols-[minmax(0,1fr)_340px]">
         {/* ─── Left column ─── */}
         <div className="space-y-8">
           {/* Calibration breakdown */}
@@ -285,7 +286,7 @@ export default async function AuthorProfilePage({ params }: Props) {
             </div>
           )}
         </div>
-      </div>
+      </ContentPage>
     </div>
   );
 }

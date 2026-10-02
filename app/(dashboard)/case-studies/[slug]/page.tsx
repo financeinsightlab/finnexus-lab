@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { MDXRemote } from 'next-mdx-remote/rsc';
 import Link from 'next/link';
-import { ChevronLeft, CalendarDays, Clock, Briefcase, Building2, ArrowRight, Award, Download, Layers } from 'lucide-react';
+import { ChevronLeft, CalendarDays, Briefcase, Building2, ArrowRight, Award, Download, Layers } from 'lucide-react';
 import { formatDate } from '@/lib/utils';
 import { getCaseStudyBySlug, getAllCaseStudies } from '@/lib/content';
 import JsonLd from '@/components/seo/JsonLd';
@@ -12,6 +12,7 @@ import ContentRenderer from '@/components/ContentRenderer';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import { ContentPage, ContentLayout } from '@/components/content/ContentLayout';
 
 const BASE = 'https://kunwaranalytics.in';
 
@@ -37,7 +38,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   const { slug } = await params;
 
   // 1. New CMS
-  let dbPost = null;
+  let dbPost: any = null;
   try {
     dbPost = await prisma.post.findUnique({
       where: { slug },
@@ -49,35 +50,40 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     if (!dbPost.published) notFound();
 
     return (
-      <div className="min-h-screen bg-cinema-black text-white">
-        <header className="relative aurora-bg overflow-hidden pt-10 pb-14">
-          <div className="absolute inset-0 opacity-[0.04] bg-grid pointer-events-none" />
-          <div className="wrap max-w-4xl relative z-10">
-            <Link href="/case-studies" className="inline-flex items-center gap-1.5 text-sm text-cinema-cyan hover:text-white transition-colors mb-8">
-              <ChevronLeft className="w-4 h-4" /> All Case Studies
+      <div className="min-h-screen bg-background text-foreground">
+        <header className="border-b border-border bg-card/60 py-10 md:py-14">
+          <ContentPage>
+            <Link href="/case-studies" className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-foreground">
+              <ChevronLeft className="h-4 w-4" /> All Case Studies
             </Link>
-            <span className="px-3 py-1 bg-cinema-cyan/10 text-cinema-cyan text-xs font-bold rounded-full uppercase tracking-widest border border-cinema-cyan/30">
+            <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary">
               Case Study
             </span>
-            <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight tracking-tight mt-4">{dbPost.title}</h1>
-            <p className="text-lg text-gray-400 leading-relaxed max-w-3xl italic border-l-4 border-cinema-cyan/40 pl-6 mt-6">
+            <h1 className="mt-4 max-w-[52ch] text-3xl font-extrabold leading-tight tracking-tight text-foreground md:text-5xl">
+              {dbPost.title}
+            </h1>
+            <p className="mt-5 max-w-[76ch] border-l-4 border-primary/50 pl-5 text-lg italic leading-relaxed text-muted-foreground">
               {dbPost.excerpt}
             </p>
-            <div className="flex flex-wrap items-center gap-6 pt-6 mt-6 text-sm text-gray-400 border-t border-white/10">
+            <div className="mt-6 flex flex-wrap items-center gap-6 border-t border-border pt-5 text-sm text-muted-foreground">
               <span className="inline-flex items-center gap-2">
-                <Building2 className="w-4 h-4 text-cinema-cyan" /> {dbPost.author?.name || 'Kunwar Analytics'}
+                <Building2 className="h-4 w-4 text-primary" /> {dbPost.author?.name || 'Kunwar Analytics'}
               </span>
               <span className="inline-flex items-center gap-2">
-                <CalendarDays className="w-4 h-4 text-cinema-cyan" /> {new Date(dbPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}
+                <CalendarDays className="h-4 w-4 text-primary" /> {new Date(dbPost.createdAt).toLocaleDateString(undefined, { dateStyle: 'long' })}
               </span>
             </div>
-          </div>
+          </ContentPage>
         </header>
-        <article className="wrap max-w-4xl pb-24">
-          <div className="bg-cinema-charcoal rounded-3xl p-6 md:p-12 border border-white/10 shadow-cinema-lg">
-            <ContentRenderer content={dbPost.content} contentType={dbPost.contentType} blocks={dbPost.blockContent} />
-          </div>
-        </article>
+
+        <ContentPage className="py-10 md:py-14">
+          <ContentLayout>
+            <article className="rounded-3xl border border-border bg-card p-5 shadow-sm md:p-8 lg:p-10">
+              <ContentRenderer content={dbPost.content} contentType={dbPost.contentType} blocks={dbPost.blockContent} />
+            </article>
+          </ContentLayout>
+        </ContentPage>
+
         <PromotionSlot placement="ARTICLE_PAGE" path={`/case-studies/${slug}`} contentType="CASE_STUDY" />
         <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={slug} />
         <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={slug} linkKind="CTA" />
@@ -101,38 +107,36 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   };
 
   return (
-    <div className="min-h-screen bg-cinema-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <JsonLd data={episodeSchema} />
 
       {/* ═══════════ HEADER ═══════════ */}
-      <header className="relative aurora-bg overflow-hidden pt-10 pb-16">
-        <div className="absolute -top-24 right-1/4 w-[400px] h-[400px] rounded-full bg-cinema-cyan/10 blur-[120px] pointer-events-none" />
-        <div className="absolute inset-0 opacity-[0.04] bg-grid pointer-events-none" />
+      <header className="relative overflow-hidden border-b border-border bg-card/60 pt-8 pb-12">
+        <div className="pointer-events-none absolute -top-24 right-1/4 h-[400px] w-[400px] rounded-full bg-primary/10 blur-[120px]" />
 
-        <div className="wrap max-w-6xl relative z-10">
-          <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-            <Link href="/" className="hover:text-cinema-cyan transition-colors">Home</Link>
-            <span className="text-gray-600">/</span>
-            <Link href="/case-studies" className="hover:text-cinema-cyan transition-colors">Case Studies</Link>
-            <span className="text-gray-600">/</span>
-            <span className="text-cinema-cyan">{caseStudy.engagementType}</span>
+        <ContentPage className="relative z-10">
+          <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
+            <Link href="/" className="transition-colors hover:text-primary">Home</Link>
+            <span>/</span>
+            <Link href="/case-studies" className="transition-colors hover:text-primary">Case Studies</Link>
+            <span>/</span>
+            <span className="text-primary">{caseStudy.engagementType}</span>
           </nav>
 
-          <div className="grid lg:grid-cols-[0.9fr_1.1fr] gap-10 items-center">
+          <div className="grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr]">
             {/* Cover image */}
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-br from-cinema-cyan/25 to-cinema-violet/25 rounded-3xl blur-2xl opacity-60 pointer-events-none" />
-              <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-cinema-lg aspect-[4/3]">
+              <div className="pointer-events-none absolute -inset-4 rounded-3xl bg-gradient-to-br from-primary/20 to-primary/5 blur-2xl" />
+              <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-border shadow-lg">
                 {caseStudy.coverImage ? (
                   // eslint-disable-next-line @next/next/no-img-element
-                  <img src={caseStudy.coverImage} alt={caseStudy.title} className="w-full h-full object-cover" />
+                  <img src={caseStudy.coverImage} alt={caseStudy.title} className="h-full w-full object-cover" />
                 ) : (
-                  <div className="w-full h-full bg-gradient-to-br from-cinema-mid-blue via-cinema-deep-blue to-cinema-black" />
+                  <div className="h-full w-full bg-gradient-to-br from-secondary via-muted to-card" />
                 )}
-                <div className="absolute inset-0 bg-gradient-to-t from-cinema-black/60 to-transparent" />
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold uppercase tracking-wider rounded-full border border-cinema-amber/40 bg-cinema-amber/20 text-cinema-amber backdrop-blur-sm">
-                    <Award className="w-3.5 h-3.5" /> Featured
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/40 bg-amber-500/15 px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-amber-700 backdrop-blur-sm dark:text-amber-300">
+                    <Award className="h-3.5 w-3.5" /> Featured
                   </span>
                 </div>
               </div>
@@ -140,37 +144,37 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
             {/* Meta */}
             <div>
-              <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-cinema-cyan/30 bg-cinema-cyan/10 text-cinema-cyan">
-                  <Briefcase className="w-3.5 h-3.5" /> {caseStudy.engagementType}
+              <div className="mb-4 flex flex-wrap items-center gap-2">
+                <span className="inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/10 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-primary">
+                  <Briefcase className="h-3.5 w-3.5" /> {caseStudy.engagementType}
                 </span>
                 {caseStudy.industry && (
-                  <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-white/15 bg-white/5 text-gray-300">
-                    <Building2 className="w-3.5 h-3.5" /> {caseStudy.industry}
+                  <span className="inline-flex items-center gap-1.5 rounded-full border border-border bg-secondary px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider text-secondary-foreground">
+                    <Building2 className="h-3.5 w-3.5" /> {caseStudy.industry}
                   </span>
                 )}
               </div>
 
-              <h1 className="text-3xl md:text-4xl font-extrabold text-white leading-tight mb-5">
+              <h1 className="mb-5 max-w-[52ch] text-3xl font-extrabold leading-tight text-foreground md:text-4xl">
                 {caseStudy.title}
               </h1>
 
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-                <div className="glass-cinema rounded-xl border border-white/10 p-4">
-                  <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Client</p>
-                  <p className="text-sm text-white font-semibold">{caseStudy.clientType}</p>
+              <div className="mb-6 grid grid-cols-2 gap-4 sm:grid-cols-3">
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">Client</p>
+                  <p className="text-sm font-semibold text-foreground">{caseStudy.clientType}</p>
                 </div>
-                <div className="glass-cinema rounded-xl border border-white/10 p-4">
-                  <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Date</p>
-                  <p className="text-sm text-white font-semibold">{formatDate(caseStudy.date)}</p>
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">Date</p>
+                  <p className="text-sm font-semibold text-foreground">{formatDate(caseStudy.date)}</p>
                 </div>
-                <div className="glass-cinema rounded-xl border border-white/10 p-4">
-                  <p className="text-[10px] uppercase tracking-widest text-gray-500 mb-1">Timeline</p>
-                  <p className="text-sm text-white font-semibold">{caseStudy.timeline ?? '—'}</p>
+                <div className="rounded-xl border border-border bg-card p-4">
+                  <p className="mb-1 text-[10px] uppercase tracking-widest text-muted-foreground">Timeline</p>
+                  <p className="text-sm font-semibold text-foreground">{caseStudy.timeline ?? '—'}</p>
                 </div>
               </div>
 
-              <p className="text-gray-300 leading-relaxed border-l-4 border-cinema-cyan/50 pl-4">
+              <p className="max-w-[76ch] border-l-4 border-primary/50 pl-4 leading-relaxed text-muted-foreground">
                 {caseStudy.outcome}
               </p>
 
@@ -178,17 +182,17 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               <div className="mt-6">
                 <a
                   href={`/case-studies/${caseStudy.slug}/download`}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cinema-cyan text-cinema-black font-bold text-sm shadow-glow-cyan hover:scale-[1.03] active:scale-95 transition-transform"
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground shadow-sm transition-transform hover:scale-[1.03] active:scale-95"
                 >
-                  <Download className="w-4 h-4" /> Download PDF
+                  <Download className="h-4 w-4" /> Download PDF
                 </a>
-                <span className="ml-3 text-xs text-gray-500">Consulting-style PDF, generated on demand</span>
+                <span className="ml-3 text-xs text-muted-foreground">Consulting-style PDF, generated on demand</span>
               </div>
 
               {caseStudy.tags && caseStudy.tags.length > 0 && (
-                <div className="flex flex-wrap gap-2 mt-5">
+                <div className="mt-5 flex flex-wrap gap-2">
                   {caseStudy.tags.map((tag) => (
-                    <span key={tag} className="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400">
+                    <span key={tag} className="rounded-full border border-border bg-secondary px-2.5 py-1 text-xs text-secondary-foreground">
                       #{tag}
                     </span>
                   ))}
@@ -196,57 +200,62 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
               )}
             </div>
           </div>
-        </div>
+        </ContentPage>
       </header>
 
       {/* ═══════════ FRAMEWORKS & METHODS ═══════════ */}
       {caseStudy.frameworks && caseStudy.frameworks.length > 0 && (
-        <section className="border-b border-white/5 bg-cinema-ink/60">
-          <div className="wrap max-w-4xl py-10">
+        <section className="border-b border-border bg-muted/40">
+          <ContentPage className="py-10">
             <div className="flex items-start gap-4">
-              <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-cinema-cyan/10 border border-cinema-cyan/30 flex items-center justify-center">
-                <Layers className="w-5 h-5 text-cinema-cyan" />
+              <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl border border-primary/30 bg-primary/10">
+                <Layers className="h-5 w-5 text-primary" />
               </div>
               <div className="flex-grow">
-                <span className="section-label text-cinema-cyan">Methodology</span>
-                <h2 className="text-xl md:text-2xl font-bold text-white mt-1 mb-4">Frameworks &amp; Methods Used</h2>
+                <span className="text-xs font-bold uppercase tracking-widest text-primary">Methodology</span>
+                <h2 className="mb-4 mt-1 text-xl font-bold text-foreground md:text-2xl">Frameworks &amp; Methods Used</h2>
                 <div className="flex flex-wrap gap-2">
                   {caseStudy.frameworks.map((framework) => (
                     <span
                       key={framework}
-                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-semibold border border-cinema-cyan/25 bg-cinema-cyan/5 text-cinema-cyan"
+                      className="inline-flex items-center gap-1.5 rounded-lg border border-primary/25 bg-primary/5 px-3.5 py-1.5 text-xs font-semibold text-primary"
                     >
-                      <Layers className="w-3 h-3" /> {framework}
+                      <Layers className="h-3 w-3" /> {framework}
                     </span>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </ContentPage>
         </section>
       )}
 
       {/* ═══════════ BODY ═══════════ */}
-      <div className="wrap max-w-4xl py-12 md:py-16">
-        <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-headings:font-bold prose-p:text-gray-300 prose-strong:text-white prose-em:text-gray-200 prose-li:text-gray-300 prose-hr:border-white/10 prose-blockquote:text-gray-400 prose-blockquote:border-cinema-cyan prose-table:text-gray-300 prose-th:text-white prose-thead:border-white/20 prose-td:border-white/10">
-          {caseStudy.content ? (
-            <MDXRemote source={caseStudy.content} />
-          ) : (
-            <p className="text-gray-500">Full case study content coming soon.</p>
-          )}
-        </div>
-      </div>
+      <ContentPage className="py-10 md:py-14">
+        <ContentLayout>
+          <article className="rounded-3xl border border-border bg-card p-5 shadow-sm md:p-8 lg:p-10">
+            {/* MDX body: global typography + automatic wide tables/figures */}
+            <div className="cms-content prose-content article-body">
+              {caseStudy.content ? (
+                <MDXRemote source={caseStudy.content} />
+              ) : (
+                <p className="text-muted-foreground">Full case study content coming soon.</p>
+              )}
+            </div>
+          </article>
+        </ContentLayout>
+      </ContentPage>
 
       {/* ═══════════ MORE CASE STUDIES ═══════════ */}
-      <section className="border-t border-white/5 bg-cinema-ink/60">
-        <div className="wrap max-w-6xl py-14">
-          <div className="flex items-end justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold text-white">More Case Studies</h2>
-            <Link href="/case-studies" className="inline-flex items-center gap-1.5 text-sm font-semibold text-cinema-cyan hover:gap-2.5 transition-all">
-              View all <ArrowRight className="w-4 h-4" />
+      <section className="border-t border-border bg-muted/40">
+        <ContentPage className="py-14">
+          <div className="mb-8 flex items-end justify-between">
+            <h2 className="text-2xl font-bold text-foreground md:text-3xl">More Case Studies</h2>
+            <Link href="/case-studies" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary transition-all hover:gap-2.5">
+              View all <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
             {getAllCaseStudies()
               .filter((s) => s.slug !== caseStudy.slug)
               .slice(0, 3)
@@ -254,27 +263,28 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                 <Link
                   key={s.slug}
                   href={`/case-studies/${s.slug}`}
-                  className="group glass-cinema rounded-2xl border border-white/10 overflow-hidden hover:border-cinema-cyan/40 transition-all duration-300"
+                  className="group overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:border-primary/40 hover:shadow-lg"
                 >
-                  <div className="h-36 overflow-hidden">
+                  <div className="h-36 overflow-hidden bg-muted">
                     {s.coverImage ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={s.coverImage} alt={s.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                      <img src={s.coverImage} alt={s.title} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
                     ) : (
-                      <div className="w-full h-full bg-gradient-to-br from-cinema-mid-blue via-cinema-deep-blue to-cinema-black" />
+                      <div className="h-full w-full bg-gradient-to-br from-secondary via-muted to-card" />
                     )}
                   </div>
                   <div className="p-5">
-                    <span className="text-[10px] font-bold uppercase tracking-wider text-cinema-cyan">{s.engagementType}</span>
-                    <h3 className="font-bold text-white text-sm leading-snug mt-1.5 line-clamp-2 group-hover:text-cinema-cyan transition-colors">
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{s.engagementType}</span>
+                    <h3 className="mt-1.5 line-clamp-2 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
                       {s.title}
                     </h3>
                   </div>
                 </Link>
               ))}
           </div>
-        </div>
+        </ContentPage>
       </section>
+
       <PromotionSlot placement="ARTICLE_PAGE" path={`/case-studies/${caseStudy.slug}`} contentType="CASE_STUDY" />
       <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={caseStudy.slug} />
       <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={caseStudy.slug} linkKind="CTA" />

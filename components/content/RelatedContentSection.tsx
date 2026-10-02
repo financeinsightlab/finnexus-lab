@@ -30,7 +30,7 @@ export default async function RelatedContentSection({
 
   const heading = title ?? (linkKind === 'CTA' ? 'What to do next' : 'Related content');
   return (
-    <section className="mx-auto w-full max-w-6xl px-4 py-10 sm:px-6 lg:px-8" aria-label={heading}>
+    <section className="content-page w-full py-10" aria-label={heading}>
       <div className="mb-5 flex items-center gap-2">
         <BookOpen className="h-5 w-5 text-primary" aria-hidden="true" />
         <h2 className="text-xl font-bold text-foreground">{heading}</h2>

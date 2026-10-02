@@ -66,7 +66,7 @@ export default function DataLabDownload({
       <button
         onClick={download}
         type="button"
-        className="inline-flex items-center gap-2 rounded-xl bg-cinema-aurora/15 border border-cinema-aurora/30 text-cinema-aurora px-4 py-2.5 text-sm font-medium hover:bg-cinema-aurora/25 transition"
+        className="inline-flex items-center gap-2 rounded-xl border border-emerald-600/30 bg-emerald-500/10 px-4 py-2.5 text-sm font-medium text-emerald-700 transition hover:bg-emerald-500/20 dark:border-cinema-aurora/30 dark:bg-cinema-aurora/15 dark:text-cinema-aurora"
       >
         {done ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
         {done ? 'Downloaded!' : label}
@@ -76,7 +76,7 @@ export default function DataLabDownload({
         <a
           href={`/api/datasets/${slug}?format=json`}
           download
-          className="inline-flex items-center gap-2 rounded-xl bg-white/5 border border-white/15 text-gray-200 px-4 py-2.5 text-sm font-medium hover:bg-white/10 transition"
+          className="inline-flex items-center gap-2 rounded-xl border border-border bg-secondary px-4 py-2.5 text-sm font-medium text-secondary-foreground transition hover:bg-accent"
         >
           <FileJson className="w-4 h-4" />
           JSON

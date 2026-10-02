@@ -24,19 +24,19 @@ export default function MobileToc({ items }: { items: TocItem[] }) {
   }, [items]);
 
   return (
-    <div className="lg:hidden glass-cinema rounded-2xl border border-white/10 overflow-hidden mb-6">
+    <div className="mb-6 overflow-hidden rounded-2xl border border-border bg-card shadow-sm lg:hidden">
       <button
         onClick={() => setOpen(v => !v)}
         className="w-full flex items-center justify-between px-5 py-4 text-left"
         aria-expanded={open}
       >
-        <span className="inline-flex items-center gap-2 text-cinema-cyan text-sm font-semibold uppercase tracking-widest">
-          <List className="w-4 h-4" /> On this page
+        <span className="inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-widest text-primary">
+          <List className="h-4 w-4" /> On this page
         </span>
-        <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform ${open ? 'rotate-180' : ''}`} />
+        <ChevronDown className={`h-4 w-4 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
       </button>
       {open && (
-        <ul className="px-5 pb-5 space-y-2.5 border-t border-white/10 pt-3">
+        <ul className="space-y-2.5 border-t border-border px-5 pb-5 pt-3">
           {items.map(item => (
             <li key={item.id}>
               <a
@@ -44,7 +44,7 @@ export default function MobileToc({ items }: { items: TocItem[] }) {
                 onClick={() => setOpen(false)}
                 className={`block text-sm leading-snug transition-colors ${
                   item.level === 2 ? 'font-medium' : 'pl-4'
-                } ${active === item.id ? 'text-cinema-cyan' : 'text-gray-400 hover:text-white'}`}
+                } ${active === item.id ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
               >
                 {item.text}
               </a>

@@ -13,6 +13,7 @@ import ContentFaq from '@/components/content/ContentFaq'
 import RelatedContentSection from '@/components/content/RelatedContentSection'
 import PromotionSlot from '@/components/promotions/PromotionSlot'
 import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms'
+import { ContentPage } from '@/components/content/ContentLayout'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -100,14 +101,14 @@ export default async function StudyMaterialPage({ params }: PageProps) {
   const categoryColor = material.category.color || '#0D6E6E'
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
+    <div className="min-h-screen bg-background text-foreground">
       {/* JSON-LD structured data for SEO + GEO */}
       <JsonLd data={articleJsonLd} />
       <JsonLd data={crumbs} />
 
       {/* ─── Hero Header ─── */}
       <section className="relative overflow-hidden bg-brand-navy border-b border-white/5 py-12">
-        <div className="max-w-4xl mx-auto px-6">
+        <ContentPage className="relative">
           <Link
             href="/study"
             className="inline-flex items-center gap-2 text-slate-400 hover:text-teal-400 transition-colors text-sm mb-6"
@@ -192,23 +193,23 @@ export default async function StudyMaterialPage({ params }: PageProps) {
               Access Resource
             </a>
           )}
-        </div>
+        </ContentPage>
       </section>
 
       {/* ─── Content ─── */}
-      <article className="max-w-4xl mx-auto px-6 py-12">
-        <div className="prose prose-lg dark:prose-invert max-w-none">
+      <ContentPage as="article" className="py-12">
+        <div className="cms-content prose-content article-body">
           {material.content ? (
             <MDXRemote source={material.content} />
           ) : (
             <p className="text-center italic text-gray-500">Content not available.</p>
           )}
         </div>
-      </article>
+      </ContentPage>
 
       {/* ─── Related Materials ─── */}
       {related.length > 0 && (
-        <section className="max-w-[1400px] mx-auto px-6 py-12 border-t border-gray-200 dark:border-white/5">
+        <ContentPage as="section" className="border-t border-border py-12">
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <BookOpen className="w-6 h-6 text-[#0D6E6E]" />
             Related Study Materials
@@ -232,13 +233,13 @@ export default async function StudyMaterialPage({ params }: PageProps) {
               </Link>
             ))}
           </div>
-        </section>
+        </ContentPage>
       )}
       {material.type === 'COURSE' && (
-        <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+        <ContentPage className="space-y-8 py-8">
           <CourseLessonsList courseSlug={material.slug} courseType="STUDY" />
           <CourseAssessmentPanel courseSlug={material.slug} returnTo={`/study/${material.slug}`} />
-        </div>
+        </ContentPage>
       )}
       <RelatedFinanceTerms categories={[material.category.name]} keywords={[material.slug, ...material.tags]} title="Related finance terms" />
       <PromotionSlot placement="STUDY_PAGE" path={`/study/${material.slug}`} contentType="STUDY" />

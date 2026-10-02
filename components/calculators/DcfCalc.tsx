@@ -236,7 +236,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
 
   return (
     <div className="min-h-screen py-10 relative">
-      <div className="wrap max-w-[1400px] mx-auto space-y-8 px-4">
+      <div className="content-page space-y-8">
         
         {/* Header */}
         <div className="mb-6">

@@ -272,7 +272,7 @@ export function markdownToBlocks(content: string): Block[] {
         const formatted = text
           .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
           .replace(/\*([^*]+)\*/g, '<em>$1</em>')
-          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" class="text-cinema-cyan underline">$1</a>')
+          .replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2">$1</a>')
           .replace(/\n/g, '<br/>')
 
         blocks.push(createBlock('paragraph', {

@@ -319,7 +319,7 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
   const datasetSchema = datasetJsonLd(project, DATA_LAB_VISUALS[project.slug]);
 
   return (
-    <div className="min-h-screen bg-cinema-ink">
+    <div className="min-h-screen bg-background text-foreground">
       <JsonLd data={datasetSchema} />
       {/* Reading progress bar */}
       <ScrollProgress />
@@ -331,7 +331,7 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
         <div className="absolute top-0 right-1/4 w-96 h-96 rounded-full bg-cinema-violet/20 blur-[120px]" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 rounded-full bg-cinema-glow-blue/20 blur-[120px]" />
 
-        <div className="wrap relative z-10 max-w-6xl pt-16 pb-12 md:pt-20">
+        <div className="content-page relative z-10 pt-16 pb-12 md:pt-20">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
             <Link href="/" className="hover:text-white transition">Home</Link>
@@ -415,13 +415,13 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
 
       {/* ===== INTERACTIVE LAB ===== */}
       {visual && (
-        <section className="wrap max-w-6xl py-12">
+        <section className="content-page py-12">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
             <div>
-              <span className="inline-flex items-center gap-2 text-cinema-cyan text-xs font-semibold uppercase tracking-widest">
+              <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
                 <Sparkles className="w-4 h-4" /> Interactive Lab
               </span>
-              <h2 className="mt-2 text-2xl md:text-3xl font-bold text-white">Explore the Model</h2>
+              <h2 className="mt-2 text-2xl md:text-3xl font-bold text-foreground">Explore the Model</h2>
             </div>
             <div className="flex flex-wrap items-center gap-3">
               {visual.download && (
@@ -434,7 +434,7 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
               {relatedTool && (
                 <Link
                   href={relatedTool.href}
-                  className="inline-flex items-center gap-2 rounded-xl bg-cinema-violet/15 border border-cinema-violet/30 text-cinema-violet px-4 py-2.5 text-sm font-medium hover:bg-cinema-violet/25 transition"
+                  className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2.5 text-sm font-medium text-primary transition hover:bg-primary/20"
                 >
                   <ArrowUpRight className="w-4 h-4" /> {relatedTool.label}
                 </Link>
@@ -458,24 +458,24 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
 
       {/* ===== SIMULATOR ===== */}
       {visual?.simulator && (
-        <section className="wrap max-w-6xl pb-12">
-          <div className="glass-cinema rounded-2xl border border-white/10 p-6 md:p-8">
-            <span className="inline-flex items-center gap-2 text-cinema-aurora text-xs font-semibold uppercase tracking-widest">
+        <section className="content-page pb-12">
+          <div className="rounded-2xl border border-border bg-card p-6 shadow-sm md:p-8">
+            <span className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
               <Wrench className="w-4 h-4" /> Interactive Model
             </span>
-            <h2 className="mt-2 text-2xl md:text-3xl font-bold text-white">Try the Unit Economics Model</h2>
-            <p className="text-gray-400 mt-2 mb-6">Adjust the sample inputs — orders, AOV, costs — to recompute the displayed contribution-margin scenario. This is not a live market-data feed.</p>
+            <h2 className="mt-2 text-2xl md:text-3xl font-bold text-foreground">Try the Unit Economics Model</h2>
+            <p className="mt-2 mb-6 text-muted-foreground">Adjust the sample inputs — orders, AOV, costs — to recompute the displayed contribution-margin scenario. This is not a live market-data feed.</p>
             <QCommerceCalc slug={slug} isPremiumUser />
           </div>
         </section>
       )}
 
       {/* ===== FULL ANALYSIS ===== */}
-      <section className="wrap max-w-6xl pb-16">
-        <div className="grid lg:grid-cols-[260px_1fr] gap-8 items-start">
+      <section className="content-page pb-16">
+        <div className="content-layout content-layout--aside-left">
           {/* TOC — sticky on desktop, collapsible on mobile */}
           {tocItems.length > 0 && (
-            <aside className="lg:sticky lg:top-24">
+            <aside className="content-aside content-aside--sticky">
               <div className="hidden lg:block">
                 <DataLabToc items={tocItems} />
               </div>
@@ -483,13 +483,13 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
             </aside>
           )}
 
-          <div className="glass-cinema rounded-2xl border border-white/10 p-6 md:p-10 min-w-0">
+          <div className="content-main rounded-2xl border border-border bg-card p-6 shadow-sm md:p-10">
             {project.content ? (
-              <div className="prose prose-lg max-w-none prose-invert prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-li:text-gray-300 prose-h2:mt-10 prose-h2:mb-4">
+              <div className="cms-content prose-content article-body">
                 <MDXRemote source={project.content} components={mdxComponents} />
               </div>
             ) : (
-              <p className="text-gray-400">Full content coming soon.</p>
+              <p className="text-muted-foreground">Full content coming soon.</p>
             )}
           </div>
         </div>
@@ -497,14 +497,14 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
 
       {/* ===== RELATED ===== */}
       {related.length > 0 && (
-        <section className="wrap max-w-6xl pb-24">
-          <h2 className="text-2xl font-bold text-white mb-8">More from the Data Lab</h2>
+        <section className="content-page pb-24">
+          <h2 className="mb-8 text-2xl font-bold text-foreground">More from the Data Lab</h2>
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {related.map(r => (
               <Link
                 key={r.slug}
                 href={`/data-lab/${r.slug}`}
-                className="glass-cinema group relative overflow-hidden rounded-2xl border border-white/10 hover:border-white/25 transition-all duration-300 hover:-translate-y-1.5"
+                className="group relative overflow-hidden rounded-2xl border border-border bg-card transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-lg"
               >
                 <div className="relative overflow-hidden" style={{ height: 140 }}>
                   <Image
@@ -522,7 +522,7 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
                   </div>
                 </div>
                 <div className="p-5">
-                  <h3 className="text-base font-bold text-white leading-snug group-hover:text-cinema-cyan transition-colors">{r.title}</h3>
+                  <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">{r.title}</h3>
                 </div>
               </Link>
             ))}
@@ -530,23 +530,23 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
 
           <Link
             href="/data-lab"
-            className="inline-flex items-center gap-2 mt-10 text-cinema-cyan hover:gap-3 transition-all"
+            className="mt-10 inline-flex items-center gap-2 text-primary transition-all hover:gap-3"
           >
-            <ArrowLeft className="w-4 h-4" /> All Data Lab Projects
+            <ArrowLeft className="h-4 w-4" /> All Data Lab Projects
           </Link>
 
           {/* Prev / Next navigation */}
           {(prev || next) && (
-            <div className="grid sm:grid-cols-2 gap-4 mt-14 pt-10 border-t border-white/10">
+            <div className="mt-14 grid gap-4 border-t border-border pt-10 sm:grid-cols-2">
               {prev ? (
                 <Link
                   href={`/data-lab/${prev.slug}`}
-                  className="glass-cinema group rounded-2xl border border-white/10 p-5 hover:border-white/25 transition-all hover:-translate-y-0.5"
+                  className="group rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40"
                 >
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 uppercase tracking-wider mb-2 group-hover:text-cinema-cyan transition">
+                  <span className="mb-2 inline-flex items-center gap-1 text-xs uppercase tracking-wider text-muted-foreground transition group-hover:text-primary">
                     <ChevronLeft className="w-3.5 h-3.5" /> Previous
                   </span>
-                  <div className="text-sm font-semibold text-white leading-snug group-hover:text-cinema-cyan transition-colors line-clamp-2">
+                  <div className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
                     {prev.title}
                   </div>
                 </Link>
@@ -554,12 +554,12 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
               {next && (
                 <Link
                   href={`/data-lab/${next.slug}`}
-                  className="glass-cinema group rounded-2xl border border-white/10 p-5 text-right hover:border-white/25 transition-all hover:-translate-y-0.5"
+                  className="group rounded-2xl border border-border bg-card p-5 text-right transition-all hover:-translate-y-0.5 hover:border-primary/40"
                 >
-                  <span className="inline-flex items-center gap-1 text-xs text-gray-400 uppercase tracking-wider mb-2 justify-end group-hover:text-cinema-cyan transition">
+                  <span className="mb-2 inline-flex items-center justify-end gap-1 text-xs uppercase tracking-wider text-muted-foreground transition group-hover:text-primary">
                     Next <ChevronRight className="w-3.5 h-3.5" />
                   </span>
-                  <div className="text-sm font-semibold text-white leading-snug group-hover:text-cinema-cyan transition-colors line-clamp-2">
+                  <div className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
                     {next.title}
                   </div>
                 </Link>

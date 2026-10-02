@@ -44,26 +44,26 @@ export default function CinematicHero() {
   }, [])
 
   return (
-    <section className="relative min-h-screen flex items-center overflow-hidden bg-cinema-black">
+    <section className="relative min-h-screen flex items-center overflow-hidden bg-background dark:bg-cinema-black">
       {/* 3D WebGL hero scene */}
       <div className="absolute inset-0 z-0">
         <HeroScene reduced={reduced} />
       </div>
 
       {/* Ambient gradient overlays */}
-      <div className="absolute inset-0 z-[1] pointer-events-none cinema-mesh opacity-40" />
-      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-cinema-black/40 via-transparent to-cinema-black/80" />
-      <div className="absolute inset-0 z-[1] pointer-events-none cinema-noise" />
+      <div className="absolute inset-0 z-[1] pointer-events-none cinema-mesh hidden opacity-40 dark:block" />
+      <div className="absolute inset-0 z-[1] pointer-events-none bg-gradient-to-b from-transparent via-transparent to-background/60 dark:from-cinema-black/40 dark:via-transparent dark:to-cinema-black/80" />
+      <div className="absolute inset-0 z-[1] pointer-events-none cinema-noise hidden dark:block" />
 
       {/* Content */}
-      <div className="wrap relative z-10 py-32 md:py-40">
-        <p className="section-label mb-5 anim-fade" style={{ color: '#06b6d4' }}>
+      <div className="content-page relative z-10 py-32 md:py-40">
+        <p className="section-label mb-5 anim-fade text-cyan-700 dark:text-cyan-400">
           Financial Intelligence Platform
         </p>
 
         <RevealText
           as="h1"
-          className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-[1.08] mb-6"
+          className="text-5xl md:text-6xl lg:text-7xl font-bold text-slate-900 dark:text-white leading-[1.08] mb-6"
           delay={0.1}
           stagger={0.08}
         >
@@ -72,7 +72,7 @@ export default function CinematicHero() {
 
         <RevealText
           as="p"
-          className="text-xl md:text-2xl text-gray-300 max-w-2xl leading-relaxed mb-10"
+          className="text-xl md:text-2xl text-slate-600 dark:text-gray-300 max-w-2xl leading-relaxed mb-10"
           delay={0.5}
           stagger={0.03}
           y={20}
@@ -94,10 +94,10 @@ export default function CinematicHero() {
           {HERO_STATS.map((stat) => (
             <div
               key={stat.label}
-              className="glass-cinema min-w-[120px] rounded-xl px-5 py-4"
+              className="min-w-[120px] rounded-xl border border-border bg-card/70 px-5 py-4 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/5"
               data-cursor="card"
             >
-              <p className="text-3xl font-bold cinema-text-gradient mb-1">
+              <p className="hero-stat-value text-3xl font-bold mb-1">
                 <AnimatedCounter
                   value={stat.value}
                   prefix={stat.prefix ?? ''}
@@ -105,19 +105,19 @@ export default function CinematicHero() {
                   duration={2500}
                 />
               </p>
-              <p className="text-xs text-gray-400 uppercase tracking-wider">{stat.label}</p>
+              <p className="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider">{stat.label}</p>
             </div>
           ))}
           <div className="glass-cinema min-w-[120px] rounded-xl px-5 py-4" data-cursor="card">
             <p className="text-3xl font-bold cinema-text-gradient mb-1">Free</p>
-            <p className="text-xs text-gray-400 uppercase tracking-wider">Always</p>
+            <p className="text-xs text-slate-500 dark:text-gray-400 uppercase tracking-wider">Always</p>
           </div>
         </div>
       </div>
 
       {/* Scroll indicator */}
       <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex flex-col items-center z-10 anim-fade delay-700">
-        <span className="text-xs text-gray-500 mb-2 tracking-widest uppercase">Scroll</span>
+        <span className="text-xs text-slate-500 dark:text-gray-500 mb-2 tracking-widest uppercase">Scroll</span>
         <div className="w-px h-10 bg-gradient-to-b from-transparent via-cinema-cyan to-transparent" />
       </div>
     </section>

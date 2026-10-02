@@ -151,7 +151,7 @@ export default function PgdmPage() {
       <header className="relative overflow-hidden bg-cinema-ink py-14 md:py-18 border-b border-white/5">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl" />
         <div className="absolute -bottom-32 -right-32 w-96 h-96 bg-violet-500/10 rounded-full blur-3xl" />
-        <div className="relative z-10 max-w-[1200px] mx-auto px-6">
+        <div className="content-page relative z-10">
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
             <div className="space-y-3">
               <div className="flex flex-wrap items-center gap-2">
@@ -197,7 +197,7 @@ export default function PgdmPage() {
       </header>
 
       {/* ── TRACKS ── */}
-      <main className="max-w-[1200px] mx-auto px-6 py-12 md:py-14 space-y-12">
+      <main className="content-page space-y-12 py-12 md:py-14">
         {/* ── CROSS-SUBJECT SEARCH ── */}
         <form action="/pgdm/search" method="get" className="flex flex-col sm:flex-row gap-2 rounded-2xl border border-white/8 bg-cinema-charcoal/60 p-3">
           <input

@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { ContentPage } from '@/components/content/ContentLayout';
 import Link from 'next/link';
 
 export const metadata: Metadata = {
@@ -9,8 +10,9 @@ export const metadata: Metadata = {
 
 export default function CookiesPage() {
   return (
-    <main className="min-h-screen bg-slate-50 py-16 dark:bg-[#0a1120]">
-      <article className="prose prose-lg mx-auto max-w-3xl rounded-2xl border border-slate-200 bg-white p-8 dark:border-white/10 dark:bg-[#111c31] dark:prose-invert">
+    <main className="min-h-screen bg-background py-16">
+      <ContentPage width="reading">
+        <article className="cms-content prose-content rounded-2xl border border-border bg-card p-8 shadow-sm">
         <p className="text-sm uppercase tracking-widest text-teal-600">Privacy information</p>
         <h1>Cookie and browser storage information</h1>
         <p>Last updated: October 2, 2026</p>
@@ -26,7 +28,8 @@ export default function CookiesPage() {
         <h2>Choices</h2>
         <p>You can manage or clear cookies and browser storage in your browser settings. Blocking authentication cookies can prevent sign-in and account features from working. This notice does not claim that every deployment has been independently audited for cookie compliance.</p>
         <p>For questions, contact <a href="mailto:kunwaranalytics@gmail.com">kunwaranalytics@gmail.com</a>. See the <Link href="/privacy">Privacy Policy</Link> and <Link href="/terms">Terms of Use</Link>.</p>
-      </article>
+        </article>
+      </ContentPage>
     </main>
   );
 }

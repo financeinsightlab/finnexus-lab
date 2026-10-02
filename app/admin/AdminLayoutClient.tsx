@@ -71,7 +71,7 @@ export default function AdminLayoutClient({
 
       {/* Main Content Area - Dynamic margin based on sidebar state */}
       <main className={`flex-1 ${contentMarginClass} p-6 md:p-10 transition-all duration-300`}>
-        <div className="max-w-6xl mx-auto anim-fade-up">
+        <div className="content-page anim-fade-up">
           {children}
         </div>
       </main>

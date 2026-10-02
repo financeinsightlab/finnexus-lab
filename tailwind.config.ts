@@ -7,6 +7,10 @@ export default {
     './app/**/*.{ts,tsx,mdx}',
     './components/**/*.{ts,tsx,mdx}',
     './pages/**/*.{ts,tsx,mdx}',
+    // The CMS block renderer emits HTML (with utility classes) from lib/.
+    // Without this glob those classes were never generated — CMS-rendered
+    // content silently lost most of its styling.
+    './lib/**/*.{ts,tsx}',
   ],
   theme: {
     extend: {
@@ -65,7 +69,11 @@ export default {
       },
       maxWidth: {
         content: '1280px',
-        prose: '680px',
+        /* Global content layout system — see .content-page / .prose-content in app/globals.css.
+           `page` is the wide editorial container, `prose` the comfortable reading measure. */
+        page: 'var(--content-page-max)',
+        prose: 'var(--prose-measure)',
+        reading: '680px',
       },
       /* ── Cinematic depth shadows ── */
       boxShadow: {
