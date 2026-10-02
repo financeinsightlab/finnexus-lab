@@ -61,8 +61,8 @@ export default function HomeDataLabSection() {
                   </span>
                 </div>
                 <div className="p-6">
-                  <span className="text-xs font-semibold uppercase tracking-wider text-primary">{p.sector}</span>
-                  <h3 className="mt-2 text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+<span className="text-xs font-semibold text-primary uppercase tracking-wider">{p.sector}</span>
+                  <h3 className="mt-2 text-lg font-bold text-foreground leading-snug group-hover:text-primary transition-colors">
                     {p.title}
                   </h3>
                   <div className="flex flex-wrap gap-2 mt-4">

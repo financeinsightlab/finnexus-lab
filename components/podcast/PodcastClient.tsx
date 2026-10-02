@@ -89,12 +89,16 @@ export default function PodcastClient({ episodes, initialFormat = 'All' }: Podca
             placeholder="Search episodes, guests, topics…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+
             className="w-full rounded-xl border border-input bg-background py-3 pl-10 pr-9 text-sm text-foreground transition-all placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none focus:ring-1 focus:ring-primary/40"
+
           />
           {query && (
             <button
               onClick={() => setQuery('')}
+
               className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+
               title="Clear search"
             >
               <X className="w-4 h-4" />
@@ -113,8 +117,10 @@ export default function PodcastClient({ episodes, initialFormat = 'All' }: Podca
               }}
               className={`px-4 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
                 format === f
+
                   ? 'border-primary bg-primary text-primary-foreground shadow-sm'
                   : 'border-border bg-secondary text-secondary-foreground hover:border-primary/50'
+
               }`}
             >
               {f}
@@ -135,7 +141,9 @@ export default function PodcastClient({ episodes, initialFormat = 'All' }: Podca
         <div className="text-center mt-10">
           <button
             onClick={() => setVisibleCount((n) => n + PAGE_SIZE)}
+
             className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-border bg-secondary px-6 py-3 text-sm font-semibold text-secondary-foreground transition-all hover:border-primary/50 hover:text-primary"
+
           >
             <ChevronDown className="w-4 h-4" />
             Load more ({filtered.length - visibleCount} remaining)
@@ -147,8 +155,10 @@ export default function PodcastClient({ episodes, initialFormat = 'All' }: Podca
       {filtered.length === 0 && (
         <div className="rounded-2xl border border-border bg-card py-16 text-center shadow-sm">
           <div className="text-5xl mb-4">🎙️</div>
+
           <p className="mb-1 text-lg font-semibold text-foreground">No episodes found</p>
           <p className="text-muted-foreground">
+
             {hasActiveFilters
               ? 'Try adjusting your search or filters.'
               : 'New episodes drop every two weeks. Check back soon!'}

@@ -20,11 +20,11 @@ export const metadata: Metadata = {
 
 /** Presentation-only styling per plan; commercial + feature data comes from the catalog. */
 const PLAN_STYLES: Record<PlanId, { color: string; accent: string; recommended?: boolean }> = {
-  FREE: { color: 'bg-gray-50', accent: 'text-gray-700' },
-  PRO: { color: 'bg-teal-50', accent: 'text-teal-800', recommended: true },
-  ELITE: { color: 'bg-purple-50', accent: 'text-purple-800' },
-  TEAM: { color: 'bg-amber-50', accent: 'text-amber-800' },
-  ENTERPRISE: { color: 'bg-slate-50', accent: 'text-slate-800' },
+  FREE: { color: 'bg-surface-muted', accent: 'text-content-primary' },
+  PRO: { color: 'bg-brand-muted', accent: 'text-brand', recommended: true },
+  ELITE: { color: 'bg-accent-violet-muted', accent: 'text-accent-violet' },
+  TEAM: { color: 'bg-warning-muted', accent: 'text-warning' },
+  ENTERPRISE: { color: 'bg-info-muted', accent: 'text-info' },
 };
 
 /**
@@ -79,7 +79,7 @@ export default function PricingPage() {
               >
                 {plan.recommended && (
                   <div className="text-center mb-4">
-                    <span className="inline-block bg-brand-teal text-white text-sm font-medium px-3 py-1 rounded-full">
+                    <span className="inline-block rounded-full bg-primary px-3 py-1 text-sm font-medium text-primary-foreground">
                       Recommended
                     </span>
                   </div>

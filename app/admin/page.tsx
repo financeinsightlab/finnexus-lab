@@ -130,7 +130,7 @@ export default async function AdminDashboard() {
     INSIGHT: "text-emerald-400 bg-emerald-500/10",
     CASE_STUDY: "text-purple-400 bg-purple-500/10",
     MEDIA: "text-pink-400 bg-pink-500/10",
-    OTHER: "text-slate-400 bg-slate-500/10",
+    OTHER: "text-content-secondary bg-surface-muted",
   }
 
   return (
@@ -141,9 +141,9 @@ export default async function AdminDashboard() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
             <span className="section-label text-teal-400">Command Center</span>
-            <h1 className="text-4xl font-extrabold text-white mt-2 leading-tight">Administration Overview</h1>
-            <p className="text-slate-300 mt-2 max-w-xl">
-              Welcome back, <span className="text-white font-semibold">{session.user?.name || "Admin"}</span>. Here's your live platform snapshot.
+            <h1 className="text-4xl font-extrabold text-content-primary mt-2 leading-tight">Administration Overview</h1>
+            <p className="text-content-secondary mt-2 max-w-xl">
+              Welcome back, <span className="text-content-primary font-semibold">{session.user?.name || "Admin"}</span>. Here's your live platform snapshot.
             </p>
           </div>
           <Link href="/admin/cms/new" className="btn-primary bg-white text-brand-navy hover:bg-gray-100 flex items-center gap-2 group whitespace-nowrap shadow-lg">
@@ -156,19 +156,19 @@ export default async function AdminDashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-[#1A1F2E] p-6 rounded-2xl border border-[#2D3748] hover:border-[#0D6E6E]/50 transition-all group shadow-xl">
+          <div key={i} className="bg-surface p-6 rounded-2xl border border-border hover:border-brand/50 transition-all group shadow-xl">
             <div className="flex items-center justify-between mb-5">
               <div className={`p-2.5 rounded-xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
                 <stat.icon className="w-5 h-5" />
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span className="text-[10px] uppercase font-bold text-slate-500 tracking-widest">Live</span>
+                <span className="text-[10px] uppercase font-bold text-content-muted tracking-widest">Live</span>
               </div>
             </div>
-            <p className="text-xs font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
-            <h3 className="text-3xl font-bold text-gray-900 dark:text-white mt-1.5 tracking-tight">{stat.value}</h3>
-            <p className="text-xs text-slate-500 mt-2">{stat.trend}</p>
+            <p className="text-xs font-bold text-content-muted uppercase tracking-widest">{stat.label}</p>
+            <h3 className="text-3xl font-bold text-content-primary mt-1.5 tracking-tight">{stat.value}</h3>
+            <p className="text-xs text-content-muted mt-2">{stat.trend}</p>
           </div>
         ))}
       </div>
@@ -176,44 +176,44 @@ export default async function AdminDashboard() {
       {/* Content Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Content by Type */}
-        <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
-          <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-5 flex items-center gap-2">
-            <FileText className="w-4 h-4 text-[#0D6E6E]" /> Content Breakdown
+        <div className="bg-surface rounded-2xl border border-border p-6 shadow-xl">
+          <h3 className="text-sm font-bold text-content-primary mb-5 flex items-center gap-2">
+            <FileText className="w-4 h-4 text-brand" /> Content Breakdown
           </h3>
           <div className="space-y-3">
             {postsByType.map((g) => (
               <div key={g.type} className="flex items-center justify-between">
-                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-lg ${typeColors[g.type] ?? "text-slate-400 bg-slate-500/10"}`}>
+                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded-lg ${typeColors[g.type] ?? "text-content-secondary bg-surface-muted"}`}>
                   {g.type.replace("_", " ")}
                 </span>
-                <span className="text-gray-900 dark:text-white font-bold text-sm">{(g._count as any).id}</span>
+                <span className="text-content-primary font-bold text-sm">{(g._count as any).id}</span>
               </div>
             ))}
             {postsByType.length === 0 && (
-              <p className="text-slate-600 text-sm text-center py-4">No content yet</p>
+              <p className="text-content-muted text-sm text-center py-4">No content yet</p>
             )}
           </div>
         </div>
 
         {/* Recent Signups */}
-        <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
+        <div className="bg-surface rounded-2xl border border-border p-6 shadow-xl">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-sm font-bold text-content-primary flex items-center gap-2">
               <UserPlus className="w-4 h-4 text-blue-400" /> Recent Signups
             </h3>
-            <Link href="/admin/users" className="text-[10px] text-[#0D6E6E] font-bold hover:underline">View all</Link>
+            <Link href="/admin/users" className="text-[10px] text-brand font-bold hover:underline">View all</Link>
           </div>
           <div className="space-y-3">
             {recentUsers.map((u) => (
               <div key={u.id} className="flex items-center gap-3 group">
-                <div className="w-8 h-8 rounded-full bg-[#0D6E6E]/10 border border-[#0D6E6E]/20 flex items-center justify-center text-[#0D6E6E] text-xs font-bold flex-shrink-0">
+                <div className="w-8 h-8 rounded-full bg-brand/10 border border-brand/20 flex items-center justify-center text-brand text-xs font-bold flex-shrink-0">
                   {(u.name || u.email || "?")[0].toUpperCase()}
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs font-semibold text-gray-900 dark:text-white truncate">{u.name || "Anonymous"}</p>
-                  <p className="text-[10px] text-slate-500 truncate">{u.email}</p>
+                  <p className="text-xs font-semibold text-content-primary truncate">{u.name || "Anonymous"}</p>
+                  <p className="text-[10px] text-content-muted truncate">{u.email}</p>
                 </div>
-                <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-md ${u.role === "ADMIN" ? "bg-amber-500/10 text-amber-400" : "bg-white/5 text-slate-500"}`}>
+                <span className={`text-[9px] font-bold uppercase px-2 py-0.5 rounded-md ${u.role === "ADMIN" ? "bg-amber-500/10 text-amber-400" : "bg-surface-muted text-content-muted"}`}>
                   {u.role}
                 </span>
               </div>
@@ -222,12 +222,12 @@ export default async function AdminDashboard() {
         </div>
 
         {/* Recent Content */}
-        <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
+        <div className="bg-surface rounded-2xl border border-border p-6 shadow-xl">
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-sm font-bold text-content-primary flex items-center gap-2">
               <Clock className="w-4 h-4 text-purple-400" /> Recent Content
             </h3>
-            <Link href="/admin/cms" className="text-[10px] text-[#0D6E6E] font-bold hover:underline">View all</Link>
+            <Link href="/admin/cms" className="text-[10px] text-brand font-bold hover:underline">View all</Link>
           </div>
           <div className="space-y-3">
             {recentPosts.map((p) => (
@@ -235,10 +235,10 @@ export default async function AdminDashboard() {
                 <div className="flex items-start gap-3">
                   <div className={`w-1.5 h-1.5 rounded-full mt-1.5 flex-shrink-0 ${p.published ? "bg-emerald-500" : "bg-amber-500"}`} />
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-gray-900 dark:text-white truncate group-hover:text-[#0D6E6E] transition-colors">{p.title}</p>
+                    <p className="text-xs font-semibold text-content-primary truncate group-hover:text-brand transition-colors">{p.title}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className="text-[9px] text-slate-600 font-mono">{p.type}</span>
-                      <span className="text-[9px] text-slate-600">· {p.viewCount} views</span>
+                      <span className="text-[9px] text-content-muted font-mono">{p.type}</span>
+                      <span className="text-[9px] text-content-muted">· {p.viewCount} views</span>
                     </div>
                   </div>
                 </div>
@@ -249,10 +249,10 @@ export default async function AdminDashboard() {
       </div>
 
       {/* Quick Actions */}
-      <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-8 shadow-xl">
+      <div className="bg-surface rounded-2xl border border-border p-8 shadow-xl">
         <div className="flex items-center justify-between mb-6">
-          <h3 className="text-lg font-bold text-gray-900 dark:text-white">Quick Actions</h3>
-          <span className="text-xs text-[#0D6E6E] font-semibold">Content Engine v2.0</span>
+          <h3 className="text-lg font-bold text-content-primary">Quick Actions</h3>
+          <span className="text-xs text-brand font-semibold">Content Engine v2.0</span>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           {[
@@ -262,15 +262,15 @@ export default async function AdminDashboard() {
             { label: "User Directory", href: "/admin/users", color: "text-amber-400" },
             { label: "Live Analytics", href: "/admin/analytics", color: "text-pink-400" },
             { label: "Contact Inquiries", href: "/admin/messages", color: "text-teal-400" },
-            { label: "New Content", href: "/admin/cms/new", color: "text-[#0D6E6E]" },
+            { label: "New Content", href: "/admin/cms/new", color: "text-brand" },
           ].map((link, i) => (
             <Link
               key={i}
               href={link.href}
-              className="flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 rounded-xl transition-all group border border-transparent hover:border-white/5"
+              className="flex items-center justify-between p-4 bg-surface-muted hover:bg-accent rounded-xl transition-all group border border-transparent hover:border-border-subtle"
             >
-              <span className={`text-sm font-semibold ${link.color} group-hover:text-white transition-colors`}>{link.label}</span>
-              <ArrowUpRight className="w-4 h-4 text-slate-500 group-hover:text-[#0D6E6E] transition-all" />
+              <span className={`text-sm font-semibold ${link.color} group-hover:text-brand transition-colors`}>{link.label}</span>
+              <ArrowUpRight className="w-4 h-4 text-content-muted group-hover:text-brand transition-all" />
             </Link>
           ))}
         </div>

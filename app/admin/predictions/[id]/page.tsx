@@ -36,23 +36,23 @@ export default async function EditPredictionPage({ params }: { params: Promise<{
   return (
     <div className="space-y-10 max-w-3xl">
       <div className="flex items-center gap-4">
-        <Link href="/admin/predictions" className="text-slate-400 hover:text-white pb-1">
+        <Link href="/admin/predictions" className="text-content-secondary hover:text-brand pb-1">
           ← Back
         </Link>
         <div>
           <span className="section-label">Admin · Predictions Engine</span>
-          <h1 className="text-4xl font-extrabold text-white mt-2">
+          <h1 className="text-4xl font-extrabold text-content-primary mt-2">
             ✏️ Edit Prediction
           </h1>
         </div>
       </div>
 
-      <section className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
+      <section className="bg-surface rounded-2xl border border-border p-6 shadow-xl">
         <form action={updatePredictionAction} className="space-y-6">
           <input type="hidden" name="id" value={prediction.id} />
           
           <div>
-            <label className="text-xs text-slate-400 uppercase tracking-widest font-bold block mb-1.5">
+            <label className="text-xs text-content-muted uppercase tracking-widest font-bold block mb-1.5">
               Prediction Claim *
             </label>
             <textarea
@@ -60,20 +60,20 @@ export default async function EditPredictionPage({ params }: { params: Promise<{
               required
               defaultValue={prediction.claim}
               rows={3}
-              className="w-full bg-[#0f1c2d] border border-[#2D3748] rounded-xl px-4 py-3 text-sm text-slate-300 focus:border-[#0D6E6E] focus:outline-none resize-none"
+              className="w-full bg-surface-raised border border-border rounded-xl px-4 py-3 text-sm text-content-primary focus:border-brand focus:outline-none resize-none"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="text-xs text-slate-400 uppercase tracking-widest font-bold block mb-1.5">
+              <label className="text-xs text-content-muted uppercase tracking-widest font-bold block mb-1.5">
                 Sector *
               </label>
               <select
                 name="sector"
                 required
                 defaultValue={prediction.sector}
-                className="w-full bg-[#0f1c2d] border border-[#2D3748] rounded-xl px-4 py-3 text-sm text-slate-300 focus:border-[#0D6E6E] focus:outline-none"
+                className="w-full bg-surface-raised border border-border rounded-xl px-4 py-3 text-sm text-content-primary focus:border-brand focus:outline-none"
               >
                 {SECTORS.map((s) => (
                   <option key={s} value={s}>{s}</option>
@@ -82,7 +82,7 @@ export default async function EditPredictionPage({ params }: { params: Promise<{
             </div>
 
             <div>
-              <label className="text-xs text-slate-400 uppercase tracking-widest font-bold block mb-1.5">
+              <label className="text-xs text-content-muted uppercase tracking-widest font-bold block mb-1.5">
                 Resolve Date *
               </label>
               <input
@@ -90,20 +90,20 @@ export default async function EditPredictionPage({ params }: { params: Promise<{
                 name="resolveDate"
                 required
                 defaultValue={resolveDateValue}
-                className="w-full bg-[#0f1c2d] border border-[#2D3748] rounded-xl px-4 py-3 text-sm text-slate-300 focus:border-[#0D6E6E] focus:outline-none"
+                className="w-full bg-surface-raised border border-border rounded-xl px-4 py-3 text-sm text-content-primary focus:border-brand focus:outline-none"
               />
             </div>
           </div>
 
           <div>
-            <label className="text-xs text-slate-400 uppercase tracking-widest font-bold block mb-1.5">
+            <label className="text-xs text-content-muted uppercase tracking-widest font-bold block mb-1.5">
               Source Report Slug (optional)
             </label>
             <input
               type="text"
               name="reportSlug"
               defaultValue={prediction.reportSlug || ''}
-              className="w-full bg-[#0f1c2d] border border-[#2D3748] rounded-xl px-4 py-3 text-sm text-slate-300 focus:border-[#0D6E6E] focus:outline-none"
+              className="w-full bg-surface-raised border border-border rounded-xl px-4 py-3 text-sm text-content-primary focus:border-brand focus:outline-none"
             />
           </div>
 

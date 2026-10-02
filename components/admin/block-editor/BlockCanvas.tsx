@@ -62,16 +62,16 @@ export default function BlockCanvas({
     return (
       <div className="min-h-[500px] flex items-center justify-center">
         <div className="text-center max-w-sm mx-auto">
-          <div className="w-24 h-24 rounded-3xl bg-[#1A1F2E] border-2 border-dashed border-[#2D3748] flex items-center justify-center mx-auto mb-6">
-            <Plus className="w-10 h-10 text-slate-700" />
+          <div className="w-24 h-24 rounded-3xl bg-surface border-2 border-dashed border-border flex items-center justify-center mx-auto mb-6">
+            <Plus className="w-10 h-10 text-content-muted" />
           </div>
-          <h3 className="text-lg font-bold text-slate-400 mb-2">Your canvas is empty</h3>
-          <p className="text-sm text-slate-600 mb-6">
+          <h3 className="text-lg font-bold text-content-secondary mb-2">Your canvas is empty</h3>
+          <p className="text-sm text-content-muted mb-6">
             Add blocks from the sidebar to start building your layout
           </p>
           <button
             onClick={() => onAddBlock('paragraph')}
-            className="px-6 py-3 bg-[#0D6E6E] text-white font-bold rounded-xl hover:bg-[#0F9E9E] transition-all shadow-[0_0_20px_rgba(13,110,110,0.3)] text-sm"
+            className="px-6 py-3 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary-hover transition-all shadow-[0_0_20px_rgba(13,110,110,0.3)] text-sm"
           >
             + Add First Block
           </button>
@@ -95,10 +95,10 @@ export default function BlockCanvas({
             <div
               className={`relative group rounded-2xl border transition-all duration-200 ${
                 isSelected
-                  ? 'border-[#0D6E6E] shadow-[0_0_0_2px_rgba(13,110,110,0.2)]'
-                  : 'border-transparent hover:border-white/10'
+                  ? 'border-brand shadow-[0_0_0_2px_rgba(13,110,110,0.2)]'
+                  : 'border-transparent hover:border-border'
               } ${isDragging ? 'opacity-40 scale-95' : ''} ${
-                isDragTarget ? 'border-[#0D6E6E] scale-[1.01]' : ''
+                isDragTarget ? 'border-brand scale-[1.01]' : ''
               }`}
               draggable
               onDragStart={e => handleDragStart(e, index)}
@@ -111,34 +111,34 @@ export default function BlockCanvas({
               <div className={`absolute -top-3 right-3 flex items-center gap-1 z-10 transition-all ${
                 isSelected ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
               }`}>
-                <div className="flex items-center gap-1 bg-[#1A1F2E] border border-[#2D3748] rounded-xl px-2 py-1 shadow-xl">
+                <div className="flex items-center gap-1 bg-surface border border-border rounded-xl px-2 py-1 shadow-xl">
                   {/* Block type label */}
-                  <span className="text-[9px] font-bold text-[#0D6E6E] uppercase tracking-widest mr-1 px-2 border-r border-white/10">
+                  <span className="text-[9px] font-bold text-brand uppercase tracking-widest mr-1 px-2 border-r border-border-subtle">
                     {block.type}
                   </span>
                   <button
                     onClick={e => { e.stopPropagation(); onMoveBlock(block.id, 'up') }}
-                    className="p-1.5 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                    className="p-1.5 text-content-muted hover:text-content-primary transition-colors rounded-lg hover:bg-accent"
                     title="Move Up"
                   ><ChevronUp className="w-3.5 h-3.5" /></button>
                   <button
                     onClick={e => { e.stopPropagation(); onMoveBlock(block.id, 'down') }}
-                    className="p-1.5 text-slate-500 hover:text-white transition-colors rounded-lg hover:bg-white/5"
+                    className="p-1.5 text-content-muted hover:text-content-primary transition-colors rounded-lg hover:bg-accent"
                     title="Move Down"
                   ><ChevronDown className="w-3.5 h-3.5" /></button>
                   <button
                     onClick={e => { e.stopPropagation(); onDuplicateBlock(block.id) }}
-                    className="p-1.5 text-slate-500 hover:text-blue-400 transition-colors rounded-lg hover:bg-blue-500/10"
+                    className="p-1.5 text-content-muted hover:text-brand transition-colors rounded-lg hover:bg-brand-muted"
                     title="Duplicate"
                   ><Copy className="w-3.5 h-3.5" /></button>
                   <button
                     onClick={e => { e.stopPropagation(); onSelectBlock(block.id) }}
-                    className={`p-1.5 transition-colors rounded-lg ${isSelected ? 'text-[#0D6E6E] bg-[#0D6E6E]/10' : 'text-slate-500 hover:text-[#0D6E6E] hover:bg-[#0D6E6E]/10'}`}
+                    className={`p-1.5 transition-colors rounded-lg ${isSelected ? 'text-brand bg-brand/10' : 'text-content-muted hover:text-brand hover:bg-brand-muted'}`}
                     title="Settings"
                   ><Settings className="w-3.5 h-3.5" /></button>
                   <button
                     onClick={e => { e.stopPropagation(); onDeleteBlock(block.id) }}
-                    className="p-1.5 text-slate-500 hover:text-red-400 transition-colors rounded-lg hover:bg-red-500/10"
+                    className="p-1.5 text-content-muted hover:text-error transition-colors rounded-lg hover:bg-error-muted"
                     title="Delete Block"
                   ><Trash2 className="w-3.5 h-3.5" /></button>
                 </div>
@@ -148,11 +148,11 @@ export default function BlockCanvas({
               <div className={`absolute left-2 top-1/2 -translate-y-1/2 cursor-grab active:cursor-grabbing transition-opacity ${
                 isSelected ? 'opacity-40' : 'opacity-0 group-hover:opacity-40'
               }`}>
-                <GripVertical className="w-4 h-4 text-slate-500" />
+                <GripVertical className="w-4 h-4 text-content-muted" />
               </div>
 
               {/* Block Content Preview */}
-              <div className="bg-[#1A1F2E] rounded-2xl overflow-hidden">
+              <div className="bg-surface rounded-2xl overflow-hidden">
                 <BlockPreview block={block} isSelected={isSelected} />
               </div>
             </div>
@@ -169,11 +169,11 @@ export default function BlockCanvas({
 function InsertPoint({ onClick }: { onClick: () => void }) {
   return (
     <div className="group flex items-center gap-3 my-1 cursor-pointer" onClick={onClick}>
-      <div className="flex-1 h-px bg-transparent group-hover:bg-[#0D6E6E]/30 transition-colors" />
-      <div className="opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center w-7 h-7 rounded-full border border-[#0D6E6E]/50 bg-[#0D6E6E]/10 text-[#0D6E6E]">
+      <div className="flex-1 h-px bg-transparent group-hover:bg-primary/30 transition-colors" />
+      <div className="opacity-0 group-hover:opacity-100 transition-all flex items-center justify-center w-7 h-7 rounded-full border border-brand/50 bg-brand/10 text-brand">
         <Plus className="w-3.5 h-3.5" />
       </div>
-      <div className="flex-1 h-px bg-transparent group-hover:bg-[#0D6E6E]/30 transition-colors" />
+      <div className="flex-1 h-px bg-transparent group-hover:bg-primary/30 transition-colors" />
     </div>
   )
 }

@@ -37,7 +37,7 @@ export default function DataLabToc({ items }: { items: TocItem[] }) {
               href={`#${item.id}`}
               className={`block text-sm leading-snug transition-colors ${
                 item.level === 2 ? 'font-medium' : 'pl-4'
-              } ${active === item.id ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
+} ${active === item.id ? 'text-primary' : 'text-content-muted hover:text-content-primary'}`}
             >
               {item.text}
             </a>

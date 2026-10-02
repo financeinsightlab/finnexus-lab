@@ -136,7 +136,7 @@ export default function PaymentReviewClient({ initialPayments }: { initialPaymen
             ) : (
                 <div className="space-y-5">
                     {visiblePayments.map((payment) => (
-                        <article key={payment.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-[#111c31] md:p-7">
+                        <article key={payment.id} className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-white/10 dark:bg-surface-raised md:p-7">
                             <div className="flex flex-wrap items-start justify-between gap-4">
                                 <div>
                                     <div className="flex flex-wrap items-center gap-3">
@@ -184,7 +184,7 @@ export default function PaymentReviewClient({ initialPayments }: { initialPaymen
                                             onChange={(event) => setReasons((current) => ({ ...current, [payment.id]: event.target.value }))}
                                             maxLength={500}
                                             rows={2}
-                                            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-[#0a1120] dark:text-white"
+                                            className="mt-1 block w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm font-normal text-slate-900 outline-none focus:border-teal-500 dark:border-white/10 dark:bg-background dark:text-white"
                                         />
                                     </label>
                                     <div className="flex gap-2">

@@ -69,7 +69,7 @@ const COLOR_MAP: Record<string, { badge: string; dot: string }> = {
 
 export default function AnalystCourseSection() {
   return (
-    <section className="relative bg-gradient-to-b from-[#090b12] to-[#0B0D13] py-14 border-t border-white/5">
+    <section className="relative bg-gradient-to-b from-surface-muted to-background py-14 border-t border-border-subtle">
       {/* Ambient glow */}
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div className="absolute -top-32 left-1/4 w-[600px] h-[600px] rounded-full blur-[160px] opacity-[0.06] bg-teal-500" />
@@ -85,13 +85,13 @@ export default function AnalystCourseSection() {
               <GraduationCap className="w-3 h-3" />
               SignalPath — Analyst Complete Course
             </span>
-            <h2 className="text-3xl md:text-4xl font-extrabold text-white leading-tight">
+            <h2 className="text-3xl md:text-4xl font-extrabold text-content-primary leading-tight">
               Business Analytics
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-teal-400 via-cyan-400 to-violet-400">
                 Zero → Expert Curriculum
               </span>
             </h2>
-            <p className="text-slate-400 mt-3 max-w-2xl text-sm leading-relaxed">
+            <p className="text-content-secondary mt-3 max-w-2xl text-sm leading-relaxed">
               A complete structured path — 15 levels, 100+ lessons, 40+ projects.
               Dashboard · SQL Lab · Learning Library · Assessments · Projects · Case Studies ·
               Interview Center · Portfolio Builder · Metrics Dictionary.
@@ -107,8 +107,8 @@ export default function AnalystCourseSection() {
               { value: '11',   label: 'Sections' },
             ].map((s) => (
               <div key={s.label} className="text-center">
-                <div className="text-2xl font-black text-white tabular-nums">{s.value}</div>
-                <div className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mt-0.5">{s.label}</div>
+                <div className="text-2xl font-black text-content-primary tabular-nums">{s.value}</div>
+                <div className="text-[10px] text-content-muted font-bold uppercase tracking-wider mt-0.5">{s.label}</div>
               </div>
             ))}
           </div>
@@ -122,7 +122,7 @@ export default function AnalystCourseSection() {
               <Link
                 key={i}
                 href="/study/analyst-course"
-                className="group relative rounded-2xl overflow-hidden border border-white/6 bg-[#111827]/80 hover:bg-[#1a2235]/90 hover:border-white/12 transition-all duration-300 p-5 flex items-start gap-4"
+                className="group relative rounded-2xl overflow-hidden border border-border bg-surface-raised/90 hover:bg-surface-overlay hover:border-brand/40 transition-all duration-300 p-5 flex items-start gap-4"
                 style={{
                   boxShadow: '0 2px 16px rgba(0,0,0,0.3)',
                 }}
@@ -147,10 +147,10 @@ export default function AnalystCourseSection() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-bold text-white group-hover:text-teal-400 transition-colors leading-tight mb-1">
+                  <h3 className="text-sm font-bold text-content-primary group-hover:text-brand-hover transition-colors leading-tight mb-1">
                     {section.label}
                   </h3>
-                  <p className="text-[11px] text-slate-500 leading-relaxed">{section.desc}</p>
+                  <p className="text-[11px] text-content-muted leading-relaxed">{section.desc}</p>
                 </div>
               </Link>
             )
@@ -159,7 +159,7 @@ export default function AnalystCourseSection() {
 
         {/* ─── Level roadmap pills ─── */}
         <div className="mb-10">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-600 mb-3">
+          <p className="text-[11px] font-bold uppercase tracking-widest text-content-muted mb-3">
             15 Learning Levels
           </p>
           <div className="flex flex-wrap gap-2">
@@ -185,9 +185,9 @@ export default function AnalystCourseSection() {
             <div>
               <div className="flex items-center gap-2 mb-2">
                 <GraduationCap className="w-5 h-5 text-teal-400" />
-                <span className="text-white font-extrabold">Open the Full Interactive Course</span>
+                <span className="text-content-primary font-extrabold">Open the Full Interactive Course</span>
               </div>
-              <p className="text-slate-400 text-sm max-w-xl">
+              <p className="text-content-secondary text-sm max-w-xl">
                 Dashboard, SQL Lab, Learning Library, Assessments, 40+ Projects, Case Studies,
                 Interview Center, Portfolio Builder & Metrics Dictionary — all in one place,
                 styled to match this website.
@@ -195,7 +195,7 @@ export default function AnalystCourseSection() {
             </div>
             <Link
               href="/study/analyst-course"
-              className="shrink-0 flex items-center gap-2 px-6 py-3 rounded-xl bg-teal-500 text-white font-bold text-sm hover:bg-teal-400 transition-colors shadow-lg shadow-teal-500/20"
+              className="shrink-0 flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary-hover transition-colors shadow-lg shadow-teal-500/20"
             >
               Open Course
               <ChevronRight className="w-4 h-4" />

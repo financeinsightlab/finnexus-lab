@@ -32,8 +32,8 @@ export default function CardImageBanner({
   src,
   alt,
   icon,
-  gradientFrom = 'from-[#1a1f2e]',
-  gradientTo = 'to-[#2d3748]',
+  gradientFrom = 'from-surface-raised',
+  gradientTo = 'to-surface-muted',
   overlayOpacity = 'opacity-50',
   blendMode = ''
 }: CardImageBannerProps) {

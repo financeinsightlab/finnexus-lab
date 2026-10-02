@@ -1,6 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
+import { usePathname } from "next/navigation"
 import CollapsibleSidebar from "@/components/admin/CollapsibleSidebar"
 
 interface AdminLayoutClientProps {
@@ -16,6 +17,9 @@ export default function AdminLayoutClient({
   userRole = "ADMIN",
   userInitial = "A"
 }: AdminLayoutClientProps) {
+  const pathname = usePathname()
+  const isCmsEditor = pathname === "/admin/cms/new" || /^\/admin\/cms\/edit\/[^/]+$/.test(pathname)
+
   // Initialize state to false (same on server and client to avoid hydration mismatch)
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false)
 
@@ -62,7 +66,7 @@ export default function AdminLayoutClient({
     : "lg:ml-64"  // 256px when expanded
 
   return (
-    <div className="mt-16 flex min-h-[calc(100dvh-4rem)] min-w-0 bg-gray-50 font-sans text-gray-800 dark:bg-[#0F1117] dark:text-slate-300">
+<div className="admin-theme flex min-h-[calc(100dvh-4rem)] min-w-0 bg-background font-sans text-content-primary mt-16">
       <CollapsibleSidebar 
         userName={userName}
         userRole={userRole}
@@ -70,8 +74,8 @@ export default function AdminLayoutClient({
       />
 
       {/* Main Content Area - Dynamic margin based on sidebar state */}
-      <main className={`min-w-0 flex-1 ${contentMarginClass} p-6 md:p-10 transition-all duration-300`}>
-        <div className="content-page anim-fade-up">
+<main className={`flex-1 min-w-0 ${contentMarginClass} ${isCmsEditor ? 'p-0 overflow-hidden' : 'p-6 md:p-10'} transition-all duration-300`}>
+        <div className={isCmsEditor ? 'w-full h-full min-w-0' : 'content-page anim-fade-up'}>
           {children}
         </div>
       </main>

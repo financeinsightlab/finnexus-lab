@@ -345,7 +345,7 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
                 <div className="absolute -right-4 -top-4 w-24 h-24 bg-purple-50 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
                 <div className="relative z-10 text-center">
                   <p className="text-sm font-medium text-gray-500 mb-1 uppercase tracking-widest">Implied Share Price</p>
-                  <h4 className="text-4xl font-extrabold text-[#111827]">
+                  <h4 className="text-4xl font-extrabold text-content-primary">
                     ${calculations.impliedSharePrice.toFixed(2)}
                   </h4>
                 </div>
@@ -364,7 +364,7 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
                     <Tooltip 
                       formatter={(value: any, name: any) => [value + 'x', name]}
                       contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                      cursor={{fill: '#f8fafc'}}
+                      cursor={{ fill: 'hsl(var(--surface-muted))' }}
                     />
                     <Legend iconType="circle" />
                     <Bar dataKey="evEbitda" name="EV / EBITDA Multiple" fill="#0d9488" radius={[4, 4, 0, 0]} barSize={40} />
@@ -377,7 +377,7 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
             {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
             <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
               
-              <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-[#0b542c]">
+              <div className="bg-success text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-success">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/>
                 </svg>
@@ -463,13 +463,13 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
                       <td colSpan={2} className="border border-gray-200 dark:border-slate-700 bg-white dark:bg-slate-900"></td>
                     </tr>
 
-                    <tr className="bg-[#eef3fb]">
+                    <tr className="bg-surface-muted">
                       <ExcelRowIndex i="9" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold text-[11px] text-[#0b5c96] pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Final Implied Market Value</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-center font-mono font-extrabold text-[13px] text-[#0b5c96] shadow-inner">${Math.round(calculations.discountedEv).toLocaleString()}</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold text-[11px] text-info pl-3 sticky left-6 z-20 shadow-[2px_0_5px_-2px_rgba(0,0,0,0.05)]">Final Implied Market Value</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-center font-mono font-extrabold text-[13px] text-info shadow-inner">${Math.round(calculations.discountedEv).toLocaleString()}</td>
                       <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-center font-mono font-extrabold text-[11px] text-red-600 shadow-inner">- ${targetNetDebt.toLocaleString()} Debt</td>
                       <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-center font-mono font-extrabold text-[13px] text-green-700 shadow-inner border-2 border-green-500 bg-green-50">${Math.round(calculations.impliedEquityValue).toLocaleString()}</td>
-                      <td colSpan={4} className="border border-gray-200 dark:border-slate-700 bg-[#eef3fb]"></td>
+                      <td colSpan={4} className="border border-gray-200 dark:border-slate-700 bg-surface-muted"></td>
                     </tr>
 
                   </tbody>
@@ -524,7 +524,7 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
                     <button type="submit" disabled={loading} className="btn btn-primary w-full shadow-xl shadow-brand-teal/30">
                       {loading ? 'Verifying...' : 'Pay & Subscribe Access'}
                     </button>
-                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-gray-800">
+                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-content-primary">
                       Cancel
                     </button>
                   </form>

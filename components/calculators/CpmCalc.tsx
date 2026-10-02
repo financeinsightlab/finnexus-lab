@@ -24,7 +24,7 @@ const DEFAULT_ACTS: Act[] = [
 ];
 
 const inp =
-  'w-14 bg-white/5 border border-white/10 rounded-lg px-2 py-1.5 text-white text-sm font-mono text-center focus:outline-none focus:border-teal-500/50';
+  'w-14 bg-surface border border-input rounded-lg px-2 py-1.5 text-content-primary text-sm font-mono text-center focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20';
 
 export default function CpmCalc() {
   const [acts, setActs] = useState<Act[]>(DEFAULT_ACTS);
@@ -69,7 +69,7 @@ export default function CpmCalc() {
         <span className="inline-block text-[10px] font-bold uppercase tracking-widest text-teal-300 bg-teal-500/10 border border-teal-500/25 rounded-full px-3 py-1">
           PGDM Lab · 301 Unit 5
         </span>
-        <h1 className="text-2xl md:text-3xl font-extrabold text-white">Critical Path Simulator (CPM)</h1>
+        <h1 className="text-2xl md:text-3xl font-extrabold text-content-primary">Critical Path Simulator (CPM)</h1>
         <p className="text-sm text-gray-400">
           Edit durations of the lecture network (with dummy E) — ES/EF/LS/LF, floats and the critical path
           recompute live. Companion to{' '}
@@ -90,8 +90,8 @@ export default function CpmCalc() {
                 r.tf === 0 && r.dur > 0
                   ? 'border-teal-500/50 bg-teal-500/10 text-teal-300 font-bold'
                   : r.dur === 0
-                    ? 'border-white/10 bg-white/[0.03] text-gray-500'
-                    : 'border-white/10 bg-white/[0.04] text-gray-300'
+                    ? 'border-border-subtle bg-surface-muted text-content-muted'
+                    : 'border-border bg-surface-muted text-content-secondary'
               }`}
               title={`ES ${r.es} · EF ${r.ef} · LS ${r.ls} · LF ${r.lf} · TF ${r.tf}`}
             >
@@ -100,9 +100,9 @@ export default function CpmCalc() {
             </span>
           ))}
         </div>
-        <div className="mt-4 rounded-xl bg-teal-500/[0.07] border border-teal-500/25 px-4 py-3 text-center">
+        <div className="mt-4 rounded-xl bg-brand-muted border border-brand/25 px-4 py-3 text-center">
           <p className="text-[10px] font-bold uppercase tracking-widest text-teal-300">Critical path & project duration</p>
-          <p className="text-xl font-mono font-extrabold text-white mt-1">
+          <p className="text-xl font-mono font-extrabold text-content-primary mt-1">
             {result.critical.join(' → ')} = {result.projectEnd} days
           </p>
         </div>
@@ -125,7 +125,7 @@ export default function CpmCalc() {
         </div>
         <button
           onClick={() => setActs(DEFAULT_ACTS)}
-          className="mt-4 text-[11px] font-bold text-gray-400 hover:text-teal-300 border border-white/10 hover:border-teal-500/40 rounded-lg px-3 py-1.5 transition-colors"
+          className="mt-4 text-[11px] font-bold text-gray-400 hover:text-brand-hover border border-white/10 hover:border-teal-500/40 rounded-lg px-3 py-1.5 transition-colors"
         >
           Reset to lecture example
         </button>
@@ -144,7 +144,7 @@ export default function CpmCalc() {
           </thead>
           <tbody>
             {result.rows.map((r) => (
-              <tr key={r.id} className={`border-t border-white/5 ${r.tf === 0 && r.dur > 0 ? 'text-teal-300' : 'text-gray-300'}`}>
+              <tr key={r.id} className={`border-t border-border-subtle ${r.tf === 0 && r.dur > 0 ? 'text-brand' : 'text-content-secondary'}`}>
                 <td className="py-1.5 pr-3 font-bold">{r.id}{r.dur === 0 ? ' ᵈ' : ''}</td>
                 <td className="pr-3">{r.from}→{r.to}</td>
                 <td className="pr-3">{r.dur}</td>

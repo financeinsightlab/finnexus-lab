@@ -334,9 +334,9 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
         <div className="content-page relative z-10 pt-16 pb-12 md:pt-20">
           {/* Breadcrumb */}
           <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-            <Link href="/" className="hover:text-white transition">Home</Link>
+            <Link href="/" className="hover:text-content-primary transition">Home</Link>
             <span>/</span>
-            <Link href="/data-lab" className="hover:text-white transition">Data Lab</Link>
+            <Link href="/data-lab" className="hover:text-content-primary transition">Data Lab</Link>
             <span>/</span>
             <span className="text-cinema-cyan">{project.sector}</span>
           </nav>
@@ -491,7 +491,9 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
 
           <div className="content-main rounded-2xl border border-border bg-card p-6 shadow-sm md:p-10">
             {project.content ? (
+
               <div className="cms-content prose-content article-body">
+
                 <MDXRemote source={project.content} components={mdxComponents} />
               </div>
             ) : (
@@ -528,7 +530,9 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
                   </div>
                 </div>
                 <div className="p-5">
+
                   <h3 className="text-base font-bold leading-snug text-foreground transition-colors group-hover:text-primary">{r.title}</h3>
+
                 </div>
               </Link>
             ))}
@@ -549,10 +553,12 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
                   href={`/data-lab/${prev.slug}`}
                   className="group rounded-2xl border border-border bg-card p-5 transition-all hover:-translate-y-0.5 hover:border-primary/40"
                 >
+
                   <span className="mb-2 inline-flex items-center gap-1 text-xs uppercase tracking-wider text-muted-foreground transition group-hover:text-primary">
                     <ChevronLeft className="w-3.5 h-3.5" /> Previous
                   </span>
                   <div className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+
                     {prev.title}
                   </div>
                 </Link>
@@ -562,10 +568,12 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
                   href={`/data-lab/${next.slug}`}
                   className="group rounded-2xl border border-border bg-card p-5 text-right transition-all hover:-translate-y-0.5 hover:border-primary/40"
                 >
+
                   <span className="mb-2 inline-flex items-center justify-end gap-1 text-xs uppercase tracking-wider text-muted-foreground transition group-hover:text-primary">
                     Next <ChevronRight className="w-3.5 h-3.5" />
                   </span>
                   <div className="line-clamp-2 text-sm font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+
                     {next.title}
                   </div>
                 </Link>

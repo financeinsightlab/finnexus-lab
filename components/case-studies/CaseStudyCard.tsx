@@ -9,6 +9,7 @@ import type { CaseStudy } from '@/types';
 /* Theme-aware accent chips: each pairs a dark-ish text tone for light mode with
    a bright tone for dark mode, and never relies on dark-only surfaces. */
 const ENGAGEMENT_ACCENTS: Record<string, string> = {
+
   'Market Entry + Growth Strategy': 'text-teal-700 dark:text-cinema-cyan border-teal-600/30 bg-teal-500/10',
   'Cost Transformation + Operations': 'text-amber-700 dark:text-cinema-amber border-amber-600/30 bg-amber-500/10',
   'M&A Due Diligence + 100-Day Plan': 'text-violet-700 dark:text-cinema-violet border-violet-600/30 bg-violet-500/10',
@@ -17,6 +18,7 @@ const ENGAGEMENT_ACCENTS: Record<string, string> = {
   'Supply Chain Optimization': 'text-teal-700 dark:text-cinema-cyan border-teal-600/30 bg-teal-500/10',
   'Go-to-Market Strategy': 'text-amber-700 dark:text-cinema-amber border-amber-600/30 bg-amber-500/10',
   'Turnaround & Restructuring': 'text-rose-700 dark:text-rose-400 border-rose-600/30 bg-rose-500/10',
+
 };
 
 interface CaseStudyCardProps {
@@ -37,7 +39,9 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
     setTilt({ x: py * -8, y: px * 10 }); // rotateX from Y movement, rotateY from X movement
   };
 
+
   const accent = ENGAGEMENT_ACCENTS[study.engagementType] ?? 'text-teal-700 dark:text-cinema-cyan border-teal-600/30 bg-teal-500/10';
+
 
   return (
     <div style={{ perspective: '1200px' }} className="h-full">
@@ -80,19 +84,23 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
                 {study.engagementType}
               </span>
               {study.featured && (
+
                 <span className="inline-flex items-center gap-1 rounded-full border border-amber-500/40 bg-amber-500/20 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider text-amber-800 backdrop-blur-sm dark:text-cinema-amber">
+
                   ★ Featured
                 </span>
               )}
             </div>
 
             {/* Bottom meta on image */}
+
             <div className="absolute bottom-3 left-4 right-4 flex items-center justify-between text-[11px] text-white/85">
               <span className="inline-flex items-center gap-1.5">
                 <Building2 className="h-3.5 w-3.5 text-teal-300 dark:text-cinema-cyan" /> {study.clientType}
               </span>
               <span className="inline-flex items-center gap-1.5">
                 <Clock className="h-3.5 w-3.5 text-teal-300 dark:text-cinema-cyan" /> {study.timeline ?? '—'}
+
               </span>
             </div>
           </div>
@@ -111,7 +119,9 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
               </span>
             </div>
 
+
             <h3 className="mb-2 line-clamp-2 text-lg font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+
               {study.title}
             </h3>
 
@@ -125,7 +135,9 @@ export default function CaseStudyCard({ study }: CaseStudyCardProps) {
                 {study.frameworks.slice(0, 3).map((framework) => (
                   <span
                     key={framework}
+
                     className="inline-flex items-center gap-1 rounded-md border border-primary/25 bg-primary/5 px-2 py-0.5 text-[10px] text-primary"
+
                   >
                     <Layers className="w-2.5 h-2.5" /> {framework}
                   </span>

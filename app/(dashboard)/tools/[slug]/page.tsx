@@ -108,7 +108,9 @@ export default async function CalculatorPage({ params }: PageProps) {
 
   if (tool?.gated && !hasPlanPremiumAccess) {
     return (
+
       <div className="content-page min-h-screen py-16">
+
         <JsonLd data={toolSchema} />
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-600">Premium financial tool</p>
         <h1 className="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">{tool.title}</h1>
@@ -120,11 +122,15 @@ export default async function CalculatorPage({ params }: PageProps) {
   }
 
   return (
+
     <div className="relative flex min-h-screen w-full flex-col bg-background text-foreground">
+
        {/* 3D Hero Banner */}
        <div className="relative w-full h-48 md:h-64 border-b border-border overflow-hidden">
           <Image src={heroImg} alt={slug} fill priority loading="eager" className="object-cover opacity-90 dark:opacity-70 dark:mix-blend-lighten mix-blend-multiply" />
+
           <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
+
        </div>
        
        <JsonLd data={toolSchema} />

@@ -49,7 +49,7 @@ function RichText({ text }: { text: string }) {
     <>
       {parts.map((p, i) =>
         i % 2 === 1 ? (
-          <strong key={i} className="text-white font-semibold">{p}</strong>
+          <strong key={i} className="text-content-primary font-semibold">{p}</strong>
         ) : (
           <span key={i}>{p}</span>
         )
@@ -59,10 +59,12 @@ function RichText({ text }: { text: string }) {
 }
 
 const CALLOUT_STYLE = {
+
   note: { icon: Lightbulb, cls: 'border-blue-500/30 bg-blue-500/[0.07]', label: 'Note', labelCls: 'text-blue-700 dark:text-blue-300' },
   warning: { icon: AlertTriangle, cls: 'border-red-500/30 bg-red-500/[0.07]', label: 'Watch out', labelCls: 'text-red-700 dark:text-red-300' },
   excel: { icon: Table2, cls: 'border-emerald-500/30 bg-emerald-500/[0.07]', label: 'Excel craft', labelCls: 'text-emerald-700 dark:text-emerald-300' },
   exam: { icon: GraduationCap, cls: 'border-amber-500/30 bg-amber-500/[0.07]', label: 'Exam edge', labelCls: 'text-amber-700 dark:text-amber-300' },
+
 } as const;
 
 export default async function LecturePage({ params }: PageProps) {
@@ -74,9 +76,11 @@ export default async function LecturePage({ params }: PageProps) {
   const accent = subject.track === 'FINANCE' ? 'teal' : 'violet';
   const chip =
     accent === 'teal'
+
       ? 'bg-primary/10 text-primary border-primary/25'
       : 'bg-cinema-violet/10 text-violet-700 dark:text-violet-300 border-cinema-violet/25';
   const num = accent === 'teal' ? 'from-teal-500 to-emerald-500' : 'from-violet-500 to-indigo-500';
+
 
   const BASE = 'https://kunwaranalytics.in';
   const lectureSchemas = [
@@ -112,6 +116,7 @@ export default async function LecturePage({ params }: PageProps) {
     <div className="min-h-screen bg-background text-foreground">
       <JsonLd data={lectureSchemas} />
       {/* ── HEADER ── */}
+
       <header className="relative overflow-hidden border-b border-border bg-card/70 py-12">
         <div className="absolute -top-24 -right-24 w-72 h-72 bg-primary/10 rounded-full blur-3xl" />
         <div className="content-page relative z-10">
@@ -119,6 +124,7 @@ export default async function LecturePage({ params }: PageProps) {
             <Link href="/pgdm" className="hover:text-primary transition-colors">PGDM</Link>
             <ChevronRight className="w-3 h-3" />
             <Link href={`/pgdm/${subject.slug}`} className="hover:text-primary transition-colors truncate max-w-[240px]">
+
               {subject.code} {subject.name}
             </Link>
             <ChevronRight className="w-3 h-3" />
@@ -204,7 +210,9 @@ export default async function LecturePage({ params }: PageProps) {
               </p>
             ))}
             {sec.bullets && (
+
               <ul className="space-y-2 rounded-2xl border border-border bg-muted/50 p-5">
+
                 {sec.bullets.map((b, j) => (
                   <li key={j} className="flex gap-3 text-[13.5px] text-foreground leading-relaxed">
                     <span className={`shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-gradient-to-r ${num}`} />
@@ -303,7 +311,9 @@ export default async function LecturePage({ params }: PageProps) {
                           <div className="min-w-0">
                             <p className="text-[13px] text-foreground leading-relaxed">{s.text}</p>
                             {s.calc && (
+
                               <p className="text-[12.5px] font-mono text-primary/90 bg-teal-500/[0.06] border border-teal-500/15 rounded-lg px-3 py-1.5 mt-1 break-words">
+
                                 {s.calc}
                               </p>
                             )}
@@ -333,8 +343,10 @@ export default async function LecturePage({ params }: PageProps) {
               {lecture.caseStudy.body.map((p, i) => (
                 <p key={i} className="text-[14px] text-foreground leading-[1.85]">{p}</p>
               ))}
+
               <div className="rounded-xl bg-muted/50 border border-border p-4">
                 <p className="text-[10px] font-bold uppercase tracking-widest text-violet-700 dark:text-violet-300 mb-2">Your task</p>
+
                 <ol className="space-y-1.5">
                   {lecture.caseStudy.questions.map((q, i) => (
                     <li key={i} className="text-[13px] text-foreground flex gap-2.5">
@@ -411,7 +423,9 @@ export default async function LecturePage({ params }: PageProps) {
                 <Link
                   key={i}
                   href={t.href}
+
                   className="text-[12.5px] font-semibold text-primary bg-primary/10 border border-primary/25 rounded-xl px-4 py-2 hover:bg-primary/20 transition-colors"
+
                 >
                   {t.label} →
                 </Link>
@@ -430,11 +444,13 @@ export default async function LecturePage({ params }: PageProps) {
         <RelatedFinanceTerms categories={[subject.track, TRACK_META[subject.track].label]} keywords={[subject.slug, subject.code.toLowerCase()]} title="Key finance terms in this lecture" limit={3} />
 
         {/* ── NEXT ── */}
+
         <nav className="flex items-center justify-between border-t border-border pt-6">
           <Link href={`/pgdm/${subject.slug}`} className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary">
             ← All {subject.code} lectures
           </Link>
           <Link href="/pgdm" className="text-xs font-medium text-muted-foreground transition-colors hover:text-primary">
+
             Specialization tracks →
           </Link>
         </nav>

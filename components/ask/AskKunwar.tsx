@@ -91,7 +91,7 @@ export default function AskKunwar() {
                 <Link
                     key={tokens.length}
                     href={url}
-                    className="text-amber-600 dark:text-amber-400 font-semibold underline underline-offset-2 hover:opacity-80"
+                    className="text-brand font-semibold underline underline-offset-2 hover:text-brand-hover"
                 >
                     {label}
                 </Link>
@@ -112,11 +112,11 @@ export default function AskKunwar() {
             <span key={baseKey}>
                 {parts.map((part, i) => {
                     if (part.startsWith('**') && part.endsWith('**')) {
-                        return <strong key={i} className="font-bold text-neutral-900 dark:text-white">{part.slice(2, -2)}</strong>;
+                        return <strong key={i} className="font-bold text-content-primary">{part.slice(2, -2)}</strong>;
                     }
                     if (part.startsWith('`') && part.endsWith('`')) {
                         return (
-                            <code key={i} className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 font-mono text-amber-600 dark:text-amber-400 text-xs">
+                            <code key={i} className="px-1.5 py-0.5 rounded bg-accent font-mono text-brand text-xs">
                                 {part.slice(1, -1)}
                             </code>
                         );
@@ -145,12 +145,12 @@ export default function AskKunwar() {
                     value={question}
                     onChange={(event) => setQuestion(event.target.value)}
                     placeholder="Ask about features, pricing, valuation, research, or study courses…"
-                    className="w-full rounded-xl border border-neutral-300 bg-white px-4 py-3 text-sm text-neutral-900 shadow-sm outline-none transition focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20 dark:border-neutral-700 dark:bg-neutral-900 dark:text-white"
+                    className="w-full rounded-xl border border-input bg-surface px-4 py-3 text-sm text-content-primary shadow-sm outline-none transition placeholder:text-content-muted focus:border-brand focus:ring-2 focus:ring-brand/20"
                 />
                 <button
                     type="submit"
                     disabled={loading}
-                    className="rounded-xl bg-amber-500 px-6 py-3 text-sm font-semibold text-white transition hover:bg-amber-600 disabled:cursor-not-allowed disabled:opacity-60"
+                    className="rounded-xl bg-primary px-6 py-3 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover disabled:cursor-not-allowed disabled:opacity-60"
                 >
                     {loading ? 'Searching…' : 'Ask'}
                 </button>
@@ -166,7 +166,7 @@ export default function AskKunwar() {
                                 setQuestion(suggestion);
                                 void ask(suggestion);
                             }}
-                            className="rounded-full border border-neutral-200 px-3 py-1 text-xs text-neutral-600 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-300 dark:hover:bg-neutral-800"
+                            className="rounded-full border border-border bg-surface px-3 py-1 text-xs text-content-secondary transition hover:bg-surface-muted hover:text-content-primary"
                         >
                             {suggestion}
                         </button>
@@ -175,19 +175,19 @@ export default function AskKunwar() {
             )}
 
             {error && (
-                <p className="mt-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/40 dark:text-red-300">
+                <p className="mt-4 rounded-lg border border-error/30 bg-error-muted px-4 py-3 text-sm text-error">
                     {error}
                 </p>
             )}
 
             {result && (
                 <div className="mt-6 space-y-4">
-                    <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
-                        <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
+                    <div className="rounded-xl border border-border bg-surface p-5 shadow-sm">
+                        <p className="text-xs font-semibold uppercase tracking-widest text-content-muted">
                             Answer · sourced from {result.citations.length} page
                             {result.citations.length === 1 ? '' : 's'} · {PROVIDER_LABELS[result.provider] ?? 'Source-grounded answer'}
                         </p>
-                        <div className="mt-3 text-sm leading-relaxed text-neutral-800 dark:text-neutral-100 whitespace-pre-line space-y-2">
+                        <div className="mt-3 space-y-2 whitespace-pre-line text-sm leading-relaxed text-content-secondary">
                             {renderMarkdown(result.answer)}
                         </div>
                     </div>
@@ -198,14 +198,14 @@ export default function AskKunwar() {
                                 const href = safeAskHref(citation.url);
                                 const citationContent = (
                                     <>
-                                        <span className="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
+                                        <span className="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-brand-muted text-xs font-bold text-brand">
                                             {citation.index}
                                         </span>
                                         <span className="min-w-0">
-                                            <span className="block text-sm font-medium text-neutral-900 dark:text-white">
+                                            <span className="block text-sm font-medium text-content-primary">
                                                 {citation.title}
                                             </span>
-                                            <span className="mt-0.5 block truncate text-xs text-neutral-500">
+                                            <span className="mt-0.5 block truncate text-xs text-content-muted">
                                                 {citation.snippet}
                                             </span>
                                         </span>
@@ -214,11 +214,11 @@ export default function AskKunwar() {
                                 return (
                                     <li key={citation.index}>
                                         {href ? (
-                                            <Link href={href} className="flex gap-3 rounded-lg border border-neutral-200 p-3 transition hover:border-amber-400 hover:bg-amber-50/50 dark:border-neutral-800 dark:hover:bg-neutral-800/50">
+                                            <Link href={href} className="flex gap-3 rounded-lg border border-border bg-surface p-3 transition hover:border-brand/40 hover:bg-brand-muted">
                                                 {citationContent}
                                             </Link>
                                         ) : (
-                                            <div className="flex gap-3 rounded-lg border border-neutral-200 p-3 dark:border-neutral-800">
+                                            <div className="flex gap-3 rounded-lg border border-border p-3">
                                                 {citationContent}
                                             </div>
                                         )}

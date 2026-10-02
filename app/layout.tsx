@@ -157,7 +157,7 @@ export default function RootLayout({
         <JsonLd data={organizationSchema} />
         <JsonLd data={websiteSchema} />
       </head>
-      <body className="min-h-screen flex flex-col bg-[#faf9f6] text-slate-900 dark:bg-[#0a1120] dark:text-white transition-colors duration-300">
+      <body className="min-h-screen flex flex-col bg-background text-content-primary transition-colors duration-300">
         {/* Global ambient background — fixed, behind all content */}
         <div className="fixed inset-0 z-0 pointer-events-none cinema-mesh opacity-30" />
         <div className="fixed inset-0 z-0 pointer-events-none cinema-noise" />

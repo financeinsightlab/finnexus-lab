@@ -67,6 +67,12 @@ export async function GET(
       htmlContent = htmlContent.replace('<header>', `<header>\n ${backBtnHtml}`)
     }
 
+    // Keep the built-in theme control, and share its state with the site's next-themes preference.
+    htmlContent = htmlContent.replace(
+      '<button class="hbtn" id="theme">◐</button>',
+      '<button class="hbtn" id="theme" type="button" title="Switch theme" aria-label="Switch theme" aria-pressed="false">◐</button>'
+    )
+
     // 2. Inject custom CSS to make the sidebar collapsible on ALL screen sizes with dynamic layout adjustment
     const customSidebarStyle = `
 <style id="custom-responsive-sidebar">
@@ -120,8 +126,51 @@ export async function GET(
   }
 </style>`
 
+    const siteThemeStyle = `
+<style id="site-theme-palette">
+  :root {
+    color-scheme: dark;
+    --acc: #4ec9bd;
+    --acc2: #54d4e3;
+    --good: #6bd59b;
+    --bad: #ff8792;
+  }
+  body.lite {
+    color-scheme: light;
+    --acc: #0d6e6e;
+    --acc2: #087e8b;
+    --good: #1a5c3a;
+    --bad: #9b2335;
+    --glow: 0 12px 34px rgba(15, 23, 42, .10);
+  }
+  body.lite .hero { background: linear-gradient(135deg, #ffffff, #eaf5f3); }
+  body.lite .hero h1 span { background-image: linear-gradient(90deg, var(--acc), #855600, var(--acc2)); }
+  body.lite .qopt.right .k { color: #ffffff; }
+  :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+    outline: 2px solid var(--acc2);
+    outline-offset: 3px;
+  }
+</style>`
+
     if (htmlContent.includes('</head>')) {
-      htmlContent = htmlContent.replace('</head>', `${customSidebarStyle}\n</head>`)
+      htmlContent = htmlContent.replace('</head>', `${customSidebarStyle}\n${siteThemeStyle}\n</head>`)
+    }
+
+    // Apply the site's saved theme before course content paints; the course still works standalone.
+    const themeInitScript = `<script id="site-theme-init">(function(){try{var pref=localStorage.getItem('theme')||'system';var media=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;var light=pref==='light'||(pref!=='dark'&&!!(media&&!media.matches));document.documentElement.dataset.siteTheme=light?'light':'dark';document.body.classList.toggle('lite',light);}catch(e){}})();</script>`
+    if (htmlContent.includes('<body>')) {
+      htmlContent = htmlContent.replace('<body>', `<body>\n${themeInitScript}`)
+    }
+
+    // Keep the existing course toggle, but initialize from and persist to the shared site key.
+    htmlContent = htmlContent.replace(
+      "if(ls('pbi2-theme')==='lite')document.body.classList.add('lite');",
+      "document.body.classList.toggle('lite',document.documentElement.dataset.siteTheme==='light');"
+    )
+
+    const themeSyncScript = `<script id="site-theme-sync">(function(){var root=document.documentElement;var button=document.getElementById('theme');var media=window.matchMedia?window.matchMedia('(prefers-color-scheme: dark)'):null;function apply(pref){var light=pref==='light'||(pref!=='dark'&&!!(media&&!media.matches));document.body.classList.toggle('lite',light);root.dataset.siteTheme=light?'light':'dark';updateButton(light);}function updateButton(light){if(button){button.setAttribute('aria-pressed',String(light));button.setAttribute('aria-label',light?'Switch to dark theme':'Switch to light theme');button.title=light?'Switch to dark theme':'Switch to light theme';button.textContent=light?'☼':'◐';}}try{updateButton(document.body.classList.contains('lite'));}catch(e){}if(button){button.addEventListener('click',function(){var light=document.body.classList.contains('lite');var pref=light?'light':'dark';try{localStorage.setItem('theme',pref);}catch(e){}root.dataset.siteTheme=pref;updateButton(light);});}window.addEventListener('storage',function(event){if(event.key==='theme')apply(event.newValue||'system');});if(media){var onSystemChange=function(){try{var pref=localStorage.getItem('theme');if(!pref||pref==='system')apply('system');}catch(e){apply('system');}};if(media.addEventListener)media.addEventListener('change',onSystemChange);else if(media.addListener)media.addListener(onSystemChange);}})();</script>`
+    if (htmlContent.includes('</body>')) {
+      htmlContent = htmlContent.replace('</body>', `${themeSyncScript}\n</body>`)
     }
 
     // 3. Ensure navigating between sections on desktop does NOT reset/override the user's open/closed sidebar preference

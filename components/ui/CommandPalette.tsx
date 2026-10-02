@@ -9,6 +9,7 @@ import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 import type { SearchItem, SearchResult } from '@/lib/search';
+import { useDialogAccessibility } from '@/components/ui/useDialogAccessibility';
 
 const STATIC_ACTIONS: SearchItem[] = [
     { kind: 'research', title: 'Dashboard', description: 'Your saved items and plan', url: '/dashboard', tags: ['account'], score: 1 },
@@ -140,11 +141,11 @@ export default function CommandPalette() {
                 aria-label="Open command palette"
                 aria-expanded={open}
                 aria-controls="command-palette-dialog"
-                className="hidden items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-300 transition-colors hover:border-white/20 hover:text-white md:inline-flex"
+                className="hidden items-center gap-2 rounded-lg border border-border bg-surface-muted px-3 py-1.5 text-xs font-medium text-content-secondary transition-colors hover:border-border-strong hover:text-content-primary md:inline-flex"
             >
                 <span aria-hidden>🔍</span>
                 <span>Search…</span>
-                <kbd className="rounded border border-white/10 bg-black/30 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">
+                <kbd className="rounded border border-border bg-surface-muted px-1.5 py-0.5 font-mono text-[10px] text-content-muted">
                     ⌘K
                 </kbd>
             </button>
@@ -164,7 +165,7 @@ export default function CommandPalette() {
                     <div
                         ref={dialogRef}
                         id="command-palette-dialog"
-                        className="viewport-dialog-panel ui-scroll-region flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1420] shadow-2xl"
+                        className="viewport-dialog-panel ui-scroll-region flex w-full max-w-xl flex-col overflow-hidden rounded-2xl border border-border bg-surface-overlay shadow-2xl"
                         style={{ maxHeight: 'calc(100dvh - max(12vh, calc(env(safe-area-inset-top) + 1rem)) - max(0.75rem, env(safe-area-inset-bottom)))' }}
                         onMouseDown={(event) => event.stopPropagation()}
                         role="dialog"
@@ -173,8 +174,8 @@ export default function CommandPalette() {
                         tabIndex={-1}
                         data-lenis-prevent
                     >
-                        <div className="flex shrink-0 items-center gap-3 border-b border-white/10 px-4">
-                            <span aria-hidden className="text-slate-500">
+                        <div className="flex shrink-0 items-center gap-3 border-b border-border px-4">
+                            <span aria-hidden className="text-content-muted">
                                 🔍
                             </span>
                             <input
@@ -183,14 +184,14 @@ export default function CommandPalette() {
                                 onChange={(event) => setQuery(event.target.value)}
                                 onKeyDown={onInputKeyDown}
                                 placeholder="Search pages, research, lectures, tools…"
-                                className="min-w-0 flex-1 bg-transparent py-4 text-sm text-white outline-none placeholder:text-slate-500"
+                                className="min-w-0 flex-1 bg-transparent py-4 text-sm text-content-primary outline-none placeholder:text-content-muted"
                             />
-                            {loading && <span className="shrink-0 text-xs text-slate-500">…</span>}
+                            {loading && <span className="shrink-0 text-xs text-content-muted">…</span>}
                             <button
                                 ref={closeButtonRef}
                                 type="button"
                                 onClick={() => setOpen(false)}
-                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-slate-400 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
+                                className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-content-muted transition hover:bg-accent hover:text-content-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
                                 aria-label="Close command palette"
                             >
                                 <X className="h-5 w-5" />
@@ -199,7 +200,7 @@ export default function CommandPalette() {
 
                         <ul className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain py-2" data-lenis-prevent>
                             {rows.length === 0 ? (
-                                <li className="px-4 py-8 text-center text-sm text-slate-500">
+                                <li className="px-4 py-8 text-center text-sm text-content-muted">
                                     No matches. Try another term.
                                 </li>
                             ) : (
@@ -216,14 +217,14 @@ export default function CommandPalette() {
                                                 {GROUP_ICON[row.item.kind] ?? '📄'}
                                             </span>
                                             <span className="min-w-0 flex-1 break-words">
-                                                <span className="block break-words text-sm font-medium text-slate-100">
+                                                <span className="block break-words text-sm font-medium text-content-primary">
                                                     {row.item.title}
                                                 </span>
-                                                <span className="block break-words text-xs text-slate-500">
+                                                <span className="block break-words text-xs text-content-muted">
                                                     {row.item.description}
                                                 </span>
                                             </span>
-                                            <span className="max-w-[28%] shrink-0 break-words text-right text-[10px] uppercase tracking-widest text-slate-600">
+                                            <span className="max-w-[28%] shrink-0 break-words text-right text-[10px] uppercase tracking-widest text-content-muted">
                                                 {row.label}
                                             </span>
                                         </button>
@@ -232,7 +233,7 @@ export default function CommandPalette() {
                             )}
                         </ul>
 
-                        <div className="flex shrink-0 items-center justify-between gap-2 border-t border-white/10 px-4 py-2 text-[10px] text-slate-500">
+                        <div className="flex shrink-0 items-center justify-between gap-2 border-t border-border px-4 py-2 text-[10px] text-content-muted">
                             <span>↑↓ navigate · ↵ open · esc close</span>
                             <span>Kunwar Analytics</span>
                         </div>

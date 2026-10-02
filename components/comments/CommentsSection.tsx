@@ -133,7 +133,7 @@ function CommentCard({
                                 onChange={(e) => setDraft(e.target.value)}
                                 rows={2}
                                 placeholder={`Reply to ${node.authorName ?? 'this comment'}…`}
-                                className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm dark:border-white/10 dark:bg-[#111c31]"
+                                className="w-full rounded-lg border border-slate-200 bg-white p-2 text-sm dark:border-white/10 dark:bg-surface-raised"
                             />
                             <div className="mt-2 flex justify-end">
                                 <button
@@ -257,7 +257,7 @@ export default function CommentsSection({
                         onChange={(e) => setDraft(e.target.value)}
                         rows={3}
                         placeholder="Share your analysis… use @handle to mention someone."
-                        className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm dark:border-white/10 dark:bg-[#111c31]"
+                        className="w-full rounded-xl border border-slate-200 bg-white p-3 text-sm dark:border-white/10 dark:bg-surface-raised"
                     />
                     <div className="mt-2 flex justify-end">
                         <button

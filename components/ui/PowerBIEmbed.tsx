@@ -26,7 +26,7 @@ export default function PowerBIEmbed({
     >
       {/* Loading skeleton */}
       {!loaded && !error && (
-        <div className="absolute inset-0 flex flex-col items-center justify-center bg-brand-silver gap-3">
+        <div className="absolute inset-0 flex flex-col items-center justify-center bg-surface-muted gap-3">
           {/* Spinner */}
           <svg
             className="animate-spin h-8 w-8 text-brand-teal"

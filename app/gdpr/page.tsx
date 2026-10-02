@@ -10,9 +10,11 @@ export const metadata: Metadata = {
 
 export default function PrivacyRightsPage() {
   return (
+
     <main className="min-h-screen bg-background py-16">
       <ContentPage width="reading">
         <article className="cms-content prose-content rounded-2xl border border-border bg-card p-8 shadow-sm">
+
         <p className="text-sm uppercase tracking-widest text-teal-600">Privacy information</p>
         <h1>Privacy requests</h1>
         <p>Last updated: October 2, 2026</p>

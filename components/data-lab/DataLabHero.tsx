@@ -42,7 +42,7 @@ export default function DataLabHero() {
       {/* Content */}
       <div className="content-page relative z-10 py-28 md:py-36">
         <div className="max-w-3xl">
-          <p className="section-label mb-5 anim-fade text-cyan-700 dark:text-cyan-400">
+<p className="section-label mb-5 anim-fade text-brand">
             The Quantitative Engine
           </p>
 

@@ -188,7 +188,7 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
             { label: 'Net Income', key: 'netIncome', bold: true, highlight: 'navy' },
             { label: '  Net Margin %', key: 'netMargin', pct: true },
           ].map((row, idx) => (
-            <tr key={idx} className={`hover:bg-blue-50/30 group ${row.highlight === 'navy' ? 'bg-[#eef3fb]' : row.highlight === 'green' ? 'bg-green-50/20' : row.highlight === 'blue' ? 'bg-sky-50/20' : ''}`}>
+            <tr key={idx} className={`hover:bg-blue-50/30 group ${row.highlight === 'navy' ? 'bg-surface-muted' : row.highlight === 'green' ? 'bg-green-50/20' : row.highlight === 'blue' ? 'bg-sky-50/20' : ''}`}>
               <ExcelIdx i={String(idx + 1)} />
               <td className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 pl-3 sticky left-6 z-20 ${row.bold ? 'font-bold text-gray-800' : 'text-gray-500 pl-6'} bg-white dark:bg-slate-900 group-hover:bg-blue-50/10`}>
                 {row.label}
@@ -198,7 +198,7 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
                 const isNeg = row.neg && val > 0;
                 const isPct = row.pct;
                 return (
-                  <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${(row.highlight === 'navy') ? 'text-[#0b5c96] text-[13px]' : isNeg ? 'text-red-600' : 'text-gray-700'}`}>
+                  <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${(row.highlight === 'navy') ? 'text-info text-[13px]' : isNeg ? 'text-red-600' : 'text-gray-700'}`}>
                     {isPct ? `${val}%` : isNeg ? `(${fmt(val)})` : fmt(val)}
                   </td>
                 );
@@ -235,7 +235,7 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
               </td>
               {row.section ? <td colSpan={5} className="border border-gray-200 dark:border-slate-700 bg-gray-100"></td> :
                 model.map((m, mi) => (
-                  <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'blue' ? 'text-[#0b5c96]' : row.highlight === 'green' ? 'text-green-700' : 'text-gray-700'}`}>
+                  <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'blue' ? 'text-info' : row.highlight === 'green' ? 'text-green-700' : 'text-gray-700'}`}>
                     {row.key ? fmt((m as any)[row.key] ?? 0) : ''}
                   </td>
                 ))
@@ -266,7 +266,7 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
             { label: 'Debt / Equity Raised', key: 'cashFromFinancing', bold: false },
             { label: 'NET ENDING CASH', key: 'endingCash', bold: true, highlight: 'navy' },
           ].map((row, idx) => (
-            <tr key={idx} className={`${row.section ? 'bg-gray-100' : 'hover:bg-blue-50/30'} ${row.highlight === 'navy' ? 'bg-[#eef3fb]' : row.highlight === 'green' ? 'bg-green-50/20' : ''}`}>
+            <tr key={idx} className={`${row.section ? 'bg-gray-100' : 'hover:bg-blue-50/30'} ${row.highlight === 'navy' ? 'bg-surface-muted' : row.highlight === 'green' ? 'bg-green-50/20' : ''}`}>
               <ExcelIdx i={row.section ? '' : String(idx)} />
               <td className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 sticky left-6 z-20 ${row.section ? 'font-extrabold text-gray-500 uppercase tracking-widest text-[10px] bg-gray-100' : row.bold ? 'font-bold text-gray-800 pl-3 bg-white dark:bg-slate-900' : 'text-gray-600 pl-6 bg-white dark:bg-slate-900'}`}>
                 {row.label}
@@ -275,7 +275,7 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
                 model.map((m, mi) => {
                   const val = row.key ? ((m as any)[row.key] ?? 0) : 0;
                   return (
-                    <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'navy' ? 'text-[#0b5c96] text-[13px]' : val < 0 ? 'text-red-600' : 'text-gray-700'}`}>
+                    <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'navy' ? 'text-info text-[13px]' : val < 0 ? 'text-red-600' : 'text-gray-700'}`}>
                       {val < 0 ? `(${fmt(Math.abs(val))})` : fmt(val)}
                     </td>
                   );
@@ -398,7 +398,7 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
 
             {/* Excel Sheet Tabs */}
             <div className="bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden">
-              <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2">
+              <div className="bg-success text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/></svg>
                 <span>3_Statement_Financial_Model.xlsx</span>
               </div>
@@ -415,7 +415,7 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
                   <button
                     key={tab.id}
                     onClick={() => setActiveTab(tab.id as 'pl' | 'bs' | 'cf')}
-                    className={`px-4 py-2 text-[11px] font-bold border-r border-gray-200 dark:border-slate-700 transition-colors ${activeTab === tab.id ? 'bg-[#107c41] text-white' : 'text-gray-600 hover:bg-gray-100'}`}
+                    className={`px-4 py-2 text-[11px] font-bold border-r border-gray-200 dark:border-slate-700 transition-colors ${activeTab === tab.id ? 'bg-success text-white' : 'text-gray-600 hover:bg-gray-100'}`}
                   >
                     {tab.label}
                   </button>

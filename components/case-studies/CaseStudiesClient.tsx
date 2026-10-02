@@ -77,12 +77,16 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
             placeholder="Search case studies, industries, tags…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+
             className="w-full rounded-xl border border-input bg-background py-3 pl-10 pr-9 text-sm text-foreground transition-all placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none focus:ring-1 focus:ring-primary/40"
+
           />
           {query && (
             <button
               onClick={() => setQuery('')}
+
               className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
+
             >
               <X className="w-4 h-4" />
             </button>
@@ -98,8 +102,10 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
               onClick={() => setIndustry(ind)}
               className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
                 industry === ind
+
                   ? 'border-primary bg-primary text-primary-foreground shadow-sm'
                   : 'border-border bg-secondary text-secondary-foreground hover:border-primary/50'
+
               }`}
             >
               {ind}
@@ -118,8 +124,10 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
       ) : (
         <div className="rounded-2xl border border-border bg-card py-20 text-center shadow-sm">
           <div className="text-5xl mb-4">📁</div>
+
           <p className="mb-1 text-lg font-semibold text-foreground">No case studies found</p>
           <p className="text-muted-foreground">
+
             {hasFilters ? 'Try adjusting your search or filters.' : 'Check back soon for new case studies.'}
           </p>
         </div>

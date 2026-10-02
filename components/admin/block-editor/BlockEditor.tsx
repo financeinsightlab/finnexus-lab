@@ -19,7 +19,7 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
   const [selectedBlockId, setSelectedBlockId] = useState<string | null>(null)
   const [previewMode, setPreviewMode] = useState<PreviewMode>('desktop')
   const [showTemplates, setShowTemplates] = useState(false)
-  const [sidebarOpen, setSidebarOpen] = useState(true)
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const dragOverIndex = useRef<number | null>(null)
 
   const selectedBlock = blocks.find(b => b.id === selectedBlockId) || null
@@ -113,34 +113,48 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
 
   const previewWidths: Record<PreviewMode, string> = {
     desktop: 'w-full',
-    tablet: 'max-w-[768px] mx-auto border border-white/10 rounded-2xl bg-[#0F1117] shadow-2xl',
-    mobile: 'max-w-[375px] mx-auto border-[8px] border-[#1A1F2E] rounded-[3rem] bg-[#0F1117] shadow-2xl overflow-y-auto aspect-[9/19]',
+    tablet: 'w-full max-w-[768px] mx-auto border border-border rounded-2xl bg-surface shadow-2xl',
+    mobile: 'w-full max-w-[375px] mx-auto border-[8px] border-[#1A1F2E] rounded-[3rem] bg-surface shadow-2xl overflow-y-auto aspect-[9/19]',
   }
 
   return (
+
     <div className="flex h-full min-h-[600px] min-w-0 flex-col overflow-hidden bg-[#0B0D13] md:flex-row">
+
       {/* Left: Block Palette Sidebar */}
       {sidebarOpen && (
-        <BlockSidebar
-          onAddBlock={addBlock}
-          onShowTemplates={() => setShowTemplates(true)}
-        />
+        <>
+          <button
+            type="button"
+            aria-label="Close block library"
+            className="xl:hidden absolute inset-0 z-20 bg-background/40"
+            onClick={() => setSidebarOpen(false)}
+          />
+          <div className="absolute inset-y-0 left-0 z-30 w-[min(16rem,calc(100vw-2rem))] xl:relative xl:inset-auto xl:z-auto xl:w-64">
+            <BlockSidebar
+              onAddBlock={addBlock}
+              onShowTemplates={() => setShowTemplates(true)}
+            />
+          </div>
+        </>
       )}
 
       {/* Center: Canvas */}
       <div className="flex min-h-[16rem] min-w-0 flex-1 flex-col overflow-hidden">
         {/* Canvas toolbar */}
+
         <div className="min-h-12 flex h-auto flex-wrap items-center justify-between gap-2 bg-[#1A1F2E] border-b border-[#2D3748] px-2 py-2 shrink-0 md:h-12 md:flex-nowrap md:px-4 md:py-0">
           <div className="flex flex-wrap items-center gap-2 text-slate-500">
+
             <button 
               onClick={() => setSidebarOpen(!sidebarOpen)} 
-              className="p-1.5 hover:text-white transition-colors bg-white/5 rounded-lg"
+              className="p-1.5 hover:text-content-primary transition-colors bg-surface-muted rounded-lg"
               title="Toggle Block Library"
             >
               {sidebarOpen ? <PanelLeftClose className="w-4 h-4" /> : <PanelLeftOpen className="w-4 h-4" />}
             </button>
-            <div className="w-px h-6 bg-white/10 mx-1"></div>
-            <div className="flex items-center gap-1 bg-black/20 p-1 rounded-xl">
+            <div className="w-px h-6 bg-border-subtle mx-1"></div>
+            <div className="flex items-center gap-1 bg-surface-muted p-1 rounded-xl">
             {([
               { mode: 'desktop', icon: Monitor },
               { mode: 'tablet', icon: Tablet },
@@ -151,8 +165,8 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
                 onClick={() => setPreviewMode(mode)}
                 className={`p-2 rounded-lg transition-all ${
                   previewMode === mode
-                    ? 'bg-[#0D6E6E] text-white shadow'
-                    : 'text-slate-500 hover:text-white'
+                    ? 'bg-primary text-primary-foreground shadow'
+                    : 'text-content-muted hover:text-content-primary'
                 }`}
                 title={mode}
                 aria-label={`Preview ${mode}`}
@@ -163,21 +177,23 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
             ))}
           </div>
           </div>
-          <div className="flex items-center gap-3 text-xs font-bold text-slate-600 uppercase tracking-widest">
+          <div className="hidden sm:flex items-center gap-3 text-xs font-bold text-content-muted uppercase tracking-widest">
             <Eye className="w-4 h-4" />
             {blocks.length} Block{blocks.length !== 1 ? 's' : ''}
           </div>
           <button
             onClick={() => setShowTemplates(true)}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-purple-500/10 text-purple-400 hover:bg-purple-500 hover:text-white transition-all text-xs font-bold"
+            className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-accent-violet-muted text-accent-violet hover:bg-accent-violet hover:text-content-inverse transition-all text-xs font-bold"
           >
             <LayoutTemplate className="w-4 h-4" />
-            Templates
+            <span className="hidden sm:inline">Templates</span>
           </button>
         </div>
 
         {/* Scrollable Canvas Area */}
+
         <div className="ui-scroll-region min-h-0 min-w-0 flex-1 overflow-y-auto bg-[#0F1117] p-4 md:p-6" data-lenis-prevent>
+
           <div className={`transition-all duration-300 ${previewWidths[previewMode]}`}>
             <BlockCanvas
               blocks={blocks}
@@ -195,12 +211,22 @@ export default function BlockEditor({ initialBlocks = [], onChange }: BlockEdito
 
       {/* Right: Settings Panel */}
       {selectedBlock && (
-        <BlockSettingsPanel
-          block={selectedBlock}
-          onUpdate={(data, attrs) => updateBlock(selectedBlock.id, data, attrs)}
-          onDelete={() => deleteBlock(selectedBlock.id)}
-          onClose={() => setSelectedBlockId(null)}
-        />
+        <>
+          <button
+            type="button"
+            aria-label="Close block settings"
+            className="xl:hidden absolute inset-0 z-30 bg-background/40"
+            onClick={() => setSelectedBlockId(null)}
+          />
+          <div className="absolute inset-y-0 right-0 z-40 w-[min(18rem,calc(100vw-2rem))] xl:relative xl:inset-auto xl:z-auto xl:w-72">
+            <BlockSettingsPanel
+              block={selectedBlock}
+              onUpdate={(data, attrs) => updateBlock(selectedBlock.id, data, attrs)}
+              onDelete={() => deleteBlock(selectedBlock.id)}
+              onClose={() => setSelectedBlockId(null)}
+            />
+          </div>
+        </>
       )}
     </div>
   )

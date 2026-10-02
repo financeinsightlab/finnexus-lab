@@ -160,17 +160,17 @@ export default async function AdminAnalytics() {
   }))
 
   const stats = [
-    { label: "Total Users", value: totalUsers.toLocaleString(), icon: Users, color: "text-blue-400", bg: "bg-blue-500/10" },
-    { label: "Active Sessions", value: activeSessions.toLocaleString(), icon: Activity, color: "text-emerald-400", bg: "bg-emerald-500/10" },
-    { label: "Total Logins", value: totalLogins.toLocaleString(), icon: LogIn, color: "text-purple-400", bg: "bg-purple-500/10" },
-    { label: "Page Views", value: totalPageViews.toLocaleString(), icon: Eye, color: "text-amber-400", bg: "bg-amber-500/10" },
-    { label: "Avg Time on Page", value: formatDuration(avgDurationMs), icon: Clock, color: "text-pink-400", bg: "bg-pink-500/10" },
+    { label: "Total Users", value: totalUsers.toLocaleString(), icon: Users, color: "text-info", bg: "bg-info-muted" },
+    { label: "Active Sessions", value: activeSessions.toLocaleString(), icon: Activity, color: "text-success", bg: "bg-success-muted" },
+    { label: "Total Logins", value: totalLogins.toLocaleString(), icon: LogIn, color: "text-accent-violet", bg: "bg-accent-violet-muted" },
+    { label: "Page Views", value: totalPageViews.toLocaleString(), icon: Eye, color: "text-warning", bg: "bg-warning-muted" },
+    { label: "Avg Time on Page", value: formatDuration(avgDurationMs), icon: Clock, color: "text-accent-violet", bg: "bg-accent-violet-muted" },
   ]
 
   return (
     <div className="space-y-10">
       {/* Header */}
-      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 md:p-10 shadow-xl border border-white/5">
+      <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 md:p-10 shadow-xl border border-border-subtle">
         <HeroBackground />
         <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div>
@@ -180,9 +180,9 @@ export default async function AdminAnalytics() {
               Real-time: who is on what page, how long, total logins, and user trends.
             </p>
           </div>
-          <div className="flex items-center gap-2 px-4 py-2 bg-emerald-500/20 border border-emerald-400/30 rounded-xl shadow-lg backdrop-blur-sm">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-            <span className="text-xs font-bold text-emerald-300">LIVE DATA</span>
+          <div className="flex items-center gap-2 px-4 py-2 bg-success-muted border border-success/30 rounded-xl shadow-lg backdrop-blur-sm">
+            <div className="w-2 h-2 rounded-full bg-success animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
+            <span className="text-xs font-bold text-success">LIVE DATA</span>
           </div>
         </div>
       </div>
@@ -190,12 +190,12 @@ export default async function AdminAnalytics() {
       {/* Stats Grid */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-[#1A1F2E] p-5 rounded-2xl border border-[#2D3748] hover:border-[#0D6E6E]/50 transition-all group shadow-xl">
+          <div key={i} className="bg-surface p-5 rounded-2xl border border-border hover:border-brand/50 transition-all group shadow-xl">
             <div className="flex items-center justify-between mb-4">
               <div className={`p-2 rounded-xl ${stat.bg} ${stat.color} group-hover:scale-110 transition-transform`}>
                 <stat.icon className="w-4 h-4" />
               </div>
-              <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
             </div>
             <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{stat.label}</p>
             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mt-1 tracking-tight">{stat.value}</h3>
@@ -206,9 +206,9 @@ export default async function AdminAnalytics() {
       {/* Login Breakdown + Monthly Chart */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Monthly Chart */}
-        <div className="lg:col-span-2 bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
+        <div className="lg:col-span-2 bg-surface rounded-2xl border border-border p-6 shadow-xl">
           <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
-            <BarChart3 className="w-4 h-4 text-[#0D6E6E]" /> Monthly Signups & Logins — Last 6 Months
+            <BarChart3 className="w-4 h-4 text-brand" /> Monthly Signups & Logins — Last 6 Months
           </h3>
           <div className="space-y-3">
             {monthlyData.map((m, i) => {
@@ -218,7 +218,7 @@ export default async function AdminAnalytics() {
                   <span className="text-[10px] font-bold text-slate-500 w-8">{m.month}</span>
                   <div className="flex-1 space-y-1">
                     <div className="flex items-center gap-2">
-                      <div className="h-2 rounded-full bg-[#0D6E6E]" style={{ width: `${Math.max((m.logins / maxLogins) * 100, m.logins > 0 ? 4 : 0)}%` }} />
+                      <div className="h-2 rounded-full bg-primary" style={{ width: `${Math.max((m.logins / maxLogins) * 100, m.logins > 0 ? 4 : 0)}%` }} />
                       <span className="text-[10px] text-slate-400">{m.logins} logins</span>
                     </div>
                     <div className="flex items-center gap-2">
@@ -230,14 +230,14 @@ export default async function AdminAnalytics() {
               )
             })}
           </div>
-          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-[#2D3748]">
-            <div className="flex items-center gap-2"><div className="w-3 h-2 rounded-full bg-[#0D6E6E]" /><span className="text-[10px] text-slate-400">Logins</span></div>
+          <div className="flex items-center gap-4 mt-4 pt-4 border-t border-border">
+            <div className="flex items-center gap-2"><div className="w-3 h-2 rounded-full bg-primary" /><span className="text-[10px] text-slate-400">Logins</span></div>
             <div className="flex items-center gap-2"><div className="w-3 h-2 rounded-full bg-blue-500" /><span className="text-[10px] text-slate-400">Signups</span></div>
           </div>
         </div>
 
         {/* Login by Provider */}
-        <div className="bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-6 shadow-xl">
+        <div className="bg-surface rounded-2xl border border-border p-6 shadow-xl">
           <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
             <LogIn className="w-4 h-4 text-purple-400" /> Logins by Provider
           </h3>
@@ -246,11 +246,11 @@ export default async function AdminAnalytics() {
               <span className="text-xs font-bold text-gray-900 dark:text-white">Total All Time</span>
               <span className="text-xl font-bold text-purple-400">{totalLogins.toLocaleString()}</span>
             </div>
-            <div className="h-px bg-[#2D3748]" />
+            <div className="h-px bg-surface-muted" />
             {loginsByProvider.length > 0 ? loginsByProvider.map((g, i) => (
               <div key={i} className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${g.provider === "google" ? "bg-blue-400" : g.provider === "credentials" ? "bg-[#0D6E6E]" : "bg-slate-400"}`} />
+                  <div className={`w-2 h-2 rounded-full ${g.provider === "google" ? "bg-blue-400" : g.provider === "credentials" ? "bg-primary" : "bg-slate-400"}`} />
                   <span className="text-xs text-slate-300 capitalize">{g.provider}</span>
                 </div>
                 <span className="text-sm font-bold text-gray-900 dark:text-white">{g._count.id}</span>

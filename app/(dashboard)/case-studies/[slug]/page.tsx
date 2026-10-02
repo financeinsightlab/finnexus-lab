@@ -51,11 +51,13 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
     if (!dbPost.published) notFound();
 
     return (
+
       <div className="min-h-screen bg-background text-foreground">
         <header className="border-b border-border bg-card/60 py-10 md:py-14">
           <ContentPage>
             <Link href="/case-studies" className="mb-8 inline-flex items-center gap-1.5 text-sm font-medium text-primary transition-colors hover:text-foreground">
               <ChevronLeft className="h-4 w-4" /> All Case Studies
+
             </Link>
             <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-primary">
               Case Study
@@ -110,12 +112,15 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
   };
 
   return (
+
     <div className="min-h-screen bg-background text-foreground">
+
       <JsonLd data={episodeSchema} />
 
       {/* ═══════════ HEADER ═══════════ */}
       <header className="relative overflow-hidden border-b border-border bg-card/60 pt-8 pb-12">
         <div className="pointer-events-none absolute -top-24 right-1/4 h-[400px] w-[400px] rounded-full bg-primary/10 blur-[120px]" />
+
 
         <ContentPage className="relative z-10">
           <nav className="mb-8 flex items-center gap-2 text-sm text-muted-foreground">
@@ -124,6 +129,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             <Link href="/case-studies" className="transition-colors hover:text-primary">Case Studies</Link>
             <span>/</span>
             <span className="text-primary">{caseStudy.engagementType}</span>
+
           </nav>
 
           <div className="grid items-center gap-10 lg:grid-cols-[0.85fr_1.15fr]">
@@ -237,6 +243,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
       )}
 
       {/* ═══════════ BODY ═══════════ */}
+
       <ContentPage className="py-10 md:py-14">
         <ContentLayout>
           <article className="rounded-3xl border border-border bg-card p-5 shadow-sm md:p-8 lg:p-10">
@@ -255,6 +262,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
 
       {/* Promotion slot: CONTENT_MIDDLE */}
       <PromotionSlot slot="CONTENT_MIDDLE" path={`/case-studies/${caseStudy.slug}`} tags={[caseStudy.industry ?? '', ...(caseStudy.tags ?? [])]} />
+
 
       {/* ═══════════ MORE CASE STUDIES ═══════════ */}
       <section className="border-t border-border bg-muted/40">
@@ -284,8 +292,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
                     )}
                   </div>
                   <div className="p-5">
+
                     <span className="text-[10px] font-bold uppercase tracking-wider text-primary">{s.engagementType}</span>
                     <h3 className="mt-1.5 line-clamp-2 text-sm font-bold leading-snug text-foreground transition-colors group-hover:text-primary">
+
                       {s.title}
                     </h3>
                   </div>

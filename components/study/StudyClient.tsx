@@ -126,7 +126,7 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
+    <div className="min-h-screen bg-gray-50 dark:bg-surface-muted">
       {/* ─── Header ─── */}
       <section className="relative overflow-hidden bg-brand-navy border-b border-white/5 py-14">
         <div className="relative z-10 max-w-[1400px] mx-auto px-6">
@@ -177,7 +177,9 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
       <CoursesSection />
 
       {/* ─── Category Filter Chips ─── */}
+
       <section className="border-b border-white/5 bg-[#0f1522] py-4 lg:sticky lg:top-16 lg:z-40">
+
         <div className="max-w-[1400px] mx-auto px-6">
           <div className="flex items-center gap-3 flex-wrap">
             <button
@@ -223,7 +225,7 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
                 className="bg-white/5 border border-white/10 rounded-lg px-3 py-1.5 text-xs font-bold text-slate-300 focus:outline-none focus:border-teal-500/50"
               >
                 {SORT_OPTIONS.map((opt) => (
-                  <option key={opt.value} value={opt.value} className="bg-[#1A1F2E]">
+                  <option key={opt.value} value={opt.value} className="bg-surface">
                     {opt.label}
                   </option>
                 ))}
@@ -241,7 +243,7 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
                   <button
                     onClick={() => setActiveType('all')}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                      activeType === 'all' ? 'bg-purple-500/20 text-purple-400' : 'text-slate-400 hover:text-white'
+                      activeType === 'all' ? 'bg-purple-500/20 text-purple-400' : 'text-content-secondary hover:text-content-primary'
                     }`}
                   >
                     All
@@ -251,7 +253,7 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
                       key={t.value}
                       onClick={() => setActiveType(t.value)}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                        activeType === t.value ? 'bg-purple-500/20 text-purple-400' : 'text-slate-400 hover:text-white'
+                        activeType === t.value ? 'bg-purple-500/20 text-purple-400' : 'text-content-secondary hover:text-content-primary'
                       }`}
                     >
                       {t.label}
@@ -267,7 +269,7 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
                   <button
                     onClick={() => setActiveDifficulty('all')}
                     className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                      activeDifficulty === 'all' ? 'bg-amber-500/20 text-amber-400' : 'text-slate-400 hover:text-white'
+                      activeDifficulty === 'all' ? 'bg-amber-500/20 text-amber-400' : 'text-content-secondary hover:text-content-primary'
                     }`}
                   >
                     All
@@ -277,7 +279,7 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
                       key={d.value}
                       onClick={() => setActiveDifficulty(d.value)}
                       className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition-all ${
-                        activeDifficulty === d.value ? 'bg-amber-500/20 text-amber-400' : 'text-slate-400 hover:text-white'
+                        activeDifficulty === d.value ? 'bg-amber-500/20 text-amber-400' : 'text-content-secondary hover:text-content-primary'
                       }`}
                     >
                       {d.label}
@@ -296,7 +298,7 @@ export default function StudyClient({ materials, categories }: StudyClientProps)
               </span>
               <button
                 onClick={clearFilters}
-                className="text-[11px] text-teal-400 hover:text-teal-300 font-bold"
+                className="text-[11px] text-teal-400 hover:text-brand-hover font-bold"
               >
                 Clear all
               </button>

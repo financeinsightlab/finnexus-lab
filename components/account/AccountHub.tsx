@@ -62,7 +62,7 @@ interface ApiKeyItem {
 }
 
 const inputClass =
-    'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-brand-teal dark:border-white/10 dark:bg-[#0f1c2d] dark:text-slate-200';
+    'w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-800 outline-none focus:border-brand-teal dark:border-white/10 dark:bg-surface-raised dark:text-slate-200';
 
 function formatDate(iso: string | null): string {
     if (!iso) return '—';
@@ -95,7 +95,7 @@ export default function AccountHub() {
                         onClick={() => setTab(id)}
                         className={`-mb-px border-b-2 px-4 py-2 text-sm font-semibold transition-colors ${tab === id
                             ? 'border-brand-teal text-brand-teal'
-                            : 'border-transparent text-brand-slate hover:text-brand-navy dark:text-slate-400 dark:hover:text-white'
+                            : 'border-transparent text-brand-slate hover:text-content-primary dark:text-slate-400 dark:hover:text-white'
                             }`}
                     >
                         {label}
@@ -159,7 +159,7 @@ function BillingPanel() {
 
     if (!state) {
         return (
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#0f1c2d]">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-surface-raised">
                 <p className="text-sm text-rose-600 dark:text-rose-400">
                     {error ?? 'Billing is unavailable right now.'}
                 </p>
@@ -179,7 +179,7 @@ function BillingPanel() {
 
     return (
         <div className="max-w-2xl space-y-6">
-            <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#0f1c2d]">
+            <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-surface-raised">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
                         <p className="text-xs font-semibold uppercase tracking-widest text-brand-slate dark:text-slate-400">Current plan</p>
@@ -261,7 +261,7 @@ function ProfilePanel() {
     if (loading) return <p className="text-sm text-brand-slate dark:text-slate-400">Loading profile…</p>;
 
     return (
-        <div className="card max-w-2xl space-y-4 p-6 dark:bg-[#0f1c2d]">
+        <div className="card max-w-2xl space-y-4 p-6 dark:bg-surface-raised">
             <div>
                 <label className="text-xs font-semibold uppercase tracking-wide text-brand-slate">Headline</label>
                 <input
@@ -382,7 +382,7 @@ function BadgesPanel() {
                     ['Predictions', stats?.predictions ?? 0],
                     ['Lessons done', stats?.lessons ?? 0],
                 ].map(([label, value]) => (
-                    <div key={label as string} className="card p-4 text-center dark:bg-[#0f1c2d]">
+                    <div key={label as string} className="card p-4 text-center dark:bg-surface-raised">
                         <div className="text-2xl font-extrabold text-brand-navy dark:text-white">{value}</div>
                         <div className="text-xs uppercase tracking-wide text-brand-slate">{label}</div>
                     </div>
@@ -395,7 +395,7 @@ function BadgesPanel() {
                     return (
                         <div
                             key={badge.slug}
-                            className={`card flex items-center gap-4 p-5 dark:bg-[#0f1c2d] ${earned ? 'border-brand-teal/40' : 'opacity-60'
+                            className={`card flex items-center gap-4 p-5 dark:bg-surface-raised ${earned ? 'border-brand-teal/40' : 'opacity-60'
                                 }`}
                         >
                             <div className="text-3xl" aria-hidden>
@@ -465,7 +465,7 @@ function NotificationsPanel() {
                     {items.map((n) => (
                         <li
                             key={n.id}
-                            className={`card p-4 dark:bg-[#0f1c2d] ${n.readAt ? 'opacity-70' : ''}`}
+                            className={`card p-4 dark:bg-surface-raised ${n.readAt ? 'opacity-70' : ''}`}
                         >
                             <div className="flex items-start justify-between gap-3">
                                 <div className="min-w-0">
@@ -565,7 +565,7 @@ function KeysPanel() {
                     {list.map((key) => (
                         <li
                             key={key.id}
-                            className={`card flex flex-wrap items-center justify-between gap-3 p-4 dark:bg-[#0f1c2d] ${key.revokedAt ? 'opacity-60' : ''
+                            className={`card flex flex-wrap items-center justify-between gap-3 p-4 dark:bg-surface-raised ${key.revokedAt ? 'opacity-60' : ''
                                 }`}
                         >
                             <div className="min-w-0">
@@ -594,7 +594,7 @@ function KeysPanel() {
 
     return (
         <div className="space-y-8">
-            <div className="card max-w-xl space-y-3 p-6 dark:bg-[#0f1c2d]">
+            <div className="card max-w-xl space-y-3 p-6 dark:bg-surface-raised">
                 <h3 className="font-bold text-brand-navy dark:text-white">Create a personal API key</h3>
                 <p className="text-sm text-brand-slate dark:text-slate-400">
                     The secret is shown once. We only store a hash — copy it now.

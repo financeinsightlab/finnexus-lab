@@ -44,31 +44,31 @@ export default function Paywall({
     return (
         <div className="space-y-6">
             {preview}
-            <div className="relative overflow-hidden rounded-2xl border border-amber-300/40 bg-gradient-to-br from-amber-50 to-white p-8 text-center shadow-sm dark:from-amber-950/30 dark:to-neutral-900">
-                <p className="text-xs font-semibold uppercase tracking-widest text-amber-600 dark:text-amber-400">
+            <div className="relative overflow-hidden rounded-2xl border border-warning/30 bg-warning-muted p-8 text-center shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-widest text-warning">
                     {plan.name} members only
                 </p>
-                <h3 className="mt-3 text-2xl font-bold text-neutral-900 dark:text-white">
+                <h3 className="mt-3 text-2xl font-bold text-content-primary">
                     Unlock the full analysis
                 </h3>
-                <p className="mx-auto mt-2 max-w-md text-sm text-neutral-600 dark:text-neutral-300">
+                <p className="mx-auto mt-2 max-w-md text-sm text-content-secondary">
                     {plan.tagline}
                 </p>
                 <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
                     <Link
                         href={href}
-                        className="rounded-lg bg-amber-500 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-amber-600"
+                        className="rounded-lg bg-primary px-5 py-2.5 text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover"
                     >
                         Upgrade to {plan.name}
                     </Link>
                     <Link
                         href="/pricing"
-                        className="rounded-lg border border-neutral-300 px-5 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 dark:border-neutral-700 dark:text-neutral-200 dark:hover:bg-neutral-800"
+                        className="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-content-secondary transition hover:bg-surface-muted hover:text-content-primary"
                     >
                         Compare plans
                     </Link>
                 </div>
-                <p className="mt-4 text-xs text-neutral-400">
+                <p className="mt-4 text-xs text-content-muted">
                     You are currently on the {normalizePlan(user?.subscriptionPlan)} plan.
                 </p>
             </div>

@@ -2,7 +2,9 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
+
 import { useModalAccessibility } from "@/components/ui/useModalAccessibility"
+
 import {
   BarChart3,
   Users,
@@ -38,6 +40,7 @@ export default function CollapsibleSidebar({
   // Initialize state to false (same on server and client to avoid hydration mismatch)
   const [isCollapsed, setIsCollapsed] = useState(false)
   const [isMobileOpen, setIsMobileOpen] = useState(false)
+
   const mobileSidebarRef = useRef<HTMLElement>(null)
   const mobileToggleRef = useRef<HTMLButtonElement>(null)
   const mobileCloseButtonRef = useRef<HTMLButtonElement>(null)
@@ -46,6 +49,7 @@ export default function CollapsibleSidebar({
     initialFocusRef: mobileCloseButtonRef,
     restoreFocusRef: mobileToggleRef,
   })
+
 
   // Load state from localStorage after hydration (client-side only)
   useEffect(() => {
@@ -107,11 +111,13 @@ export default function CollapsibleSidebar({
       <button
         ref={mobileToggleRef}
         onClick={toggleMobileSidebar}
-        className="lg:hidden fixed top-20 left-4 z-50 p-2 rounded-lg bg-white dark:bg-[#1A1F2E] border border-gray-200 dark:border-[#2D3748] text-gray-700 dark:text-white"
+        className="lg:hidden fixed top-20 left-4 z-50 p-2 rounded-lg bg-surface border border-border text-content-primary"
         aria-label={isMobileOpen ? "Close sidebar" : "Open sidebar"}
         aria-expanded={isMobileOpen}
+
         aria-controls="admin-mobile-navigation"
         aria-haspopup="dialog"
+
       >
         {isMobileOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
       </button>
@@ -121,7 +127,7 @@ export default function CollapsibleSidebar({
         className={`
           fixed top-16 bottom-0 left-0 
           ${sidebarWidth}
-          bg-white dark:bg-[#1A1F2E] border-r border-gray-200 dark:border-[#2D3748] z-40 
+          bg-surface border-r border-border-subtle z-40
           hidden lg:flex lg:flex-col
           transition-all duration-300 ease-in-out
           ${isCollapsed ? 'sidebar-collapsed' : 'sidebar-expanded'}
@@ -131,23 +137,23 @@ export default function CollapsibleSidebar({
           {/* Header with Toggle Button */}
           <div className="px-6 py-8 flex items-center justify-between">
             <div className={`overflow-hidden transition-all duration-300 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}`}>
-              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#0D6E6E] mb-1 whitespace-nowrap">
+              <h2 className="text-[10px] font-bold uppercase tracking-[0.2em] text-brand mb-1 whitespace-nowrap">
                 Admin Portal
               </h2>
-              <div className="h-px w-8 bg-[#0D6E6E] opacity-30"></div>
+              <div className="h-px w-8 bg-primary opacity-30"></div>
             </div>
             
             {/* Toggle Button */}
             <button
               onClick={toggleSidebar}
-              className="p-1.5 rounded-lg hover:bg-white/10 transition-colors"
+              className="p-1.5 rounded-lg hover:bg-accent transition-colors"
               aria-label={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
               title={isCollapsed ? "Expand sidebar" : "Collapse sidebar"}
             >
               {isCollapsed ? (
-                <ChevronRightIcon className="w-4 h-4 text-slate-400" />
+                <ChevronRightIcon className="w-4 h-4 text-content-muted" />
               ) : (
-                <ChevronLeft className="w-4 h-4 text-slate-400" />
+                <ChevronLeft className="w-4 h-4 text-content-muted" />
               )}
             </button>
           </div>
@@ -170,17 +176,17 @@ export default function CollapsibleSidebar({
                     title={isCollapsed ? `${item.label} (Locked)` : "LOCKED"}
                   >
                     <div className="absolute inset-y-2 left-0 w-1 bg-slate-600 rounded-full scale-y-0 transition-transform duration-200"></div>
-                    <item.icon className="w-5 h-5 opacity-50 flex-shrink-0 text-slate-500" />
+                    <item.icon className="w-5 h-5 opacity-50 flex-shrink-0 text-content-muted" />
                     
                     <span className={`
-                      text-sm font-medium transition-all duration-300 text-slate-500
+                      text-sm font-medium transition-all duration-300 text-content-muted
                       ${isCollapsed ? 'w-0 opacity-0 overflow-hidden' : 'w-auto opacity-100'}
                     `}>
                       {item.label}
                     </span>
                     
                     {!isCollapsed && (
-                      <Lock className="ml-auto w-4 h-4 text-slate-600 flex-shrink-0" />
+                      <Lock className="ml-auto w-4 h-4 text-content-muted flex-shrink-0" />
                     )}
                   </div>
                 )
@@ -192,14 +198,14 @@ export default function CollapsibleSidebar({
                 href={item.href} 
                 className={`
                   flex items-center gap-3 px-4 py-3 rounded-xl 
-                  hover:bg-white/5 transition-all 
-                  text-slate-400 hover:text-white 
+                  hover:bg-accent transition-all
+                  text-content-muted hover:text-content-primary
                   group relative overflow-hidden
                   ${isCollapsed ? 'justify-center' : ''}
                 `}
                 title={isCollapsed ? item.label : undefined}
               >
-                <div className="absolute inset-y-2 left-0 w-1 bg-[#0D6E6E] rounded-full scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></div>
+                <div className="absolute inset-y-2 left-0 w-1 bg-primary rounded-full scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></div>
                 <item.icon className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity flex-shrink-0" />
                 
                 {/* Label - hidden when collapsed */}
@@ -220,13 +226,13 @@ export default function CollapsibleSidebar({
           </nav>
 
           {/* User Profile / Exit Control */}
-          <div className="p-4 border-t border-gray-200 dark:border-[#2D3748]">
+          <div className="p-4 border-t border-border-subtle">
             <div className={`
               flex items-center gap-3 px-4 py-4 mb-2 
-              bg-white/5 rounded-2xl border border-white/5
+              bg-surface-muted rounded-2xl border border-border-subtle
               ${isCollapsed ? 'justify-center' : ''}
             `}>
-              <div className="w-8 h-8 rounded-full bg-[#0D6E6E] flex items-center justify-center text-xs font-bold text-white shadow-lg flex-shrink-0">
+              <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-primary-foreground shadow-lg flex-shrink-0">
                 {userInitial}
               </div>
               
@@ -235,8 +241,8 @@ export default function CollapsibleSidebar({
                 overflow-hidden transition-all duration-300
                 ${isCollapsed ? 'w-0 opacity-0' : 'w-auto opacity-100'}
               `}>
-                <p className="text-sm font-semibold text-white truncate">{userName}</p>
-                <p className="text-[10px] text-slate-500 truncate uppercase tracking-tight">{userRole}</p>
+                <p className="text-sm font-semibold text-content-primary truncate">{userName}</p>
+                <p className="text-[10px] text-content-muted truncate uppercase tracking-tight">{userRole}</p>
               </div>
             </div>
             
@@ -244,7 +250,7 @@ export default function CollapsibleSidebar({
               href="/"
               className={`
                 flex items-center gap-3 px-4 py-3 rounded-xl 
-                hover:bg-red-500/10 text-slate-400 hover:text-red-400 
+                hover:bg-red-500/10 text-content-muted hover:text-error
                 transition-all font-medium text-sm group
                 ${isCollapsed ? 'justify-center' : ''}
               `}
@@ -269,15 +275,18 @@ export default function CollapsibleSidebar({
 
       {/* Mobile Sidebar Overlay */}
       {isMobileOpen && (
+
         <div
           className="lg:hidden fixed inset-0 bg-black/50 z-30"
           onClick={() => setIsMobileOpen(false)}
           aria-hidden="true"
+
         />
       )}
 
       {/* Mobile Sidebar */}
       <aside
+
         id="admin-mobile-navigation"
         ref={mobileSidebarRef}
         className={`ui-scroll-region lg:hidden fixed top-16 bottom-0 left-0 w-64 max-h-[calc(100dvh-4rem)] overflow-hidden bg-white dark:bg-[#1A1F2E] border-r border-gray-200 dark:border-[#2D3748] z-40 transform transition-transform duration-300 ease-in-out flex flex-col ${isMobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
@@ -289,9 +298,11 @@ export default function CollapsibleSidebar({
         inert={!isMobileOpen}
         tabIndex={-1}
         data-lenis-prevent
+
       >
         <div className="ui-scroll-region flex h-full min-h-0 flex-col overflow-hidden">
           {/* Mobile Header */}
+
           <div className="flex shrink-0 items-center justify-between gap-3 border-b border-gray-200 px-4 py-4 dark:border-[#2D3748]">
             <div>
               <h2 id="admin-mobile-navigation-title" className="text-[10px] font-bold uppercase tracking-[0.2em] text-[#0D6E6E] mb-1">
@@ -307,6 +318,7 @@ export default function CollapsibleSidebar({
               aria-label="Close admin navigation"
             >
               <X className="h-5 w-5" />
+
             </button>
           </div>
 
@@ -316,10 +328,10 @@ export default function CollapsibleSidebar({
               <Link 
                 key={item.href}
                 href={item.href} 
-                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-white/5 transition-all text-slate-400 hover:text-white group relative overflow-hidden"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-accent transition-all text-content-muted hover:text-content-primary group relative overflow-hidden"
                 onClick={toggleMobileSidebar}
               >
-                <div className="absolute inset-y-2 left-0 w-1 bg-[#0D6E6E] rounded-full scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></div>
+                <div className="absolute inset-y-2 left-0 w-1 bg-primary rounded-full scale-y-0 group-hover:scale-y-100 transition-transform duration-200"></div>
                 <item.icon className="w-5 h-5 opacity-70 group-hover:opacity-100 transition-opacity" />
                 <span className="text-sm font-medium">{item.label}</span>
                 <ChevronRight className="ml-auto w-4 h-4 opacity-20 group-hover:opacity-60 transition-opacity" />
@@ -328,20 +340,22 @@ export default function CollapsibleSidebar({
           </nav>
 
           {/* Mobile User Profile */}
+
           <div className="ui-scroll-region min-h-0 max-h-[min(38dvh,18rem)] shrink-0 overflow-y-auto overscroll-y-contain border-t border-gray-200 p-4 pb-[max(1rem,env(safe-area-inset-bottom))] dark:border-[#2D3748]" data-lenis-prevent>
             <div className="flex items-center gap-3 px-4 py-4 mb-2 bg-white/5 rounded-2xl border border-white/5">
               <div className="w-8 h-8 rounded-full bg-[#0D6E6E] flex items-center justify-center text-xs font-bold text-white shadow-lg">
+
                 {userInitial}
               </div>
               <div className="overflow-hidden">
-                <p className="text-sm font-semibold text-white truncate">{userName}</p>
-                <p className="text-[10px] text-slate-500 truncate uppercase tracking-tight">{userRole}</p>
+                <p className="text-sm font-semibold text-content-primary truncate">{userName}</p>
+                <p className="text-[10px] text-content-muted truncate uppercase tracking-tight">{userRole}</p>
               </div>
             </div>
             
             <Link 
               href="/"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-slate-400 hover:text-red-400 transition-all font-medium text-sm group"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-red-500/10 text-content-muted hover:text-error transition-all font-medium text-sm group"
               onClick={toggleMobileSidebar}
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />

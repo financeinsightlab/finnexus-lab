@@ -10,6 +10,7 @@ export type { Tool } from '@/lib/tools-registry';
  */
 export default function ToolsPage() {
   return (
+
     <ToolsHubClient
       topSlot={<PromotionSlot slot="TOOL_SECTION" path="/tools" />}
       bottomSlot={
@@ -19,5 +20,6 @@ export default function ToolsPage() {
         </>
       }
     />
+
   );
 }

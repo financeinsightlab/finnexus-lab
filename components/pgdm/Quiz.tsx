@@ -17,10 +17,10 @@ export default function Quiz({ questions, subjectName }: { questions: QuizQuesti
 
   const optCls = (qi: number, oi: number) => {
     const p = picked[qi];
-    if (p === undefined) return 'border-white/10 bg-white/5 hover:border-teal-500/40 hover:bg-teal-500/[0.06] text-gray-300';
-    if (oi === questions[qi].answer) return 'border-emerald-500/40 bg-emerald-500/10 text-emerald-200';
-    if (p === oi) return 'border-rose-500/40 bg-rose-500/10 text-rose-200';
-    return 'border-white/5 bg-white/[0.02] text-gray-500';
+    if (p === undefined) return 'border-border bg-surface-muted hover:border-brand/40 hover:bg-brand-muted text-content-secondary';
+    if (oi === questions[qi].answer) return 'border-success/40 bg-success-muted text-success';
+    if (p === oi) return 'border-error/40 bg-error-muted text-error';
+    return 'border-border-subtle bg-surface-muted text-content-muted';
   };
 
   return (
@@ -47,7 +47,7 @@ export default function Quiz({ questions, subjectName }: { questions: QuizQuesti
           {answered > 0 && (
             <button
               onClick={() => setPicked({})}
-              className="text-[10px] font-bold uppercase tracking-widest text-gray-400 border border-white/10 rounded-full px-3 py-1.5 hover:border-violet-500/40 hover:text-violet-300 transition-colors"
+              className="text-[10px] font-bold uppercase tracking-widest text-gray-400 border border-white/10 rounded-full px-3 py-1.5 hover:border-violet-500/40 hover:text-accent-violet transition-colors"
             >
               Reset
             </button>
@@ -78,8 +78,8 @@ export default function Quiz({ questions, subjectName }: { questions: QuizQuesti
             {picked[qi] !== undefined && (
               <p className={`mt-3 text-[12px] leading-relaxed rounded-lg px-3 py-2 border ${
                 picked[qi] === q.answer
-                  ? 'bg-emerald-500/[0.07] border-emerald-500/20 text-emerald-200/90'
-                  : 'bg-amber-500/[0.07] border-amber-500/20 text-amber-200/90'
+                  ? 'bg-success-muted border-success/20 text-success'
+                  : 'bg-warning-muted border-warning/20 text-warning'
               }`}>
                 {picked[qi] === q.answer ? 'Correct — ' : 'Not quite — '}
                 {q.explain}

@@ -49,7 +49,7 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
     const user = await getCurrentUser();
 
     return (
-        <div className="min-h-[70vh] bg-slate-50 px-6 py-20 dark:bg-[#0a1120]">
+        <div className="min-h-[70vh] bg-slate-50 px-6 py-20 dark:bg-background">
             <CheckoutClient
                 plan={instructions.plan}
                 planName={PLAN_CATALOG[instructions.plan].name}

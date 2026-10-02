@@ -15,7 +15,7 @@ export default async function AccountPage() {
     if (!session?.user?.id) redirect('/auth/signin?callbackUrl=/account');
 
     return (
-        <div className="min-h-screen bg-slate-50 dark:bg-[#0a1120] pt-20 pb-16">
+        <div className="min-h-screen bg-slate-50 dark:bg-background pt-20 pb-16">
             <AccountHub />
         </div>
     );

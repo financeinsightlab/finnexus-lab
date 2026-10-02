@@ -210,7 +210,7 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
 
             {/* Excel Matrix */}
             <div className="bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden">
-              <div className="bg-[#107c41] text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2">
+              <div className="bg-success text-white px-3 py-1 text-[11px] font-medium flex items-center gap-2">
                 <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor"><path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/></svg>
                 <span>Market_Sizing_TAM_SAM_SOM_Framework.xlsx</span>
               </div>
@@ -242,7 +242,7 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
                         <td className="border border-gray-300 bg-gray-100 text-center font-bold text-gray-400 text-xs w-6 sticky left-0 z-20">{row.i}</td>
                         <td className={`border border-gray-200 dark:border-slate-700 px-3 py-2 sticky left-6 z-20 bg-white dark:bg-slate-900 ${row.bold ? 'font-bold text-gray-800' : 'text-gray-600'}`}>{row.label}</td>
                         {row.vals.map((v, vi) => (
-                          <td key={vi} className={`border border-gray-200 dark:border-slate-700 px-3 py-2 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'blue' ? 'text-[#0b5c96]' : row.highlight === 'teal' ? 'text-teal-700' : row.highlight === 'gold' ? 'text-yellow-700' : 'text-gray-700'}`}>
+                          <td key={vi} className={`border border-gray-200 dark:border-slate-700 px-3 py-2 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'blue' ? 'text-info' : row.highlight === 'teal' ? 'text-teal-700' : row.highlight === 'gold' ? 'text-yellow-700' : 'text-gray-700'}`}>
                             {row.fmt(v)}
                           </td>
                         ))}

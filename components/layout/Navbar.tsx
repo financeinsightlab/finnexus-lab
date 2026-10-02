@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 import GlobalSearch from '@/components/layout/GlobalSearch';
 import LocaleSwitcher from '@/components/i18n/LocaleSwitcher';
+import { lockBodyScroll } from '@/components/ui/bodyScrollLock';
 import { useSession, signOut } from 'next-auth/react';
 import { NAV_CLUSTERS, NAV_CTA, type NavCluster } from '@/lib/navigation';
 
@@ -47,7 +48,7 @@ function ThemeToggle() {
   return (
     <button
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
-      className="w-10 h-10 flex items-center justify-center rounded-xl text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-200"
+      className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl text-content-secondary hover:text-content-primary hover:bg-accent transition-all duration-200"
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       aria-pressed={isDark}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
@@ -74,8 +75,8 @@ function ThemeToggle() {
 function Logo({ onClick }: { onClick?: () => void }) {
   return (
     <Link href="/" onClick={onClick} className="flex items-center group shrink-0">
-      <span className="text-lg font-bold text-white group-hover:text-teal-300 transition-colors duration-200">
-        Kunwar<span className="text-teal-400">Analytics</span>
+      <span className="text-base sm:text-lg font-bold text-content-primary group-hover:text-brand transition-colors duration-200">
+        Kunwar<span className="text-brand">Analytics</span>
       </span>
     </Link>
   );
@@ -86,13 +87,18 @@ function Logo({ onClick }: { onClick?: () => void }) {
 export default function Navbar() {
   const pathname = usePathname();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
+  const searchButtonRef = useRef<HTMLButtonElement>(null);
+  const mobileDrawerRef = useRef<HTMLElement>(null);
+  const wasMobileOpenRef = useRef(false);
   const [openCluster, setOpenCluster] = useState<string | null>(null);
   const [userOpen, setUserOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const mobileDrawerRef = useRef<HTMLElement>(null);
   const mobileCloseButtonRef = useRef<HTMLButtonElement>(null);
   const userTriggerRef = useRef<HTMLButtonElement>(null);
   const clusterTriggerRefs = useRef<Record<string, HTMLAnchorElement | null>>({});
+  const searchOpenRef = useRef(searchOpen);
+  searchOpenRef.current = searchOpen;
   const { data: session } = useSession();
 
   useModalAccessibility(mobileOpen, mobileDrawerRef, () => setMobileOpen(false), {
@@ -110,17 +116,21 @@ export default function Navbar() {
   const clusterActive = (cluster: NavCluster) =>
     isActive(cluster.href) || cluster.items.some((item) => isActive(item.href));
 
-  /* Ctrl+K / Cmd+K opens search */
+  /* Ctrl+K / Cmd+K opens search; close the drawer first on mobile. */
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
         e.preventDefault();
+        if (!searchOpen && mobileOpen) {
+          searchButtonRef.current?.focus();
+          setMobileOpen(false);
+        }
         setSearchOpen((prev) => !prev);
       }
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, []);
+  }, [mobileOpen, searchOpen]);
 
   /* Close user dropdown on outside click or Escape. */
   useEffect(() => {
@@ -161,8 +171,8 @@ export default function Navbar() {
 
   const clusterButtonClass = (cluster: NavCluster) =>
     `relative flex items-center gap-1.5 px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 whitespace-nowrap group ${clusterActive(cluster)
-      ? 'text-teal-400 bg-teal-500/10'
-      : 'text-gray-300 hover:text-white hover:bg-white/10'
+      ? 'text-brand bg-brand-muted'
+      : 'text-content-secondary hover:text-content-primary hover:bg-accent'
     }`;
 
   return (
@@ -170,12 +180,12 @@ export default function Navbar() {
       {/* Skip to content */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-[200] bg-teal-500 text-white px-4 py-2 rounded-lg font-medium"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 z-[200] bg-primary text-primary-foreground px-4 py-2 rounded-lg font-medium"
       >
         Skip to content
       </a>
 
-      <header className="fixed top-0 inset-x-0 z-50 h-16 glass-cinema border-b border-white/5 shadow-[0_4px_24px_rgba(0,0,0,0.4),inset_0_1px_0_rgba(255,255,255,0.08),0_0_30px_rgba(59,130,246,0.05)]">
+      <header className="fixed top-0 inset-x-0 z-50 h-16 glass-cinema border-b border-border-subtle shadow-depth-1">
         <nav className="h-full max-w-[1400px] mx-auto px-2 sm:px-6 lg:px-8 flex items-center justify-between gap-2 sm:gap-4">
 
           {/* ── LOGO ── */}
@@ -206,12 +216,12 @@ export default function Navbar() {
 
                 {openCluster === cluster.id && (
                   <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
-                    <div id={`nav-cluster-menu-${cluster.id}`} className="ui-scroll-region anim-fade w-[580px] max-w-[92vw] max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-2xl border border-white/10 bg-gray-900/98 backdrop-blur-xl p-4 shadow-2xl shadow-black/60" data-lenis-prevent>
+                    <div id={`nav-cluster-menu-${cluster.id}`} className="ui-scroll-region anim-fade w-[580px] max-w-[92vw] max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-2xl border border-border bg-surface-overlay backdrop-blur-xl p-4 shadow-2xl shadow-black/60" data-lenis-prevent>
                       <div className="flex items-start gap-3 px-2 pb-3">
                         <span className="text-2xl leading-none">{cluster.icon}</span>
                         <div>
-                          <p className="text-sm font-semibold text-white">{cluster.label}</p>
-                          <p className="text-xs text-gray-400">{cluster.description}</p>
+                          <p className="text-sm font-semibold text-content-primary">{cluster.label}</p>
+                          <p className="text-xs text-content-muted">{cluster.description}</p>
                         </div>
                       </div>
                       <div className="grid grid-cols-2 gap-1">
@@ -221,17 +231,17 @@ export default function Navbar() {
                             href={item.href}
                             onClick={() => setOpenCluster(null)}
                             className={`flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors group/item ${isActive(item.href)
-                              ? 'bg-teal-500/10'
-                              : 'hover:bg-white/5'
+                              ? 'bg-brand-muted'
+                              : 'hover:bg-accent'
                               }`}
                           >
                             <span className="mt-0.5 text-base leading-none">{item.icon}</span>
                             <span className="min-w-0">
-                              <span className={`block text-sm font-medium ${isActive(item.href) ? 'text-teal-400' : 'text-gray-200 group-hover/item:text-white'}`}>
+                              <span className={`block text-sm font-medium ${isActive(item.href) ? 'text-brand' : 'text-content-secondary group-hover/item:text-content-primary'}`}>
                                 {item.label}
                               </span>
                               {item.description && (
-                                <span className="mt-0.5 block text-xs text-gray-500 group-hover/item:text-gray-400">
+                                <span className="mt-0.5 block text-xs text-content-muted group-hover/item:text-content-secondary">
                                   {item.description}
                                 </span>
                               )}
@@ -239,11 +249,11 @@ export default function Navbar() {
                           </Link>
                         ))}
                       </div>
-                      <div className="mt-3 border-t border-white/5 px-3 pt-3">
+                      <div className="mt-3 border-t border-border-subtle px-3 pt-3">
                         <Link
                           href={cluster.href}
                           onClick={() => setOpenCluster(null)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-teal-400 hover:text-teal-300 transition-colors"
+                          className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand-hover transition-colors"
                         >
                           Open {cluster.label}
                           <span className="transition-transform group-hover:translate-x-0.5">→</span>
@@ -257,16 +267,17 @@ export default function Navbar() {
           </div>
 
           {/* ── RIGHT CONTROLS ── */}
-          <div className="flex items-center gap-1 shrink-0">
+          <div className="flex items-center gap-0 sm:gap-1 shrink-0">
             {/* Search — also opens with Ctrl+K */}
             <button
+              ref={searchButtonRef}
               onClick={() => setSearchOpen(true)}
-              className="flex items-center gap-2 px-3 py-2 rounded-xl text-gray-300 hover:text-white hover:bg-white/10 transition-all duration-200 text-sm font-medium border border-transparent hover:border-gray-700 min-w-[40px] min-h-[40px] justify-center"
+              className="flex items-center gap-2 px-2 sm:px-3 py-2 rounded-xl text-content-secondary hover:text-content-primary hover:bg-accent transition-all duration-200 text-sm font-medium border border-transparent hover:border-border-strong min-w-[36px] min-h-[36px] justify-center"
               aria-label="Search (Ctrl+K)"
             >
               <SearchIcon />
               <span className="hidden xl:inline">Search</span>
-              <kbd className="hidden xl:inline rounded border border-white/10 bg-black/30 px-1.5 py-0.5 font-mono text-[10px] text-slate-400">⌘K</kbd>
+              <kbd className="hidden xl:inline rounded border border-border bg-surface-muted px-1.5 py-0.5 font-mono text-[10px] text-content-muted">⌘K</kbd>
             </button>
 
             {/* Language (Pillar F2) */}
@@ -280,7 +291,7 @@ export default function Navbar() {
               {!session ? (
                 <Link
                   href="/auth/signin"
-                  className="px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-sm font-semibold shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-[1.02] transition-all duration-200"
+                  className="px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-teal-500/20 hover:bg-primary-hover hover:scale-[1.02] transition-all duration-200"
                 >
                   Sign In
                 </Link>
@@ -289,7 +300,7 @@ export default function Navbar() {
                   <button
                     ref={userTriggerRef}
                     onClick={() => setUserOpen(v => !v)}
-                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500/10 to-emerald-500/10 text-teal-400 border border-teal-500/30 text-sm font-medium hover:bg-teal-500/20 hover:border-teal-500 transition-all"
+                    className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r bg-brand/10 text-brand border border-brand/30 text-sm font-medium hover:bg-brand-muted hover:border-brand transition-all"
                     aria-expanded={userOpen}
                     aria-controls="user-account-menu"
                   >
@@ -299,47 +310,47 @@ export default function Navbar() {
                   </button>
 
                   {userOpen && (
-                    <div id="user-account-menu" className="absolute top-[calc(100%+8px)] right-0 w-56 min-h-0 overflow-hidden bg-gray-900/98 backdrop-blur-xl border border-gray-800 rounded-2xl shadow-2xl shadow-black/60 z-50 anim-fade flex flex-col" style={{ maxHeight: 'calc(100dvh - 5rem)' }}>
+                    <div id="user-account-menu" className="absolute top-[calc(100%+8px)] right-0 w-56 min-h-0 overflow-hidden bg-surface-overlay backdrop-blur-xl border border-border-subtle rounded-2xl shadow-2xl shadow-black/60 z-50 anim-fade flex flex-col" style={{ maxHeight: 'calc(100dvh - 5rem)' }}>
                       <div className="px-4 pt-3 pb-1 shrink-0">
-                        <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest">Account</p>
-                        <div className="mt-1 px-1 py-1.5 bg-white/4 rounded-lg border border-white/6">
-                          <p className="text-[11px] text-gray-500">Signed in as</p>
-                          <p className="text-sm font-medium text-white truncate mt-0.5">{session.user?.email}</p>
+                        <p className="text-[10px] text-content-muted font-semibold uppercase tracking-widest">Account</p>
+                        <div className="mt-1 px-1 py-1.5 bg-surface-muted/40 rounded-lg border border-border-subtle">
+                          <p className="text-[11px] text-content-muted">Signed in as</p>
+                          <p className="text-sm font-medium text-content-primary truncate mt-0.5">{session.user?.email}</p>
                         </div>
                       </div>
                       <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto px-2 pb-1" data-lenis-prevent>
                         <Link
                           href="/dashboard"
                           onClick={() => setUserOpen(false)}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors group/item text-gray-300 hover:bg-white/5 hover:text-white"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors group/item text-content-secondary hover:bg-accent hover:text-content-primary"
                         >
                           <span className="text-sm opacity-70">📊</span>
                           <span className="flex-1">Dashboard</span>
-                          <span className="text-gray-600 group-hover/item:text-teal-500 transition-colors text-xs">→</span>
+                          <span className="text-content-muted group-hover/item:text-brand transition-colors text-xs">→</span>
                         </Link>
                         <Link
                           href="/account"
                           onClick={() => setUserOpen(false)}
-                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors group/item text-gray-300 hover:bg-white/5 hover:text-white"
+                          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors group/item text-content-secondary hover:bg-accent hover:text-content-primary"
                         >
                           <span className="text-sm opacity-70">👤</span>
                           <span className="flex-1">Your account</span>
-                          <span className="text-gray-600 group-hover/item:text-teal-500 transition-colors text-xs">→</span>
+                          <span className="text-content-muted group-hover/item:text-brand transition-colors text-xs">→</span>
                         </Link>
                         {['ADMIN', 'ANALYST'].includes((session.user as { role?: string })?.role || '') && (
                           <Link
                             href={(session.user as { role?: string })?.role === 'ADMIN' ? "/admin" : "/admin/cms"}
                             onClick={() => setUserOpen(false)}
-                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors group/item text-gray-300 hover:bg-white/5 hover:text-white"
+                            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm transition-colors group/item text-content-secondary hover:bg-accent hover:text-content-primary"
                           >
                             <span className="text-sm opacity-70">⚙️</span>
                             <span className="flex-1">Admin Panel</span>
-                            <span className="text-gray-600 group-hover/item:text-teal-500 transition-colors text-xs">→</span>
+                            <span className="text-content-muted group-hover/item:text-brand transition-colors text-xs">→</span>
                           </Link>
                         )}
                         <button
                           onClick={() => { setUserOpen(false); signOut(); }}
-                          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 transition-colors mt-1"
+                          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm text-error hover:bg-error-muted hover:text-error transition-colors mt-1"
                         >
                           <span>🚪</span>
                           <span>Sign Out</span>
@@ -354,7 +365,7 @@ export default function Navbar() {
             {/* CTA — desktop only */}
             <Link
               href={NAV_CTA.href}
-              className="hidden xl:flex items-center gap-2 ml-2 px-4 py-2 rounded-xl bg-gradient-to-r from-teal-500 to-emerald-500 text-white text-sm font-semibold shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-[1.02] transition-all duration-200 whitespace-nowrap"
+              className="hidden xl:flex items-center gap-2 ml-2 px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold shadow-lg shadow-teal-500/20 hover:bg-primary-hover hover:scale-[1.02] transition-all duration-200 whitespace-nowrap"
             >
               <span>{NAV_CTA.icon}</span>
               {NAV_CTA.label}
@@ -362,8 +373,10 @@ export default function Navbar() {
 
             {/* Hamburger — visible below lg */}
             <button
+              ref={mobileMenuButtonRef}
+              type="button"
               onClick={() => setMobileOpen(v => !v)}
-              className="lg:hidden relative ml-1 w-10 h-10 flex flex-col items-center justify-center gap-1.5 rounded-xl hover:bg-white/10 text-white transition-all duration-200 active:scale-95"
+              className="lg:hidden relative ml-1 w-9 h-9 sm:w-10 sm:h-10 flex flex-col items-center justify-center gap-1.5 rounded-xl hover:bg-accent text-content-primary transition-all duration-200 active:scale-95"
               aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
               aria-expanded={mobileOpen}
               aria-controls="public-mobile-navigation"
@@ -387,32 +400,35 @@ export default function Navbar() {
         role="presentation"
       >
         {/* Backdrop */}
-        <div
+        <button
+          type="button"
           className={`absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
           onClick={() => setMobileOpen(false)}
-          aria-hidden="true"
+          aria-label="Close navigation menu"
+          tabIndex={mobileOpen ? 0 : -1}
         />
 
         {/* Drawer panel */}
         <aside
           id="public-mobile-navigation"
           ref={mobileDrawerRef}
-          className={`viewport-height ui-scroll-region absolute inset-y-0 right-0 flex w-[340px] max-w-[92vw] flex-col overscroll-y-contain bg-gray-950 border-l border-white/5 shadow-2xl transition-transform duration-300 ease-out ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
+          className={`viewport-height ui-scroll-region absolute inset-y-0 right-0 flex w-[340px] max-w-[92vw] flex-col overscroll-y-contain bg-surface-overlay border-l border-border-subtle shadow-2xl transition-transform duration-300 ease-out ${mobileOpen ? 'translate-x-0' : 'translate-x-full'}`}
           aria-label="Mobile navigation"
-          role={mobileOpen ? 'dialog' : undefined}
-          aria-modal={mobileOpen ? true : undefined}
+          role="dialog"
+          aria-modal="true"
           tabIndex={-1}
           data-lenis-prevent
           style={{ paddingRight: 'env(safe-area-inset-right)' }}
         >
           {/* Drawer header */}
-          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-white/5 px-4 pb-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:p-5">
+          <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border-subtle px-4 pb-4 pt-[max(1.25rem,env(safe-area-inset-top))] sm:p-5">
             <Logo onClick={() => setMobileOpen(false)} />
             <button
               ref={mobileCloseButtonRef}
               onClick={() => setMobileOpen(false)}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-gray-400 hover:text-white hover:bg-white/10 transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl text-content-muted hover:text-content-primary hover:bg-accent transition-all focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
               aria-label="Close menu"
+              data-drawer-first
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
                 <line x1="18" y1="6" x2="6" y2="18" />
@@ -427,12 +443,13 @@ export default function Navbar() {
             {/* Search */}
             <div className="p-4">
               <button
-                onClick={() => { setSearchOpen(true); setMobileOpen(false); }}
-                className="w-full flex items-center gap-3 px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl transition-colors"
+                type="button"
+                onClick={() => { searchButtonRef.current?.focus(); setSearchOpen(true); setMobileOpen(false); }}
+                className="w-full flex items-center gap-3 px-4 py-3 bg-surface-muted hover:bg-accent border border-border rounded-xl transition-colors"
               >
-                <SearchIcon className="text-teal-400 shrink-0" />
-                <span className="text-gray-300 text-sm">Search anything…</span>
-                <span className="ml-auto text-xs text-gray-600 bg-white/5 px-2 py-0.5 rounded-md">⌘K</span>
+                <SearchIcon className="text-brand shrink-0" />
+                <span className="text-content-secondary text-sm">Search anything…</span>
+                <span className="ml-auto text-xs text-content-muted bg-surface-muted px-2 py-0.5 rounded-md">⌘K</span>
               </button>
             </div>
 
@@ -445,7 +462,7 @@ export default function Navbar() {
                     onClick={() => setMobileOpen(false)}
                     className="flex items-center gap-2 px-1 mb-2"
                   >
-                    <span className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest">
+                    <span className="text-[10px] text-content-muted font-semibold uppercase tracking-widest">
                       {cluster.icon} {cluster.label}
                     </span>
                   </Link>
@@ -456,13 +473,13 @@ export default function Navbar() {
                         href={item.href}
                         onClick={() => setMobileOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive(item.href)
-                          ? 'bg-teal-500/10 text-teal-400 border border-teal-500/20'
-                          : 'text-gray-300 hover:bg-white/5 hover:text-white border border-transparent'
+                          ? 'bg-brand-muted text-brand border border-brand/20'
+                          : 'text-content-secondary hover:bg-accent hover:text-content-primary border border-transparent'
                           }`}
                       >
                         <span className="text-base w-6 text-center">{item.icon}</span>
                         {item.label}
-                        {isActive(item.href) && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-teal-400" />}
+                        {isActive(item.href) && <span className="ml-auto w-1.5 h-1.5 rounded-full bg-brand" />}
                       </Link>
                     ))}
                   </div>
@@ -471,34 +488,34 @@ export default function Navbar() {
             </div>
           </div>
 
-          {/* Account and primary action remain available while the navigation list scrolls. */}
-          <div className="ui-scroll-region min-h-0 max-h-[min(42dvh,20rem)] shrink-0 overflow-y-auto overscroll-y-contain border-t border-white/5 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3" data-lenis-prevent>
+{/* Account and primary action remain available while the navigation list scrolls. */}
+          <div className="ui-scroll-region min-h-0 max-h-[min(42dvh,20rem)] shrink-0 overflow-y-auto overscroll-y-contain border-t border-border-subtle px-4 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3" data-lenis-prevent>
             <div className="px-0 pb-2">
-              <p className="text-[10px] text-gray-500 font-semibold uppercase tracking-widest mb-3 px-1">Account</p>
+              <p className="text-[10px] text-content-muted font-semibold uppercase tracking-widest mb-3 px-1">Account</p>
               {!session ? (
                 <Link
                   href="/auth/signin"
                   onClick={() => setMobileOpen(false)}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-semibold rounded-xl shadow-lg hover:opacity-90 transition-opacity"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-primary text-primary-foreground font-semibold rounded-xl shadow-lg hover:opacity-90 transition-opacity"
                 >
                   <span>🔐</span>
                   Sign In / Sign Up
                 </Link>
               ) : (
                 <div className="space-y-2">
-                  <div className="px-4 py-3 bg-white/4 rounded-xl border border-white/6">
-                    <p className="text-[11px] text-gray-500">Signed in as</p>
-                    <p className="text-sm font-medium text-white truncate mt-0.5">{session.user?.email}</p>
+                  <div className="px-4 py-3 bg-surface-muted/40 rounded-xl border border-border-subtle">
+                    <p className="text-[11px] text-content-muted">Signed in as</p>
+                    <p className="text-sm font-medium text-content-primary truncate mt-0.5">{session.user?.email}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
-                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-2 py-2.5 border border-teal-500/40 text-teal-400 rounded-xl text-sm font-medium hover:bg-teal-500/10 transition-all">
+                    <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-2 py-2.5 border border-brand/40 text-brand rounded-xl text-sm font-medium hover:bg-brand-muted transition-all">
                       Dashboard
                     </Link>
                     {['ADMIN', 'ANALYST'].includes((session.user as { role?: string })?.role || '') && (
                       <Link
                         href={(session.user as { role?: string })?.role === 'ADMIN' ? "/admin" : "/admin/cms"}
                         onClick={() => setMobileOpen(false)}
-                        className="flex items-center justify-center gap-2 py-2.5 bg-gradient-to-r from-purple-500 to-indigo-500 text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
+                        className="flex items-center justify-center gap-2 py-2.5 bg-info text-content-inverse rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
                       >
                         Admin
                       </Link>
@@ -506,7 +523,7 @@ export default function Navbar() {
                   </div>
                   <button
                     onClick={() => { setMobileOpen(false); signOut(); }}
-                    className="w-full py-2.5 bg-red-500/10 text-red-400 border border-red-500/20 rounded-xl text-sm font-medium hover:bg-red-500/20 transition-all"
+                    className="w-full py-2.5 bg-error-muted text-error border border-error/30 rounded-xl text-sm font-medium hover:bg-error-muted transition-all"
                   >
                     Sign Out
                   </button>
@@ -519,7 +536,7 @@ export default function Navbar() {
               <Link
                 href={NAV_CTA.href}
                 onClick={() => setMobileOpen(false)}
-                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-gradient-to-r from-teal-500 to-emerald-500 text-white font-semibold rounded-xl shadow-lg shadow-teal-500/20 hover:shadow-teal-500/40 hover:scale-[1.01] transition-all"
+                className="w-full flex items-center justify-center gap-2 px-4 py-3.5 bg-primary text-primary-foreground font-semibold rounded-xl shadow-lg shadow-teal-500/20 hover:bg-primary-hover hover:scale-[1.01] transition-all"
               >
                 <span>{NAV_CTA.icon}</span>
                 {NAV_CTA.label}

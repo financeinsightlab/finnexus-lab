@@ -100,7 +100,9 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
   const FormatIcon = formatIcon(episode.format);
 
   return (
+
     <div className="min-h-screen bg-background text-foreground">
+
       <JsonLd data={buildEpisodeSchema(episode)} />
 
       {/* ═══════════ HEADER ═══════════ */}
@@ -110,8 +112,10 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
 
         <div className="content-page relative z-10">
           {/* Breadcrumb */}
+
           <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
             <Link href="/podcast" className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
+
               <ArrowLeft className="w-4 h-4" /> Podcast
             </Link>
             <span className="text-muted-foreground">/</span>
@@ -168,7 +172,9 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
                     <Link
                       key={tag}
                       href={`/podcast?format=All#episodes`}
+
                       className="text-xs px-3 py-1 rounded-full bg-secondary border border-border text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
+
                     >
                       #{tag}
                     </Link>
@@ -236,8 +242,10 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
 
         {/* Show notes + transcript */}
         <div className="mt-10">
+
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Show Notes & Transcript</h2>
           <div className="cms-content prose-content article-body">
+
             {episode.content ? (
               <MDXRemote source={episode.content} components={scrollableTableComponents} />
             ) : (

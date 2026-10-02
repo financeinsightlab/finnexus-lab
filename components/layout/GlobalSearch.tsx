@@ -8,7 +8,7 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
+
 
 interface SearchHit {
     kind: string;
@@ -57,7 +57,6 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
     const inputRef = useRef<HTMLInputElement>(null);
     const dialogRef = useRef<HTMLDivElement>(null);
 
-    useModalAccessibility(open, dialogRef, onClose, { initialFocusRef: inputRef });
 
     // Reset state when closed
     useEffect(() => {
@@ -131,7 +130,7 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
         >
             <div
                 ref={dialogRef}
-                className="viewport-dialog-panel ui-scroll-region flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-white/10 bg-[#0f1c2d] shadow-2xl shadow-black/60"
+                className="viewport-dialog-panel ui-scroll-region flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-border bg-surface-overlay shadow-2xl shadow-black/60"
                 style={{ maxHeight: 'min(45rem, calc(100dvh - max(10vh, calc(env(safe-area-inset-top) + 1rem)) - max(1rem, env(safe-area-inset-bottom))))' }}
                 role="dialog"
                 aria-modal="true"
@@ -141,18 +140,18 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                 onMouseDown={(e) => e.stopPropagation()}
             >
                 {/* Header */}
-                <div className="flex shrink-0 items-center justify-between gap-2 border-b border-white/10 bg-gradient-to-r from-[#0d1b2e] to-[#0f2240] px-4 py-3">
-                    <h2 id="global-search-title" className="text-sm font-bold tracking-wide text-white">
+                <div className="flex shrink-0 items-center justify-between gap-2 border-b border-border bg-surface-muted px-4 py-3">
+                    <h2 id="global-search-title" className="text-sm font-bold tracking-wide text-content-primary">
                         🔍 Search Kunwar Analytics
                     </h2>
                     <div className="flex items-center gap-2">
-                        <kbd className="hidden rounded border border-white/10 bg-black/30 px-1.5 py-0.5 font-mono text-[10px] text-slate-400 sm:block">
+                        <kbd className="hidden rounded border border-border bg-black/30 px-1.5 py-0.5 font-mono text-[10px] text-content-muted sm:block">
                             ESC
                         </kbd>
                         <button
                             type="button"
                             onClick={onClose}
-                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-white/70 transition hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
+                            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-content-secondary transition hover:bg-accent hover:text-content-primary focus-visible:outline focus-visible:outline-2 focus-visible:outline-teal-400"
                             aria-label="Close search"
                         >
                             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -163,9 +162,9 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                 </div>
 
                 {/* Search input */}
-                <form onSubmit={handleSubmit} className="shrink-0 border-b border-white/10 p-3">
+                <form onSubmit={handleSubmit} className="shrink-0 border-b border-border p-3">
                     <div className="relative flex items-center">
-                        <svg className="absolute left-3 h-4 w-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                        <svg className="absolute left-3 h-4 w-4 text-content-muted" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                             <circle cx="11" cy="11" r="8" />
                             <line x1="21" y1="21" x2="16.65" y2="16.65" />
                         </svg>
@@ -175,12 +174,12 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                             onChange={(e) => setQuery(e.target.value)}
                             type="search"
                             placeholder="Search research, insights, tools, courses…"
-                            className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-10 pr-10 text-sm text-white placeholder:text-slate-500 outline-none focus:border-teal-500/50 focus:ring-1 focus:ring-teal-500/30 transition"
+                            className="w-full rounded-xl border border-border bg-surface-muted py-3 pl-10 pr-10 text-sm text-content-primary placeholder:text-content-muted outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
                             enterKeyHint="search"
                             autoComplete="off"
                         />
                         {loading && (
-                            <span className="absolute right-3 text-xs text-teal-400 animate-pulse">…</span>
+                            <span className="absolute right-3 text-xs text-brand animate-pulse">…</span>
                         )}
                     </div>
                 </form>
@@ -188,10 +187,10 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                 {/* Results */}
                 <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain" data-lenis-prevent>
                     {error ? (
-                        <p className="px-4 py-12 text-center text-sm text-red-400">{error}</p>
+                        <p className="px-4 py-12 text-center text-sm text-error">{error}</p>
                     ) : query.trim().length < 2 ? (
                         <div className="px-4 py-10 text-center">
-                            <p className="text-sm text-slate-400">
+                            <p className="text-sm text-content-muted">
                                 Type at least 2 characters to search across research, insights, Data Lab, courses and tools.
                             </p>
                             <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -200,7 +199,7 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                                         key={suggestion}
                                         type="button"
                                         onClick={() => setQuery(suggestion)}
-                                        className="rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-slate-300 transition hover:bg-white/10 hover:text-white"
+                                        className="rounded-full border border-border bg-surface-muted px-3 py-1 text-xs text-content-secondary transition hover:bg-accent hover:text-content-primary"
                                     >
                                         {suggestion}
                                     </button>
@@ -208,16 +207,16 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                             </div>
                         </div>
                     ) : loading && !result ? (
-                        <p className="px-4 py-12 text-center text-sm text-slate-400">Searching…</p>
+                        <p className="px-4 py-12 text-center text-sm text-content-muted">Searching…</p>
                     ) : totalShown === 0 ? (
-                        <p className="px-4 py-12 text-center text-sm text-slate-400">
+                        <p className="px-4 py-12 text-center text-sm text-content-muted">
                             No results for &ldquo;{query.trim()}&rdquo;. Try different keywords.
                         </p>
                     ) : (
                         <div className="flex flex-col divide-y divide-white/5">
                             {result?.groups.map((group) => (
                                 <div key={group.kind}>
-                                    <p className="bg-white/3 px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-slate-500">
+                                    <p className="bg-surface-muted px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-content-muted">
                                         {KIND_ICON[group.kind] ?? '📄'} {group.label}
                                     </p>
                                     {group.items.map((item) => (
@@ -225,13 +224,13 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                                             key={`${group.kind}-${item.url}`}
                                             href={item.url}
                                             onClick={onClose}
-                                            className="flex min-h-[52px] flex-col justify-center gap-0.5 px-4 py-3 transition hover:bg-white/5"
+                                            className="flex min-h-[52px] flex-col justify-center gap-0.5 px-4 py-3 transition hover:bg-surface-muted"
                                         >
-                                            <span className="break-words font-medium text-sm text-slate-100">
+                                            <span className="break-words font-medium text-sm text-content-primary">
                                                 {item.title}
                                             </span>
                                             {item.description ? (
-                                                <span className="break-words text-xs text-slate-500">
+                                                <span className="break-words text-xs text-content-muted">
                                                     {item.description}
                                                 </span>
                                             ) : null}
@@ -244,11 +243,11 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                 </div>
 
                 {/* Footer */}
-                <div className="shrink-0 border-t border-white/10 bg-white/3 px-4 py-2.5">
+                <div className="shrink-0 border-t border-border bg-surface-muted px-4 py-2.5">
                     <Link
                         href={query.trim() ? `/research?q=${encodeURIComponent(query.trim())}` : '/research'}
                         onClick={onClose}
-                        className="flex min-h-[40px] w-full items-center justify-center gap-2 rounded-lg bg-teal-600/80 px-3 text-center text-sm font-semibold text-white transition hover:bg-teal-500"
+                        className="flex min-h-[40px] w-full items-center justify-center gap-2 rounded-lg bg-primary px-3 text-center text-sm font-semibold text-primary-foreground transition hover:bg-primary-hover"
                     >
                         <span>Open full research search</span>
                         <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>

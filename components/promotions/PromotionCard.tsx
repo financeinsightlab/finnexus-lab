@@ -234,10 +234,12 @@ export default function PromotionCard({
               {!hasMedia && promotion.logoUrl && (
                 <img src={promotion.logoUrl} alt={`${promotion.brandName} logo`} loading="lazy" decoding="async" className="h-8 w-8 shrink-0 rounded-lg object-contain" onError={(event) => { event.currentTarget.style.display = 'none'; }} />
               )}
+
               <div className="min-w-0 flex-1">
                 <p className="truncate text-xs font-bold uppercase tracking-wider text-teal-600 dark:text-teal-400">{promotion.brandName}</p>
                 <p className="mt-0.5 text-sm font-bold leading-snug text-foreground">{promotion.title}</p>
               </div>
+
             </div>
             <p className="line-clamp-3 text-xs leading-5 text-muted-foreground">{promotion.shortDescription}</p>
             <PromotionLink promotionId={promotion.id} path={path} slot={slot} href={promotion.href} preview={preview} className={`${CTA_CLASS} flex w-full px-4 py-2.5 text-xs`}>
@@ -247,6 +249,7 @@ export default function PromotionCard({
               <span aria-hidden="true" className="relative z-10 transition-transform group-hover:translate-x-1">→</span>
             </PromotionLink>
           </div>
+
         </div>
       </aside>
     );
@@ -267,6 +270,7 @@ export default function PromotionCard({
               {disclosure} · {promotion.brandName}
             </span>
             {minimizeButton}
+
           </div>
           {media ? (
             <div className="grid md:grid-cols-[minmax(280px,0.5fr)_minmax(0,1fr)]">
@@ -294,6 +298,7 @@ export default function PromotionCard({
     );
   }
 
+
   if (preview) return <div className={className}>{body}</div>;
   return (
     <div className={`${deviceClass ?? ''} ${className}`.trim() || undefined} data-promotion-device-wrapper="">
@@ -301,5 +306,6 @@ export default function PromotionCard({
         {body}
       </div>
     </div>
+
   );
 }

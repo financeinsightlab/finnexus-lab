@@ -147,7 +147,9 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
             <div className="mb-7 flex items-center justify-between gap-4">
               <Link
                 href="/research"
+
                 className="group inline-flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-foreground"
+
               >
                 <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                 Back to Research Library
@@ -198,8 +200,10 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
 
         {/* ── COVER IMAGE ── */}
         {coverImage && (
+
           <ContentPage className="relative z-20 -mt-6">
             <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-2xl">
+
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={coverImage}
@@ -339,8 +343,10 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
                 />
               </div>
             </article>
+
           </ContentLayout>
         </ContentPage>
+
       </div>
       <PromotionSlot slot="CONTENT_BOTTOM" path={`/research/${slug}`} tags={[...tags, sector]} />
       <RelatedContentSection sourceType="RESEARCH" sourceSlug={slug} />

@@ -95,8 +95,10 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
       </header>
 
       {/* ── INTEGRATED FILTER CONTROLS ── */}
+
       <section className="sticky top-16 z-30 border-b border-border bg-card/95 shadow-sm backdrop-blur-xl">
         <div className="content-page py-3.5 space-y-3">
+
           {/* Row 1: Search + Sort + Reset */}
           <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
             {/* Search Input */}
@@ -107,12 +109,16 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
                 placeholder="Search strategic briefs, theses, catalysts..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
+
                 className="w-full rounded-xl border border-input bg-background py-2.5 pl-10 pr-9 text-xs text-foreground transition-all placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
+
               />
               {query && (
                 <button
                   onClick={() => setQuery('')}
+
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+
                   title="Clear search"
                 >
                   <X className="w-3.5 h-3.5" />
@@ -122,6 +128,7 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
 
             {/* Sort & Reset Buttons */}
             <div className="flex items-center gap-2.5 w-full sm:w-auto justify-between sm:justify-end">
+
               <div className="flex items-center gap-1.5 rounded-xl border border-border bg-secondary px-3 py-1.5 text-xs text-secondary-foreground">
                 <ArrowUpDown className="h-3.5 w-3.5 text-primary" />
                 <span className="hidden text-muted-foreground md:inline">Sort:</span>
@@ -133,6 +140,7 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
                   <option value="date">Latest Published</option>
                   <option value="readingTime">Shortest Read Time</option>
                   <option value="title">Alphabetical (A-Z)</option>
+
                 </select>
               </div>
 
@@ -159,14 +167,18 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
                   aria-pressed={active}
                   className={`flex min-h-11 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-xl px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
                     active
+
                       ? 'border border-primary bg-primary font-bold text-primary-foreground shadow-sm'
                       : 'border border-border bg-secondary text-secondary-foreground hover:bg-accent'
+
                   }`}
                 >
                   <span>{c}</span>
                   <span
                     className={`text-[10px] px-1.5 py-0.2 rounded-full font-mono font-bold ${
+
                       active ? 'bg-primary-foreground/25 text-primary-foreground' : 'bg-muted text-muted-foreground'
+
                     }`}
                   >
                     {count}
@@ -198,7 +210,9 @@ export default function InsightsClient({ posts }: InsightsClientProps) {
             </p>
             <button
               onClick={clearAllFilters}
+
               className="cursor-pointer rounded-xl bg-primary px-5 py-2.5 text-xs font-bold text-primary-foreground shadow-sm transition-all hover:opacity-90"
+
             >
               Reset All Filters
             </button>

@@ -143,7 +143,9 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
             <div className="mb-7 flex items-center justify-between gap-4">
               <Link
                 href="/insights"
+
                 className="group inline-flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-foreground"
+
               >
                 <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                 Back to All Insights
@@ -171,9 +173,11 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
               </h1>
 
               {thesis && (
+
                 <div className="max-w-[80ch] rounded-2xl border border-border border-l-4 border-l-primary bg-secondary/40 p-5 shadow-sm">
                   <p className="mb-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wider text-primary">
                     <Sparkles className="h-3.5 w-3.5" /> Executive Thesis
+
                   </p>
                   <p className="text-base italic leading-relaxed text-foreground md:text-lg">
                     &quot;{thesis}&quot;
@@ -197,9 +201,11 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
 
         {/* ── COVER IMAGE ── */}
         {coverImage && (
+
           <ContentPage className="relative z-20 -mt-6">
             <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-2xl">
               {/* eslint-disable-next-line @next/next/no-img-element */}
+
               <img
                 src={coverImage}
                 alt={title}
@@ -325,8 +331,10 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
                 />
               </div>
             </article>
+
           </ContentLayout>
         </ContentPage>
+
       </div>
       <PromotionSlot slot="CONTENT_BOTTOM" path={`/insights/${slug}`} tags={[...tags, category]} />
       <RelatedContentSection sourceType="INSIGHT" sourceSlug={slug} />

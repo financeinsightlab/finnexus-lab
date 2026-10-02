@@ -158,7 +158,7 @@ export default function AboutPage() {
       </section>
 
       {/* Methodology Section */}
-      <section className="bg-brand-silver py-20">
+      <section className="bg-surface-muted py-20">
         <div className="wrap">
           <div className="text-center mb-12">
             <p className="section-label mb-4">Process</p>
@@ -214,7 +214,7 @@ export default function AboutPage() {
       </section>
 
       {/* Enterprise Section */}
-      <section className="bg-brand-silver py-20">
+      <section className="bg-surface-muted py-20">
         <div className="wrap">
           <div className="text-center mb-12">
             <p className="section-label mb-4">Organization Enquiries</p>

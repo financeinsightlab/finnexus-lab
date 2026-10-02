@@ -121,7 +121,7 @@ export default function GlobalSearchFallback({
     return (
         <div
             ref={dialogRef}
-            className="viewport-dialog-panel ui-scroll-region flex w-full min-w-0 max-w-xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-[#0f1c2d]"
+            className="viewport-dialog-panel ui-scroll-region flex w-full min-w-0 max-w-xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-2xl dark:border-white/10 dark:bg-surface-raised"
             style={panelStyle}
             role="dialog"
             aria-modal="true"
@@ -130,7 +130,7 @@ export default function GlobalSearchFallback({
             data-lenis-prevent
             onMouseDown={(e) => e.stopPropagation()}
         >
-            <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-gray-100 bg-gradient-to-r from-brand-navy to-brand-slate px-3 py-3 sm:gap-3 sm:px-4 dark:border-white/10">
+            <div className="flex min-w-0 shrink-0 items-center justify-between gap-2 border-b border-gray-100 bg-brand-navy px-3 py-3 sm:gap-3 sm:px-4 dark:border-white/10">
                 <h2 id="global-search-title" className="min-w-0 truncate text-sm font-bold tracking-wide text-white">
                     Search Kunwar Analytics
                 </h2>
@@ -154,7 +154,7 @@ export default function GlobalSearchFallback({
                         onChange={(e) => setQuery(e.target.value)}
                         type="search"
                         placeholder="Search reports, insights, topics…"
-                        className="box-border w-full min-w-0 max-w-full rounded-xl border-2 border-gray-200 bg-white py-3 pl-3 pr-12 text-base text-brand-navy placeholder:text-gray-400 focus:border-brand-teal focus:outline-none focus:ring-2 focus:ring-brand-teal/30 dark:border-white/10 dark:bg-[#0a1120] dark:text-slate-100 sm:pl-4"
+                        className="box-border w-full min-w-0 max-w-full rounded-xl border-2 border-gray-200 bg-white py-3 pl-3 pr-12 text-base text-brand-navy placeholder:text-gray-400 focus:border-brand-teal focus:outline-none focus:ring-2 focus:ring-brand-teal/30 dark:border-white/10 dark:bg-background dark:text-slate-100 sm:pl-4"
                         enterKeyHint="search"
                         autoComplete="off"
                     />
@@ -193,7 +193,7 @@ export default function GlobalSearchFallback({
                                         key={`${group.kind}-${item.url}`}
                                         href={item.url}
                                         onClick={onClose}
-                                        className="flex min-h-[44px] min-w-0 max-w-full flex-col justify-center gap-1 border-b border-gray-100 px-3 py-3 text-left last:border-b-0 hover:bg-brand-silver/60 dark:border-white/10 dark:hover:bg-white/5 sm:px-4"
+                                        className="flex min-h-[44px] min-w-0 max-w-full flex-col justify-center gap-1 border-b border-gray-100 px-3 py-3 text-left last:border-b-0 hover:bg-surface-muted/60 dark:border-white/10 dark:hover:bg-white/5 sm:px-4"
                                     >
                                         <span className="break-words font-semibold text-brand-navy dark:text-slate-100">
                                             {item.title}

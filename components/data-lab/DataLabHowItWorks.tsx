@@ -55,10 +55,10 @@ export default function DataLabHowItWorks() {
             <ScrollReveal key={s.title} delay={i * 90}>
               <div className="group relative h-full rounded-2xl border border-border bg-card p-6 shadow-sm transition-all duration-300 hover:-translate-y-1.5 hover:border-primary/40 hover:shadow-lg">
                 <div className="flex items-center justify-between mb-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl border border-border bg-secondary">
+<div className="w-12 h-12 rounded-2xl bg-surface-muted border border-border flex items-center justify-center">
                     <s.icon className={`w-6 h-6 ${s.color}`} />
                   </div>
-                  <span className="bg-gradient-to-br from-foreground/25 to-foreground/5 bg-clip-text text-4xl font-bold text-transparent">
+                  <span className="text-4xl font-bold text-brand">
                     {s.step}
                   </span>
                 </div>
