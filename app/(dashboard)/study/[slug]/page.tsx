@@ -12,6 +12,7 @@ import CourseAssessmentPanel from '@/components/learning/CourseAssessmentPanel'
 import ContentFaq from '@/components/content/ContentFaq'
 import RelatedContentSection from '@/components/content/RelatedContentSection'
 import PromotionSlot from '@/components/promotions/PromotionSlot'
+import PromotionRailLayout from '@/components/promotions/PromotionRailLayout'
 import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms'
 
 interface PageProps {
@@ -195,16 +196,23 @@ export default async function StudyMaterialPage({ params }: PageProps) {
         </div>
       </section>
 
-      {/* ─── Content ─── */}
-      <article className="max-w-4xl mx-auto px-6 py-12">
-        <div className="prose prose-lg dark:prose-invert max-w-none">
-          {material.content ? (
-            <MDXRemote source={material.content} />
-          ) : (
-            <p className="text-center italic text-gray-500">Content not available.</p>
-          )}
-        </div>
-      </article>
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]} />
+
+      {/* ─── Content (with optional COURSE_SIDEBAR rail) ─── */}
+      <PromotionRailLayout path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]}>
+        <article className="max-w-4xl mx-auto px-6 py-12">
+          <div className="prose prose-lg dark:prose-invert max-w-none">
+            {material.content ? (
+              <MDXRemote source={material.content} />
+            ) : (
+              <p className="text-center italic text-gray-500">Content not available.</p>
+            )}
+          </div>
+          {/* Promotion slot: CONTENT_MIDDLE */}
+          <PromotionSlot slot="CONTENT_MIDDLE" path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]} className="mt-10 w-full" />
+        </article>
+      </PromotionRailLayout>
 
       {/* ─── Related Materials ─── */}
       {related.length > 0 && (
@@ -241,10 +249,11 @@ export default async function StudyMaterialPage({ params }: PageProps) {
         </div>
       )}
       <RelatedFinanceTerms categories={[material.category.name]} keywords={[material.slug, ...material.tags]} title="Related finance terms" />
-      <PromotionSlot placement="STUDY_PAGE" path={`/study/${material.slug}`} contentType="STUDY" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]} />
       <RelatedContentSection sourceType="STUDY" sourceSlug={material.slug} />
       <RelatedContentSection sourceType="STUDY" sourceSlug={material.slug} linkKind="CTA" />
       <ContentFaq relatedType="STUDY" relatedSlug={material.slug} />
+      <PromotionSlot slot="FOOTER" path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]} />
     </div>
   )
 }

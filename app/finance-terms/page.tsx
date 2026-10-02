@@ -80,6 +80,7 @@ export default async function FinanceTermsPage({ searchParams }: { searchParams:
       <div className="border-b border-border/60 bg-gradient-to-b from-background via-muted/15 to-background">
         <FinanceTermsCarousel terms={featuredTerms} showExploreLink={false} />
       </div>
+      <PromotionSlot slot="CONTENT_TOP" path="/finance-terms" />
       <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-bold text-foreground">{query ? `Results for “${query}”` : category ? `${category} terms` : 'Browse the glossary'}</h2>
@@ -126,12 +127,13 @@ export default async function FinanceTermsPage({ searchParams }: { searchParams:
           </nav>
         )}
         <div className="my-8">
-          <PromotionSlot placement="BETWEEN_CONTENT" path="/finance-terms" contentType="FINANCE_TERM" />
+          <PromotionSlot slot="CONTENT_BOTTOM" path="/finance-terms" />
         </div>
         <div className="mt-10 rounded-2xl border border-border bg-muted/40 p-5 text-sm text-muted-foreground">
           Looking for learning paths or tools? <Link href="/pgdm" className="font-semibold text-primary hover:underline">Browse individual PGDM courses</Link> or <Link href="/tools" className="font-semibold text-primary hover:underline">explore calculators</Link>.
         </div>
       </main>
+      <PromotionSlot slot="FOOTER" path="/finance-terms" />
     </div>
   );
 }

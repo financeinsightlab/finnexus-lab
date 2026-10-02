@@ -14,6 +14,7 @@ import JsonLd from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import PromotionRailLayout from '@/components/promotions/PromotionRailLayout';
 import CourseLessonsList from '@/components/learning/CourseLessonsList';
 import CourseAssessmentPanel from '@/components/learning/CourseAssessmentPanel';
 import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms';
@@ -172,7 +173,11 @@ export default async function SubjectPage({ params }: PageProps) {
         ]}
       />
 
+      <PromotionRailLayout path={`/pgdm/${subject.slug}`} tags={[subject.track, meta.label]}>
       <main className="max-w-[1000px] mx-auto px-6 py-10 space-y-10">
+        {/* Promotion slot: CONTENT_TOP */}
+        <PromotionSlot slot="CONTENT_TOP" path={`/pgdm/${subject.slug}`} tags={[subject.track, meta.label]} className="w-full" />
+
         {/* ── COURSE OUTCOMES ── */}
         <section className="grid md:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-white/8 bg-cinema-charcoal/60 p-5">
@@ -306,13 +311,19 @@ export default async function SubjectPage({ params }: PageProps) {
           Modeling tools for this paper live on the <Link href="/tools" className="text-teal-400 hover:underline">Tools page</Link>
         </p>
         <CourseLessonsList courseSlug={subject.slug} courseType="PGDM" />
+
+        {/* Promotion slot: CONTENT_MIDDLE */}
+        <PromotionSlot slot="CONTENT_MIDDLE" path={`/pgdm/${subject.slug}`} tags={[subject.track, meta.label]} className="w-full" />
+
         <CourseAssessmentPanel courseSlug={subject.slug} returnTo={`/pgdm/${subject.slug}`} />
         <RelatedFinanceTerms categories={[subject.track, meta.label]} keywords={[subject.slug, subject.code.toLowerCase()]} title="Finance terms used in this course" />
       </main>
-      <PromotionSlot placement="COURSE_PAGE" path={`/pgdm/${subject.slug}`} contentType="COURSE" />
+      </PromotionRailLayout>
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/pgdm/${subject.slug}`} tags={[subject.track, meta.label]} />
       <RelatedContentSection sourceType="COURSE" sourceSlug={subject.slug} />
       <RelatedContentSection sourceType="COURSE" sourceSlug={subject.slug} linkKind="CTA" />
       <ContentFaq relatedType="COURSE" relatedSlug={subject.slug} />
+      <PromotionSlot slot="FOOTER" path={`/pgdm/${subject.slug}`} tags={[subject.track, meta.label]} />
     </div>
   );
 }

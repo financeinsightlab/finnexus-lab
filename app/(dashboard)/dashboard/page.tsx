@@ -24,6 +24,7 @@ import { getAllInsights, getAllResearch } from '@/lib/content';
 import { getPublishedStudyMaterials } from '@/lib/study';
 import { readLastVisit } from '@/lib/visit-store';
 import VisitMarker from '@/components/dashboard/VisitMarker';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -482,6 +483,8 @@ export default async function DashboardPage() {
           </div>
         </div>
       </section>
+      {/* Promotion slot: DASHBOARD (only explicitly targeted promotions; never GLOBAL) */}
+      <PromotionSlot slot="DASHBOARD" path="/dashboard" />
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import CardImageBanner from '@/components/ui/CardImageBanner';
 import HeroBackground from '@/components/ui/HeroBackground';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 interface EnquiryTopic {
   icon: string;
@@ -139,8 +140,13 @@ export default function ServicesPage() {
           <Link href="/contact?service=Other" className="btn btn-white text-lg px-8 py-3">
             Submit an Enquiry →
           </Link>
+          {/* Promotion slot: CTA_SECTION */}
+          <div className="pt-10">
+            <PromotionSlot slot="CTA_SECTION" path="/services" />
+          </div>
         </div>
       </section>
+      <PromotionSlot slot="FOOTER" path="/services" />
     </div>
   );
 }

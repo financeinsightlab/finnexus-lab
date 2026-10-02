@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getSubject } from '@/lib/pgdm/curriculum';
 import PrintButton from '@/components/pgdm/PrintButton';
 import JsonLd from '@/components/seo/JsonLd';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 import type { Metadata } from 'next';
 
 interface PageProps {
@@ -146,6 +147,11 @@ export default async function CheatSheetPage({ params }: PageProps) {
               </section>
             );
           })}
+
+          {/* Promotion slot: CONTENT_BOTTOM (hidden when printing) */}
+          <div className="print-hide">
+            <PromotionSlot slot="CONTENT_BOTTOM" path={`/pgdm/${subject.slug}/cheatsheet`} tags={[subject.track]} className="w-full" />
+          </div>
 
           <footer className="print-hide text-center text-xs text-slate-500">
             <Link href="/pgdm" className="hover:text-teal-300">All subjects</Link> ·{' '}

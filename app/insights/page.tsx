@@ -57,11 +57,13 @@ export default async function InsightsPage() {
 
   return (
     <>
+      <PromotionSlot slot="CONTENT_TOP" path="/insights" />
       <InsightsClient posts={mergedPosts} />
-      <PromotionSlot placement="ARTICLE_PAGE" path="/insights" contentType="INSIGHT" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/insights" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="insights" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="insights" linkKind="CTA" />
       <ContentFaq relatedType="PAGE" relatedSlug="insights" />
+      <PromotionSlot slot="FOOTER" path="/insights" />
     </>
   );
 }

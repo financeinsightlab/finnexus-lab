@@ -413,6 +413,9 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
         </div>
       </section>
 
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path={`/data-lab/${slug}`} tags={[project.sector, ...(project.tools ?? [])]} />
+
       {/* ===== INTERACTIVE LAB ===== */}
       {visual && (
         <section className="wrap max-w-6xl py-12">
@@ -469,6 +472,9 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
           </div>
         </section>
       )}
+
+      {/* Promotion slot: CONTENT_MIDDLE */}
+      <PromotionSlot slot="CONTENT_MIDDLE" path={`/data-lab/${slug}`} tags={[project.sector, ...(project.tools ?? [])]} />
 
       {/* ===== FULL ANALYSIS ===== */}
       <section className="wrap max-w-6xl pb-16">
@@ -568,10 +574,11 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
           )}
         </section>
       )}
-      <PromotionSlot placement="ARTICLE_PAGE" path={`/data-lab/${slug}`} contentType="DATASET" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/data-lab/${slug}`} tags={[project.sector, ...(project.tools ?? [])]} />
       <RelatedContentSection sourceType="DATASET" sourceSlug={slug} />
       <RelatedContentSection sourceType="DATASET" sourceSlug={slug} linkKind="CTA" />
       <ContentFaq relatedType="DATASET" relatedSlug={slug} />
+      <PromotionSlot slot="FOOTER" path={`/data-lab/${slug}`} tags={[project.sector, ...(project.tools ?? [])]} />
     </div>
   );
 }

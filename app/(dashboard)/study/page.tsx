@@ -11,6 +11,7 @@ import {
 } from '@/lib/study'
 import StudyClient from '@/components/study/StudyClient'
 import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd'
+import PromotionSlot from '@/components/promotions/PromotionSlot'
 
 export const metadata: Metadata = {
   title: 'Study Material | Kunwar Analytics',
@@ -58,10 +59,13 @@ export default async function StudyPage() {
   return (
     <>
       <JsonLd data={crumbs} />
+      <PromotionSlot slot="CONTENT_TOP" path="/study" />
       <StudyClient
         materials={serializedMaterials}
         categories={serializedCategories}
       />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/study" />
+      <PromotionSlot slot="FOOTER" path="/study" />
     </>
   )
 }

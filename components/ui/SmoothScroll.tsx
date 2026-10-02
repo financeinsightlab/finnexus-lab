@@ -10,10 +10,13 @@ import Lenis from 'lenis'
  * - Integrates with requestAnimationFrame
  * - Disabled when prefers-reduced-motion (falls back to native scroll)
  * - Cleans up on unmount
- * Wrap the app body content with this for site-wide smooth scrolling.
+ * Mount once near the root (as a sibling of the page content) for site-wide
+ * smooth scrolling. It does not need to wrap the content: Lenis attaches to
+ * the window, and wrapping would only matter if this component were loaded
+ * with `ssr: false`, which would opt the whole page out of server rendering.
  */
 
-export default function SmoothScroll({ children }: { children: React.ReactNode }) {
+export default function SmoothScroll({ children }: { children?: React.ReactNode }) {
   const lenisRef = useRef<Lenis | null>(null)
 
   useEffect(() => {
@@ -43,5 +46,5 @@ export default function SmoothScroll({ children }: { children: React.ReactNode }
     }
   }, [])
 
-  return <>{children}</>
+  return <>{children ?? null}</>
 }

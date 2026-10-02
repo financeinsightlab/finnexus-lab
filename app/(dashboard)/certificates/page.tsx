@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { CERTIFICATES, CERTIFICATE_CATEGORIES } from '@/lib/certificates';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 import CertificatesClient from './CertificatesClient';
 
 export const metadata: Metadata = {
@@ -17,5 +18,12 @@ export const metadata: Metadata = {
 };
 
 export default function CertificatesPage() {
-    return <CertificatesClient certificates={CERTIFICATES} categories={CERTIFICATE_CATEGORIES} />;
+    return (
+        <>
+            <PromotionSlot slot="CONTENT_TOP" path="/certificates" />
+            <CertificatesClient certificates={CERTIFICATES} categories={CERTIFICATE_CATEGORIES} />
+            <PromotionSlot slot="CONTENT_BOTTOM" path="/certificates" />
+            <PromotionSlot slot="FOOTER" path="/certificates" />
+        </>
+    );
 }

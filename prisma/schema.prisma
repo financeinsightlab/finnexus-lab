@@ -965,14 +965,55 @@ model Promotion {
   campaignId            String?
   utmParameters         Json?
   conversionTrackingUrl String?
+  // ── Targeting engine (additive) ──
+  // Device: mobile/tablet/desktop flags; theme: ALL | LIGHT | DARK;
+  // rotation: PRIORITY | ROTATE | WEIGHTED | RANDOM; frequencyCap: max viewable
+  // impressions per visitor per 24h (null = unlimited, enforced first-party).
+  tabletVisible         Boolean  @default(true)
+  themeMode             String   @default("ALL")
+  rotationMode          String   @default("PRIORITY")
+  frequencyCap          Int?
   createdAt             DateTime @default(now())
   updatedAt             DateTime @updatedAt
   events                PromotionEvent[]
+  targets               PromotionTarget[]
+  placements            PromotionPlacement[]
 
   @@index([placement, active, priority])
   @@index([startsAt, endsAt])
   @@index([category])
   @@index([campaignId])
+}
+
+/// One targeting rule of a promotion. A promotion has many rules; INCLUDE rules
+/// are OR-ed, EXCLUDE rules always win. targetType: GLOBAL | PATH | PAGE_TYPE |
+/// CONTENT | TAG. targetValue holds the normalised path, page type key,
+/// `TYPE:slug` content key or lower-cased tag.
+model PromotionTarget {
+  id                 String    @id @default(cuid())
+  promotionId        String
+  promotion          Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  mode               String    @default("INCLUDE")
+  targetType         String
+  targetValue        String    @default("")
+  includeDescendants Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+
+  @@unique([promotionId, mode, targetType, targetValue])
+  @@index([targetType, targetValue])
+}
+
+/// One slot assignment of a promotion (many-to-many). `weight` drives weighted rotation.
+model PromotionPlacement {
+  id          String    @id @default(cuid())
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  slot        String
+  weight      Int       @default(1)
+  createdAt   DateTime  @default(now())
+
+  @@unique([promotionId, slot])
+  @@index([slot])
 }
 
 model PromotionEvent {
@@ -981,8 +1022,12 @@ model PromotionEvent {
   promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
   eventType   String
   path        String
+  slot        String?
+  device      String?
+  pageType    String?
   createdAt   DateTime @default(now())
 
   @@index([promotionId, eventType, createdAt])
   @@index([path, createdAt])
+  @@index([slot, createdAt])
 }

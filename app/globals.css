@@ -1905,3 +1905,23 @@ aside[aria-label="Mobile navigation"] {
  .prose ol a:hover {
    text-decoration: underline;
  }
+/* ── Promotion cards (components/promotions) ── */
+@keyframes promo-cta-glow {
+  0%, 100% { box-shadow: 0 0 14px rgba(13, 148, 136, 0.4), 0 0 28px rgba(6, 182, 212, 0.2); transform: scale(1); }
+  50% { box-shadow: 0 0 22px rgba(13, 148, 136, 0.75), 0 0 44px rgba(6, 182, 212, 0.4); transform: scale(1.02); }
+}
+@keyframes promo-cta-shimmer {
+  0% { transform: translateX(-150%) skewX(-20deg); }
+  30%, 100% { transform: translateX(250%) skewX(-20deg); }
+}
+@keyframes promo-crawl-slow {
+  0%, 15% { transform: translateY(0%); }
+  48%, 68% { transform: translateY(-35%); }
+  92%, 100% { transform: translateY(0%); }
+}
+.promo-cta-glow { animation: promo-cta-glow 2.5s ease-in-out infinite; }
+.promo-cta-shimmer { animation: promo-cta-shimmer 3s ease-in-out infinite; }
+.promo-crawl { animation: promo-crawl-slow 14s ease-in-out infinite; transform-origin: center top; will-change: transform; }
+@media (prefers-reduced-motion: reduce) {
+  .promo-cta-glow, .promo-cta-shimmer, .promo-crawl { animation: none; }
+}

@@ -11,6 +11,7 @@ import LessonCompletionControl from '@/components/learning/LessonCompletionContr
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import PromotionRailLayout from '@/components/promotions/PromotionRailLayout';
 import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms';
 import { TRACK_META } from '@/lib/pgdm/types';
 
@@ -155,7 +156,11 @@ export default async function LecturePage({ params }: PageProps) {
         </div>
       </header>
 
+      <PromotionRailLayout path={`/pgdm/${subject.slug}/${lecture.slug}`} tags={[subject.track, meta.label]}>
       <main className="max-w-[860px] mx-auto px-6 py-10 space-y-10">
+        {/* Promotion slot: CONTENT_TOP */}
+        <PromotionSlot slot="CONTENT_TOP" path={`/pgdm/${subject.slug}/${lecture.slug}`} tags={[subject.track, meta.label]} className="w-full" />
+
         {lecture.status === 'building' && (
           <div className="flex items-start gap-3 rounded-2xl border border-amber-500/30 bg-amber-500/[0.07] p-4">
             <Construction className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
@@ -223,6 +228,9 @@ export default async function LecturePage({ params }: PageProps) {
             })()}
           </section>
         ))}
+
+        {/* Promotion slot: CONTENT_MIDDLE */}
+        <PromotionSlot slot="CONTENT_MIDDLE" path={`/pgdm/${subject.slug}/${lecture.slug}`} tags={[subject.track, meta.label]} className="w-full" />
 
         {/* ── DIAGRAM ── */}
         {lecture.diagram && (
@@ -431,10 +439,12 @@ export default async function LecturePage({ params }: PageProps) {
           </Link>
         </nav>
       </main>
-      <PromotionSlot placement="COURSE_PAGE" path={`/pgdm/${subject.slug}/${lecture.slug}`} contentType="COURSE" />
+      </PromotionRailLayout>
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/pgdm/${subject.slug}/${lecture.slug}`} tags={[subject.track, meta.label]} />
       <RelatedContentSection sourceType="COURSE_LESSON" sourceSlug={`${subject.slug}/${lecture.slug}`} />
       <RelatedContentSection sourceType="COURSE_LESSON" sourceSlug={`${subject.slug}/${lecture.slug}`} linkKind="CTA" />
       <ContentFaq relatedType="COURSE_LESSON" relatedSlug={`${subject.slug}/${lecture.slug}`} />
+      <PromotionSlot slot="FOOTER" path={`/pgdm/${subject.slug}/${lecture.slug}`} tags={[subject.track, meta.label]} />
     </div>
   );
 }

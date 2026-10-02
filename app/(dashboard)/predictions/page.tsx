@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { getPublicPredictionBoard } from '@/lib/predictions';
 import PredictionsClient from './PredictionsClient';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export const metadata: Metadata = {
   title: 'Predictions Board | Kunwar Analytics',
@@ -26,11 +27,14 @@ export default async function PredictionsBoardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
+      <PromotionSlot slot="CONTENT_TOP" path="/predictions" />
       <PredictionsClient
         predictions={predictions}
         sectors={sectors}
         stats={stats}
       />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/predictions" />
+      <PromotionSlot slot="FOOTER" path="/predictions" />
     </div>
   );
 }

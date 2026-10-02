@@ -7,6 +7,7 @@ import { Share2, Clock, CalendarDays, ArrowLeft, Rss, Sparkles } from 'lucide-re
 import { formatDate } from '@/lib/utils';
 import { getPodcastEpisodeBySlug, getAllPodcastEpisodes } from '@/lib/content';
 import JsonLd from '@/components/seo/JsonLd';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 import PodcastEpisodeCard from '@/components/podcast/PodcastEpisodeCard';
 import PodcastCover, { formatIcon } from '@/components/podcast/PodcastCover';
 import AudioPlayer from '@/components/podcast/AudioPlayer';
@@ -178,6 +179,9 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
         </div>
       </header>
 
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path={`/podcast/${episode.slug}`} tags={episode.tags ?? []} />
+
       {/* ═══════════ AUDIO + SHARE ═══════════ */}
       <section className="wrap max-w-4xl py-10">
         {audioSrc ? (
@@ -242,6 +246,9 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
         </div>
       </section>
 
+      {/* Promotion slot: CONTENT_BOTTOM */}
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/podcast/${episode.slug}`} tags={episode.tags ?? []} />
+
       {/* ═══════════ RELATED ═══════════ */}
       {related.length > 0 && (
         <section className="border-y border-white/5 bg-cinema-ink/60">
@@ -282,6 +289,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
           </div>
         </div>
       </section>
+      <PromotionSlot slot="FOOTER" path={`/podcast/${episode.slug}`} tags={episode.tags ?? []} />
     </div>
   );
 }

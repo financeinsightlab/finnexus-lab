@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from 'vitest';
 import { crawlWebsiteUrl } from './crawl-promotion-url';
-import { matchesPath } from './promotions';
+import { legacyTargetsFromPromotion, resolvePageContext, targetsMatchPage } from './promotions/targeting';
 
 describe('crawlWebsiteUrl', () => {
   it('throws an error for an invalid URL', async () => {
@@ -37,18 +37,25 @@ describe('crawlWebsiteUrl', () => {
   });
 });
 
-describe('matchesPath for promotions', () => {
-  it('matches all pages when targetPages contains ALL or is empty', () => {
-    expect(matchesPath(['ALL'], '/')).toBe(true);
-    expect(matchesPath(['ALL'], '/research')).toBe(true);
-    expect(matchesPath(['ALL'], '/finance-terms')).toBe(true);
-    expect(matchesPath(['all pages'], '/insights/post-1')).toBe(true);
-    expect(matchesPath([], '/anywhere')).toBe(true);
+describe('legacy targetPages adapter for promotions', () => {
+  const matches = (targetPages: string[], path: string) =>
+    targetsMatchPage(legacyTargetsFromPromotion({ placement: 'ALL', targetPages, targetContentTypes: [] }), resolvePageContext(path)) !== null;
+
+  it('treats ALL / "all pages" / empty lists as explicit Global targeting of public pages', () => {
+    expect(matches(['ALL'], '/')).toBe(true);
+    expect(matches(['ALL'], '/research')).toBe(true);
+    expect(matches(['ALL'], '/finance-terms')).toBe(true);
+    expect(matches(['all pages'], '/insights/post-1')).toBe(true);
+    expect(matches([], '/anywhere')).toBe(true);
+    // Global never reaches private or blocked pages.
+    expect(matches(['ALL'], '/dashboard')).toBe(false);
+    expect(matches(['ALL'], '/admin/product-content')).toBe(false);
   });
 
-  it('matches prefix sections correctly', () => {
-    expect(matchesPath(['/research'], '/research')).toBe(true);
-    expect(matchesPath(['/research'], '/research/deep-dive')).toBe(true);
-    expect(matchesPath(['/research'], '/tools')).toBe(false);
+  it('keeps legacy section entries as prefix matches (with descendants)', () => {
+    expect(matches(['/research'], '/research')).toBe(true);
+    expect(matches(['/research'], '/research/deep-dive')).toBe(true);
+    expect(matches(['/research'], '/tools')).toBe(false);
+    expect(matches(['/research'], '/research-notes')).toBe(false);
   });
 });

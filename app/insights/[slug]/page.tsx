@@ -15,6 +15,7 @@ import JsonLd, { articleSchema } from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import PromotionSidebar from '@/components/promotions/PromotionSidebar';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -195,6 +196,9 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
           </div>
         )}
 
+        {/* Promotion slot: CONTENT_TOP */}
+        <PromotionSlot slot="CONTENT_TOP" path={`/insights/${slug}`} tags={[...tags, category]} />
+
         {/* ── MAIN CONTENT & SIDEBAR ── */}
         <main className="wrap max-w-5xl py-12 md:py-16">
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
@@ -204,6 +208,9 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
                 className="block-editor-content text-gray-200 text-sm md:text-base leading-relaxed space-y-2"
                 dangerouslySetInnerHTML={{ __html: renderedHtml }}
               />
+
+              {/* Promotion slot: CONTENT_MIDDLE */}
+              <PromotionSlot slot="CONTENT_MIDDLE" path={`/insights/${slug}`} tags={[...tags, category]} className="mt-10 w-full" />
 
               {/* Tags */}
               {tags.length > 0 && (
@@ -233,6 +240,9 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
 
             {/* Sidebar */}
             <aside className="space-y-6">
+              {/* Promotion slot: SIDEBAR_PRIMARY */}
+              <PromotionSidebar path={`/insights/${slug}`} tags={[...tags, category]} />
+
               {/* Insight Metadata Card */}
               <div className="glass-cinema rounded-2xl p-6 border border-white/10 space-y-4">
                 <h3 className="text-xs uppercase tracking-wider font-bold text-cinema-cyan flex items-center gap-2">
@@ -298,10 +308,11 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
           </div>
         </main>
       </div>
-      <PromotionSlot placement="ARTICLE_PAGE" path={`/insights/${slug}`} contentType="INSIGHT" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/insights/${slug}`} tags={[...tags, category]} />
       <RelatedContentSection sourceType="INSIGHT" sourceSlug={slug} />
       <RelatedContentSection sourceType="INSIGHT" sourceSlug={slug} linkKind="CTA" />
       <ContentFaq relatedType="INSIGHT" relatedSlug={slug} />
+      <PromotionSlot slot="FOOTER" path={`/insights/${slug}`} tags={[...tags, category]} />
     </>
   );
 }

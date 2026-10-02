@@ -57,11 +57,13 @@ export default async function ResearchPage() {
 
   return (
     <>
+      <PromotionSlot slot="CONTENT_TOP" path="/research" />
       <ResearchClient posts={mergedPosts} />
-      <PromotionSlot placement="RESEARCH_PAGE" path="/research" contentType="RESEARCH" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/research" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="research" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="research" linkKind="CTA" />
       <ContentFaq relatedType="PAGE" relatedSlug="research" />
+      <PromotionSlot slot="FOOTER" path="/research" />
     </>
   );
 }

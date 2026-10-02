@@ -6,6 +6,7 @@ import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import PromotionRailLayout from '@/components/promotions/PromotionRailLayout';
 import LessonCompletionControl from '@/components/learning/LessonCompletionControl';
 import { getStudyMaterialBySlug } from '@/lib/study';
 import { prisma } from '@/lib/prisma';
@@ -66,18 +67,25 @@ export default async function StudyCmsLessonPage({ params }: Props) {
           {lesson.durationMinutes && <p className="mt-3 text-sm text-muted-foreground">Estimated lesson time: {lesson.durationMinutes} minutes</p>}
         </div>
       </header>
+      <PromotionRailLayout path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]}>
       <main className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
+        {/* Promotion slot: CONTENT_TOP */}
+        <PromotionSlot slot="CONTENT_TOP" path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]} className="w-full" />
         <article className="prose prose-lg max-w-none rounded-2xl border border-border bg-card p-5 text-foreground dark:prose-invert sm:p-8">
           <MDXRemote source={lesson.content} />
         </article>
+        {/* Promotion slot: CONTENT_MIDDLE */}
+        <PromotionSlot slot="CONTENT_MIDDLE" path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]} className="w-full" />
         <LessonCompletionControl courseSlug={courseSlug} lessonSlug={lessonSlug} returnTo={`/study/${courseSlug}/lessons/${lessonSlug}`} />
         <div className="flex flex-wrap gap-3">
           <Link href={`/study/${courseSlug}`} className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-accent">Back to course</Link>
         </div>
       </main>
-      <PromotionSlot placement="COURSE_PAGE" path={`/study/${courseSlug}/lessons/${lessonSlug}`} contentType="COURSE" />
+      </PromotionRailLayout>
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]} />
       <RelatedContentSection sourceType="STUDY_COURSE" sourceSlug={courseSlug} />
       <ContentFaq relatedType="COURSE_LESSON" relatedSlug={`${courseSlug}/${lessonSlug}`} />
+      <PromotionSlot slot="FOOTER" path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]} />
     </div>
   );
 }

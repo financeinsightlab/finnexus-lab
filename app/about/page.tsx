@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 interface Skill {
   cat: string;
@@ -294,6 +295,7 @@ export default function AboutPage() {
           </Link>
         </div>
       </section>
+      <PromotionSlot slot="FOOTER" path="/about" />
     </div>
   );
 }

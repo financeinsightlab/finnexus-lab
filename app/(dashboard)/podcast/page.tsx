@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllPodcastEpisodes } from '@/lib/content';
 import JsonLd from '@/components/seo/JsonLd';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 import PodcastClient from '@/components/podcast/PodcastClient';
 import PodcastCover from '@/components/podcast/PodcastCover';
 import AudioPlayer from '@/components/podcast/AudioPlayer';
@@ -240,6 +241,9 @@ export default async function PodcastPage({
         </div>
       </section>
 
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path="/podcast" />
+
       {/* ═══════════ FEATURED SPOTLIGHT (if different from latest) ═══════════ */}
       {featured && featured !== episodes[0] && (
         <section className="wrap max-w-6xl py-8">
@@ -291,6 +295,9 @@ export default async function PodcastPage({
 
       {/* ═══════════ ALL EPISODES (search / filter / list) ═══════════ */}
       <PodcastClient episodes={episodes} initialFormat={format} />
+
+      {/* Promotion slot: CONTENT_BOTTOM */}
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/podcast" />
 
       {/* ═══════════ HOST ═══════════ */}
       <section className="border-y border-white/5 bg-cinema-ink/60">
@@ -378,6 +385,7 @@ export default async function PodcastPage({
           </div>
         </div>
       </section>
+      <PromotionSlot slot="FOOTER" path="/podcast" />
     </div>
   );
 }

@@ -74,6 +74,7 @@ export default async function FinanceTermDetailPage({ params }: Props) {
           <p className="mt-5 max-w-3xl text-lg leading-8 text-muted-foreground">{term.simpleMeaning}</p>
         </div>
       </header>
+      <PromotionSlot slot="CONTENT_TOP" path={`/finance-terms/${term.slug}`} tags={[term.category]} />
       <main className="mx-auto max-w-5xl space-y-6 px-4 py-10 sm:px-6 lg:px-8">
         <section className="rounded-2xl border border-border bg-card p-6 shadow-sm" aria-labelledby="simple-meaning-heading">
           <h2 id="simple-meaning-heading" className="text-xl font-bold text-foreground">Simple meaning</h2>
@@ -98,6 +99,8 @@ export default async function FinanceTermDetailPage({ params }: Props) {
             {term.keywords.map((keyword) => <span key={keyword} className="rounded-full border border-border bg-card px-3 py-1 text-xs text-muted-foreground">{keyword}</span>)}
           </section>
         )}
+        {/* Promotion slot: FINANCE_TERM_RELATED — inside the related-resources area */}
+        <PromotionSlot slot="FINANCE_TERM_RELATED" path={`/finance-terms/${term.slug}`} tags={[term.category]} className="w-full" />
         {related.length > 0 && (
           <section aria-labelledby="related-terms-heading">
             <h2 id="related-terms-heading" className="mb-4 text-2xl font-bold text-foreground">Related finance terms</h2>
@@ -119,10 +122,11 @@ export default async function FinanceTermDetailPage({ params }: Props) {
           <Link href="/ask" className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-accent">Ask Kunwar</Link>
         </div>
       </main>
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/finance-terms/${term.slug}`} tags={[term.category]} />
       <RelatedContentSection sourceType="FINANCE_TERM" sourceSlug={term.slug} />
       <RelatedContentSection sourceType="FINANCE_TERM" sourceSlug={term.slug} linkKind="CTA" />
-      <PromotionSlot placement="ARTICLE_PAGE" path={`/finance-terms/${term.slug}`} contentType="FINANCE_TERM" />
       <ContentFaq relatedType="FINANCE_TERM" relatedSlug={term.slug} />
+      <PromotionSlot slot="FOOTER" path={`/finance-terms/${term.slug}`} tags={[term.category]} />
     </div>
   );
 }

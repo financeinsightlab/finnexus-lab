@@ -10,6 +10,7 @@ import {
 import JsonLd from '@/components/seo/JsonLd';
 import LedgerFilters from './LedgerFilters';
 import { filterLedger, parseLedgerFilters } from './ledger-utils';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export const metadata: Metadata = {
     title: 'Public Prediction Ledger | Kunwar Analytics',
@@ -213,6 +214,8 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
                     to machines at <span className="font-mono text-slate-400">/predictions/ledger</span> via schema.org JSON-LD.
                 </p>
             </main>
+            <PromotionSlot slot="CONTENT_BOTTOM" path="/predictions/ledger" />
+            <PromotionSlot slot="FOOTER" path="/predictions/ledger" />
         </div>
     );
 }

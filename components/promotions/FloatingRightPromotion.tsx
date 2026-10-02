@@ -1,12 +1,34 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useTheme } from 'next-themes';
 import { Volume2, VolumeX, ExternalLink, Sparkles, Flame, Minus, ChevronUp, X, Globe } from 'lucide-react';
 import type { PromotionCardData } from '@/components/promotions/PromotionCard';
+import { currentDevice, sendPromotionEvent } from '@/components/promotions/beacon';
+import { PAGE_TYPE_META } from '@/lib/promotions/catalog';
+import { isDeviceEnabled, isFrequencyCapped, isThemeEnabled, recordFrequencyView } from '@/lib/promotions/display';
+import { resolvePageContext } from '@/lib/promotions/targeting';
 
+const SLOT = 'SIDEBAR';
+
+function isDismissed(id: string): boolean {
+  try {
+    return sessionStorage.getItem(`promo_dismissed_${id}`) === 'true';
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Floating partner showcase (slot SIDEBAR). Loads the ordered candidates for
+ * the current path from the cached public API, then applies the per-visitor
+ * rules that only the browser knows: session dismissal, device class, theme
+ * and the first-party frequency cap.
+ */
 export default function FloatingRightPromotion() {
   const pathname = usePathname();
+  const { resolvedTheme } = useTheme();
   const [promo, setPromo] = useState<PromotionCardData | null>(null);
   const [visible, setVisible] = useState(false);
   const [dismissed, setDismissed] = useState(false);
@@ -19,38 +41,46 @@ export default function FloatingRightPromotion() {
   });
   const [muted, setMuted] = useState(true);
   const videoRef = useRef<HTMLVideoElement>(null);
-  const impressionRecorded = useRef(false);
+  const impressionRecorded = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!pathname || pathname.startsWith('/admin') || pathname.startsWith('/auth')) {
+    if (!pathname) return;
+    const context = resolvePageContext(pathname);
+    if (PAGE_TYPE_META[context.pageType].blocked) {
       setVisible(false);
+      setPromo(null);
       return;
     }
 
     let isMounted = true;
     async function loadPromotion() {
       try {
-        const res = await fetch(`/api/promotions/active?path=${encodeURIComponent(pathname)}`);
+        const res = await fetch(`/api/promotions/active?path=${encodeURIComponent(context.pathname)}`);
         if (!res.ok) return;
-        const data = await res.json();
+        const data = (await res.json()) as { promotions?: PromotionCardData[] };
         if (!isMounted) return;
 
-        if (data?.promotion?.id) {
-          try {
-            if (sessionStorage.getItem(`promo_dismissed_${data.promotion.id}`) === 'true') {
-              setDismissed(true);
-              return;
-            }
-          } catch {}
+        const device = currentDevice() ?? 'desktop';
+        const theme = resolvedTheme === 'dark' ? 'dark' : 'light';
+        const candidate = (data.promotions ?? []).find(
+          (item) =>
+            item?.id &&
+            !isDismissed(item.id) &&
+            isDeviceEnabled(item, device) &&
+            isThemeEnabled(item.themeMode, theme) &&
+            !isFrequencyCapped(item.id, item.frequencyCap),
+        );
 
-          setPromo(data.promotion);
+        if (candidate) {
+          setPromo(candidate);
           setDismissed(false);
           setVisible(true);
         } else {
           setVisible(false);
+          setPromo(null);
         }
       } catch {
-        // silent fail
+        // silent fail — promotions must never break navigation
       }
     }
 
@@ -58,49 +88,21 @@ export default function FloatingRightPromotion() {
     return () => {
       isMounted = false;
     };
-  }, [pathname]);
+  }, [pathname, resolvedTheme]);
 
-  // Record impression once visible
+  // Record one impression per promotion per page.
   useEffect(() => {
-    if (visible && promo && !dismissed && !impressionRecorded.current) {
-      impressionRecorded.current = true;
-      const payload = JSON.stringify({
-        promotionId: promo.id,
-        eventType: 'IMPRESSION',
-        path: pathname,
-      });
-
-      if (navigator.sendBeacon) {
-        navigator.sendBeacon('/api/promotions/event', new Blob([payload], { type: 'application/json' }));
-      } else {
-        fetch('/api/promotions/event', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: payload,
-          keepalive: true,
-        }).catch(() => undefined);
-      }
-    }
+    if (!visible || !promo || dismissed || !pathname) return;
+    const key = `${promo.id}|${pathname}`;
+    if (impressionRecorded.current === key) return;
+    impressionRecorded.current = key;
+    sendPromotionEvent({ promotionId: promo.id, eventType: 'IMPRESSION', path: pathname, slot: SLOT });
+    if (promo.frequencyCap) recordFrequencyView(promo.id);
   }, [visible, promo, dismissed, pathname]);
 
   const handleCtaClick = () => {
-    if (!promo) return;
-    const payload = JSON.stringify({
-      promotionId: promo.id,
-      eventType: 'CLICK',
-      path: pathname,
-    });
-
-    if (navigator.sendBeacon) {
-      navigator.sendBeacon('/api/promotions/event', new Blob([payload], { type: 'application/json' }));
-    } else {
-      fetch('/api/promotions/event', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: payload,
-        keepalive: true,
-      }).catch(() => undefined);
-    }
+    if (!promo || !pathname) return;
+    sendPromotionEvent({ promotionId: promo.id, eventType: 'CLICK', path: pathname, slot: SLOT });
   };
 
   const handleToggleMinimize = (val: boolean) => {
@@ -123,8 +125,11 @@ export default function FloatingRightPromotion() {
   if (!promo || dismissed) return null;
 
   const hasVideo = !!promo.videoUrl;
-  const hasImage = !hasVideo && (promo.imageUrl || promo.lightCreativeUrl || promo.darkCreativeUrl);
-  const imageSource = promo.imageUrl || promo.lightCreativeUrl || promo.darkCreativeUrl;
+  const isDark = resolvedTheme === 'dark';
+  const imageSource = isDark
+    ? promo.darkCreativeUrl || promo.lightCreativeUrl || promo.imageUrl
+    : promo.lightCreativeUrl || promo.imageUrl || promo.darkCreativeUrl;
+  const hasImage = !hasVideo && !!imageSource;
   const disclosure = promo.disclosureText || 'Featured Partner · Sponsored';
 
   const promoDomain = (() => {
@@ -137,50 +142,10 @@ export default function FloatingRightPromotion() {
 
   return (
     <>
-      <style>{`
-        @keyframes promo-cta-glow {
-          0%, 100% {
-            box-shadow: 0 0 16px rgba(13, 148, 136, 0.45), 0 0 32px rgba(6, 182, 212, 0.25);
-            transform: scale(1);
-          }
-          50% {
-            box-shadow: 0 0 26px rgba(13, 148, 136, 0.8), 0 0 52px rgba(6, 182, 212, 0.5);
-            transform: scale(1.025);
-          }
-        }
-        @keyframes promo-shimmer-sweep {
-          0% {
-            transform: translateX(-150%) skewX(-20deg);
-          }
-          35%, 100% {
-            transform: translateX(250%) skewX(-20deg);
-          }
-        }
-        @keyframes webpage-crawl {
-          0%, 15% {
-            transform: translateY(0%);
-          }
-          48%, 68% {
-            transform: translateY(-38%);
-          }
-          92%, 100% {
-            transform: translateY(0%);
-          }
-        }
-        .animate-cta-continuous {
-          animation: promo-cta-glow 2.4s ease-in-out infinite;
-        }
-        .animate-cta-shimmer {
-          animation: promo-shimmer-sweep 2.8s ease-in-out infinite;
-        }
-        .animate-webpage-crawl {
-          animation: webpage-crawl 14s ease-in-out infinite;
-          will-change: transform;
-        }
-      `}</style>
-
       <aside
         aria-label="Partner promotion showcase"
+        data-promotion-id={promo.id}
+        data-promotion-slot={SLOT}
         className={`fixed bottom-[96px] right-4 sm:right-6 z-[160] transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${
           visible
             ? 'translate-y-0 opacity-100 scale-100 pointer-events-auto'
@@ -200,7 +165,7 @@ export default function FloatingRightPromotion() {
               }
             }}
             title="Expand partner showcase"
-            className="animate-cta-continuous group flex items-center gap-2.5 rounded-full border-2 border-teal-500/50 bg-card/95 py-2 px-3.5 shadow-2xl backdrop-blur-xl dark:border-teal-400/40 dark:bg-[#0c1222]/95 transition-all hover:scale-105 hover:border-teal-400 cursor-pointer"
+            className="promo-cta-glow group flex items-center gap-2.5 rounded-full border-2 border-teal-500/50 bg-card/95 py-2 px-3.5 shadow-2xl backdrop-blur-xl dark:border-teal-400/40 dark:bg-[#0c1222]/95 transition-all hover:scale-105 hover:border-teal-400 cursor-pointer"
           >
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" />
@@ -208,7 +173,6 @@ export default function FloatingRightPromotion() {
             </span>
             <Flame className="h-3.5 w-3.5 text-amber-400 animate-bounce" />
             {promo.logoUrl && (
-              // eslint-disable-next-line @next/next/no-img-element
               <img src={promo.logoUrl} alt="" className="h-4 w-4 rounded object-contain shrink-0" />
             )}
             <div className="flex items-center gap-1.5">
@@ -314,12 +278,11 @@ export default function FloatingRightPromotion() {
 
                 {/* Viewport Frame with Slow Smooth Web Crawl Animation */}
                 <div className="relative aspect-[16/10] w-full overflow-hidden bg-slate-950">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={imageSource!}
                     alt={`${promo.brandName} live website`}
                     loading="lazy"
-                    className="w-full object-cover object-top animate-webpage-crawl group-hover/preview:[animation-play-state:paused]"
+                    className="w-full object-cover object-top promo-crawl group-hover/preview:[animation-play-state:paused]"
                   />
                   {/* Subtle bottom fade to blend with card */}
                   <div className="pointer-events-none absolute inset-x-0 bottom-0 h-6 bg-gradient-to-t from-slate-950/90 via-slate-950/40 to-transparent" />
@@ -331,7 +294,6 @@ export default function FloatingRightPromotion() {
             <div className="space-y-1 pt-0.5">
               <div className="flex items-center gap-1.5">
                 {promo.logoUrl ? (
-                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={promo.logoUrl}
                     alt={`${promo.brandName} logo`}
@@ -361,12 +323,12 @@ export default function FloatingRightPromotion() {
                 onClick={handleCtaClick}
                 target="_blank"
                 rel="sponsored nofollow noopener noreferrer"
-                className="animate-cta-continuous relative overflow-hidden group flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-600 px-4 py-2.5 text-xs font-black text-white shadow-xl transition-all hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
+                className="promo-cta-glow relative overflow-hidden group flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-600 px-4 py-2.5 text-xs font-black text-white shadow-xl transition-all hover:scale-[1.03] active:scale-[0.98] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-400"
               >
                 {/* Continuous Light Sweep Sheen */}
                 <span
                   aria-hidden="true"
-                  className="animate-cta-shimmer pointer-events-none absolute inset-0 -top-2 -bottom-2 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent"
+                  className="promo-cta-shimmer pointer-events-none absolute inset-0 -top-2 -bottom-2 w-1/3 bg-gradient-to-r from-transparent via-white/40 to-transparent"
                 />
 
                 <Flame className="h-3.5 w-3.5 text-amber-300 animate-bounce [animation-duration:1.5s]" />

@@ -6,6 +6,7 @@ import CaseStudiesClient from '@/components/case-studies/CaseStudiesClient';
 import { prisma } from '@/lib/prisma';
 import { Briefcase, Building2, TrendingUp, Target, ArrowRight } from 'lucide-react';
 import type { CaseStudy } from '@/types';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export const metadata: Metadata = {
   title: 'Case Studies | Kunwar Analytics',
@@ -117,7 +118,9 @@ export default async function CaseStudiesPage() {
       </section>
 
       {/* ═══════════ ARCHIVE ═══════════ */}
+      <PromotionSlot slot="CONTENT_TOP" path="/case-studies" />
       <CaseStudiesClient studies={allStudies} />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/case-studies" />
 
       {/* ═══════════ CTA ═══════════ */}
       <section className="aurora-bg border-t border-white/5">
@@ -143,6 +146,7 @@ export default async function CaseStudiesPage() {
           </div>
         </div>
       </section>
+      <PromotionSlot slot="FOOTER" path="/case-studies" />
     </div>
   );
 }
