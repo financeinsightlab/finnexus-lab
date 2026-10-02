@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
+import { Prisma } from '@prisma/client';
 import { prisma } from '@/lib/prisma';
 import { authorizeApi, ADMIN_ROLES } from '@/lib/auth-guards';
 import { parseJsonBody, toInputJson } from '@/lib/validation';
@@ -81,12 +82,16 @@ export async function POST(request: Request) {
     campaignId: raw.campaignId?.trim() || null,
     startsAt: raw.startsAt ? new Date(raw.startsAt) : null,
     endsAt: raw.endsAt ? new Date(raw.endsAt) : null,
-    utmParameters: raw.utmParameters ? toInputJson(raw.utmParameters) : undefined,
+    utmParameters: raw.utmParameters === undefined
+      ? undefined
+      : raw.utmParameters === null
+        ? Prisma.DbNull
+        : toInputJson(raw.utmParameters),
   };
   try {
     const promotion = id
       ? await prisma.promotion.update({ where: { id }, data })
-      : await prisma.promotion.create({ data: { ...data, utmParameters: data.utmParameters ?? null } });
+      : await prisma.promotion.create({ data });
     revalidateProductContent({ type: 'PROMOTION' });
     return NextResponse.json({ promotion }, { status: id ? 200 : 201, headers: { 'Cache-Control': 'no-store' } });
   } catch (error) {
