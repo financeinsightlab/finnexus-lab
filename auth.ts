@@ -82,9 +82,43 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const t = token as unknown as TokenData
         session.user.id = t.id as string
-        session.user.role = t.role as UserRole
-        session.user.subscriptionStatus = t.subscriptionStatus as SubscriptionStatus
-        session.user.subscriptionPlan = t.subscriptionPlan as string | null
+
+        // Refresh role and billing state from PostgreSQL on every session read.
+        // The JWT is only a session identifier cache; it is never trusted for
+        // premium expiry or current administrator privileges.
+        try {
+          const currentUser = t.id
+            ? await prisma.user.findUnique({
+                where: { id: t.id },
+                select: {
+                  role: true,
+                  subscriptionStatus: true,
+                  subscriptionPlan: true,
+                  subscriptionExpiresAt: true,
+                },
+              })
+            : null
+
+          if (currentUser) {
+            session.user.role = currentUser.role
+            session.user.subscriptionStatus = currentUser.subscriptionStatus
+            session.user.subscriptionPlan = currentUser.subscriptionPlan
+            session.user.subscriptionExpiresAt = currentUser.subscriptionExpiresAt
+          } else {
+            session.user.role = 'MEMBER'
+            session.user.subscriptionStatus = 'INACTIVE'
+            session.user.subscriptionPlan = null
+            session.user.subscriptionExpiresAt = new Date(0)
+          }
+        } catch (error) {
+          logger.warn('Unable to refresh session privileges from the database; using a fail-closed session', {
+            error: error instanceof Error ? error.message : String(error),
+          })
+          session.user.role = 'MEMBER'
+          session.user.subscriptionStatus = 'INACTIVE'
+          session.user.subscriptionPlan = null
+          session.user.subscriptionExpiresAt = new Date(0)
+        }
       }
       return session
     },

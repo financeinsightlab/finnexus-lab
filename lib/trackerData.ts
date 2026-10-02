@@ -115,7 +115,9 @@ export function labelForTemperature(temp: number): string {
 }
 
 export function shortLabel(label: string): string {
-  return label.split(' — ')[0];
+  if (label.includes('BULL')) return 'High indicator';
+  if (label.includes('BEAR')) return 'Low indicator';
+  return 'Mid-range indicator';
 }
 
 export function getHeatMapData(quarterKey?: string) {
@@ -125,7 +127,7 @@ export function getHeatMapData(quarterKey?: string) {
       slug: t.slug, name: t.shortName, icon: t.icon, tagline: t.tagline,
       temperature: q.temperature, label: shortLabel(q.consensus),
       color: temperatureColor(q.temperature, q.consensus),
-      headline: q.headline, latest: getLatestQuarter(t),
+      headline: q.headline, latest: q,
     };
   });
 }

@@ -13,6 +13,7 @@ import {
     type ApiKeyEnvironment,
     type UsageCheck,
 } from '@/lib/api-keys';
+import { resolvePlan } from '@/lib/entitlements';
 
 export interface IssueKeyInput {
     name: string;
@@ -74,10 +75,14 @@ async function activePlanFor(key: VerifiedKey): Promise<string> {
     if (key.userId) {
         const user = await prisma.user.findUnique({
             where: { id: key.userId },
-            select: { subscriptionPlan: true, role: true },
+            select: {
+                subscriptionPlan: true,
+                subscriptionStatus: true,
+                subscriptionExpiresAt: true,
+                role: true,
+            },
         });
-        if (user?.role === 'ADMIN') return 'ENTERPRISE';
-        if (user?.subscriptionPlan) return user.subscriptionPlan;
+        return resolvePlan(user);
     }
     return 'FREE';
 }

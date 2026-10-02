@@ -7,6 +7,12 @@ import { getStudyMaterialBySlug, getRelatedStudyMaterials, incrementStudyMateria
 import { ArrowLeft, Clock, Eye, ExternalLink, BookOpen } from 'lucide-react'
 import { MDXRemote } from 'next-mdx-remote/rsc'
 import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd'
+import CourseLessonsList from '@/components/learning/CourseLessonsList'
+import CourseAssessmentPanel from '@/components/learning/CourseAssessmentPanel'
+import ContentFaq from '@/components/content/ContentFaq'
+import RelatedContentSection from '@/components/content/RelatedContentSection'
+import PromotionSlot from '@/components/promotions/PromotionSlot'
+import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms'
 
 interface PageProps {
   params: Promise<{ slug: string }>
@@ -228,6 +234,17 @@ export default async function StudyMaterialPage({ params }: PageProps) {
           </div>
         </section>
       )}
+      {material.type === 'COURSE' && (
+        <div className="mx-auto max-w-5xl space-y-8 px-4 py-8 sm:px-6 lg:px-8">
+          <CourseLessonsList courseSlug={material.slug} courseType="STUDY" />
+          <CourseAssessmentPanel courseSlug={material.slug} returnTo={`/study/${material.slug}`} />
+        </div>
+      )}
+      <RelatedFinanceTerms categories={[material.category.name]} keywords={[material.slug, ...material.tags]} title="Related finance terms" />
+      <PromotionSlot placement="STUDY_PAGE" path={`/study/${material.slug}`} contentType="STUDY" />
+      <RelatedContentSection sourceType="STUDY" sourceSlug={material.slug} />
+      <RelatedContentSection sourceType="STUDY" sourceSlug={material.slug} linkKind="CTA" />
+      <ContentFaq relatedType="STUDY" relatedSlug={material.slug} />
     </div>
   )
 }

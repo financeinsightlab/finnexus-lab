@@ -44,11 +44,11 @@ export async function POST(request: NextRequest) {
       notifiedInApp: result.notifiedInApp,
       notifiedEmail: result.notifiedEmail,
       message: result.notifiedInApp
-        ? 'Reply recorded and user notified via in-app notification & email dispatch!'
-        : 'Reply recorded and notification dispatched to user email!',
+        ? 'Reply recorded and in-app notification sent. No email was sent because email delivery is not configured.'
+        : 'Reply recorded. No in-app notification or email was sent.',
     });
-  } catch (error) {
-    console.error('Failed to send reply to inquiry:', error);
+  } catch {
+    console.error('Failed to save contact inquiry reply.');
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

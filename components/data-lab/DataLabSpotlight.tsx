@@ -81,7 +81,7 @@ export default function DataLabSpotlight({ project }: { project: DataLabProject 
                     href={`/data-lab/${project.slug}`}
                     className="inline-flex items-center gap-2 rounded-xl bg-cinema-cyan px-6 py-3 text-sm font-semibold text-cinema-ink hover:shadow-cinema-lg transition group/btn"
                   >
-                    Open Interactive Model
+                    View Project Page
                     <ArrowUpRight className="w-4 h-4 group-hover/btn:translate-x-0.5 group-hover/btn:-translate-y-0.5 transition-transform" />
                   </Link>
                 </div>

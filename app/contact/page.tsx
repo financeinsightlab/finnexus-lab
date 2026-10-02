@@ -3,16 +3,17 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
 import ContactForm from './ContactForm';
+import ContentFaq from '@/components/content/ContentFaq';
 
 export const metadata: Metadata = {
   title: 'Contact | Kunwar Analytics',
   description:
-    'Get in touch for research inquiries, financial modelling projects, data analytics and enterprise engagements. Typical response within one business day.',
+    'Submit a research, modelling, analytics, or organization enquiry. Availability, response timing, scope, and terms are not guaranteed.',
   alternates: { canonical: 'https://kunwaranalytics.in/contact' },
   openGraph: {
     title: 'Contact | Kunwar Analytics',
     description:
-      'Research inquiries, financial modelling, data analytics and enterprise engagements.',
+      'Submit a research, modelling, analytics, or organization enquiry. Availability and response timing are not guaranteed.',
     url: 'https://kunwaranalytics.in/contact',
     type: 'website',
   },
@@ -24,53 +25,28 @@ const CHANNELS = [
     label: 'General enquiries',
     value: 'kunwaranalytics@gmail.com',
     href: 'mailto:kunwaranalytics@gmail.com',
-    note: 'Research, projects and collaborations',
+    note: 'Research and product questions',
   },
   {
     icon: '🏢',
-    label: 'Enterprise & teams',
+    label: 'Organization enquiries',
     value: 'kunwaranalytics@gmail.com',
     href: 'mailto:kunwaranalytics@gmail.com',
-    note: 'Custom engagements, SLAs and invoicing',
+    note: 'No published team features or service levels',
   },
   {
     icon: '💼',
     label: 'LinkedIn',
     value: '/company/kunwaranalytics',
     href: 'https://linkedin.com/company/kunwaranalytics',
-    note: 'Fastest for quick questions',
+    note: 'Social channel',
   },
 ];
 
 const ROUTING = [
-  { icon: '🔬', title: 'Research request', desc: 'Sector deep-dives, market sizing, company notes.', href: '/research' },
-  { icon: '🧮', title: 'Modelling & analysis', desc: 'Three-statement models, valuation, dashboards.', href: '/tools' },
-  { icon: '🏦', title: 'Enterprise engagement', desc: 'Retainers, custom research desks, team licences.', href: '/enterprise' },
-];
-
-const SLAS = [
-  { label: 'Acknowledge', value: 'Same business day' },
-  { label: 'Detailed reply', value: 'Within 24–48 hours' },
-  { label: 'Scoping call', value: 'Within 3 business days' },
-];
-
-const FAQS = [
-  {
-    q: 'Do you take on one-off projects?',
-    a: 'Yes. One-off research notes, models and dashboards are welcome alongside ongoing retainers.',
-  },
-  {
-    q: 'How is pricing structured?',
-    a: 'Fixed-fee for scoped deliverables and monthly retainers for ongoing work. See the pricing page for plan-level detail.',
-  },
-  {
-    q: 'Can you work under an NDA?',
-    a: 'Absolutely. Share your template when you write in and we can execute before any sensitive material changes hands.',
-  },
-  {
-    q: 'Do you offer student or academic rates?',
-    a: 'Many learning tracks and several certificates are free. For supervised student projects, mention it in your message.',
-  },
+  { icon: '🔬', title: 'Research enquiry', desc: 'Ask about current availability for a defined research question.', href: '/services' },
+  { icon: '🧮', title: 'Modelling & analytics enquiry', desc: 'View enquiry topics; no project is confirmed by listing.', href: '/services' },
+  { icon: '🏦', title: 'Organization enquiry', desc: 'Contact-only; no published team feature set or service level.', href: '/enterprise' },
 ];
 
 export default function ContactPage() {
@@ -85,18 +61,17 @@ export default function ContactPage() {
             Start a Conversation
           </h1>
           <p className="max-w-2xl text-xl text-white/80">
-            Have a research question, need custom analysis, or want to discuss a project?
-            Tell me what you're trying to decide and I'll point you in the right direction.
+            Use the form or email us with a non-confidential question. An enquiry does not confirm availability, pricing, response timing, or an engagement.
           </p>
           <div className="mt-8 flex flex-wrap gap-4 text-sm text-white/70">
             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
-              ⏱ Replies within 24–48 hours
+              ⏱ Response timing not guaranteed
             </span>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
-              🔒 NDA-friendly
+              🔒 Do not submit confidential material
             </span>
             <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5">
-              🌍 Remote, worldwide
+              ✉️ Enquiry only — not a booking
             </span>
           </div>
         </div>
@@ -161,37 +136,15 @@ export default function ContactPage() {
             </div>
 
             <div className="card p-6">
-              <h3 className="mb-4 font-semibold text-brand-navy dark:text-white">Response SLA</h3>
-              <dl className="space-y-3">
-                {SLAS.map((sla) => (
-                  <div key={sla.label} className="flex items-center justify-between border-b border-slate-100 pb-2 last:border-0 last:pb-0 dark:border-white/5">
-                    <dt className="text-sm text-slate-500 dark:text-slate-400">{sla.label}</dt>
-                    <dd className="text-sm font-semibold text-slate-700 dark:text-slate-200">{sla.value}</dd>
-                  </div>
-                ))}
-              </dl>
+              <h3 className="mb-4 font-semibold text-brand-navy dark:text-white">Before you write</h3>
+              <p className="text-sm leading-6 text-slate-600 dark:text-slate-300">
+                Share only non-confidential information. Any potential scope, fee, delivery timing, and terms must be confirmed separately in writing. Submitting this form does not create a booking or service commitment.
+              </p>
             </div>
           </div>
         </div>
 
-        {/* FAQ */}
-        <div className="mt-20">
-          <h2 className="text-2xl font-bold text-brand-navy dark:text-white">Frequently asked questions</h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {FAQS.map((faq) => (
-              <details
-                key={faq.q}
-                className="group rounded-2xl border border-slate-200 bg-white p-5 open:shadow-lg dark:border-white/10 dark:bg-[#111c31]"
-              >
-                <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-sm font-semibold text-slate-800 dark:text-slate-100">
-                  {faq.q}
-                  <span className="text-slate-400 transition-transform group-open:rotate-45">+</span>
-                </summary>
-                <p className="mt-3 text-sm text-slate-600 dark:text-slate-300">{faq.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
+        <ContentFaq relatedType="PAGE" relatedSlug="contact" title="Contact questions" />
       </section>
     </div>
   );

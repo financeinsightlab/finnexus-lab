@@ -24,7 +24,7 @@ export default function HomeDataLabSection() {
             <SectionHeader
               label="Data Lab"
               title="Interactive Models & Dashboards"
-              subtitle="Explore the quantitative engine behind our research — live charts, simulators, and downloadable datasets."
+              subtitle="Browse selected project pages with interactive views and downloads where available. Source details and update timing vary by page."
               align="left"
               light
             />

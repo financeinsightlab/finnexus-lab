@@ -151,13 +151,27 @@ export async function answerFromSources(
         score: passage.score,
     }));
 
-    const answer = passages.length > 0 ? await provider.synthesize(question, passages) : '';
+    const rawAnswer = passages.length > 0 ? await provider.synthesize(question, passages) : '';
+    const allowedIndexes = new Set(passages.map((passage) => passage.index));
+    let validCitationCount = 0;
+    const answer = rawAnswer
+        .replace(/\[(\d{1,3})\]/g, (marker, rawIndex: string) => {
+            const index = Number(rawIndex);
+            if (!allowedIndexes.has(index)) return '';
+            validCitationCount += 1;
+            return marker;
+        })
+        .replace(/[ \t]{2,}/g, ' ')
+        .replace(/[ \t]+([,.;:!?])/g, '$1')
+        .trim();
 
-    if (!answer) {
+    // Refuse ungrounded model output: an answer must cite at least one source
+    // number that was actually supplied to the provider.
+    if (!answer || validCitationCount === 0) {
         return {
             question,
             answer: NO_ANSWER_MESSAGE,
-            citations,
+            citations: [],
             provider: provider.name,
             noAnswer: true,
         };

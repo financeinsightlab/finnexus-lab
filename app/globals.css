@@ -5,6 +5,26 @@
 @tailwind utilities;
 
 :root {
+  color-scheme: light;
+  --background: 40 30% 98%;
+  --foreground: 222 39% 11%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 39% 11%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 222 39% 11%;
+  --primary: 180 79% 24%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 210 25% 94%;
+  --secondary-foreground: 222 39% 15%;
+  --muted: 210 25% 95%;
+  --muted-foreground: 215 16% 38%;
+  --accent: 180 28% 93%;
+  --accent-foreground: 180 79% 19%;
+  --destructive: 350 66% 38%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 214 22% 86%;
+  --input: 214 22% 82%;
+  --ring: 180 79% 24%;
   --navy: #1A2B3C;
   --slate: #4A5568;
   --teal: #0D6E6E;
@@ -12,6 +32,51 @@
   --green: #1A5C3A;
   --red: #9B2335;
 }
+
+.dark {
+  color-scheme: dark;
+  --background: 220 37% 9%;
+  --foreground: 210 40% 96%;
+  --card: 220 32% 13%;
+  --card-foreground: 210 40% 96%;
+  --popover: 220 32% 13%;
+  --popover-foreground: 210 40% 96%;
+  --primary: 180 74% 38%;
+  --primary-foreground: 222 39% 8%;
+  --secondary: 220 25% 19%;
+  --secondary-foreground: 210 40% 96%;
+  --muted: 220 25% 17%;
+  --muted-foreground: 215 20% 70%;
+  --accent: 220 25% 21%;
+  --accent-foreground: 180 75% 78%;
+  --destructive: 350 60% 55%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 217 21% 26%;
+  --input: 217 21% 31%;
+  --ring: 180 74% 48%;
+}
+
+.skip-link {
+  position: fixed;
+  left: 1rem;
+  top: 1rem;
+  z-index: 100000;
+  transform: translateY(-180%);
+  border-radius: 0.75rem;
+  background: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
+  padding: 0.75rem 1rem;
+  font-weight: 700;
+  box-shadow: 0 4px 16px rgb(0 0 0 / 0.2);
+}
+.skip-link:focus { transform: translateY(0); }
+
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid hsl(var(--ring));
+  outline-offset: 3px;
+}
+
+::selection { background: hsl(var(--primary) / 0.22); color: hsl(var(--foreground)); }
 
 @keyframes bounceGentle {
   0%, 100% { transform: translateY(0); }
@@ -293,6 +358,13 @@
    REDUCED MOTION — disable all 3D transforms & animations
    ═══════════════════════════════════════════════════════════════ */
 @media (prefers-reduced-motion: reduce) {
+  html, html.scroll-smooth { scroll-behavior: auto !important; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
   .float-anim,
   .float-anim-slow,
   .aurora-bg::before,

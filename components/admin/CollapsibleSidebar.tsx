@@ -17,7 +17,9 @@ import {
   Target,
   Lock,
   Image as ImageIcon,
-  MessageSquare
+  MessageSquare,
+  CreditCard,
+  Megaphone
 } from "lucide-react"
 
 interface CollapsibleSidebarProps {
@@ -76,8 +78,10 @@ export default function CollapsibleSidebar({
     { label: "Content CMS", href: "/admin/cms", icon: FileText },
     { label: "Media Library", href: "/admin/media", icon: ImageIcon },
     { label: "Study Material", href: "/admin/study", icon: FileText },
+    { label: "Product Content", href: "/admin/product-content", icon: Megaphone },
     { label: "Predictions", href: "/admin/predictions", icon: Target },
     { label: "User Management", href: "/admin/users", icon: Users, adminOnly: true },
+    { label: "UPI Payments", href: "/admin/payments", icon: CreditCard, adminOnly: true },
     { label: "Analytics", href: "/admin/analytics", icon: BarChart3, adminOnly: true },
     { label: "Settings", href: "/admin/settings", icon: Settings, adminOnly: true },
   ]
@@ -277,7 +281,7 @@ export default function CollapsibleSidebar({
 
           {/* Mobile Navigation */}
           <nav className="flex-1 px-4 space-y-1">
-            {menuItems.map((item) => (
+            {menuItems.filter((item) => !item.adminOnly || userRole === "ADMIN").map((item) => (
               <Link 
                 key={item.href}
                 href={item.href} 

@@ -11,6 +11,12 @@ import { QUIZZES } from '@/lib/pgdm/quizzes';
 import Quiz from '@/components/pgdm/Quiz';
 import { TRACK_META } from '@/lib/pgdm/types';
 import JsonLd from '@/components/seo/JsonLd';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
+import CourseLessonsList from '@/components/learning/CourseLessonsList';
+import CourseAssessmentPanel from '@/components/learning/CourseAssessmentPanel';
+import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms';
 
 interface PageProps {
   params: Promise<{ subject: string }>;
@@ -299,7 +305,14 @@ export default async function SubjectPage({ params }: PageProps) {
           <FlaskConical className="w-3.5 h-3.5" />
           Modeling tools for this paper live on the <Link href="/tools" className="text-teal-400 hover:underline">Tools page</Link>
         </p>
+        <CourseLessonsList courseSlug={subject.slug} courseType="PGDM" />
+        <CourseAssessmentPanel courseSlug={subject.slug} returnTo={`/pgdm/${subject.slug}`} />
+        <RelatedFinanceTerms categories={[subject.track, meta.label]} keywords={[subject.slug, subject.code.toLowerCase()]} title="Finance terms used in this course" />
       </main>
+      <PromotionSlot placement="COURSE_PAGE" path={`/pgdm/${subject.slug}`} contentType="COURSE" />
+      <RelatedContentSection sourceType="COURSE" sourceSlug={subject.slug} />
+      <RelatedContentSection sourceType="COURSE" sourceSlug={subject.slug} linkKind="CTA" />
+      <ContentFaq relatedType="COURSE" relatedSlug={subject.slug} />
     </div>
   );
 }

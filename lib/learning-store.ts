@@ -76,24 +76,16 @@ export async function getLessonStates(userId: string, courseSlug: string): Promi
 }
 
 /**
- * Full progress for one course, marking the enrollment COMPLETED when the last
- * lesson is done.
+ * Lesson progress is deliberately not the same as course completion. A course
+ * is only marked complete by the final-assessment route after every published
+ * lesson is complete and the learner passes its CMS-managed final test.
  */
 export async function getCourseProgressForUser(
-    userId: string,
-    course: CourseDefinition,
+  userId: string,
+  course: CourseDefinition,
 ): Promise<CourseProgress> {
-    const states = await getLessonStates(userId, course.slug);
-    const progress = computeCourseProgress(course, states);
-
-    if (progress.isComplete) {
-        await prisma.enrollment.updateMany({
-            where: { userId, courseSlug: course.slug, status: { not: 'COMPLETED' } },
-            data: { status: 'COMPLETED', completedAt: new Date() },
-        });
-    }
-
-    return progress;
+  const states = await getLessonStates(userId, course.slug);
+  return computeCourseProgress(course, states);
 }
 
 /** Distinct ISO activity dates (YYYY-MM-DD) for streak maths. */

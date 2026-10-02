@@ -22,6 +22,8 @@ model User {
   stripeSubscriptionId   String?                 @unique
   subscriptionStatus     SubscriptionStatus      @default(INACTIVE)
   subscriptionPlan       String?
+  // Manual UPI approvals expire after one calendar month; null preserves legacy/admin grants.
+  subscriptionExpiresAt  DateTime?
   createdAt              DateTime                @default(now())
   updatedAt              DateTime                @updatedAt
   purchasedServices      String[]
@@ -47,9 +49,14 @@ model User {
   followers              Follow[]                @relation("UserFollowers")
   notifications          Notification[]
   notificationPreference NotificationPreference?
+  paymentSubmissions     PaymentSubmission[]
+  paymentsVerified      PaymentSubmission[]       @relation("PaymentsVerified")
+  paymentAuditEvents     PaymentAuditEvent[]      @relation("PaymentAuditActor")
   enrollments            Enrollment[]
   lessonProgress         LessonProgress[]
   badges                 UserBadge[]
+  assessmentAttempts     CourseAssessmentAttempt[]
+  courseCertificates     CourseCertificate[]
 }
 
 model Account {
@@ -274,6 +281,57 @@ model LoginEvent {
   @@index([provider]) // For groupBy queries on provider
 }
 
+// Manual UPI payment submissions. No card data or screenshot files are stored.
+model PaymentSubmission {
+  id                    String                @id @default(cuid())
+  userId                String?
+  user                  User?                 @relation(fields: [userId], references: [id], onDelete: SetNull)
+  plan                  String
+  amountMinor           Int
+  currency              String                @default("INR")
+  paymentMethod         PaymentMethod         @default(MANUAL_UPI)
+  transactionReference String                @unique
+  status                PaymentStatus         @default(PENDING)
+  // Set while pending to prevent multiple simultaneous submissions for one user.
+  activeKey             String?               @unique
+  submittedAt           DateTime              @default(now())
+  verifiedAt            DateTime?
+  verifiedById          String?
+  verifiedBy            User?                 @relation("PaymentsVerified", fields: [verifiedById], references: [id], onDelete: SetNull)
+  rejectionReason       String?
+  expiresAt             DateTime?
+  auditEvents           PaymentAuditEvent[]
+
+  @@index([userId, submittedAt])
+  @@index([userId, status])
+  @@index([status, submittedAt])
+  @@index([verifiedById])
+}
+
+model PaymentAuditEvent {
+  id         String             @id @default(cuid())
+  paymentId  String
+  payment    PaymentSubmission  @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  actorId    String?
+  actor      User?              @relation("PaymentAuditActor", fields: [actorId], references: [id], onDelete: SetNull)
+  action     PaymentAuditAction
+  fromStatus PaymentStatus?
+  toStatus   PaymentStatus
+  reason     String?
+  createdAt  DateTime           @default(now())
+
+  @@index([paymentId, createdAt])
+  @@index([actorId, createdAt])
+}
+
+// Database-backed fixed-window throttling works across serverless instances.
+model RateLimitBucket {
+  key             String   @id
+  count           Int      @default(0)
+  windowStartedAt DateTime
+  updatedAt       DateTime @updatedAt
+}
+
 model FeaturedContent {
   id        String   @id
   section   String
@@ -349,6 +407,22 @@ enum SubscriptionStatus {
   PAST_DUE
   CANCELED
   TRIALING
+}
+
+enum PaymentStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum PaymentMethod {
+  MANUAL_UPI
+}
+
+enum PaymentAuditAction {
+  SUBMITTED
+  APPROVED
+  REJECTED
 }
 
 enum ArticleType {
@@ -613,6 +687,7 @@ model LessonProgress {
   lessonSlug   String
   completed    Boolean   @default(false)
   secondsSpent Int       @default(0)
+  startedAt    DateTime?
   completedAt  DateTime?
   updatedAt    DateTime  @updatedAt
 
@@ -672,9 +747,11 @@ model StudyMaterial {
   duration    Int? // Estimated minutes
   published   Boolean       @default(false)
   featured    Boolean       @default(false)
-  viewCount   Int           @default(0)
-  publishedAt DateTime?
-  createdAt   DateTime      @default(now())
+  viewCount        Int           @default(0)
+  publishedAt      DateTime?
+  learningOutcomes String[]      @default([])
+  prerequisites    String[]      @default([])
+  createdAt        DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
 
   @@index([categoryId])
@@ -701,4 +778,209 @@ model StudyCategory {
 
   @@index([slug])
   @@index([order])
+}
+
+// ─── Product content: managed FAQs, finance terms and relationships ────────────
+
+model FaqItem {
+  id            String   @id @default(cuid())
+  slug          String
+  question      String
+  answer        String   @db.Text
+  category      String?
+  relatedType   String
+  relatedSlug   String
+  displayOrder  Int      @default(0)
+  published     Boolean  @default(false)
+  seoVisible    Boolean  @default(true)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([relatedType, relatedSlug, slug])
+  @@index([relatedType, relatedSlug, published, displayOrder])
+  @@index([published, seoVisible])
+}
+
+model FinanceTerm {
+  id                String   @id @default(cuid())
+  slug              String   @unique
+  term              String
+  simpleMeaning     String   @db.Text
+  example           String   @db.Text
+  interviewAnswer   String   @db.Text
+  formula           String?  @db.Text
+  category          String
+  difficulty        String   @default("BEGINNER")
+  keywords          String[] @default([])
+  synonyms          String[] @default([])
+  relatedTermSlugs  String[] @default([])
+  searchText        String   @default("") @db.Text
+  featured          Boolean  @default(false)
+  published         Boolean  @default(false)
+  seoVisible        Boolean  @default(true)
+  displayOrder      Int      @default(0)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([published, displayOrder])
+  @@index([category, published, displayOrder])
+  @@index([featured, published])
+}
+
+model RelatedContent {
+  id          String   @id @default(cuid())
+  sourceType  String
+  sourceSlug  String
+  targetType  String
+  targetSlug  String
+  anchorText  String?
+  linkKind    String   @default("RELATED")
+  displayOrder Int     @default(0)
+  published   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([sourceType, sourceSlug, targetType, targetSlug])
+  @@index([sourceType, sourceSlug, published, displayOrder])
+  @@index([targetType, targetSlug])
+}
+
+// ─── Course content, assessments and un-signed completion records ─────────────
+
+model CourseLesson {
+  id              String   @id @default(cuid())
+  courseSlug      String
+  slug            String
+  title           String
+  summary         String?
+  content         String   @db.Text
+  durationMinutes Int?
+  displayOrder    Int      @default(0)
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([courseSlug, slug])
+  @@index([courseSlug, published, displayOrder])
+}
+
+model CourseAssessment {
+  id              String   @id @default(cuid())
+  courseSlug      String   @unique
+  title           String
+  instructions    String?  @db.Text
+  passPercentage  Int      @default(70)
+  maxAttempts     Int?
+  published       Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  questions       CourseAssessmentQuestion[]
+  attempts        CourseAssessmentAttempt[]
+
+  @@index([published])
+}
+
+model CourseAssessmentQuestion {
+  id               String   @id @default(cuid())
+  assessmentId     String
+  assessment       CourseAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  prompt           String   @db.Text
+  options          Json
+  correctOption    Int
+  explanation      String   @db.Text
+  marks            Int      @default(1)
+  displayOrder     Int      @default(0)
+  published        Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([assessmentId, displayOrder])
+}
+
+model CourseAssessmentAttempt {
+  id            String   @id @default(cuid())
+  assessmentId  String
+  assessment    CourseAssessment @relation(fields: [assessmentId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  attemptNumber Int
+  score         Int
+  maxScore      Int
+  percentage    Int
+  passed        Boolean  @default(false)
+  submittedAt   DateTime @default(now())
+
+  @@unique([assessmentId, userId, attemptNumber])
+  @@index([assessmentId, userId, submittedAt])
+  @@index([userId, passed])
+}
+
+model CourseCertificate {
+  id            String   @id @default(cuid())
+  certificateId String   @unique
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  courseSlug    String
+  studentName   String
+  courseTitle   String
+  completedAt   DateTime
+  issuedAt      DateTime @default(now())
+  status        String   @default("ACTIVE")
+
+  @@unique([userId, courseSlug])
+  @@index([status, issuedAt])
+}
+
+// ─── Scheduled partner promotions and aggregate, non-personal event records ──
+
+model Promotion {
+  id                    String   @id @default(cuid())
+  brandName             String
+  title                 String
+  shortDescription      String
+  fullDescription       String?  @db.Text
+  logoUrl               String?
+  imageUrl              String?
+  lightCreativeUrl      String?
+  darkCreativeUrl       String?
+  ctaText               String   @default("Learn more")
+  destinationUrl        String
+  affiliateUrl          String?
+  trackingUrl           String?
+  category              String
+  placement             String
+  targetPages           String[] @default([])
+  targetContentTypes    String[] @default([])
+  startsAt              DateTime?
+  endsAt                DateTime?
+  active                Boolean  @default(false)
+  priority              Int      @default(0)
+  displayFrequency      Int      @default(1)
+  mobileVisible         Boolean  @default(true)
+  desktopVisible        Boolean  @default(true)
+  disclosureType        String   @default("SPONSORED")
+  disclosureText        String   @default("Sponsored · Paid promotion")
+  campaignId            String?
+  utmParameters         Json?
+  conversionTrackingUrl String?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  events                PromotionEvent[]
+
+  @@index([placement, active, priority])
+  @@index([startsAt, endsAt])
+  @@index([category])
+  @@index([campaignId])
+}
+
+model PromotionEvent {
+  id          String   @id @default(cuid())
+  promotionId String
+  promotion   Promotion @relation(fields: [promotionId], references: [id], onDelete: Cascade)
+  eventType   String
+  path        String
+  createdAt   DateTime @default(now())
+
+  @@index([promotionId, eventType, createdAt])
+  @@index([path, createdAt])
 }

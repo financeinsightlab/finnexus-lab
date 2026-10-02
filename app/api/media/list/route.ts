@@ -1,17 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/auth'
+import { authorizeApi, STAFF_ROLES } from '@/lib/auth-guards'
 import { getMediaList, MediaListParams } from '@/lib/media-utils'
 
 export async function GET(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const authorization = await authorizeApi(STAFF_ROLES)
+    if (!authorization.ok) return authorization.response
 
     // Parse query parameters
     const searchParams = request.nextUrl.searchParams
@@ -31,13 +25,10 @@ export async function GET(request: NextRequest) {
       data: result
     })
 
-  } catch (error: unknown) {
-    console.error('Media list API error:', error)
+  } catch {
+    console.error('Media list API failed.')
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Internal server error' 
-      },
+      { success: false, error: 'Unable to load media' },
       { status: 500 }
     )
   }

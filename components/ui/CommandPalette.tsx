@@ -15,6 +15,7 @@ const STATIC_ACTIONS: SearchItem[] = [
     { kind: 'insight', title: 'Insights', description: 'Short-form analysis', url: '/insights', tags: [], score: 1 },
     { kind: 'pgdm-subject', title: 'PGDM curriculum', description: 'Subjects, lectures, cheat sheets', url: '/pgdm', tags: [], score: 1 },
     { kind: 'study', title: 'Study material', description: 'Notes, videos and courses', url: '/study', tags: [], score: 1 },
+    { kind: 'study', title: 'Finance terms', description: 'Search definitions, formulas and interview explanations', url: '/finance-terms', tags: ['glossary', 'finance'], score: 1 },
     { kind: 'data-lab', title: 'Data Lab', description: 'Notebooks and datasets', url: '/data-lab', tags: [], score: 1 },
     { kind: 'tool', title: 'Tools & calculators', description: '16 analyst calculators', url: '/tools', tags: [], score: 1 },
     { kind: 'case-study', title: 'Case studies', description: 'Deep-dive business teardowns', url: '/case-studies', tags: [], score: 1 },
@@ -33,6 +34,7 @@ const GROUP_ICON: Record<string, string> = {
     'pgdm-lecture': '📘',
     tool: '🧮',
     study: '📚',
+    'finance-term': '📖',
 };
 
 interface FlatRow {

@@ -122,10 +122,13 @@ export default async function CMSDashboard({
               All content — from MDX files and CMS entries — in one place.
             </p>
           </div>
-          <Link href="/admin/cms/new" className="btn-primary bg-white text-brand-navy hover:bg-gray-100 flex items-center justify-center gap-2 group shadow-lg">
-            <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
-            Create New Entry
-          </Link>
+          <div className="flex flex-wrap gap-3">
+            <Link href="/admin/product-content" className="btn-outline-white">Product content tools</Link>
+            <Link href="/admin/cms/new" className="btn-primary bg-white text-brand-navy hover:bg-gray-100 flex items-center justify-center gap-2 group shadow-lg">
+              <Plus className="w-4 h-4 group-hover:rotate-90 transition-transform" />
+              Create New Entry
+            </Link>
+          </div>
         </div>
       </div>
 

@@ -17,10 +17,19 @@ interface JsonLdProps {
  * }} />
  */
 export default function JsonLd({ data }: JsonLdProps) {
+  // JSON-LD content is sometimes CMS-authored. Escape HTML-significant and
+  // JavaScript line-separator characters so user content can never terminate
+  // the script element or alter the surrounding document.
+  const serialized = JSON.stringify(data)
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e')
+    .replace(/&/g, '\\u0026')
+    .replace(/\u2028/g, '\\u2028')
+    .replace(/\u2029/g, '\\u2029');
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: serialized }}
     />
   )
 }

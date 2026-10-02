@@ -40,6 +40,7 @@ const KIND_ICON: Record<string, string> = {
     'pgdm-lecture': '📘',
     tool: '🧮',
     study: '📚',
+    'finance-term': '📖',
 };
 
 type GlobalSearchProps = {

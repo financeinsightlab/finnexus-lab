@@ -8,7 +8,6 @@ import { prisma } from '@/lib/prisma';
 export interface ThreadedComment {
     id: string;
     content: string;
-    authorId: string;
     authorName: string | null;
     authorImage: string | null;
     parentId: string | null;
@@ -30,6 +29,7 @@ export function parseMentions(text: string): string[] {
 /** Build a nested tree from a flat comment list. O(n) with a parent map. */
 export function buildThreads(
     flat: Omit<ThreadedComment, 'replies'>[],
+    options: { dropOrphans?: boolean } = {},
 ): ThreadedComment[] {
     const nodes = new Map<string, ThreadedComment>();
     for (const c of flat) nodes.set(c.id, { ...c, replies: [] });
@@ -38,19 +38,30 @@ export function buildThreads(
     for (const node of nodes.values()) {
         if (node.parentId && nodes.has(node.parentId)) {
             nodes.get(node.parentId)!.replies.push(node);
-        } else {
+        } else if (!node.parentId || !options.dropOrphans) {
             roots.push(node);
         }
     }
     return roots;
 }
 
-export async function listComments(where: { postId?: string; predictionId?: string }): Promise<ThreadedComment[]> {
+export async function listComments(
+    where: { postId?: string; predictionId?: string },
+    options: { moderationView?: boolean } = {},
+): Promise<ThreadedComment[]> {
     const rows = await prisma.comment.findMany({
-        where: { ...where, status: { not: 'DELETED' } },
+        // Anonymous/public responses expose only visible comments. Staff can
+        // explicitly request the complete moderation state through the API.
+        where: options.moderationView ? where : { ...where, status: 'VISIBLE' },
         orderBy: { createdAt: 'asc' },
         include: {
-            author: { select: { name: true, image: true } },
+            author: {
+                select: {
+                    name: true,
+                    image: true,
+                    profile: { select: { isPublic: true } },
+                },
+            },
             reactions: { select: { emoji: true } },
         },
     });
@@ -61,9 +72,12 @@ export async function listComments(where: { postId?: string; predictionId?: stri
         return {
             id: row.id,
             content: row.content,
-            authorId: row.authorId,
-            authorName: row.author.name,
-            authorImage: row.author.image,
+            authorName: !options.moderationView && row.author.profile?.isPublic !== true
+                ? 'Private member'
+                : row.author.name,
+            authorImage: !options.moderationView && row.author.profile?.isPublic !== true
+                ? null
+                : row.author.image,
             parentId: row.parentId,
             status: row.status,
             reactions: Array.from(counts, ([emoji, count]) => ({ emoji, count })),
@@ -72,7 +86,7 @@ export async function listComments(where: { postId?: string; predictionId?: stri
         };
     });
 
-    return buildThreads(flat);
+    return buildThreads(flat, { dropOrphans: !options.moderationView });
 }
 
 export interface CreateCommentInput {
@@ -83,7 +97,52 @@ export interface CreateCommentInput {
     parentId?: string;
 }
 
+export class CommentWriteError extends Error {
+    constructor(readonly code: 'INVALID_TARGET' | 'TARGET_NOT_FOUND' | 'INVALID_PARENT' | 'DUPLICATE_COMMENT') {
+        super(code);
+        this.name = 'CommentWriteError';
+    }
+}
+
 export async function createComment(input: CreateCommentInput) {
+    if (Boolean(input.postId) === Boolean(input.predictionId)) {
+        throw new CommentWriteError('INVALID_TARGET');
+    }
+
+    if (input.postId) {
+        const post = await prisma.post.findUnique({ where: { id: input.postId }, select: { published: true } });
+        if (!post?.published) throw new CommentWriteError('TARGET_NOT_FOUND');
+    }
+    if (input.predictionId) {
+        const prediction = await prisma.prediction.findUnique({ where: { id: input.predictionId }, select: { id: true } });
+        if (!prediction) throw new CommentWriteError('TARGET_NOT_FOUND');
+    }
+
+    if (input.parentId) {
+        const parent = await prisma.comment.findUnique({
+            where: { id: input.parentId },
+            select: { postId: true, predictionId: true, status: true },
+        });
+        if (
+            !parent ||
+            parent.status !== 'VISIBLE' ||
+            parent.postId !== (input.postId ?? null) ||
+            parent.predictionId !== (input.predictionId ?? null)
+        ) {
+            throw new CommentWriteError('INVALID_PARENT');
+        }
+    }
+
+    const duplicate = await prisma.comment.findFirst({
+        where: {
+            authorId: input.authorId,
+            content: input.content,
+            createdAt: { gte: new Date(Date.now() - 5 * 60 * 1000) },
+        },
+        select: { id: true },
+    });
+    if (duplicate) throw new CommentWriteError('DUPLICATE_COMMENT');
+
     const handles = parseMentions(input.content);
     let mentionIds: string[] = [];
     if (handles.length > 0) {
@@ -125,8 +184,21 @@ export async function createComment(input: CreateCommentInput) {
     return comment;
 }
 
-/** Toggle a reaction; returns whether the emoji is now active for the user. */
+export class CommentReactionError extends Error {
+    constructor() {
+        super('COMMENT_UNAVAILABLE');
+        this.name = 'CommentReactionError';
+    }
+}
+
+/** Toggle a reaction; only comments visible to the public can be reacted to. */
 export async function toggleReaction(commentId: string, userId: string, emoji: string) {
+    const comment = await prisma.comment.findUnique({
+        where: { id: commentId },
+        select: { status: true },
+    });
+    if (!comment || comment.status !== 'VISIBLE') throw new CommentReactionError();
+
     const existing = await prisma.commentReaction.findUnique({
         where: { commentId_userId_emoji: { commentId, userId, emoji } },
     });

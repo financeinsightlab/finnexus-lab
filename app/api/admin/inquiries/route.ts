@@ -17,8 +17,8 @@ export async function GET(request: NextRequest) {
 
     const data = await getContactInquiries(status);
     return NextResponse.json(data);
-  } catch (error) {
-    console.error('Failed to load inquiries:', error);
+  } catch {
+    console.error('Failed to load contact inquiries.');
     return NextResponse.json({ error: 'Failed to load inquiries' }, { status: 500 });
   }
 }

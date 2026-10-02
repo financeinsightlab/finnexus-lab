@@ -3,7 +3,7 @@ import { featureStatus } from '@/lib/status';
 
 export const metadata: Metadata = {
     title: 'Platform status',
-    description: 'Which Kunwar Analytics capabilities are live, and what each pending integration needs.',
+    description: 'A configuration-aware status board for available and intentionally disabled Kunwar Analytics capabilities.',
     alternates: { canonical: '/status' },
 };
 
@@ -31,9 +31,8 @@ export default function StatusPage() {
                     Platform status
                 </h1>
                 <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300">
-                    A transparent view of what is live today and exactly what each pending
-                    integration needs. Everything marked <strong>Live</strong> works with no
-                    third-party account.
+                    This page distinguishes available local features, integrations needing
+                    configuration, and capabilities intentionally disabled by product policy.
                 </p>
             </header>
 
@@ -57,12 +56,16 @@ export default function StatusPage() {
                                     </div>
                                     <span
                                         className={
-                                            feature.enabled
+                                            feature.state === 'available'
                                                 ? 'flex-none rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300'
                                                 : 'flex-none rounded-full bg-neutral-100 px-3 py-1 text-xs font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-400'
                                         }
                                     >
-                                        {feature.enabled ? 'Live' : 'Needs key'}
+                                        {feature.state === 'disabled'
+                                            ? 'Disabled by design'
+                                            : feature.enabled
+                                                ? 'Available'
+                                                : 'Needs configuration'}
                                     </span>
                                 </li>
                             ))}

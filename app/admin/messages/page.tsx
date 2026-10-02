@@ -113,7 +113,7 @@ export default function AdminMessagesPage() {
         const result = await res.json();
         setNotificationStatus({
           id: inquiry.id,
-          message: result.message || 'Reply saved and notification sent to user!',
+          message: result.message || 'Reply saved. Email delivery is not configured.',
         });
 
         // Update list locally
@@ -181,7 +181,7 @@ export default function AdminMessagesPage() {
               Contact Form Inquiries
             </h1>
             <p className="text-slate-300 mt-2 max-w-xl text-sm">
-              All messages submitted from your website's contact form appear here. Reply directly to automatically dispatch notifications to the sender's email and user account.
+              Contact-form messages appear here. Replies are saved and may trigger an in-app notification for registered users; email delivery is not configured, so replies are not emailed.
             </p>
           </div>
 
@@ -222,13 +222,13 @@ export default function AdminMessagesPage() {
 
         <div className="bg-white dark:bg-[#1A1F2E] p-6 rounded-2xl border border-gray-200 dark:border-[#2D3748] shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-xs font-bold uppercase tracking-wider text-emerald-500">Replied & Notified</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-emerald-500">Replies Saved</span>
             <div className="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
               <CheckCircle2 className="w-5 h-5" />
             </div>
           </div>
           <p className="text-3xl font-extrabold text-emerald-500 mt-3">{stats.replied}</p>
-          <p className="text-xs text-slate-500 mt-1">Notified via email & dashboard</p>
+          <p className="text-xs text-slate-500 mt-1">In-app notifications may be sent; no email is sent</p>
         </div>
       </div>
 

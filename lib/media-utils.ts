@@ -158,9 +158,13 @@ export async function saveMediaToDatabase(
  * Get paginated media list
  */
 export async function getMediaList(params: MediaListParams = {}) {
-  const page = params.page || 1
-  const limit = params.limit || 20
+  const requestedPage = params.page ?? 1
+  const requestedLimit = params.limit ?? 20
+  const page = Number.isFinite(requestedPage) ? Math.min(100_000, Math.max(1, Math.floor(requestedPage))) : 1
+  const limit = Number.isFinite(requestedLimit) ? Math.min(100, Math.max(1, Math.floor(requestedLimit))) : 20
   const skip = (page - 1) * limit
+  const search = params.search?.trim().slice(0, 200)
+  const type = params.type?.trim().slice(0, 50)
   
   const where: {
     OR?: Array<{
@@ -171,16 +175,16 @@ export async function getMediaList(params: MediaListParams = {}) {
     mimeType?: { startsWith: string }
   } = {}
   
-  if (params.search) {
+  if (search) {
     where.OR = [
-      { filename: { contains: params.search, mode: 'insensitive' } },
-      { originalName: { contains: params.search, mode: 'insensitive' } },
-      { altText: { contains: params.search, mode: 'insensitive' } },
+      { filename: { contains: search, mode: 'insensitive' } },
+      { originalName: { contains: search, mode: 'insensitive' } },
+      { altText: { contains: search, mode: 'insensitive' } },
     ]
   }
 
-  if (params.type) {
-    where.mimeType = { startsWith: params.type }
+  if (type) {
+    where.mimeType = { startsWith: type }
   }
 
   let orderBy: { uploadedAt?: 'asc' | 'desc'; originalName?: 'asc'; size?: 'desc' } = { uploadedAt: 'desc' }

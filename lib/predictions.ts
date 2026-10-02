@@ -1,9 +1,11 @@
 import { prisma } from '@/lib/prisma';
 import { PredictionStatus } from '@prisma/client';
+import { toPublicPredictionAuthor } from '@/lib/public-prediction-author';
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 export type PredictionWithAuthor = Awaited<ReturnType<typeof getAllPredictions>>[number];
+export type PublicPrediction = Awaited<ReturnType<typeof getPublicPredictionBoard>>[number];
 
 // ─── Read ─────────────────────────────────────────────────────────────────────
 
@@ -12,10 +14,84 @@ export async function getAllPredictions() {
     orderBy: { resolveDate: 'asc' },
     include: {
       author: {
-        select: { id: true, name: true, email: true, role: true, customBadge: true },
+        select: { id: true, name: true, role: true, customBadge: true },
       },
     },
   });
+}
+
+/** Narrow DTO for the public board; admin and ledger callers retain getAllPredictions. */
+export async function getPublicPredictionBoard() {
+  const rows = await prisma.prediction.findMany({
+    orderBy: { resolveDate: 'asc' },
+    select: {
+      id: true,
+      claim: true,
+      sector: true,
+      resolveDate: true,
+      status: true,
+      resolutionNote: true,
+      reportSlug: true,
+      createdAt: true,
+      author: {
+        select: {
+          id: true,
+          name: true,
+          role: true,
+          customBadge: true,
+          profile: { select: { isPublic: true } },
+        },
+      },
+    },
+  });
+
+  return rows.map((prediction) => ({
+    ...prediction,
+    author: toPublicPredictionAuthor(prediction.author),
+  }));
+}
+
+/** Ledger-only public DTO: prediction fields, with no author identity or account data. */
+export async function getPublicPredictionLedger() {
+  return prisma.prediction.findMany({
+    orderBy: { resolveDate: 'asc' },
+    select: {
+      slug: true,
+      claim: true,
+      sector: true,
+      resolveDate: true,
+      status: true,
+      resolutionNote: true,
+    },
+  });
+}
+
+/** Only the prediction rows and count rendered on the public author profile. */
+export async function getAuthorProfilePredictionSummary(authorId: string) {
+  const [total, recentResolved, open] = await Promise.all([
+    prisma.prediction.count({ where: { authorId } }),
+    prisma.prediction.findMany({
+      where: { authorId, status: { not: 'PENDING' } },
+      orderBy: { resolveDate: 'desc' },
+      take: 5,
+      select: {
+        id: true,
+        claim: true,
+        status: true,
+        resolveDate: true,
+        reportSlug: true,
+        resolutionNote: true,
+      },
+    }),
+    prisma.prediction.findMany({
+      where: { authorId, status: 'PENDING' },
+      orderBy: { resolveDate: 'desc' },
+      take: 4,
+      select: { id: true, claim: true, resolveDate: true },
+    }),
+  ]);
+
+  return { total, recentResolved, open };
 }
 
 export async function getPredictionsByAuthor(authorId: string) {
@@ -23,7 +99,7 @@ export async function getPredictionsByAuthor(authorId: string) {
     where: { authorId },
     orderBy: { resolveDate: 'desc' },
     include: {
-      author: { select: { id: true, name: true, email: true, role: true, customBadge: true } },
+      author: { select: { id: true, name: true, role: true, customBadge: true } },
     },
   });
 }
@@ -33,7 +109,7 @@ export async function getOpenPredictions() {
     where: { status: 'PENDING' },
     orderBy: { resolveDate: 'asc' },
     include: {
-      author: { select: { id: true, name: true, email: true, role: true, customBadge: true } },
+      author: { select: { id: true, name: true, role: true, customBadge: true } },
     },
   });
 }
@@ -46,7 +122,7 @@ export async function getOverduePendingPredictions() {
     },
     orderBy: { resolveDate: 'asc' },
     include: {
-      author: { select: { id: true, name: true, email: true, role: true, customBadge: true } },
+      author: { select: { id: true, name: true, role: true, customBadge: true } },
     },
   });
 }
@@ -55,7 +131,7 @@ export async function getPredictionBySlug(slug: string) {
   return prisma.prediction.findUnique({
     where: { slug },
     include: {
-      author: { select: { id: true, name: true, email: true, role: true, customBadge: true } },
+      author: { select: { id: true, name: true, role: true, customBadge: true } },
     },
   });
 }
@@ -63,8 +139,14 @@ export async function getPredictionBySlug(slug: string) {
 export async function getAnalystScore(authorId: string) {
   return prisma.analystScore.findUnique({
     where: { authorId },
-    include: {
-      author: { select: { id: true, name: true, email: true } },
+    select: {
+      totalPredictions: true,
+      confirmed: true,
+      incorrect: true,
+      partial: true,
+      calibrationScore: true,
+      longestStreak: true,
+      lastCalculated: true,
     },
   });
 }

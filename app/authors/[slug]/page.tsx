@@ -1,8 +1,9 @@
 import type { Metadata } from 'next';
+import { cache } from 'react';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
 import { prisma } from '@/lib/prisma';
-import { getPredictionsByAuthor, getAnalystScore } from '@/lib/predictions';
+import { getAuthorProfilePredictionSummary, getAnalystScore } from '@/lib/predictions';
 
 export const dynamic = 'force-dynamic';
 
@@ -10,15 +11,21 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
-// Find user by slugified name
-async function getUserBySlug(slug: string) {
+// Cache the slug lookup within one server request so metadata and page rendering share it.
+const getUserBySlug = cache(async (slug: string) => {
   const users = await prisma.user.findMany({
-    select: { id: true, name: true, email: true, image: true, role: true, createdAt: true },
+    where: { profile: { is: { isPublic: true } } },
+    select: {
+      id: true,
+      name: true,
+      image: true,
+      createdAt: true,
+    },
   });
   const slugify = (s: string) =>
     (s ?? '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
   return users.find((u) => slugify(u.name ?? '') === slug) ?? null;
-}
+});
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
@@ -48,8 +55,8 @@ export default async function AuthorProfilePage({ params }: Props) {
   }
   if (!user) notFound();
 
-  const [predictions, score, posts] = await Promise.all([
-    getPredictionsByAuthor(user.id),
+  const [predictionSummary, score, posts] = await Promise.all([
+    getAuthorProfilePredictionSummary(user.id),
     getAnalystScore(user.id),
     prisma.post.findMany({
       where: { authorId: user.id, published: true },
@@ -58,11 +65,11 @@ export default async function AuthorProfilePage({ params }: Props) {
       select: { id: true, title: true, slug: true, type: true, publishedAt: true },
     }),
   ]);
-
-  const lastFive = predictions
-    .filter((p) => p.status !== 'PENDING')
-    .sort((a, b) => new Date(b.resolveDate).getTime() - new Date(a.resolveDate).getTime())
-    .slice(0, 5);
+  const {
+    total: predictionCount,
+    recentResolved: lastFive,
+    open: openPredictions,
+  } = predictionSummary;
 
   const initials = (user.name ?? '?')
     .split(' ')
@@ -217,12 +224,12 @@ export default async function AuthorProfilePage({ params }: Props) {
                 href={`/predictions?author=${slug}`}
                 className="mt-5 text-sm font-semibold text-brand-teal hover:underline block"
               >
-                View all {predictions.length} predictions →
+                View all {predictionCount} predictions →
               </Link>
             </div>
           )}
 
-          {predictions.length === 0 && (
+          {predictionCount === 0 && (
             <div className="card p-8 text-center text-gray-400">
               <div className="text-4xl mb-3">🎯</div>
               <p className="font-medium">No predictions published yet.</p>
@@ -233,14 +240,11 @@ export default async function AuthorProfilePage({ params }: Props) {
         {/* ─── Right column ─── */}
         <div className="space-y-6">
           {/* Open predictions */}
-          {predictions.filter((p) => p.status === 'PENDING').length > 0 && (
+          {openPredictions.length > 0 && (
             <div className="card p-5">
               <h3 className="text-sm font-bold text-brand-navy mb-4">⏳ Open Predictions</h3>
               <ul className="space-y-3">
-                {predictions
-                  .filter((p) => p.status === 'PENDING')
-                  .slice(0, 4)
-                  .map((p) => {
+                {openPredictions.map((p) => {
                     const daysLeft = Math.ceil(
                       (new Date(p.resolveDate).getTime() - Date.now()) / 86_400_000,
                     );

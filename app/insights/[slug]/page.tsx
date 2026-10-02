@@ -12,6 +12,9 @@ import { ChevronLeft, Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, S
 import React from 'react';
 import { CommentSection } from '@/components/ui/CommentSection';
 import JsonLd, { articleSchema } from '@/components/seo/JsonLd';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -295,6 +298,10 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
           </div>
         </main>
       </div>
+      <PromotionSlot placement="ARTICLE_PAGE" path={`/insights/${slug}`} contentType="INSIGHT" />
+      <RelatedContentSection sourceType="INSIGHT" sourceSlug={slug} />
+      <RelatedContentSection sourceType="INSIGHT" sourceSlug={slug} linkKind="CTA" />
+      <ContentFaq relatedType="INSIGHT" relatedSlug={slug} />
     </>
   );
 }

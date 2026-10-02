@@ -7,6 +7,7 @@
 
 import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import { safeAskHref } from './safe-ask-link';
 
 interface Citation {
     index: number;
@@ -31,6 +32,7 @@ interface Message {
     role: 'user' | 'assistant';
     text: string;
     citations?: Citation[];
+    provider?: string;
     isLoading?: boolean;
 }
 
@@ -44,9 +46,9 @@ const QUICK_QUESTIONS = [
 ];
 
 const PROVIDER_LABELS: Record<string, string> = {
-    'huggingface-mistral': '🤖 AI · Mistral-7B',
-    'kunwar-knowledge-engine': '⚡ Kunwar Intelligence',
-    'local-extractive': '🔍 Search-based',
+    'huggingface-mistral': 'Hugging Face inference',
+    'kunwar-knowledge-engine': 'Platform knowledge',
+    'local-extractive': 'Local source extraction',
 };
 
 function TypingDots() {
@@ -135,6 +137,7 @@ export default function AskKunwarBubble() {
                             ...m,
                             text: data.answer,
                             citations: data.citations,
+                            provider: data.provider,
                             isLoading: false,
                         }
                         : m
@@ -175,8 +178,8 @@ export default function AskKunwarBubble() {
                 tokens.push(renderFormatting(text.slice(lastIndex, match.index), tokens.length));
             }
             const label = match[1];
-            const url = match[2];
-            tokens.push(
+            const url = safeAskHref(match[2]);
+            tokens.push(url ? (
                 <Link
                     key={tokens.length}
                     href={url}
@@ -185,7 +188,7 @@ export default function AskKunwarBubble() {
                 >
                     {label}
                 </Link>
-            );
+            ) : <span key={tokens.length}>{label}</span>);
             lastIndex = match.index + match[0].length;
         }
 
@@ -323,20 +326,35 @@ export default function AskKunwarBubble() {
                                         {msg.citations && msg.citations.length > 0 && (
                                             <div className="mt-3 space-y-1.5 border-t border-white/10 pt-2">
                                                 <p className="text-[10px] font-bold uppercase tracking-widest text-slate-500">Sources</p>
-                                                {msg.citations.slice(0, 3).map((c) => (
-                                                    <Link
-                                                        key={c.index}
-                                                        href={c.url}
-                                                        onClick={() => setOpen(false)}
-                                                        className="flex items-start gap-2 rounded-lg border border-white/5 bg-white/5 p-2 text-xs text-slate-300 transition hover:border-teal-500/30 hover:text-teal-300"
-                                                    >
-                                                        <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-teal-900/60 text-[9px] font-bold text-teal-400">
-                                                            {c.index}
-                                                        </span>
-                                                        <span className="line-clamp-1">{c.title}</span>
-                                                    </Link>
-                                                ))}
+                                                {msg.citations.slice(0, 3).map((c) => {
+                                                    const href = safeAskHref(c.url);
+                                                    const content = (
+                                                        <>
+                                                            <span className="mt-px flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-teal-900/60 text-[9px] font-bold text-teal-400">
+                                                                {c.index}
+                                                            </span>
+                                                            <span className="line-clamp-1">{c.title}</span>
+                                                        </>
+                                                    );
+                                                    return href ? (
+                                                        <Link
+                                                            key={c.index}
+                                                            href={href}
+                                                            onClick={() => setOpen(false)}
+                                                            className="flex items-start gap-2 rounded-lg border border-white/5 bg-white/5 p-2 text-xs text-slate-300 transition hover:border-teal-500/30 hover:text-teal-300"
+                                                        >
+                                                            {content}
+                                                        </Link>
+                                                    ) : (
+                                                        <div key={c.index} className="flex items-start gap-2 rounded-lg border border-white/5 bg-white/5 p-2 text-xs text-slate-300">
+                                                            {content}
+                                                        </div>
+                                                    );
+                                                })}
                                             </div>
+                                        )}
+                                        {msg.provider && (
+                                            <p className="mt-2 text-[10px] text-slate-500">Method: {PROVIDER_LABELS[msg.provider] ?? 'Source-grounded answer'}</p>
                                         )}
                                     </>
                                 )}
@@ -392,7 +410,7 @@ export default function AskKunwarBubble() {
                         </button>
                     </div>
                     <p className="mt-1.5 text-center text-[10px] text-slate-600">
-                        Answers sourced from Kunwar Analytics research · {PROVIDER_LABELS['huggingface-mistral']}
+                        Answers are grounded in available Kunwar Analytics site sources; provider availability may vary.
                     </p>
                 </form>
             </div>

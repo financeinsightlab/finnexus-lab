@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, useMemo } from 'react';
 import type { SectorConsensus } from '@/lib/sentimentEngine';
-import { getQuarterByKey } from '@/lib/trackerData';
+import { getQuarterByKey, shortLabel } from '@/lib/trackerData';
 
 const CX = 320, CY = 320, R_MAX = 250;
 const COLORS: Record<string, string> = {
@@ -41,7 +41,7 @@ export default function PremiumRadar({ sectors, activeKey }: Props) {
       <div className="relative rounded-3xl bg-gradient-to-br from-[#0b1623] to-[#0f1c2d] border border-white/10 p-4 overflow-hidden">
         <div className="absolute inset-0 opacity-40" style={{ background: 'radial-gradient(500px 400px at 30% 20%, rgba(13,110,110,0.35), transparent), radial-gradient(400px 300px at 80% 90%, rgba(37,99,235,0.25), transparent)' }} />
         <div className="relative">
-          <svg viewBox="0 0 640 640" className="w-full" aria-label="Premium Contrarian Signal Radar">
+          <svg viewBox="0 0 640 640" className="w-full" aria-label="Quarter-keyed sector indicator radar">
             <circle cx={CX} cy={CY} r={R_MAX + 16} fill="#0b1623" stroke="rgba(148,163,184,0.15)" strokeWidth={1} />
             {[0.35, 0.55, 0.75, 1.0].map((f, i) => (
               <circle key={i} cx={CX} cy={CY} r={R_MAX * f} fill="none" stroke={i === 3 ? 'rgba(34,197,94,0.25)' : 'rgba(148,163,184,0.10)'} strokeWidth={1} strokeDasharray={i % 2 ? '3 4' : 'none'} />
@@ -50,8 +50,8 @@ export default function PremiumRadar({ sectors, activeKey }: Props) {
             <circle cx={CX} cy={CY} r={R_MAX} fill="none" stroke="rgba(34,197,94,0.18)" strokeWidth={1} />
             <path d={`M ${CX} ${CY} L ${beamP1.x} ${beamP1.y} A ${R_MAX} ${R_MAX} 0 0 0 ${beamP2.x} ${beamP2.y} Z`} fill="rgba(34,197,94,0.06)" />
             <line x1={CX} y1={CY} x2={beamP1.x} y2={beamP1.y} stroke="rgba(74,222,128,0.5)" strokeWidth={1.5} />
-            <text x={CX + R_MAX * 0.35 + 8} y={CY - 8} fill="rgba(239,68,68,0.5)" fontSize="10" fontWeight="700" letterSpacing="1">BEAR</text>
-            <text x={CX + R_MAX - 8} y={CY + 20} textAnchor="end" fill="rgba(34,197,94,0.5)" fontSize="10" fontWeight="700" letterSpacing="1">BULL</text>
+            <text x={CX + R_MAX * 0.35 + 8} y={CY - 8} fill="rgba(239,68,68,0.5)" fontSize="10" fontWeight="700" letterSpacing="1">LOW</text>
+            <text x={CX + R_MAX - 8} y={CY + 20} textAnchor="end" fill="rgba(34,197,94,0.5)" fontSize="10" fontWeight="700" letterSpacing="1">HIGH</text>
             {sectors.map((s, i) => {
               const angle = i * angleStep;
               const outer = polar(angle, R_MAX + 8);
@@ -79,7 +79,7 @@ export default function PremiumRadar({ sectors, activeKey }: Props) {
           </svg>
         </div>
         <div className="relative flex flex-wrap items-center gap-4 mt-2 px-2">
-          {[['Extreme Bear', '#ef4444'], ['Mixed', '#a3b2c8'], ['Extreme Bull', '#22c55e']].map(([l, c]) => (
+          {[['Low indicator', '#ef4444'], ['Mid-range indicator', '#a3b2c8'], ['High indicator', '#22c55e']].map(([l, c]) => (
             <span key={l} className="flex items-center gap-1.5 text-[10px] text-slate-400"><span className="w-2.5 h-2.5 rounded-full" style={{ background: c }} /> {l}</span>
           ))}
           <span className="text-[10px] text-slate-500 ml-auto hidden sm:inline">{quarter.label} · {quarter.kind}</span>
@@ -88,21 +88,21 @@ export default function PremiumRadar({ sectors, activeKey }: Props) {
 
       <div className="space-y-4">
         <div className="grid grid-cols-3 gap-3">
-          {[{ l: 'Avg Temp', v: `${stats.avg}°`, c: '#4ade80' }, { l: 'Bullish', v: stats.bull, c: '#22c55e' }, { l: 'Bearish', v: stats.bear, c: '#f87171' }].map((x) => (
+          {[{ l: 'Average indicator', v: `${stats.avg}°`, c: '#4ade80' }, { l: 'Values ≥ 55', v: stats.bull, c: '#22c55e' }, { l: 'Values < 45', v: stats.bear, c: '#f87171' }].map((x) => (
             <div key={x.l} className="rounded-2xl bg-gradient-to-br from-[#111c31] to-[#0b1623] border border-white/10 p-3 text-center"><p className="text-2xl font-extrabold" style={{ color: x.c }}>{x.v}</p><p className="text-[10px] uppercase tracking-widest text-slate-500 mt-0.5">{x.l}</p></div>
           ))}
         </div>
         <div className="rounded-2xl bg-gradient-to-br from-[#111c31] to-[#0b1623] border border-white/10 p-6 min-h-[240px]">
           {active ? (
             <div className="space-y-4">
-              <div className="flex items-center gap-3"><span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: `${color(active.label)}22`, color: color(active.label) }}>{active.label.split(' — ')[0]}</span><span className="text-2xl font-extrabold text-white">{active.temperature}°</span></div>
+              <div className="flex items-center gap-3"><span className="text-xs font-bold uppercase tracking-widest px-3 py-1 rounded-full" style={{ background: `${color(active.label)}22`, color: color(active.label) }}>{shortLabel(active.label)}</span><span className="text-2xl font-extrabold text-white">{active.temperature}°</span></div>
               <h3 className="text-2xl font-extrabold text-white">{active.sector}</h3>
               <p className="text-slate-400 text-sm">{active.total} pieces of content analysed</p>
-              <div><div className="h-3 bg-[#1e293b] rounded-full overflow-hidden"><div className="h-full rounded-full transition-all duration-700" style={{ width: `${active.temperature}%`, background: color(active.label) }} /></div><div className="flex justify-between text-[10px] text-slate-500 mt-1"><span>Bearish {active.bearishCount}</span><span>Neutral {active.total - active.bullishCount - active.bearishCount}</span><span>Bullish {active.bullishCount}</span></div></div>
-              {active.contrarian.length > 0 && (<div><p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-2">⚡ What is being ignored</p><ul className="space-y-1.5">{active.contrarian.map((sig) => <li key={sig} className="flex items-start gap-2 text-sm text-slate-300"><span className="text-amber-400">→</span><span className="capitalize">{sig}</span></li>)}</ul></div>)}
+              <div><div className="h-3 bg-[#1e293b] rounded-full overflow-hidden"><div className="h-full rounded-full transition-all duration-700" style={{ width: `${active.temperature}%`, background: color(active.label) }} /></div><div className="flex justify-between text-[10px] text-slate-500 mt-1"><span>Bearish terms {active.bearishCount}</span><span>Other {active.total - active.bullishCount - active.bearishCount}</span><span>Bullish terms {active.bullishCount}</span></div></div>
+              {active.contrarian.length > 0 && (<div><p className="text-xs font-bold uppercase tracking-widest text-amber-400 mb-2">⚡ Matched content terms</p><ul className="space-y-1.5">{active.contrarian.map((sig) => <li key={sig} className="flex items-start gap-2 text-sm text-slate-300"><span className="text-amber-400">→</span><span className="capitalize">{sig}</span></li>)}</ul></div>)}
               <a href={`/tracker/${active.sector.toLowerCase().replace(/\s+/g, '-')}?q=${quarter.key}`} className="inline-flex items-center gap-2 text-sm font-semibold text-teal-400 hover:text-teal-300">Read full sector analysis →</a>
             </div>
-          ) : (<div className="flex flex-col items-center justify-center h-full min-h-[180px] text-center"><div className="text-4xl mb-3">📡</div><p className="text-slate-400 text-sm max-w-xs">Click any sector dot to see its consensus breakdown and contrarian signals.</p></div>)}
+          ) : (<div className="flex flex-col items-center justify-center h-full min-h-[180px] text-center"><div className="text-4xl mb-3">📡</div><p className="text-slate-400 text-sm max-w-xs">Click a sector dot to see its stored indicator and available keyword-derived content signals.</p></div>)}
         </div>
         <div className="grid grid-cols-2 gap-2">
           {sectors.map((s) => { const c = color(s.label); const isActive = active?.sector === s.sector; return (

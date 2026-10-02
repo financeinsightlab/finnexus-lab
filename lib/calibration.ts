@@ -13,11 +13,10 @@
 //   • PENDING   → excluded from every rate until it resolves
 //
 //   weightedAccuracy = mean(outcome) * 100
-//   Brier score      = mean((outcome - 1)^2)   (lower is better, 0 = perfect)
+//   hitRate          = confirmed / resolved * 100 (strictly confirmed outcomes)
 //
-// The Brier score intentionally grades confidence honestly: because every
-// published prediction is a directional call we treat the forecast probability
-// as 1.0, so the penalty for a miss is the full 1.0.
+// No Brier score is calculated: the prediction model stores no forecast
+// probabilities, so any probability-based score would be fabricated.
 
 import type { PredictionStatus } from '@prisma/client';
 
@@ -44,10 +43,10 @@ export interface StatusCounts {
 }
 
 export interface CalibrationStats extends StatusCounts {
-    /** mean(outcome) * 100, rounded to one decimal. Higher is better. */
+    /** mean(outcome) * 100, rounded to one decimal. PARTIAL counts as 0.5. */
     weightedAccuracy: number;
-    /** Brier score in [0, 1] where 0 is perfect. Lower is better. */
-    brierScore: number;
+    /** Confirmed predictions / resolved predictions * 100; null when none are resolved. */
+    hitRate: number | null;
     /** Longest run of consecutive CONFIRMED results, by resolve date. */
     longestStreak: number;
     /** Length of the currently open CONFIRMED streak. */
@@ -136,20 +135,6 @@ export function countByStatus(
     };
 }
 
-/** Mean squared error against the binary-style outcomes. 0 is perfect. */
-export function brierScore(
-    predictions: readonly LedgerPrediction[],
-): number {
-    const outcomes = predictions
-        .map((prediction) => outcomeOf(prediction.status))
-        .filter((value): value is number => value !== null);
-
-    if (outcomes.length === 0) return 0;
-
-    const sum = outcomes.reduce((acc, outcome) => acc + (outcome - 1) ** 2, 0);
-    return round(sum / outcomes.length, 3);
-}
-
 /** Longest and currently-open runs of CONFIRMED results (ordered by resolve date). */
 export function streaks(
     predictions: readonly LedgerPrediction[],
@@ -177,7 +162,7 @@ export function streaks(
     return { longest, current };
 }
 
-/** Per-sector hit rates, ordered by volume then accuracy. */
+/** Per-sector weighted accuracy, ordered by volume then accuracy. */
 export function sectorBreakdown(
     predictions: readonly LedgerPrediction[],
     asOf: Date = new Date(),
@@ -231,10 +216,14 @@ export function buildCalibration(
 
     const { longest, current } = streaks(predictions, asOf);
 
+    const hitRate = counts.resolved > 0
+        ? round((counts.confirmed / counts.resolved) * 100, 1)
+        : null;
+
     return {
         ...counts,
         weightedAccuracy,
-        brierScore: brierScore(predictions),
+        hitRate,
         longestStreak: longest,
         currentStreak: current,
         distinctSectors: new Set(predictions.map((prediction) => prediction.sector)).size,
@@ -258,7 +247,7 @@ export function toJsonLdDataset(
         '@type': 'Dataset',
         name: 'Kunwar Analytics Public Prediction Ledger',
         description:
-            'A timestamped, publicly resolved ledger of every prediction made by Kunwar Analytics analysts, including calibration metrics (weighted accuracy, Brier score, streaks).',
+            'A timestamped public prediction ledger with outcome counts, weighted accuracy, confirmed hit rate, and streaks. No Brier score is reported because forecast probabilities are not stored.',
         url: `${baseUrl}/predictions/ledger`,
         creator: {
             '@type': 'Organization',
@@ -271,7 +260,7 @@ export function toJsonLdDataset(
             'prediction ledger',
             'analyst calibration',
             'forecast accuracy',
-            'Brier score',
+            'hit rate',
             'financial predictions',
         ],
         temporalCoverage: stats.earliestResolve
@@ -285,7 +274,9 @@ export function toJsonLdDataset(
             { '@type': 'PropertyValue', name: 'Total predictions', value: stats.total },
             { '@type': 'PropertyValue', name: 'Resolved predictions', value: stats.resolved },
             { '@type': 'PropertyValue', name: 'Weighted accuracy (%)', value: stats.weightedAccuracy },
-            { '@type': 'PropertyValue', name: 'Brier score', value: stats.brierScore },
+            ...(stats.hitRate !== null
+                ? [{ '@type': 'PropertyValue', name: 'Hit rate (% confirmed / resolved)', value: stats.hitRate }]
+                : []),
             { '@type': 'PropertyValue', name: 'Longest win streak', value: stats.longestStreak },
         ],
         dateModified: stats.asOf.toISOString(),

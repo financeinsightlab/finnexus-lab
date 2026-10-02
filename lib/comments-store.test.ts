@@ -3,7 +3,6 @@ import { buildThreads, parseMentions, type ThreadedComment } from '@/lib/comment
 
 const base = (over: Partial<Omit<ThreadedComment, 'replies'>> & { id: string }) => ({
     content: 'hi',
-    authorId: 'u1',
     authorName: 'Ann',
     authorImage: null,
     parentId: null,

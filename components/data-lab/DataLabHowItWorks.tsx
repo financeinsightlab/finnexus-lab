@@ -8,29 +8,29 @@ const STEPS = [
   {
     icon: Database,
     step: '01',
-    title: 'Source the Data',
-    desc: 'Every project begins with raw, verifiable data — company filings, RBI/VAHAN statistics, and industry reports. Sources are cited in the methodology.',
+    title: 'Open a Project',
+    desc: 'Read the question, summary, tools, and scope information actually shown on that project page.',
     color: 'text-cinema-cyan',
   },
   {
     icon: BrainCircuit,
     step: '02',
-    title: 'Build the Model',
-    desc: 'We construct transparent, reproducible models in Python, Excel, or Power BI — every assumption surfaced, every driver adjustable.',
+    title: 'Inspect the View',
+    desc: 'Charts and interactive controls differ by page. Values may be stored examples or estimates, not live observations.',
     color: 'text-cinema-violet',
   },
   {
     icon: SlidersHorizontal,
     step: '03',
-    title: 'Explore Interactively',
-    desc: 'Adjust inputs with live simulators, switch chart views, and interrogate the numbers — then download the dataset to verify.',
+    title: 'Check Limitations',
+    desc: 'Review source and methodology details where provided; references and timestamps are not available for every value.',
     color: 'text-cinema-aurora',
   },
   {
     icon: Download,
     step: '04',
-    title: 'Take It Away',
-    desc: 'Every project ships a downloadable CSV and a documented write-up so you can reuse the analysis in your own work.',
+    title: 'Download If Available',
+    desc: 'Some project pages include files for download. Availability is indicated on the relevant page and varies by project.',
     color: 'text-cinema-amber',
   },
 ];
@@ -42,9 +42,9 @@ export default function DataLabHowItWorks() {
       <div className="wrap relative z-10 max-w-6xl py-24">
         <ScrollReveal>
           <SectionHeader
-            label="How It Works"
-            title="From Raw Data to Interactive Insight"
-            subtitle="A transparent, four-step process behind every Data Lab project."
+            label="How to Use the Collection"
+            title="Explore Each Project Page"
+            subtitle="Project detail, interactivity, source notes, and downloads vary by page."
             align="center"
             light
           />

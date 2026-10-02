@@ -70,6 +70,7 @@ export const NAV_CLUSTERS: NavCluster[] = [
         description: 'Structured courses, study material and credentials.',
         items: [
             { label: 'Study Material', href: '/study', icon: '📖', description: 'Notes, formula sheets and revision' },
+            { label: 'Finance Terms', href: '/finance-terms', icon: '📚', description: 'Search plain-language finance definitions' },
             { label: 'PGDM Program', href: '/pgdm', icon: '🏛️', description: '14 subjects, 73 lectures and quizzes' },
             { label: 'Placement Prep', href: '/study/placement-prep', icon: '🧳', description: '60-day finance placement plan' },
             { label: 'Certificates', href: '/certificates', icon: '🏅', description: 'Verifiable course completion credentials' },
@@ -81,7 +82,7 @@ export const NAV_CLUSTERS: NavCluster[] = [
         label: 'Portfolio',
         icon: '🧑‍💼',
         href: '/resume',
-        description: 'Professional profile, work and verifiable credentials.',
+        description: 'Professional profile, work and certificate pathway listings.',
         items: [
             { label: 'Résumé', href: '/resume', icon: '📄', description: 'Professional experience and skills' },
             { label: 'Projects', href: '/projects', icon: '🧪', description: 'Analytics and modelling portfolio' },

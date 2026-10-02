@@ -13,7 +13,7 @@ import { ArrowUpRight, Download, ChartSpline } from 'lucide-react';
 export const metadata: Metadata = {
   title: 'Data Lab | Kunwar Analytics',
   description:
-    'The quantitative engine behind Kunwar Analytics — interactive Power BI dashboards, Python analyses and financial models with live charts and downloadable datasets.',
+    'Browse published data-analysis project pages, interactive views, and downloads where available. Data sources and update details vary by project.',
 };
 
 export default function DataLabPage() {
@@ -26,7 +26,7 @@ export default function DataLabPage() {
     '@type': 'DataCatalog',
     name: 'Kunwar Analytics Data Lab',
     description:
-      'Interactive financial intelligence projects — Python analyses, Power BI dashboards, and financial models with downloadable datasets.',
+      'Published data-analysis project pages with interactive views where available. Source detail, update timing, and downloadable files vary by project.',
     url: 'https://kunwaranalytics.in/data-lab',
     dataset: projects.map(p => ({
       '@type': 'Dataset',
@@ -69,12 +69,12 @@ export default function DataLabPage() {
                   Explore Every Project
                 </h2>
                 <p className="mt-3 text-gray-400 max-w-2xl">
-                  Search, filter by tool or sector, and open any project to interact with its model, chart, and dataset.
+                  Search and filter the published project pages. Interactive views and file downloads differ by project.
                 </p>
               </div>
               <div className="flex items-center gap-2 text-sm text-gray-400">
                 <Download className="w-4 h-4 text-cinema-aurora" />
-                Every project ships a downloadable CSV
+                Downloads are available on selected pages
               </div>
             </div>
           </ScrollReveal>
@@ -90,21 +90,20 @@ export default function DataLabPage() {
         <div className="absolute bottom-0 right-1/4 w-96 h-96 rounded-full bg-cinema-violet/20 blur-[120px]" />
         <div className="wrap relative z-10 max-w-4xl py-24 text-center">
           <span className="text-cinema-cyan text-sm font-semibold uppercase tracking-widest">
-            Have a question that needs data?
+            Data-analysis enquiry
           </span>
           <h2 className="mt-4 text-3xl md:text-5xl font-bold text-white">
-            Request a <span className="cinema-text-glow">Data Lab</span> Project
+            Ask about a <span className="cinema-text-glow">Data Lab</span> topic
           </h2>
           <p className="mt-5 text-lg text-gray-300 max-w-2xl mx-auto leading-relaxed">
-            We build rigorous, data-backed analyses for retail investors, analysts,
-            and enterprises. Tell us the question — we&apos;ll turn it into an interactive model.
+            You may enquire about a data or analysis question. A request does not confirm current capacity, availability, scope, price, or delivery; any potential work would require separate written agreement.
           </p>
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="/contact"
+              href="/contact?service=Data%20Analytics%20Project"
               className="inline-flex items-center justify-center gap-2 rounded-xl bg-cinema-cyan px-7 py-3.5 text-base font-semibold text-cinema-ink hover:shadow-cinema-lg transition group"
             >
-              Request a Project
+              Submit an enquiry
               <ArrowUpRight className="w-4 h-4 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform" />
             </Link>
             <Link

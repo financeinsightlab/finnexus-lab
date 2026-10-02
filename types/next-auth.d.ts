@@ -9,6 +9,7 @@ declare module 'next-auth' {
       role: UserRole;
       subscriptionStatus: SubscriptionStatus;
       subscriptionPlan?: string | null;
+      subscriptionExpiresAt?: Date | null;
     };
   }
 }
