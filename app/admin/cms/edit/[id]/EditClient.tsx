@@ -924,7 +924,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
 
         {/* MAIN VISUAL CANVAS / EDITOR SURFACE */}
         <main className="ui-scroll-region min-h-0 min-w-0 flex-1 flex flex-col overflow-y-auto bg-[#0F1117] relative scroll-smooth">
-          <div className="max-w-4xl mx-auto w-full px-6 md:px-12 py-16 space-y-12">
+          <div className="content-page dark w-full py-16 space-y-12">
             {/* Contextual Top-Bar Tip */}
             <div className="flex items-center justify-between pb-4 border-b border-white/5">
               <span className="text-[9px] font-bold text-slate-600 uppercase tracking-[0.2em] flex items-center gap-2">
@@ -969,7 +969,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
                 <button onClick={() => setPreviewMode(false)} className="min-h-11 rounded-full bg-white px-6 py-2 font-bold text-black shadow-2xl transition-all hover:scale-105">Close Preview</button>
               </div>
               <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto p-4 sm:p-12" data-lenis-prevent>
-                <div className="mx-auto min-w-0 max-w-4xl space-y-12">
+                <div className="content-page dark space-y-12">
                   <div className="space-y-4">
                     <div className="h-px w-20 bg-[#0D6E6E]" />
                     <h1 className="break-words [overflow-wrap:anywhere] text-6xl font-extrabold leading-[1.1] tracking-tight text-white">{title || "Untitled Elite Report"}</h1>
@@ -980,6 +980,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
                   </div>
                 </div>
               </div>
+
             </div>
           )}
         </main>

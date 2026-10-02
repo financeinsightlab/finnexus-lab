@@ -130,7 +130,7 @@ export default function PlacementPrepClient() {
     <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
       {/* Hero header */}
       <header className="relative overflow-hidden bg-brand-navy border-b border-white/5 py-14">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+        <div className="content-page">
           <div className="flex items-start justify-between gap-4 flex-wrap">
             <div>
               <div className="text-xs uppercase tracking-widest text-[#0D6E6E] font-semibold">
@@ -198,7 +198,7 @@ export default function PlacementPrepClient() {
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+      <main className="content-page py-8">
         <GlobalNotes />
 
         {tab === "tracker" && (

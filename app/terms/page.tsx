@@ -1,5 +1,6 @@
 import { Scale } from 'lucide-react';
 import Link from 'next/link';
+import { ContentPage } from '@/components/content/ContentLayout';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -13,8 +14,8 @@ const updated = 'October 2, 2026';
 export default function TermsPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
-      <div className="wrap py-20">
-        <div className="mx-auto max-w-4xl">
+      <ContentPage width="reading" className="py-16 md:py-20">
+        <div>
           <header className="mb-8 flex items-center gap-4">
             <Scale className="h-12 w-12 text-brand-teal" />
             <div>
@@ -29,7 +30,7 @@ export default function TermsPage() {
             operator should obtain legal review before relying on it as a complete contract.
           </aside>
 
-          <article className="prose prose-lg max-w-none rounded-2xl border border-gray-200 bg-white p-8 shadow-lg">
+          <article className="cms-content prose-content rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8">
             <h2>1. Using the platform</h2>
             <p>Kunwar Analytics publishes research, educational material, predictions, and interactive tools. Use the service lawfully, respect other users, and do not attempt to bypass access controls, disrupt the service, or misuse another person's information.</p>
 
@@ -59,7 +60,7 @@ export default function TermsPage() {
             <Link href="/" className="btn-primary">Return to platform</Link>
           </nav>
         </div>
-      </div>
+      </ContentPage>
     </main>
   );
 }

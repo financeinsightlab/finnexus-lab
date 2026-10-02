@@ -40,7 +40,7 @@ export default function ToolsPage() {
       {/* Page Header */}
       <header className="relative overflow-hidden bg-gradient-to-r from-brand-navy to-teal-800 py-20">
         <HeroBackground />
-        <div className="wrap relative z-10">
+        <div className="content-page relative z-10">
           <p className="section-label text-teal-300 mb-5">Financial Tools</p>
           <h1 className="text-4xl md:text-5xl font-bold text-white leading-tight mb-6">
             Tools &amp; Models
@@ -63,7 +63,7 @@ export default function ToolsPage() {
 
       {/* Sticky Category Filter Bar */}
       <div className="bg-white border-b border-gray-200 sticky top-16 z-40 shadow-sm">
-        <div className="wrap py-4">
+        <div className="content-page py-4">
           <div className="flex flex-wrap gap-2">
             {CATS.map((category) => (
               <button
@@ -80,7 +80,7 @@ export default function ToolsPage() {
       </div>
 
       {/* Tools Grid */}
-      <main className="wrap py-14">
+      <main className="content-page py-14">
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {filtered.map((tool) => (
             <div

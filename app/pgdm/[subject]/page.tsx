@@ -91,7 +91,7 @@ export default async function SubjectPage({ params }: PageProps) {
           </>
         )}
         <div className={`absolute inset-0 bg-gradient-to-br ${style.gradient} pointer-events-none`} />
-        <div className="relative z-10 max-w-[1000px] mx-auto px-6">
+        <div className="content-page relative z-10">
           {/* breadcrumb */}
           <nav className="flex items-center gap-1.5 text-xs text-gray-500 mb-5 font-medium">
             <Link href="/pgdm" className="hover:text-teal-300 transition-colors">PGDM</Link>
@@ -118,7 +118,7 @@ export default async function SubjectPage({ params }: PageProps) {
               </div>
               <h1 className="text-2xl md:text-4xl font-extrabold text-white tracking-tight">{subject.name}</h1>
               <p className="text-sm text-teal-300/90 font-medium italic">{subject.tagline}</p>
-              <p className="text-sm text-gray-300 leading-relaxed max-w-3xl">{subject.description}</p>
+              <p className="max-w-[72ch] text-sm leading-relaxed text-foreground">{subject.description}</p>
               <div className="flex flex-wrap gap-2 pt-1">
                 <a href="#quiz" className="rounded-full border border-violet-500/30 bg-violet-500/10 px-3.5 py-1.5 text-[10px] font-bold uppercase tracking-widest text-violet-300 hover:bg-violet-500/20 transition-colors">
                   ✦ MCQ quiz ({QUIZZES[subject.slug]?.length ?? 0} Qs)
@@ -172,7 +172,7 @@ export default async function SubjectPage({ params }: PageProps) {
         ]}
       />
 
-      <main className="max-w-[1000px] mx-auto px-6 py-10 space-y-10">
+      <main className="content-page py-10">
         {/* ── COURSE OUTCOMES ── */}
         <section className="grid md:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-white/8 bg-cinema-charcoal/60 p-5">

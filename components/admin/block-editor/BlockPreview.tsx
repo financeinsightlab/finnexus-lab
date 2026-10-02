@@ -26,7 +26,7 @@ export default function BlockPreview({ block, isSelected }: BlockPreviewProps) {
     }
     case 'paragraph':
       return (
-        <div className={`${wrapCls} prose prose-invert max-w-none prose-sm`}
+        <div className={`${wrapCls} cms-content prose-content`}
           dangerouslySetInnerHTML={{ __html: data.html || '<p class="text-slate-500">Start writing...</p>' }}
         />
       )

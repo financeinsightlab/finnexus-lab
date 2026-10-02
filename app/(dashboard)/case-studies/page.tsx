@@ -54,7 +54,7 @@ export default async function CaseStudiesPage() {
   const engagements = new Set(allStudies.map((s) => s.engagementType));
 
   return (
-    <div className="min-h-screen min-w-0 bg-cinema-black text-white">
+    <div className="min-h-screen min-w-0 overflow-hidden bg-background text-foreground">
       <JsonLd
         data={{
           '@context': 'https://schema.org',
@@ -69,11 +69,11 @@ export default async function CaseStudiesPage() {
       <section className="relative aurora-bg pt-16 md:pt-24 pb-16 md:pb-20">
         <div className="absolute -top-32 left-1/4 w-[500px] h-[500px] rounded-full bg-cinema-cyan/10 blur-[120px] pointer-events-none" />
         <div className="absolute top-40 right-0 w-[400px] h-[400px] rounded-full bg-cinema-violet/10 blur-[120px] pointer-events-none" />
-        <div className="absolute inset-0 opacity-[0.04] bg-grid pointer-events-none" />
+        <div className="absolute inset-0 hidden opacity-[0.04] bg-grid pointer-events-none dark:block" />
 
-        <div className="wrap max-w-7xl relative z-10">
+        <div className="content-page relative z-10">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-cinema-cyan/10 border border-cinema-cyan/30 text-cinema-cyan text-xs font-bold uppercase tracking-widest mb-6">
+            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-primary">
               <Briefcase className="w-3.5 h-3.5" /> Case Studies
             </div>
 
@@ -84,7 +84,7 @@ export default async function CaseStudiesPage() {
               </span>
             </h1>
 
-            <p className="mt-6 text-lg md:text-xl text-gray-400 max-w-2xl leading-relaxed">
+            <p className="mt-6 max-w-[72ch] text-lg leading-relaxed text-muted-foreground md:text-xl">
               Consulting-grade engagements across market entry, cost transformation, M&A due
               diligence, pricing, digital transformation, supply chain, and turnarounds — each
               documenting the challenge, the approach, and the measurable outcome.
@@ -98,17 +98,17 @@ export default async function CaseStudiesPage() {
                 { label: 'Engagement types', value: engagements.size, icon: Target },
                 { label: 'Avg. savings/impact', value: '₹150Cr+', icon: TrendingUp },
               ].map((s) => (
-                <div key={s.label} className="glass-cinema rounded-xl border border-white/10 px-4 py-3 text-center">
-                  <s.icon className="w-4 h-4 text-cinema-cyan mx-auto mb-1.5" />
-                  <div className="text-xl md:text-2xl font-extrabold text-white tabular-nums">{s.value}</div>
-                  <div className="text-[10px] uppercase tracking-widest text-gray-500 mt-0.5">{s.label}</div>
+                <div key={s.label} className="rounded-xl border border-border bg-card/70 px-4 py-3 text-center shadow-sm backdrop-blur-md">
+                  <s.icon className="mx-auto mb-1.5 h-4 w-4 text-primary" />
+                  <div className="text-xl font-extrabold tabular-nums text-foreground md:text-2xl">{s.value}</div>
+                  <div className="mt-0.5 text-[10px] uppercase tracking-widest text-muted-foreground">{s.label}</div>
                 </div>
               ))}
             </div>
 
             <a
               href="#case-studies"
-              className="mt-9 inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cinema-cyan text-cinema-black font-bold shadow-glow-cyan hover:scale-[1.03] active:scale-95 transition-transform"
+              className="mt-9 inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground shadow-sm transition-transform hover:scale-[1.03] active:scale-95"
             >
               Browse the archive <ArrowRight className="w-4 h-4" />
             </a>
@@ -120,23 +120,23 @@ export default async function CaseStudiesPage() {
       <CaseStudiesClient studies={allStudies} />
 
       {/* ═══════════ CTA ═══════════ */}
-      <section className="aurora-bg border-t border-white/5">
-        <div className="wrap max-w-4xl py-16 md:py-20 text-center">
-          <h2 className="text-3xl md:text-4xl font-extrabold text-white mb-4">Have a similar challenge?</h2>
-          <p className="text-gray-400 text-lg mb-8 max-w-xl mx-auto">
+      <section className="aurora-bg border-t border-border">
+        <div className="content-page py-16 md:py-20 text-center">
+          <h2 className="mb-4 text-3xl font-extrabold text-foreground md:text-4xl">Have a similar challenge?</h2>
+          <p className="mx-auto mb-8 max-w-xl text-lg text-muted-foreground">
             Whether you&apos;re a startup entering a new market, a PE firm evaluating an investment, or a
             platform builder optimising unit economics — we can help.
           </p>
           <div className="flex flex-wrap justify-center gap-3">
             <a
               href="/contact"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cinema-cyan text-cinema-black font-bold shadow-glow-cyan hover:scale-[1.03] active:scale-95 transition-transform"
+              className="inline-flex items-center gap-2 rounded-xl bg-primary px-6 py-3 font-bold text-primary-foreground shadow-sm transition-transform hover:scale-[1.03] active:scale-95"
             >
               Start a conversation
             </a>
             <a
               href="/services"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/20 text-white font-semibold hover:bg-white/10 transition-colors"
+              className="inline-flex items-center gap-2 rounded-xl border border-border bg-card px-6 py-3 font-semibold text-foreground transition-colors hover:bg-accent"
             >
               Explore our services
             </a>

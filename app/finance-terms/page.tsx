@@ -61,13 +61,13 @@ export default async function FinanceTermsPage({ searchParams }: { searchParams:
         ]),
       ]} />
       <header className="border-b border-border bg-card">
-        <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
+        <div className="content-page py-12">
           <nav aria-label="Breadcrumb" className="mb-5 text-sm text-muted-foreground">
             <Link href="/" className="hover:text-primary">Home</Link><span className="px-2">/</span><span aria-current="page">Finance Terms</span>
           </nav>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-primary">Finance in simple words</p>
           <h1 className="mt-2 text-3xl font-extrabold tracking-tight text-foreground sm:text-5xl">Understand finance terms. Explain them with confidence.</h1>
-          <p className="mt-4 max-w-3xl text-base leading-7 text-muted-foreground">Explore definitions, practical examples, formulas and interview-ready explanations for finance, business and analytics concepts. Every published term has its own stable page.</p>
+          <p className="mt-4 max-w-[72ch] text-base leading-7 text-muted-foreground">Explore definitions, practical examples, formulas and interview-ready explanations for finance, business and analytics concepts. Every published term has its own stable page.</p>
           <div className="mt-7">
             <Suspense fallback={<div className="h-12 rounded-xl bg-muted" />}>
               <FinanceTermSearchForm query={query} category={category} categories={categories} />
@@ -80,7 +80,7 @@ export default async function FinanceTermsPage({ searchParams }: { searchParams:
       <div className="border-b border-border/60 bg-gradient-to-b from-background via-muted/15 to-background">
         <FinanceTermsCarousel terms={featuredTerms} showExploreLink={false} />
       </div>
-      <main className="mx-auto max-w-6xl px-4 py-10 sm:px-6 lg:px-8">
+      <main className="content-page py-10">
         <div className="mb-5 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-xl font-bold text-foreground">{query ? `Results for “${query}”` : category ? `${category} terms` : 'Browse the glossary'}</h2>
           <p className="text-sm text-muted-foreground">{result.total.toLocaleString()} {result.total === 1 ? 'term' : 'terms'}</p>

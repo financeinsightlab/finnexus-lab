@@ -7,14 +7,16 @@ import { formatDate } from '@/lib/utils';
 import { getInsightBySlug, getAllInsights } from '@/lib/content';
 import { prisma } from '@/lib/prisma';
 import { renderBlocks } from '@/lib/blocks/renderer';
-import { markdownToBlocks } from '@/lib/blocks/registry';
-import { ChevronLeft, Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, Sparkles, ShieldCheck } from 'lucide-react';
+import { markdownToBlocks, type Block } from '@/lib/blocks/registry';
+import { extractHeadings } from '@/lib/content-toc';
+import { ChevronLeft, Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, Sparkles, ShieldCheck, List } from 'lucide-react';
 import React from 'react';
 import { CommentSection } from '@/components/ui/CommentSection';
 import JsonLd, { articleSchema } from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import { ContentPage, ContentLayout } from '@/components/content/ContentLayout';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -67,7 +69,7 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
   const { slug } = await params;
 
   // 1. Check CMS post first
-  let dbPost = null;
+  let dbPost: any = null;
   try {
     dbPost = await (prisma as any).post.findUnique({
       where: { slug },
@@ -95,15 +97,17 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
     ? dbPost.tags
     : (localPost?.tags || []);
 
-  // Render content via Server-side Block Engine
-  let renderedHtml = '';
+  // Resolve content blocks once — rendering + contents sidebar share the tree.
+  let contentBlocks: Block[] = [];
   if (dbPost?.blockContent?.blocks && Array.isArray(dbPost.blockContent.blocks) && dbPost.blockContent.blocks.length > 0) {
-    renderedHtml = renderBlocks(dbPost.blockContent.blocks);
+    contentBlocks = dbPost.blockContent.blocks;
   } else if (dbPost?.content) {
-    renderedHtml = renderBlocks(markdownToBlocks(dbPost.content));
+    contentBlocks = markdownToBlocks(dbPost.content);
   } else if (localPost?.content) {
-    renderedHtml = renderBlocks(markdownToBlocks(localPost.content));
+    contentBlocks = markdownToBlocks(localPost.content);
   }
+  const renderedHtml = renderBlocks(contentBlocks);
+  const headings = extractHeadings(contentBlocks, 3);
 
   // Related insights
   const allInsights = getAllInsights();
@@ -119,20 +123,28 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
     keywords: tags,
   });
 
+  const metadataRows: Array<[string, string]> = [
+    ['Format', 'Strategic Brief'],
+    ['Category', category],
+    ['Reading time', `${readingTime} minutes`],
+    ['Target audience', 'CXOs & Board Members'],
+    ['Framework', 'Quantitative & Policy'],
+  ];
+
   return (
     <>
       <JsonLd data={postSchema} />
-      <div className="min-h-screen bg-cinema-black text-gray-100">
+      <div className="min-h-screen bg-background text-foreground">
         {/* ── HEADER HERO ── */}
-        <header className="relative overflow-hidden bg-cinema-ink py-14 md:py-20 border-b border-white/5">
+        <header className="relative overflow-hidden border-b border-border bg-card/60 py-10 md:py-14">
           <HeroBackground />
-          <div className="wrap max-w-5xl relative z-10">
-            <div className="flex items-center justify-between gap-4 mb-8">
+          <ContentPage className="relative z-10">
+            <div className="mb-7 flex items-center justify-between gap-4">
               <Link
                 href="/insights"
-                className="inline-flex items-center gap-2 text-sm text-cinema-cyan hover:text-white transition-colors group"
+                className="group inline-flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-foreground"
               >
-                <ChevronLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+                <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
                 Back to All Insights
               </Link>
               <div className="flex items-center gap-3">
@@ -142,79 +154,154 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
 
             <div className="space-y-5">
               <div className="flex flex-wrap items-center gap-3">
-                <span className="px-3 py-1 bg-cinema-cyan/15 text-cinema-cyan text-xs font-bold font-mono rounded-full uppercase tracking-wider border border-cinema-cyan/30">
+                <span className="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 font-mono text-xs font-bold uppercase tracking-wider text-primary">
                   {category}
                 </span>
-                <span className="text-xs text-gray-400 font-mono flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5 text-cinema-cyan" /> {readingTime} min read
+                <span className="flex items-center gap-1 font-mono text-xs text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5 text-primary" /> {readingTime} min read
                 </span>
-                <span className="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center gap-1">
-                  <ShieldCheck className="w-3 h-3" /> Executive Brief
+                <span className="flex items-center gap-1 rounded-full border border-border bg-secondary px-2.5 py-0.5 font-mono text-[11px] text-secondary-foreground">
+                  <ShieldCheck className="h-3 w-3 text-primary" /> Executive Brief
                 </span>
               </div>
 
-              <h1 className="text-3xl md:text-5xl font-extrabold text-white leading-tight tracking-tight">
+              <h1 className="max-w-[52ch] text-3xl font-extrabold leading-tight tracking-tight text-foreground md:text-[2.75rem]">
                 {title}
               </h1>
 
               {thesis && (
-                <div className="p-5 rounded-2xl bg-[#090E18] border-l-4 border-cinema-cyan border-r border-y border-white/10 shadow-xl">
-                  <p className="text-sm uppercase tracking-wider font-bold text-cinema-cyan mb-1 flex items-center gap-1.5">
-                    <Sparkles className="w-3.5 h-3.5" /> Executive Thesis
+                <div className="max-w-[80ch] rounded-2xl border border-border border-l-4 border-l-primary bg-secondary/40 p-5 shadow-sm">
+                  <p className="mb-1 flex items-center gap-1.5 text-sm font-bold uppercase tracking-wider text-primary">
+                    <Sparkles className="h-3.5 w-3.5" /> Executive Thesis
                   </p>
-                  <p className="text-base md:text-lg text-gray-200 leading-relaxed italic">
+                  <p className="text-base italic leading-relaxed text-foreground md:text-lg">
                     &quot;{thesis}&quot;
                   </p>
                 </div>
               )}
 
-              <div className="flex flex-wrap items-center gap-6 pt-4 text-sm text-gray-400 border-t border-white/10">
+              <div className="flex flex-wrap items-center gap-6 border-t border-border pt-4 text-sm text-muted-foreground">
                 <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-cinema-cyan" />
-                  <span className="font-medium text-gray-200">{authorName}</span>
+                  <User className="h-4 w-4 text-primary" />
+                  <span className="font-medium text-foreground">{authorName}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-cinema-cyan" />
+                  <Calendar className="h-4 w-4 text-primary" />
                   <span>{formatDate(publishedDateStr)}</span>
                 </div>
               </div>
             </div>
-          </div>
+          </ContentPage>
         </header>
 
-        {/* ── 3D COVER IMAGE HERO BANNER ── */}
+        {/* ── COVER IMAGE ── */}
         {coverImage && (
-          <div className="wrap max-w-5xl -mt-8 relative z-20">
-            <div className="overflow-hidden rounded-3xl shadow-2xl border border-white/15 bg-[#080D1A]">
+          <ContentPage className="relative z-20 -mt-6">
+            <div className="overflow-hidden rounded-3xl border border-border bg-card shadow-2xl">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
                 src={coverImage}
                 alt={title}
-                className="w-full h-64 md:h-[400px] object-cover object-center"
+                className="h-56 w-full object-cover object-center md:h-[400px]"
               />
             </div>
-          </div>
+          </ContentPage>
         )}
 
         {/* ── MAIN CONTENT & SIDEBAR ── */}
-        <main className="wrap max-w-5xl py-12 md:py-16">
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_280px]">
-            {/* Main Article Prose / Blocks */}
-            <article className="glass-cinema rounded-3xl p-6 md:p-12 border border-white/10 shadow-2xl overflow-hidden min-w-0">
+        <ContentPage className="py-10 md:py-14">
+          <ContentLayout
+            asideSticky
+            aside={
+              <>
+                <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                  <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
+                    <BookOpen className="h-4 w-4" /> Insight Metadata
+                  </h3>
+                  <dl className="mt-4 space-y-2.5 text-xs">
+                    {metadataRows.map(([label, value]) => (
+                      <div key={label} className="flex justify-between gap-3 border-b border-border/70 pb-2 last:border-b-0 last:pb-0">
+                        <dt className="text-muted-foreground">{label}</dt>
+                        <dd className="text-right font-semibold text-foreground">{value}</dd>
+                      </div>
+                    ))}
+                  </dl>
+                </div>
+
+                {headings.length > 1 && (
+                  <nav
+                    aria-label="Insight contents"
+                    className="rounded-2xl border border-border bg-card p-5 shadow-sm"
+                  >
+                    <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
+                      <List className="h-4 w-4" /> Contents
+                    </h3>
+                    <ol className="mt-3 space-y-2 text-sm">
+                      {headings.map((heading) => (
+                        <li key={heading.id} className={heading.level === 3 ? 'pl-4' : ''}>
+                          <a
+                            href={`#${heading.id}`}
+                            className="text-muted-foreground transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                          >
+                            {heading.text}
+                          </a>
+                        </li>
+                      ))}
+                    </ol>
+                  </nav>
+                )}
+
+                {related.length > 0 && (
+                  <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+                    <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
+                      <Share2 className="h-4 w-4" /> Related Notes
+                    </h3>
+                    <div className="mt-4 space-y-3">
+                      {related.map((rel) => (
+                        <Link
+                          key={rel.slug}
+                          href={`/insights/${rel.slug}`}
+                          className="group block rounded-xl border border-border bg-secondary/40 p-3 transition-colors hover:border-primary/40 hover:bg-accent"
+                        >
+                          {rel.coverImage && (
+                            <div className="mb-2 h-16 w-full overflow-hidden rounded-lg border border-border bg-muted">
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
+                              <img
+                                src={rel.coverImage}
+                                alt={rel.title}
+                                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                                loading="lazy"
+                              />
+                            </div>
+                          )}
+                          <p className="mb-1 font-mono text-[10px] text-primary">{rel.category}</p>
+                          <h4 className="line-clamp-2 text-xs font-semibold leading-snug text-foreground transition-colors group-hover:text-primary">
+                            {rel.title}
+                          </h4>
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            }
+          >
+            <article className="rounded-3xl border border-border bg-card p-5 shadow-sm md:p-8 lg:p-10">
               <div
-                className="block-editor-content text-gray-200 text-sm md:text-base leading-relaxed space-y-2"
+                className="cms-content prose-content article-body"
                 dangerouslySetInnerHTML={{ __html: renderedHtml }}
               />
 
               {/* Tags */}
               {tags.length > 0 && (
-                <div className="mt-14 pt-8 border-t border-white/10 flex flex-wrap gap-2 items-center">
-                  <span className="text-xs uppercase tracking-wider text-gray-400 mr-2 flex items-center gap-1">
-                    <TagIcon className="w-3.5 h-3.5 text-cinema-cyan" /> Topics:
+                <div className="mt-12 flex flex-wrap items-center gap-2 border-t border-border pt-7">
+                  <span className="mr-2 flex items-center gap-1 text-xs uppercase tracking-wider text-muted-foreground">
+                    <TagIcon className="h-3.5 w-3.5 text-primary" /> Topics:
                   </span>
                   {tags.map((tag) => (
                     <span
                       key={tag}
-                      className="px-3 py-1 bg-white/5 hover:bg-white/10 border border-white/10 rounded-lg text-xs text-gray-300 font-mono transition-colors"
+                      className="rounded-lg border border-border bg-secondary px-3 py-1 font-mono text-xs text-secondary-foreground transition-colors hover:bg-accent"
                     >
                       #{tag}
                     </span>
@@ -223,80 +310,15 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
               )}
 
               {/* Comments Section */}
-              <div className="mt-14 pt-10 border-t border-white/10">
+              <div className="mt-12 border-t border-border pt-10">
                 <CommentSection
                   postId={dbPost?.id}
                   currentPath={`/insights/${slug}`}
                 />
               </div>
             </article>
-
-            {/* Sidebar */}
-            <aside className="space-y-6">
-              {/* Insight Metadata Card */}
-              <div className="glass-cinema rounded-2xl p-6 border border-white/10 space-y-4">
-                <h3 className="text-xs uppercase tracking-wider font-bold text-cinema-cyan flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" /> Insight Metadata
-                </h3>
-                <div className="space-y-3 text-xs text-gray-400">
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Format:</span>
-                    <span className="text-emerald-400 font-semibold">Strategic Brief</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Category:</span>
-                    <span className="text-gray-200 font-semibold">{category}</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Reading Time:</span>
-                    <span className="text-gray-200 font-semibold">{readingTime} Minutes</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Target Audience:</span>
-                    <span className="text-gray-200 font-semibold">CXOs & Board Members</span>
-                  </div>
-                  <div className="flex justify-between py-1 border-b border-white/5">
-                    <span>Framework:</span>
-                    <span className="text-gray-200 font-semibold">Quantitative & Policy</span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Related Insights */}
-              {related.length > 0 && (
-                <div className="glass-cinema rounded-2xl p-6 border border-white/10 space-y-4">
-                  <h3 className="text-xs uppercase tracking-wider font-bold text-cinema-cyan flex items-center gap-2">
-                    <Share2 className="w-4 h-4" /> Related Notes
-                  </h3>
-                  <div className="space-y-3">
-                    {related.map((rel) => (
-                      <Link
-                        key={rel.slug}
-                        href={`/insights/${rel.slug}`}
-                        className="block group p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-all border border-white/5 hover:border-cinema-cyan/30"
-                      >
-                        {rel.coverImage && (
-                          <div className="h-16 w-full mb-2 rounded-lg overflow-hidden border border-white/10 bg-black/40">
-                            <img
-                              src={rel.coverImage}
-                              alt={rel.title}
-                              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                              loading="lazy"
-                            />
-                          </div>
-                        )}
-                        <p className="text-[10px] text-cinema-cyan font-mono mb-1">{rel.category}</p>
-                        <h4 className="text-xs font-semibold text-white group-hover:text-cinema-cyan transition-colors line-clamp-2 leading-snug">
-                          {rel.title}
-                        </h4>
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </aside>
-          </div>
-        </main>
+          </ContentLayout>
+        </ContentPage>
       </div>
       <PromotionSlot placement="ARTICLE_PAGE" path={`/insights/${slug}`} contentType="INSIGHT" />
       <RelatedContentSection sourceType="INSIGHT" sourceSlug={slug} />

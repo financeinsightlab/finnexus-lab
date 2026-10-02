@@ -36,20 +36,20 @@ export default function DataLabChart({
   }, []);
 
   return (
-    <div className="glass-cinema rounded-2xl border border-white/10 p-6">
+    <div className="rounded-2xl border border-border bg-card p-6 shadow-sm">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          {title && <h3 className="text-lg font-bold text-white">{title}</h3>}
-          {subtitle && <p className="text-sm text-gray-400 mt-1">{subtitle}</p>}
+          {title && <h3 className="text-lg font-bold text-foreground">{title}</h3>}
+          {subtitle && <p className="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
         </div>
         {series.some(s => s.kind === 'line' || s.kind === 'area' || type === 'line') && (
-          <div className="inline-flex rounded-xl bg-white/5 border border-white/10 p-1">
+          <div className="inline-flex rounded-xl border border-border bg-secondary p-1">
             {(['bar', 'line', 'area'] as const).map(t => (
               <button
                 key={t}
                 onClick={() => setSelected(t)}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition ${
-                  selected === t ? 'bg-cinema-cyan/20 text-cinema-cyan' : 'text-gray-400 hover:text-white'
+                  selected === t ? 'bg-primary/20 text-primary' : 'text-muted-foreground hover:text-foreground'
                 }`}
               >
                 {t === 'bar' ? 'Bar' : t === 'line' ? 'Line' : 'Area'}
@@ -59,9 +59,9 @@ export default function DataLabChart({
         )}
       </div>
 
-      <div style={{ width: '100%', height }} className="text-gray-200">
+      <div style={{ width: '100%', height }} className="text-foreground">
         {!mounted && (
-          <div className="w-full h-full flex items-center justify-center text-gray-500 text-sm">
+          <div className="flex h-full w-full items-center justify-center text-sm text-muted-foreground">
             Loading chart…
           </div>
         )}

@@ -99,22 +99,22 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
   const FormatIcon = formatIcon(episode.format);
 
   return (
-    <div className="min-h-screen bg-cinema-black text-white">
+    <div className="min-h-screen bg-background text-foreground">
       <JsonLd data={buildEpisodeSchema(episode)} />
 
       {/* ═══════════ HEADER ═══════════ */}
-      <header className="relative aurora-bg overflow-hidden pt-10 pb-14">
-        <div className="absolute -top-24 right-1/4 w-[400px] h-[400px] rounded-full bg-cinema-cyan/10 blur-[120px] pointer-events-none" />
+      <header className="relative overflow-hidden border-b border-border bg-card/60 pt-10 pb-14">
+        <div className="absolute -top-24 right-1/4 w-[400px] h-[400px] rounded-full bg-primary/10 blur-[120px] pointer-events-none" />
         <div className="absolute inset-0 opacity-[0.04] bg-grid pointer-events-none" />
 
-        <div className="wrap max-w-4xl relative z-10">
+        <div className="content-page relative z-10">
           {/* Breadcrumb */}
-          <nav className="flex items-center gap-2 text-sm text-gray-400 mb-8">
-            <Link href="/podcast" className="inline-flex items-center gap-1.5 hover:text-cinema-cyan transition-colors">
+          <nav className="flex items-center gap-2 text-sm text-muted-foreground mb-8">
+            <Link href="/podcast" className="inline-flex items-center gap-1.5 hover:text-primary transition-colors">
               <ArrowLeft className="w-4 h-4" /> Podcast
             </Link>
-            <span className="text-gray-600">/</span>
-            <span className="text-gray-300">Episode {episode.episodeNumber}</span>
+            <span className="text-muted-foreground">/</span>
+            <span className="text-foreground">Episode {episode.episodeNumber}</span>
           </nav>
 
           <div className="flex flex-col md:flex-row gap-8 items-start">
@@ -124,38 +124,38 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
             {/* Title block */}
             <div className="flex-grow min-w-0">
               <div className="flex flex-wrap items-center gap-2 mb-4">
-                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-cinema-cyan/30 bg-cinema-cyan/10 text-cinema-cyan">
+                <span className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-primary/30 bg-primary/10 text-primary">
                   <FormatIcon className="w-3.5 h-3.5" /> {episode.format}
                 </span>
                 {episode.season && (
-                  <span className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-white/15 bg-white/5 text-gray-300">
+                  <span className="px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-border bg-secondary text-foreground">
                     Season {episode.season}
                   </span>
                 )}
                 {episode.featured && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-cinema-amber/30 bg-cinema-amber/10 text-cinema-amber">
+                  <span className="inline-flex items-center gap-1 px-3 py-1.5 text-[11px] font-bold uppercase tracking-wider rounded-full border border-amber-500/30 bg-amber-500/10 text-amber-700 dark:text-amber-300">
                     <Sparkles className="w-3.5 h-3.5" /> Featured
                   </span>
                 )}
               </div>
 
-              <h1 className="text-2xl md:text-4xl font-extrabold text-white leading-tight mb-4">
+              <h1 className="text-2xl md:text-4xl font-extrabold text-foreground leading-tight mb-4">
                 {episode.title}
               </h1>
 
               {episode.guestName && (
-                <p className="text-gray-300 mb-4">
-                  Guest: <span className="font-semibold text-white">{episode.guestName}</span>
-                  {episode.guestRole && <span className="text-gray-400"> — {episode.guestRole}</span>}
+                <p className="text-foreground mb-4">
+                  Guest: <span className="font-semibold text-foreground">{episode.guestName}</span>
+                  {episode.guestRole && <span className="text-muted-foreground"> — {episode.guestRole}</span>}
                 </p>
               )}
 
-              <div className="flex flex-wrap items-center gap-5 text-sm text-gray-400 mb-5">
+              <div className="flex flex-wrap items-center gap-5 text-sm text-muted-foreground mb-5">
                 <span className="inline-flex items-center gap-1.5">
-                  <Clock className="w-4 h-4 text-cinema-cyan" /> {episode.duration} min
+                  <Clock className="w-4 h-4 text-primary" /> {episode.duration} min
                 </span>
                 <span className="inline-flex items-center gap-1.5">
-                  <CalendarDays className="w-4 h-4 text-cinema-cyan" /> {formatDate(episode.date)}
+                  <CalendarDays className="w-4 h-4 text-primary" /> {formatDate(episode.date)}
                 </span>
                 <span>EP {String(episode.episodeNumber).padStart(2, '0')}</span>
               </div>
@@ -167,7 +167,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
                     <Link
                       key={tag}
                       href={`/podcast?format=All#episodes`}
-                      className="text-xs px-3 py-1 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-cinema-cyan hover:border-cinema-cyan/40 transition-colors"
+                      className="text-xs px-3 py-1 rounded-full bg-secondary border border-border text-muted-foreground hover:text-primary hover:border-primary/40 transition-colors"
                     >
                       #{tag}
                     </Link>
@@ -180,19 +180,19 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
       </header>
 
       {/* ═══════════ AUDIO + SHARE ═══════════ */}
-      <section className="wrap max-w-4xl py-10">
+      <section className="content-page py-10">
         {audioSrc ? (
           <AudioPlayer src={audioSrc} title={episode.title} episodeNumber={episode.episodeNumber} />
         ) : (
-          <div className="glass-cinema rounded-2xl border border-white/10 p-8 text-center">
+          <div className="bg-card rounded-2xl border border-border p-8 text-center">
             <div className="text-5xl mb-4">🎙️</div>
-            <h3 className="text-xl font-bold text-white mb-2">Audio coming soon</h3>
-            <p className="text-gray-400 mb-6">This episode will be available on podcast platforms shortly.</p>
+            <h3 className="text-xl font-bold text-foreground mb-2">Audio coming soon</h3>
+            <p className="text-muted-foreground mb-6">This episode will be available on podcast platforms shortly.</p>
             <div className="flex flex-wrap justify-center gap-3">
-              <a href="https://open.spotify.com/show/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-cinema-cyan text-cinema-black font-bold">
+              <a href="https://open.spotify.com/show/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold">
                 🎵 Spotify
               </a>
-              <a href="https://podcasts.apple.com/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-white/5 border border-white/20 text-white font-semibold">
+              <a href="https://podcasts.apple.com/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-secondary border border-border text-foreground font-semibold">
                 🍎 Apple Podcasts
               </a>
             </div>
@@ -201,14 +201,14 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
 
         {/* Share */}
         <div className="flex flex-wrap items-center gap-3 mt-8">
-          <span className="inline-flex items-center gap-2 text-sm font-semibold text-gray-300">
-            <Share2 className="w-4 h-4 text-cinema-cyan" /> Share this episode:
+          <span className="inline-flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Share2 className="w-4 h-4 text-primary" /> Share this episode:
           </span>
           <a
             href={`https://twitter.com/intent/tweet?text=${shareText}&url=${shareUrl}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-full bg-white/5 border border-white/15 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
+            className="px-4 py-2 rounded-full bg-secondary border border-border text-sm font-semibold text-foreground hover:bg-accent transition-colors"
           >
             𝕏 Post
           </a>
@@ -216,7 +216,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
             href={`https://www.linkedin.com/sharing/share-offsite/?url=${shareUrl}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-full bg-[#0A66C2] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+            className="px-4 py-2 rounded-full bg-[#0A66C2] text-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
           >
             LinkedIn
           </a>
@@ -224,7 +224,7 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
             href={`https://wa.me/?text=${shareText}%20${shareUrl}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 rounded-full bg-[#25D366] text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+            className="px-4 py-2 rounded-full bg-[#25D366] text-foreground text-sm font-semibold hover:opacity-90 transition-opacity"
           >
             WhatsApp
           </a>
@@ -232,12 +232,12 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
 
         {/* Show notes + transcript */}
         <div className="mt-10">
-          <h2 className="text-2xl md:text-3xl font-bold text-white mb-6">Show Notes & Transcript</h2>
-          <div className="prose prose-invert prose-lg max-w-none prose-headings:text-white prose-p:text-gray-300 prose-strong:text-white prose-blockquote:text-gray-400 prose-blockquote:border-cinema-cyan prose-li:text-gray-300 prose-hr:border-white/10">
+          <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-6">Show Notes & Transcript</h2>
+          <div className="cms-content prose-content article-body">
             {episode.content ? (
               <MDXRemote source={episode.content} components={scrollableTableComponents} />
             ) : (
-              <p className="text-gray-500">No show notes available for this episode.</p>
+              <p className="text-muted-foreground">No show notes available for this episode.</p>
             )}
           </div>
         </div>
@@ -245,11 +245,11 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
 
       {/* ═══════════ RELATED ═══════════ */}
       {related.length > 0 && (
-        <section className="border-y border-white/5 bg-cinema-ink/60">
-          <div className="wrap max-w-4xl py-14">
+        <section className="border-y border-border bg-muted/40">
+          <div className="content-page py-14">
             <div className="flex items-end justify-between mb-8">
-              <h2 className="text-2xl md:text-3xl font-bold text-white">More Episodes</h2>
-              <Link href="/podcast" className="inline-flex items-center gap-1.5 text-sm font-semibold text-cinema-cyan hover:gap-2.5 transition-all">
+              <h2 className="text-2xl md:text-3xl font-bold text-foreground">More Episodes</h2>
+              <Link href="/podcast" className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:gap-2.5 transition-all">
                 View all <ArrowLeft className="w-4 h-4 rotate-180" />
               </Link>
             </div>
@@ -264,21 +264,21 @@ export default async function PodcastEpisodePage({ params }: { params: Promise<{
 
       {/* ═══════════ SUBSCRIBE CTA ═══════════ */}
       <section className="aurora-bg">
-        <div className="wrap max-w-4xl py-16 text-center">
-          <h2 className="text-2xl md:text-4xl font-extrabold text-white mb-3">Never miss an episode</h2>
-          <p className="text-gray-400 mb-8">New episodes every two weeks — market intelligence in 30 minutes.</p>
+        <div className="content-page py-16 text-center">
+          <h2 className="text-2xl md:text-4xl font-extrabold text-foreground mb-3">Never miss an episode</h2>
+          <p className="text-muted-foreground mb-8">New episodes every two weeks — market intelligence in 30 minutes.</p>
           <div className="flex flex-wrap justify-center gap-3">
-            <a href="https://open.spotify.com/show/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-cinema-cyan text-cinema-black font-bold shadow-glow-cyan hover:scale-[1.03] transition-transform">
+            <a href="https://open.spotify.com/show/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-bold shadow-glow-cyan hover:scale-[1.03] transition-transform">
               🎵 Spotify
             </a>
-            <a href="https://podcasts.apple.com/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/20 text-white font-semibold hover:bg-white/10 transition-colors">
+            <a href="https://podcasts.apple.com/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-secondary border border-border text-foreground font-semibold hover:bg-accent transition-colors">
               🍎 Apple Podcasts
             </a>
-            <a href="https://podcasts.google.com/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/20 text-white font-semibold hover:bg-white/10 transition-colors">
+            <a href="https://podcasts.google.com/example" target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-secondary border border-border text-foreground font-semibold hover:bg-accent transition-colors">
               📻 Google Podcasts
             </a>
-            <a href="/podcast/feed.xml" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 border border-white/20 text-white font-semibold hover:bg-white/10 transition-colors">
-              <Rss className="w-4 h-4 text-cinema-cyan" /> RSS
+            <a href="/podcast/feed.xml" className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-secondary border border-border text-foreground font-semibold hover:bg-accent transition-colors">
+              <Rss className="w-4 h-4 text-primary" /> RSS
             </a>
           </div>
         </div>

@@ -108,7 +108,7 @@ export default async function CalculatorPage({ params }: PageProps) {
 
   if (tool?.gated && !hasPlanPremiumAccess) {
     return (
-      <div className="mx-auto min-h-screen w-full max-w-5xl bg-[#faf9f6] px-6 py-16 dark:bg-[#0a1120]">
+      <div className="content-page min-h-screen py-16">
         <JsonLd data={toolSchema} />
         <p className="text-xs font-semibold uppercase tracking-widest text-teal-600">Premium financial tool</p>
         <h1 className="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">{tool.title}</h1>
@@ -120,11 +120,11 @@ export default async function CalculatorPage({ params }: PageProps) {
   }
 
   return (
-    <div className="w-full flex flex-col min-h-screen relative bg-[#faf9f6] dark:bg-[#0a1120]">
+    <div className="relative flex min-h-screen w-full flex-col bg-background text-foreground">
        {/* 3D Hero Banner */}
-       <div className="relative w-full h-48 md:h-64 border-b border-gray-200 dark:border-slate-800/50 overflow-hidden">
+       <div className="relative w-full h-48 md:h-64 border-b border-border overflow-hidden">
           <Image src={heroImg} alt={slug} fill priority loading="eager" className="object-cover opacity-90 dark:opacity-70 dark:mix-blend-lighten mix-blend-multiply" />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#faf9f6] dark:from-[#0a1120] to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
        </div>
        
        <JsonLd data={toolSchema} />

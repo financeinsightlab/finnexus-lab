@@ -24,7 +24,7 @@ export default async function ContentFaq({
 
   return (
     <section
-      className="mx-auto w-full max-w-5xl px-4 py-12 sm:px-6 lg:px-8"
+      className="content-page w-full py-12"
       aria-labelledby={`faq-heading-${relatedType.toLowerCase()}-${relatedSlug}`}
     >
       {schemaFaqs.length > 0 && <JsonLd data={faqSchema(schemaFaqs)} />}

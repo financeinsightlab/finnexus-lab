@@ -172,7 +172,7 @@ export default function PromotionCard({
       {minimized ? (
         <aside
           ref={root}
-          className={`promotion-card-minimized mx-auto w-full max-w-5xl px-4 py-2 sm:px-6 ${visibilityClass} ${animClass} transition-all duration-300`}
+          className={`promotion-card-minimized content-page w-full py-2 ${visibilityClass} ${animClass} transition-all duration-300`}
           aria-label={`${disclosure} promotion`}
           data-promotion-id={promotion.id}
         >
@@ -346,7 +346,7 @@ export default function PromotionCard({
         /* Inline (full-width between-content) card */
         <aside
           ref={root}
-          className={`promotion-card mx-auto w-full max-w-5xl px-4 py-4 sm:px-6 ${visibilityClass} ${animClass} transition-all duration-500 ease-out`}
+          className={`promotion-card content-page w-full py-4 ${visibilityClass} ${animClass} transition-all duration-500 ease-out`}
           aria-label={`${disclosure} promotion`}
           data-promotion-id={promotion.id}
         >

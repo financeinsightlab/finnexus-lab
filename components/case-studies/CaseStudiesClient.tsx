@@ -47,20 +47,20 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
   };
 
   return (
-    <section id="case-studies" className="wrap max-w-7xl py-16 md:py-20 scroll-mt-24">
+    <section id="case-studies" className="content-page py-16 md:py-20 scroll-mt-24">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-8">
         <div>
-          <span className="section-label text-cinema-cyan">Engagement archive</span>
-          <h2 className="text-3xl md:text-4xl font-bold text-white mt-2">Selected Case Studies</h2>
+          <span className="section-label text-primary">Engagement archive</span>
+          <h2 className="mt-2 text-3xl font-bold text-foreground md:text-4xl">Selected Case Studies</h2>
         </div>
-        <div className="flex items-center gap-2.5 text-sm text-gray-400">
-          <LayoutGrid className="w-4 h-4 text-cinema-cyan" />
+        <div className="flex items-center gap-2.5 text-sm text-muted-foreground">
+          <LayoutGrid className="h-4 w-4 text-primary" />
           <span>{filtered.length} case stud{filtered.length === 1 ? 'y' : 'ies'}</span>
           {hasFilters && (
             <button
               onClick={clearAll}
-              className="inline-flex items-center gap-1 px-3 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/30 text-rose-400 hover:bg-rose-500/20 font-semibold transition-colors cursor-pointer"
+              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-rose-500/30 bg-rose-500/10 px-3 py-1.5 font-semibold text-rose-700 transition-colors hover:bg-rose-500/20 dark:text-rose-400"
             >
               <X className="w-3.5 h-3.5" /> Reset
             </button>
@@ -71,18 +71,18 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
       {/* Controls */}
       <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-10">
         <div className="relative w-full lg:w-80">
-          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-cinema-cyan" />
+          <Search className="absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <input
             type="text"
             placeholder="Search case studies, industries, tags…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="w-full pl-10 pr-9 py-3 bg-cinema-charcoal border border-white/10 rounded-xl text-sm text-white placeholder:text-gray-500 focus:outline-none focus:border-cinema-cyan/60 focus:ring-1 focus:ring-cinema-cyan/40 transition-all"
+            className="w-full rounded-xl border border-input bg-background py-3 pl-10 pr-9 text-sm text-foreground transition-all placeholder:text-muted-foreground focus:border-primary/60 focus:outline-none focus:ring-1 focus:ring-primary/40"
           />
           {query && (
             <button
               onClick={() => setQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-white cursor-pointer"
+              className="absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-muted-foreground hover:text-foreground"
             >
               <X className="w-4 h-4" />
             </button>
@@ -91,15 +91,15 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
 
         {/* Industry select */}
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold uppercase tracking-wider text-gray-500">Industry:</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Industry:</span>
           {industries.map((ind) => (
             <button
               key={ind}
               onClick={() => setIndustry(ind)}
               className={`px-3.5 py-2 rounded-full text-xs font-semibold border transition-all cursor-pointer ${
                 industry === ind
-                  ? 'bg-cinema-cyan text-cinema-black border-cinema-cyan shadow-glow-cyan'
-                  : 'bg-cinema-charcoal text-gray-300 border-white/10 hover:border-cinema-cyan/50 hover:text-white'
+                  ? 'border-primary bg-primary text-primary-foreground shadow-sm'
+                  : 'border-border bg-secondary text-secondary-foreground hover:border-primary/50'
               }`}
             >
               {ind}
@@ -116,10 +116,10 @@ export default function CaseStudiesClient({ studies }: CaseStudiesClientProps) {
           ))}
         </div>
       ) : (
-        <div className="text-center py-20 glass-cinema rounded-2xl border border-white/10">
+        <div className="rounded-2xl border border-border bg-card py-20 text-center shadow-sm">
           <div className="text-5xl mb-4">📁</div>
-          <p className="text-lg font-semibold text-white mb-1">No case studies found</p>
-          <p className="text-gray-400">
+          <p className="mb-1 text-lg font-semibold text-foreground">No case studies found</p>
+          <p className="text-muted-foreground">
             {hasFilters ? 'Try adjusting your search or filters.' : 'Check back soon for new case studies.'}
           </p>
         </div>

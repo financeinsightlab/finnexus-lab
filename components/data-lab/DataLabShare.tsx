@@ -37,7 +37,7 @@ export default function DataLabShare({ title, slug }: { title: string; slug: str
 
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-xs uppercase tracking-wider text-gray-500 mr-1">Share</span>
+      <span className="mr-1 text-xs uppercase tracking-wider text-muted-foreground">Share</span>
       {shareLinks.map(s => (
         <a
           key={s.name}
@@ -45,7 +45,7 @@ export default function DataLabShare({ title, slug }: { title: string; slug: str
           target="_blank"
           rel="noopener noreferrer"
           aria-label={s.label}
-          className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-cinema-cyan hover:border-cinema-cyan/40 transition text-sm font-semibold"
+          className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-secondary text-sm font-semibold text-secondary-foreground transition hover:border-primary/40 hover:text-primary"
         >
           {s.name}
         </a>
@@ -53,7 +53,7 @@ export default function DataLabShare({ title, slug }: { title: string; slug: str
       <button
         onClick={copy}
         aria-label="Copy link"
-        className="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white/5 border border-white/10 text-gray-300 hover:text-cinema-cyan hover:border-cinema-cyan/40 transition"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-border bg-secondary text-secondary-foreground transition hover:border-primary/40 hover:text-primary"
       >
         {copied ? <Check className="w-4 h-4 text-cinema-aurora" /> : <Link2 className="w-4 h-4" />}
       </button>

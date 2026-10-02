@@ -26,9 +26,9 @@ export default function DataLabToc({ items }: { items: TocItem[] }) {
   }, [items]);
 
   return (
-    <nav className="glass-cinema rounded-2xl border border-white/10 p-5">
-      <div className="flex items-center gap-2 mb-4 text-cinema-cyan text-xs font-semibold uppercase tracking-widest">
-        <List className="w-4 h-4" /> On this page
+    <nav className="rounded-2xl border border-border bg-card p-5 shadow-sm">
+      <div className="mb-4 flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-primary">
+        <List className="h-4 w-4" /> On this page
       </div>
       <ul className="space-y-2.5">
         {items.map(item => (
@@ -37,7 +37,7 @@ export default function DataLabToc({ items }: { items: TocItem[] }) {
               href={`#${item.id}`}
               className={`block text-sm leading-snug transition-colors ${
                 item.level === 2 ? 'font-medium' : 'pl-4'
-              } ${active === item.id ? 'text-cinema-cyan' : 'text-gray-400 hover:text-white'}`}
+              } ${active === item.id ? 'text-primary' : 'text-muted-foreground hover:text-foreground'}`}
             >
               {item.text}
             </a>

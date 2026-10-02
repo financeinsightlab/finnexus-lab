@@ -1,43 +1,68 @@
 "use client"
 
-import React from "react"
+import React, { useMemo } from "react"
 import { renderBlocks } from "@/lib/blocks/renderer"
-import { Block } from "@/lib/blocks/registry"
+import { markdownToBlocks, type Block } from "@/lib/blocks/registry"
 import { wrapUncontainedTables } from "@/lib/scrollable-html"
 
 interface ContentRendererProps {
+  /** Raw CMS content: HTML, Markdown, or empty when `blocks` is used. */
   content: string
+  /** "BLOCKS" | "MARKDOWN" — anything else with HTML content is passed through. */
   contentType?: string
-  blocks?: any
+  blocks?: unknown
+  className?: string
 }
 
-const ContentRenderer = ({ content, contentType, blocks }: ContentRendererProps) => {
-  const isBlocks = contentType === "BLOCKS"
-  
-  let htmlResult = content
-  
-  if (isBlocks && blocks) {
-    try {
-      const blockArray = Array.isArray(blocks) ? blocks : (blocks.blocks || []) 
-      htmlResult = renderBlocks(blockArray as Block[])
-    } catch (e) {
-      console.error("Failed to render blocks", e)
-    }
+function toBlockArray(blocks: unknown): Block[] {
+  if (Array.isArray(blocks)) return blocks as Block[]
+  if (blocks && typeof blocks === 'object' && Array.isArray((blocks as { blocks?: unknown }).blocks)) {
+    return (blocks as { blocks: Block[] }).blocks
   }
+  return []
+}
 
-  const scrollableHtmlResult = isBlocks ? htmlResult : wrapUncontainedTables(htmlResult)
+/**
+ * Client-side CMS renderer (editor previews + client-rendered content).
+ *
+ * All layout, typography, table, image and callout presentation comes from the
+ * global content system (`cms-content` + `prose-content` in app/globals.css) so
+ * newly published CMS content always matches the public pages — no per-article
+ * CSS, no width classes written by authors.
+ */
+const ContentRenderer = ({ content, contentType, blocks, className = "" }: ContentRendererProps) => {
+  const html = useMemo(() => {
+    const blockArray = toBlockArray(blocks)
+
+    try {
+      if (contentType === "BLOCKS" && blockArray.length > 0) {
+        return renderBlocks(blockArray)
+      }
+      // Markdown-authored content goes through the same block pipeline as the
+      // public pages (previously it was injected raw and rendered as plain text).
+      if (contentType === "MARKDOWN" && content) {
+        return renderBlocks(markdownToBlocks(content))
+      }
+      if (blockArray.length > 0) {
+        return renderBlocks(blockArray)
+      }
+      return content || ""
+    } catch (error) {
+      console.error("Failed to render CMS content", error)
+      return content || ""
+    }
+  }, [content, contentType, blocks])
+
+  // Author-authored HTML (rich-text editor) can contain tables the block
+  // renderer never saw — give those a keyboard-scrollable region too.
+  // Tables already inside a `.horizontal-scroll-region` are left alone.
+  const safeHtml = useMemo(() => wrapUncontainedTables(html), [html])
 
   return (
-    <div 
-      className={`prose prose-lg max-w-none dark:prose-invert
-                 prose-h1:text-3xl prose-h1:font-extrabold prose-h1:text-gray-900 dark:prose-h1:text-white 
-                 prose-h2:text-2xl prose-h2:font-bold prose-h2:text-gray-900 dark:prose-h2:text-white prose-h2:mt-12 
-                 prose-p:text-gray-700 dark:prose-p:text-slate-300 prose-p:leading-relaxed prose-p:text-lg
-                 prose-a:text-teal-600 dark:prose-a:text-teal-400 prose-a:font-semibold hover:prose-a:text-teal-500 dark:hover:prose-a:text-teal-300
-                 prose-blockquote:border-l-4 prose-blockquote:border-teal-500 prose-blockquote:bg-gray-50 dark:prose-blockquote:bg-white/5 prose-blockquote:p-6 prose-blockquote:rounded-r-xl prose-blockquote:italic
-                 prose-li:text-gray-700 dark:prose-li:text-slate-300 prose-img:rounded-2xl prose-img:shadow-2xl
-                 ${isBlocks ? 'block-editor-content' : ''}`}
-      dangerouslySetInnerHTML={{ __html: scrollableHtmlResult }}
+    <div
+      className={`cms-content prose-content article-body ${className}`.trim()}
+      // Server-rendered / author-authored HTML from the CMS block engine.
+      dangerouslySetInnerHTML={{ __html: safeHtml }}
     />
   )
 }

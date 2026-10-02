@@ -88,7 +88,7 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
 
   return (
     <div className="min-h-screen py-10 relative">
-      <div className="wrap max-w-7xl mx-auto">
+      <div className="content-page">
         <div className="mb-6">
           <p className="text-teal-600 font-medium mb-2">Premium Web Calculator</p>
           <h1 className="text-3xl font-bold text-brand-navy dark:text-white">Market Sizing Framework (TAM / SAM / SOM)</h1>

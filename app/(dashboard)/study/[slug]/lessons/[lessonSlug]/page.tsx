@@ -7,6 +7,7 @@ import ContentFaq from '@/components/content/ContentFaq';
 import { scrollableTableComponents } from '@/components/content/scrollableTableComponents';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import { ContentPage } from '@/components/content/ContentLayout';
 import LessonCompletionControl from '@/components/learning/LessonCompletionControl';
 import { getStudyMaterialBySlug } from '@/lib/study';
 import { prisma } from '@/lib/prisma';
@@ -57,25 +58,25 @@ export default async function StudyCmsLessonPage({ params }: Props) {
     <div className="min-h-screen bg-background text-foreground">
       <JsonLd data={structuredData} />
       <header className="border-b border-border bg-card">
-        <div className="mx-auto max-w-4xl px-4 py-10 sm:px-6 lg:px-8">
+        <ContentPage className="py-10">
           <nav aria-label="Breadcrumb" className="mb-5 text-sm text-muted-foreground">
             <Link href="/study" className="hover:text-primary">Study</Link><span className="px-2">/</span><Link href={`/study/${courseSlug}`} className="hover:text-primary">{course.title}</Link><span className="px-2">/</span><span aria-current="page" className="text-foreground">{lesson.title}</span>
           </nav>
           <p className="text-xs font-bold uppercase tracking-wider text-primary">Course lesson · {course.category.name}</p>
           <h1 className="mt-3 text-3xl font-extrabold tracking-tight text-foreground sm:text-4xl">{lesson.title}</h1>
-          {lesson.summary && <p className="mt-4 max-w-3xl text-lg leading-7 text-muted-foreground">{lesson.summary}</p>}
+          {lesson.summary && <p className="mt-4 max-w-[72ch] text-lg leading-7 text-muted-foreground">{lesson.summary}</p>}
           {lesson.durationMinutes && <p className="mt-3 text-sm text-muted-foreground">Estimated lesson time: {lesson.durationMinutes} minutes</p>}
-        </div>
+        </ContentPage>
       </header>
-      <main className="mx-auto max-w-4xl space-y-8 px-4 py-10 sm:px-6 lg:px-8">
-        <article className="prose prose-lg max-w-none rounded-2xl border border-border bg-card p-5 text-foreground dark:prose-invert sm:p-8">
+      <ContentPage as="main" className="space-y-8 py-10">
+        <article className="cms-content prose-content rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8">
           <MDXRemote source={lesson.content} components={scrollableTableComponents} />
         </article>
         <LessonCompletionControl courseSlug={courseSlug} lessonSlug={lessonSlug} returnTo={`/study/${courseSlug}/lessons/${lessonSlug}`} />
         <div className="flex flex-wrap gap-3">
           <Link href={`/study/${courseSlug}`} className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-accent">Back to course</Link>
         </div>
-      </main>
+      </ContentPage>
       <PromotionSlot placement="COURSE_PAGE" path={`/study/${courseSlug}/lessons/${lessonSlug}`} contentType="COURSE" />
       <RelatedContentSection sourceType="STUDY_COURSE" sourceSlug={courseSlug} />
       <ContentFaq relatedType="COURSE_LESSON" relatedSlug={`${courseSlug}/${lessonSlug}`} />

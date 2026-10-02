@@ -217,7 +217,7 @@ const Editor = ({ content, onChange }: EditorProps) => {
     },
     editorProps: {
       attributes: {
-        class: "prose prose-invert max-w-none focus:outline-none min-h-[600px] font-serif leading-relaxed text-slate-300 px-4 md:px-12 py-12 selection:bg-[#0D6E6E]/30",
+        class: "cms-content prose-content focus:outline-none min-h-[600px] font-serif leading-relaxed px-4 md:px-12 py-12 selection:bg-[#0D6E6E]/30",
       },
     },
   })

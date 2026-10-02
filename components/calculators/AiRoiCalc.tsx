@@ -181,7 +181,7 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
 
   return (
     <div className="min-h-screen py-10 relative">
-      <div className="wrap max-w-7xl mx-auto">
+      <div className="content-page">
         
         {/* Header */}
         <div className="mb-6">

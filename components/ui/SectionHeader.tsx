@@ -8,9 +8,11 @@ interface SectionHeaderProps {
 
 export default function SectionHeader({ label, title, subtitle, align = 'left', light = false }: SectionHeaderProps) {
   const containerClass = align === 'center' ? 'text-center' : '';
-  const labelClass = light ? 'text-cinema-cyan' : 'text-brand-teal';
-  const titleClass = light ? 'cinema-text-gradient' : 'text-brand-navy';
-  const subtitleClass = light ? 'text-gray-300' : 'text-brand-slate';
+  /* `light` used to mean "on a dark cinematic surface" and hard-coded dark-only
+     colours. It now means "on a decorative band" and adapts to the active theme. */
+  const labelClass = light ? 'text-teal-700 dark:text-cinema-cyan' : 'text-brand-teal';
+  const titleClass = light ? 'text-slate-900 dark:text-white' : 'text-brand-navy dark:text-slate-100';
+  const subtitleClass = light ? 'text-slate-600 dark:text-gray-300' : 'text-brand-slate dark:text-slate-300';
   const subtitleContainerClass = align === 'center' ? 'max-w-2xl mx-auto' : 'max-w-2xl';
 
   return (

@@ -1,7 +1,17 @@
 // ─── Block Server-Side Renderer ───────────────────────────────────────────────
-// Converts a block tree (JSON) into high-fidelity consulting-grade HTML for public pages.
+// Converts a block tree (JSON) into semantic, theme-aware HTML for public pages.
+//
+// Presentation contract: this renderer never emits hard-coded widths or
+// dark-only colours. Every block maps onto the global content system defined in
+// app/globals.css (`cms-*` classes + `.prose-content` breakout), so:
+//   • long-form prose keeps a comfortable reading measure,
+//   • tables, figures, diagrams, metrics, code and embeds automatically use the
+//     full width of the article column,
+//   • light and dark themes both work without per-page styling,
+//   • editors write content only — never layout.
 
 import { Block, MetricItem } from './registry'
+import { slugifyHeading } from '@/lib/content-toc'
 import katex from 'katex'
 
 function escapeHtml(str: string): string {
@@ -11,6 +21,10 @@ function escapeHtml(str: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
+}
+
+interface RenderContext {
+  headingIds: Set<string>
 }
 
 function getAttrStyle(block: Block): string {
@@ -50,18 +64,14 @@ function formatMathFormulas(html: string): string {
         output: 'htmlAndMathml',
       })
     } catch {
-      renderedMath = `<span class="font-mono text-emerald-300">${escapeHtml(rawEq)}</span>`
+      renderedMath = `<code>${escapeHtml(rawEq)}</code>`
     }
 
     return `
-      <div class="my-5 px-5 py-4 rounded-2xl bg-[#090E18] border border-cinema-cyan/30 shadow-xl text-center">
-        <div class="inline-flex items-center gap-1.5 mb-2 px-2 py-0.5 rounded-full bg-cinema-cyan/10 border border-cinema-cyan/25 text-[10px] font-mono font-bold text-cinema-cyan uppercase tracking-wider">
-          <span class="w-1.5 h-1.5 rounded-full bg-cinema-cyan animate-pulse"></span>
-          Mathematical Model
-        </div>
-        <div class="horizontal-scroll-region min-w-0 max-w-full text-white text-base md:text-lg py-1 flex justify-start" role="region" aria-label="Scrollable mathematical formula" tabindex="0" data-lenis-prevent>
-          ${renderedMath}
-        </div>
+      <div class="cms-math content-wide" role="region" aria-label="Scrollable mathematical formula" tabindex="0" data-lenis-prevent>
+        <span class="cms-math__label">Mathematical model</span>
+        <div class="katex-display">${renderedMath}</div>
+
       </div>
     `
   })
@@ -78,9 +88,9 @@ function formatMathFormulas(html: string): string {
         output: 'htmlAndMathml',
       })
     } catch {
-      renderedInline = `<code class="px-1.5 py-0.5 rounded bg-white/10 text-emerald-300 font-mono text-xs">${escapeHtml(rawEq)}</code>`
+      renderedInline = `<code>${escapeHtml(rawEq)}</code>`
     }
-    return `${prefix}<span class="inline-math text-cinema-cyan">${renderedInline}</span>`
+    return `${prefix}<span class="inline-math">${renderedInline}</span>`
   })
 
   return html
@@ -94,14 +104,14 @@ interface ParsedDiagramStage {
 /**
  * Universal diagram parser: converts any ASCII diagram into Visual Flow, Consulting Table, or Code Window
  */
-function parseUniversalDiagram(raw: string): 
+function parseUniversalDiagram(raw: string):
   | { type: 'visual_flow'; title: string; stages: ParsedDiagramStage[] }
   | { type: 'ascii_table'; title: string; headers: string[]; data: string[][] }
   | { type: 'code'; title: string; code: string } {
   if (!raw) return { type: 'code', title: 'System Architecture', code: '' }
 
   const lines = raw.trim().split('\n')
-  
+
   // Clean framing borders
   const cleanLines = lines
     .map((l) => l.trim())
@@ -193,78 +203,51 @@ function parseUniversalDiagram(raw: string):
 function renderVisualDiagram(title: string, stages: ParsedDiagramStage[]): string {
   const stageCards = stages
     .map((stage, idx) => {
-      const isLast = idx === stages.length - 1
       const stagePills = stage.items
         .map(
           (item) => `
-          <div class="px-3.5 py-2.5 rounded-xl bg-[#0E1628] border border-white/10 hover:border-cinema-cyan/40 transition-all text-xs text-gray-200 flex items-center gap-2.5 shadow-sm">
-            <span class="w-2 h-2 rounded-full bg-cinema-cyan shrink-0"></span>
-            <span class="font-medium">${formatMathFormulas(escapeHtml(item))}</span>
+          <div class="cms-stage__item">
+            <span class="cms-stage__dot"></span>
+            <span>${formatMathFormulas(escapeHtml(item))}</span>
           </div>
         `
         )
         .join('')
 
       return `
-        <div class="relative">
-          <div class="p-5 md:p-6 rounded-2xl bg-gradient-to-r from-[#0B1220] via-[#0E182A] to-[#0B1220] border border-white/10 shadow-lg hover:border-cinema-cyan/40 transition-all">
-            <div class="flex items-center gap-3 mb-3.5">
-              <span class="px-2.5 py-1 rounded-lg bg-cinema-cyan/15 text-cinema-cyan text-[11px] font-mono font-extrabold tracking-wider uppercase border border-cinema-cyan/30">
-                PHASE ${String(idx + 1).padStart(2, '0')}
-              </span>
-              <h4 class="text-sm md:text-base font-bold text-white tracking-tight">${escapeHtml(stage.title)}</h4>
-            </div>
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
-              ${stagePills}
-            </div>
+        <div class="cms-stage">
+          <div class="cms-stage__head">
+            <span class="cms-stage__index">Phase ${String(idx + 1).padStart(2, '0')}</span>
+            <span class="cms-stage__title">${escapeHtml(stage.title)}</span>
           </div>
-          ${
-            !isLast
-              ? `
-            <div class="flex justify-center my-2.5">
-              <div class="w-8 h-8 rounded-full bg-[#0E1528] border border-cinema-cyan/40 flex items-center justify-center text-cinema-cyan shadow-md">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M19 12l-7 7-7-7"/></svg>
-              </div>
-            </div>
-          `
-              : ''
-          }
+          <div class="cms-stage__items">${stagePills}</div>
         </div>
       `
     })
     .join('')
 
   return `
-    <div class="my-10 rounded-3xl border border-cinema-cyan/40 bg-[#070B14] p-6 md:p-8 shadow-2xl overflow-hidden">
-      <div class="flex items-center justify-between pb-5 mb-6 border-b border-white/10">
-        <div class="flex items-center gap-2.5">
-          <span class="w-3 h-3 rounded-full bg-emerald-400 animate-pulse"></span>
-          <h3 class="text-xs md:text-sm font-bold font-mono uppercase tracking-wider text-cinema-cyan">${escapeHtml(title)}</h3>
-        </div>
-        <span class="px-2.5 py-1 rounded-full text-[10px] font-mono text-cinema-cyan bg-cinema-cyan/10 border border-cinema-cyan/20">
-          ${stages.length} Architecture Stages
-        </span>
+    <div class="cms-diagram cms-wide content-wide">
+      <div class="cms-diagram__head">
+        <span class="cms-diagram__title">${escapeHtml(title)}</span>
+        <span class="cms-diagram__meta">${stages.length} stages</span>
       </div>
-      <div class="space-y-1">
-        ${stageCards}
-      </div>
+      <div class="cms-diagram__stages">${stageCards}</div>
     </div>
   `
 }
 
 /**
- * Render structured consulting table
+ * Render structured data table (CRM/consulting grade, responsive + scrollable)
  */
 function renderConsultingTable(title: string, headers: string[], data: string[][]): string {
   const thead = `
-    <thead class="sticky top-0 z-10">
+    <thead>
       <tr>
         ${headers
           .map(
             (h) => `
-          <th class="px-4 py-3.5 text-left font-bold text-xs uppercase tracking-wider text-cinema-cyan border-b border-white/15 bg-[#0E1628] whitespace-nowrap">
-            ${formatMathFormulas(escapeHtml(h))}
-          </th>
+          <th scope="col">${formatMathFormulas(escapeHtml(h))}</th>
         `
           )
           .join('')}
@@ -273,109 +256,100 @@ function renderConsultingTable(title: string, headers: string[], data: string[][
   `
 
   const tbody = data
-    .map((row, rowIdx) => {
-      const isEven = rowIdx % 2 === 0
-      const rowBg = isEven ? 'bg-transparent' : 'bg-white/[0.02]'
+    .map((row) => {
       const cells = row
         .map((cell, cellIdx) => {
           const isFirst = cellIdx === 0
-          const cellCls = isFirst ? 'font-semibold text-white' : 'text-gray-300 font-mono text-xs'
+          const cellCls = isFirst ? 'cms-cell--label' : 'cms-cell--value'
 
           // Format severity tags
           const cellLower = cell.toLowerCase().trim()
           if (cellLower === 'high' || cellLower.includes('high severity') || cellLower === 'danger') {
-            return `<td class="px-4 py-3 border-b border-white/5 whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-rose-500/20 text-rose-300 border border-rose-500/30">HIGH</span></td>`
+            return `<td class="${cellCls}"><span class="cms-badge cms-badge--high">High</span></td>`
           }
           if (cellLower === 'med' || cellLower === 'medium' || cellLower.includes('medium severity')) {
-            return `<td class="px-4 py-3 border-b border-white/5 whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">MEDIUM</span></td>`
+            return `<td class="${cellCls}"><span class="cms-badge cms-badge--medium">Medium</span></td>`
           }
           if (cellLower === 'low' || cellLower.includes('low severity')) {
-            return `<td class="px-4 py-3 border-b border-white/5 whitespace-nowrap"><span class="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">LOW</span></td>`
+            return `<td class="${cellCls}"><span class="cms-badge cms-badge--low">Low</span></td>`
           }
 
-          return `<td class="px-4 py-3 border-b border-white/5 ${cellCls} whitespace-nowrap">${formatMathFormulas(escapeHtml(cell))}</td>`
+          return `<td class="${cellCls}">${formatMathFormulas(escapeHtml(cell))}</td>`
         })
         .join('')
 
-      return `<tr class="${rowBg} hover:bg-cinema-cyan/10 transition-colors">${cells}</tr>`
+      return `<tr>${cells}</tr>`
     })
     .join('')
 
   return `
-    <div class="my-8 rounded-2xl border border-white/10 bg-[#0A101D] shadow-xl overflow-hidden">
-      ${
-        title
-          ? `
-        <div class="px-5 py-3 bg-[#0E1528] border-b border-white/10 flex items-center justify-between">
-          <span class="text-xs font-mono font-bold text-cinema-cyan uppercase tracking-wider">${escapeHtml(title)}</span>
-          <span class="text-[10px] font-mono text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">Data Matrix</span>
-        </div>
-      `
-          : ''
-      }
-      <div class="horizontal-scroll-region" role="region" aria-label="Scrollable data table; use horizontal scrolling to view all columns" tabindex="0" data-lenis-prevent>
-        <table class="w-full min-w-max text-xs md:text-sm text-left border-collapse">
-          ${thead}
-          <tbody class="divide-y divide-white/5">${tbody}</tbody>
-        </table>
-      </div>
+    <div class="cms-table-scroll horizontal-scroll-region cms-wide content-wide" role="region" aria-label="Scrollable data table; use horizontal scrolling to view all columns" tabindex="0" data-lenis-prevent>
+      <table>
+        ${title ? `<caption class="cms-table-caption">${escapeHtml(title)}</caption>` : ''}
+        ${thead}
+        <tbody>${tbody}</tbody>
+      </table>
+
     </div>
   `
 }
 
-function renderBlock(block: Block): string {
+function renderBlock(block: Block, ctx: RenderContext): string {
   const style = getAttrStyle(block)
   const styleAttr = style ? ` style="${style}"` : ''
+  const attrFlag = style ? ' data-cms-attrs="true"' : ''
   const { data } = block
 
   switch (block.type) {
     case 'heading': {
-      const level = data.level || 2
+      const level = Number(data.level) || 2
       const rawText = data.text || ''
       const text = escapeHtml(rawText)
+      const id = slugifyHeading(rawText, ctx.headingIds)
 
-      // Section badges: "1. Executive Summary" -> "SECTION 01: Executive Summary"
+      // Section badges: "1. Executive Summary" -> "Section 01: Executive Summary"
       const numMatch = rawText.match(/^(\d+)\.\s+(.+)$/)
       if (numMatch && level === 2) {
         const num = numMatch[1]
         const title = escapeHtml(numMatch[2])
         return `
-          <div class="mt-14 mb-6 pt-6 border-t border-white/10">
-            <div class="flex items-center gap-3">
-              <span class="px-3 py-1 bg-cinema-cyan/15 text-cinema-cyan font-mono font-extrabold text-xs md:text-sm rounded-lg border border-cinema-cyan/30 shrink-0">
-                SECTION ${num.padStart(2, '0')}
-              </span>
-              <h2${styleAttr} class="text-xl md:text-2xl font-extrabold text-white tracking-tight">${title}</h2>
-            </div>
+          <div class="cms-section-badge cms-wide content-wide">
+            <span class="cms-section-badge__pill">Section ${num.padStart(2, '0')}</span>
+            <h2 id="${id}"${styleAttr}${attrFlag}>${title}</h2>
           </div>
         `
       }
 
-      const fontClasses: Record<number, string> = {
-        1: 'text-2xl md:text-4xl font-extrabold text-white mt-12 mb-6 tracking-tight border-b border-white/10 pb-4',
-        2: 'text-xl md:text-2xl font-bold text-white mt-12 mb-4 tracking-tight flex items-center gap-2.5 before:content-[""] before:w-1.5 before:h-6 before:bg-[#0D6E6E] before:rounded-full',
-        3: 'text-lg md:text-xl font-semibold text-cinema-cyan mt-8 mb-3 flex items-center gap-2',
-        4: 'text-base font-semibold text-gray-200 mt-6 mb-2',
-      }
-      const cls = fontClasses[level] || fontClasses[2]
-      return `<h${level}${styleAttr} class="${cls}">${text}</h${level}>`
+      const safeLevel = level >= 1 && level <= 6 ? level : 2
+      return `<h${safeLevel} id="${id}"${styleAttr}${attrFlag}>${text}</h${safeLevel}>`
     }
 
     case 'paragraph': {
-      const formatted = formatMathFormulas(data.html || '')
-      return `<div${styleAttr} class="text-sm md:text-base text-gray-300 leading-relaxed my-4">${formatted}</div>`
+      // Stored CMS/markdown paragraphs arrive wrapped in <p>…</p>; unwrap so the
+      // rendered output stays a single, valid paragraph element.
+      let raw = (data.html || '').trim()
+      if (/^<p(\s[^>]*)?>[\s\S]*<\/p>$/i.test(raw)) {
+        raw = raw.replace(/^<p(\s[^>]*)?>/i, '').replace(/<\/p>$/i, '')
+      }
+      // Legacy inline classes from older stored content (dark-only) are dropped —
+      // `.cms-content a` now owns link styling in both themes.
+      raw = raw.replace(/\s*class="[^"]*\b(?:text-cinema-cyan|underline|text-gray-\d{3}|text-white)\b[^"]*"/gi, '')
+      const formatted = formatMathFormulas(raw)
+      return `<p${styleAttr}${attrFlag}>${formatted}</p>`
     }
 
     case 'image': {
-      const alignClass = {
-        left: 'ml-0 mr-auto max-w-lg',
-        center: 'mx-auto max-w-2xl',
-        right: 'ml-auto mr-0 max-w-lg',
-        full: 'w-full',
-      }[data.alignment || 'center']
-      const img = `<img src="${escapeHtml(data.src || '')}" alt="${escapeHtml(data.alt || '')}" class="block-image rounded-2xl border border-white/15 shadow-2xl ${alignClass} object-cover" loading="lazy" />`
-      const cap = data.caption ? `<figcaption class="text-center text-xs text-gray-400 mt-3 font-mono">▲ ${escapeHtml(data.caption)}</figcaption>` : ''
-      return `<figure${styleAttr} class="block-figure my-8 overflow-hidden">${img}${cap}</figure>`
+      const alignment = data.alignment || 'center'
+      const figureCls = {
+        left: 'cms-figure cms-figure--inset cms-figure--left',
+        center: 'cms-figure cms-figure--center cms-wide content-wide',
+        right: 'cms-figure cms-figure--inset cms-figure--right',
+        full: 'cms-figure cms-figure--wide cms-wide content-wide',
+      }[alignment] || 'cms-figure cms-figure--center cms-wide content-wide'
+
+      const img = `<img class="cms-image" src="${escapeHtml(data.src || '')}" alt="${escapeHtml(data.alt || '')}" loading="lazy" decoding="async" />`
+      const cap = data.caption ? `<figcaption>${escapeHtml(data.caption)}</figcaption>` : ''
+      return `<figure${styleAttr}${attrFlag} class="${figureCls}">${img}${cap}</figure>`
     }
 
     case 'diagram': {
@@ -390,22 +364,19 @@ function renderBlock(block: Block): string {
         return renderConsultingTable(parsed.title, parsed.headers, parsed.data)
       }
 
-      // Render Code Window
       const title = parsed.title || data.titleText || 'System Pipeline'
       return `
-        <div${styleAttr} class="my-8 rounded-2xl border border-white/10 bg-[#080D1A] overflow-hidden shadow-2xl">
-          <div class="px-5 py-3 bg-[#0E1528] border-b border-white/10 flex items-center justify-between">
-            <div class="flex items-center gap-2">
-              <span class="w-3 h-3 rounded-full bg-rose-500/80"></span>
-              <span class="w-3 h-3 rounded-full bg-amber-500/80"></span>
-              <span class="w-3 h-3 rounded-full bg-emerald-500/80"></span>
-              <span class="ml-2 text-xs font-mono font-bold text-cinema-cyan uppercase tracking-wider">${escapeHtml(title)}</span>
-            </div>
-            <span class="text-[10px] font-mono text-gray-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">Architecture Blueprint</span>
+        <div${styleAttr}${attrFlag} class="cms-code-window cms-wide content-wide">
+          <div class="cms-code-window__bar">
+            <span class="cms-code-window__dots" aria-hidden="true">
+              <span style="background:#F87171"></span>
+              <span style="background:#FBBF24"></span>
+              <span style="background:#34D399"></span>
+            </span>
+            <span class="cms-code-window__title">${escapeHtml(title)}</span>
+
           </div>
-          <div class="horizontal-scroll-region p-5 bg-[#070C18]" role="region" aria-label="Scrollable code sample" tabindex="0" data-lenis-prevent>
-            <pre class="font-mono text-xs md:text-sm text-emerald-300 leading-relaxed bg-transparent border-none p-0 m-0 whitespace-pre"><code>${escapeHtml(parsed.code)}</code></pre>
-          </div>
+          <div class="cms-code-window__scroll" role="region" aria-label="Scrollable code sample" tabindex="0" data-lenis-prevent><pre><code>${escapeHtml(parsed.code)}</code></pre></div>
         </div>
       `
     }
@@ -421,67 +392,59 @@ function renderBlock(block: Block): string {
       const cards = items
         .map((item) => {
           const trendIcon = item.trend === 'up' ? '▲' : item.trend === 'down' ? '▼' : '●'
-          const trendColor = item.trend === 'up' ? 'text-emerald-400' : item.trend === 'down' ? 'text-rose-400' : 'text-cinema-cyan'
-          const trendBg = item.trend === 'up' ? 'bg-emerald-500/10 border-emerald-500/20' : item.trend === 'down' ? 'bg-rose-500/10 border-rose-500/20' : 'bg-cinema-cyan/10 border-cinema-cyan/20'
+          const trendClass = item.trend === 'up' ? 'up' : item.trend === 'down' ? 'down' : 'neutral'
           return `
-            <div class="bg-gradient-to-b from-[#121B2E] to-[#0A101D] border border-white/10 hover:border-cinema-cyan/40 transition-all rounded-2xl p-5 flex flex-col justify-between shadow-lg">
-              <span class="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">${escapeHtml(item.label)}</span>
-              <div class="text-2xl md:text-3xl font-extrabold text-white font-mono tracking-tight">${escapeHtml(item.value)}</div>
-              ${item.change ? `<div class="mt-3 inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-mono border ${trendBg} ${trendColor} self-start">${trendIcon} ${escapeHtml(item.change)}</div>` : ''}
+            <div class="cms-metric">
+              <span class="cms-metric__label">${escapeHtml(item.label)}</span>
+              <span class="cms-metric__value">${escapeHtml(item.value)}</span>
+              ${item.change ? `<span class="cms-metric__change cms-metric__change--${trendClass}">${trendIcon} ${escapeHtml(item.change)}</span>` : ''}
             </div>
           `
         })
         .join('')
 
       return `
-        <div${styleAttr} class="my-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div${styleAttr}${attrFlag} class="cms-metrics cms-wide content-wide">
           ${cards}
         </div>
       `
     }
 
     case 'callout': {
-      const variantStyles: Record<string, { border: string; bg: string; text: string; icon: string; titleColor: string }> = {
-        info: { border: 'border-cyan-500/40', bg: 'bg-cyan-950/30', text: 'text-cyan-100', icon: '💡', titleColor: 'text-cyan-300' },
-        warning: { border: 'border-amber-500/40', bg: 'bg-amber-950/30', text: 'text-amber-100', icon: '⚠️', titleColor: 'text-amber-300' },
-        success: { border: 'border-emerald-500/40', bg: 'bg-emerald-950/30', text: 'text-emerald-100', icon: '✅', titleColor: 'text-emerald-300' },
-        danger: { border: 'border-rose-500/40', bg: 'bg-rose-950/30', text: 'text-rose-100', icon: '🛑', titleColor: 'text-rose-300' },
-      }
-      const cfg = variantStyles[data.variant || 'info'] || variantStyles.info
+      const variant = data.variant || 'info'
+      const icons: Record<string, string> = { info: '💡', warning: '⚠️', success: '✅', danger: '🛑' }
+      const icon = data.icon || icons[variant] || icons.info
       return `
-        <div${styleAttr} class="my-6 rounded-2xl border ${cfg.border} ${cfg.bg} p-6 shadow-xl backdrop-blur-sm">
-          <div class="flex items-start gap-4">
-            <span class="text-2xl shrink-0 p-2 rounded-xl bg-white/5 border border-white/10">${data.icon || cfg.icon}</span>
-            <div class="flex-1 min-w-0">
-              ${data.title ? `<p class="font-bold text-xs uppercase tracking-wider ${cfg.titleColor} mb-2 flex items-center gap-2"><span>${escapeHtml(data.title)}</span></p>` : ''}
-              <div class="text-xs md:text-sm leading-relaxed ${cfg.text}">${formatMathFormulas(escapeHtml(data.content || ''))}</div>
-            </div>
+        <aside${styleAttr}${attrFlag} class="cms-callout cms-callout--${variant} cms-wide content-wide" role="note">
+          <span class="cms-callout__icon" aria-hidden="true">${escapeHtml(icon)}</span>
+          <div class="cms-callout__body">
+            ${data.title ? `<p class="cms-callout__title">${escapeHtml(data.title)}</p>` : ''}
+            <div class="cms-callout__text">${formatMathFormulas(escapeHtml(data.content || ''))}</div>
           </div>
-        </div>
+        </aside>
       `
     }
 
     case 'quote': {
       return `
-        <blockquote${styleAttr} class="my-8 relative border-l-4 border-cinema-cyan bg-gradient-to-r from-cinema-cyan/10 via-white/5 to-transparent rounded-r-2xl p-6 md:p-8 italic text-gray-200 text-base md:text-lg shadow-xl">
-          <div class="text-3xl text-cinema-cyan font-serif leading-none mb-2">“</div>
-          <p class="leading-relaxed relative z-10">${escapeHtml(data.quote || '')}</p>
-          ${data.attribution ? `<cite class="block mt-4 text-xs md:text-sm text-cinema-cyan font-bold not-italic font-mono uppercase tracking-wider">— ${escapeHtml(data.attribution)}</cite>` : ''}
+        <blockquote${styleAttr}${attrFlag} class="cms-quote cms-wide content-wide">
+          <p>${escapeHtml(data.quote || '')}</p>
+          ${data.attribution ? `<cite class="cms-quote-attribution">${escapeHtml(data.attribution)}</cite>` : ''}
         </blockquote>
       `
     }
 
     case 'divider': {
-      return `<hr${styleAttr} class="border-none h-px bg-gradient-to-r from-transparent via-white/20 to-transparent my-12" />`
+      return `<hr${styleAttr} class="cms-divider" />`
     }
 
     case 'columns': {
       const cols = data.columns || []
-      const colClass = cols.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'
+      const colClass = cols.length === 3 ? 'cms-columns--3' : 'cms-columns--2'
       const innerCols = cols
-        .map((colBlocks) => `<div class="space-y-4">${renderBlocks(colBlocks)}</div>`)
+        .map((colBlocks) => `<div>${renderBlocksInternal(colBlocks, ctx)}</div>`)
         .join('')
-      return `<div${styleAttr} class="grid grid-cols-1 ${colClass} gap-6 my-8">${innerCols}</div>`
+      return `<div${styleAttr}${attrFlag} class="cms-columns ${colClass} cms-wide content-wide">${innerCols}</div>`
     }
 
     case 'list': {
@@ -490,25 +453,27 @@ function renderBlock(block: Block): string {
           const itemFormatted = formatMathFormulas(item)
           if (data.listStyle === 'numbered') {
             return `
-            <li class="flex items-start gap-3 leading-relaxed">
-              <span class="px-2 py-0.5 rounded-md bg-cinema-cyan/15 text-cinema-cyan font-mono text-xs font-bold border border-cinema-cyan/30 shrink-0 mt-0.5">${String(idx + 1).padStart(2, '0')}</span>
-              <div class="flex-1">${itemFormatted}</div>
+            <li class="cms-list__item">
+              <span class="cms-list__index" aria-hidden="true">${String(idx + 1).padStart(2, '0')}</span>
+              <span>${itemFormatted}</span>
             </li>
           `
           }
-          return `<li class="leading-relaxed">${itemFormatted}</li>`
+          if (data.listStyle === 'check') {
+            return `<li class="cms-list__item"><span class="cms-list__check" aria-hidden="true">✓</span><span>${itemFormatted}</span></li>`
+          }
+          return `<li>${itemFormatted}</li>`
         })
         .join('')
 
       if (data.listStyle === 'numbered') {
-        return `<ul${styleAttr} class="my-6 space-y-3.5 text-sm md:text-base text-gray-300 list-none p-0">${items}</ul>`
+        // Ordered semantics for numbered lists; the visual index chip is decorative.
+        return `<ol${styleAttr}${attrFlag} class="cms-list cms-list--numbered">${items}</ol>`
       }
-
-      const ls =
-        data.listStyle === 'check'
-          ? 'list-none space-y-2.5 [&_li]:flex [&_li]:items-start [&_li]:gap-2 [&_li]:before:content-["✓"] [&_li]:before:text-emerald-400 [&_li]:before:font-bold'
-          : 'list-disc list-outside pl-6 space-y-2 text-gray-300'
-      return `<ul${styleAttr} class="my-6 text-sm md:text-base text-gray-300 ${ls}">${items}</ul>`
+      if (data.listStyle === 'check') {
+        return `<ul${styleAttr}${attrFlag} class="cms-list cms-list--check">${items}</ul>`
+      }
+      return `<ul${styleAttr}${attrFlag} class="cms-list cms-list--bullet">${items}</ul>`
     }
 
     case 'embed': {
@@ -516,44 +481,54 @@ function renderBlock(block: Block): string {
       if (data.embedType === 'youtube') {
         const ytMatch = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
         const vid = ytMatch ? ytMatch[1] : ''
-        if (!vid) return `<div class="text-gray-500 text-xs">Invalid YouTube URL</div>`
-        return `<div${styleAttr} class="my-8 aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
-          <iframe src="https://www.youtube.com/embed/${vid}" class="w-full h-full" frameborder="0" allowfullscreen loading="lazy"></iframe>
+        if (!vid) return `<p class="cms-content__muted">Invalid YouTube URL</p>`
+        return `<div${styleAttr}${attrFlag} class="cms-embed cms-wide content-wide">
+          <iframe src="https://www.youtube.com/embed/${vid}" title="${escapeHtml(data.title || 'Embedded video')}" allowfullscreen loading="lazy"></iframe>
         </div>`
       }
-      return `<a${styleAttr} href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="block my-6 px-6 py-4 bg-white/5 border border-white/10 rounded-2xl text-cinema-cyan hover:bg-white/10 transition-all font-mono text-xs">${escapeHtml(url)}</a>`
+      return `<a${styleAttr}${attrFlag} href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="cms-embed cms-embed--link cms-wide content-wide">${escapeHtml(url)}</a>`
     }
 
     case 'button': {
-      const btnStyles: Record<string, string> = {
-        primary: 'bg-[#0D6E6E] text-white hover:bg-[#0F9E9E] shadow-[0_0_20px_rgba(13,110,110,0.4)]',
-        outline: 'bg-transparent border-2 border-[#0D6E6E] text-cinema-cyan hover:bg-[#0D6E6E] hover:text-white',
-        ghost: 'bg-white/5 text-white hover:bg-white/10',
-      }
-      const cls = btnStyles[data.buttonStyle || 'primary']
+      const cls = {
+        primary: 'cms-button--primary',
+        outline: 'cms-button--outline',
+        ghost: 'cms-button--ghost',
+      }[data.buttonStyle || 'primary'] || 'cms-button--primary'
       return `
-        <div${styleAttr} class="my-8 flex justify-center">
-          <a href="${escapeHtml(data.href || '#')}" class="inline-flex items-center px-8 py-3.5 rounded-xl font-bold text-xs md:text-sm uppercase tracking-wider transition-all ${cls}">
-            ${escapeHtml(data.label || 'Read Full Model')} →
+        <div${styleAttr}${attrFlag} class="cms-button-row content-wide">
+          <a href="${escapeHtml(data.href || '#')}" class="cms-button ${cls}">
+            ${escapeHtml(data.label || 'Read full model')} →
           </a>
         </div>
       `
     }
 
     case 'spacer': {
-      const height = data.height || 32
-      return `<div${styleAttr} style="height: ${height}px"></div>`
+      const height = Number(data.height) || 32
+      return `<div${styleAttr} style="height: ${height}px" aria-hidden="true"></div>`
     }
 
     default:
-      return `<!-- unknown block type: ${(block as Block).type} -->`
+      return ''
   }
 }
 
-export function renderBlocks(blocks: Block[]): string {
+function renderBlocksInternal(blocks: Block[], ctx: RenderContext): string {
   return blocks
     .slice()
-    .sort((a, b) => a.order - b.order)
-    .map(renderBlock)
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((block) => renderBlock(block, ctx))
+    .filter(Boolean)
     .join('\n')
+}
+
+/**
+ * Render a CMS block tree to HTML.
+ * Heading anchors are unique per render pass so a "Contents" sidebar can link
+ * to them (see lib/content-toc.ts).
+ */
+export function renderBlocks(blocks: Block[]): string {
+  if (!Array.isArray(blocks) || blocks.length === 0) return ''
+  return renderBlocksInternal(blocks, { headingIds: new Set<string>() })
 }
