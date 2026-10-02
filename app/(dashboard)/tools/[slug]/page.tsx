@@ -129,15 +129,23 @@ export default async function CalculatorPage({ params }: PageProps) {
        
        <JsonLd data={toolSchema} />
 
+       {/* Promotion slot: CONTENT_TOP */}
+       <div className="relative z-10">
+          <PromotionSlot slot="CONTENT_TOP" path={`/tools/${slug}`} tags={tool?.category ? [tool.category] : []} />
+       </div>
+
        {/* Calculator Component */}
        <div className="-mt-16 z-10 relative">
           {Component}
        </div>
+       {/* Promotion slot: CALCULATOR_RESULT — directly under the calculator */}
+       <PromotionSlot slot="CALCULATOR_RESULT" path={`/tools/${slug}`} tags={tool?.category ? [tool.category] : []} />
        {tool && <RelatedFinanceTerms categories={tool.category ? [tool.category] : []} keywords={[slug, tool.title]} title="Related finance terms" limit={4} />}
-       <PromotionSlot placement="CALCULATOR_PAGE" path={`/tools/${slug}`} contentType="TOOL" />
+       <PromotionSlot slot="CONTENT_BOTTOM" path={`/tools/${slug}`} tags={tool?.category ? [tool.category] : []} />
        <RelatedContentSection sourceType="TOOL" sourceSlug={slug} />
        <RelatedContentSection sourceType="TOOL" sourceSlug={slug} linkKind="CTA" />
        <ContentFaq relatedType="TOOL" relatedSlug={slug} />
+       <PromotionSlot slot="FOOTER" path={`/tools/${slug}`} tags={tool?.category ? [tool.category] : []} />
     </div>
   );
 }

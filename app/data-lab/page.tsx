@@ -9,6 +9,7 @@ import ScrollReveal from '@/components/ui/ScrollReveal';
 import { getAllDataLab } from '@/lib/content';
 import Link from 'next/link';
 import { ArrowUpRight, Download, ChartSpline } from 'lucide-react';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export const metadata: Metadata = {
   title: 'Data Lab | Kunwar Analytics',
@@ -45,6 +46,9 @@ export default function DataLabPage() {
 
       {/* ===== 3D ANIMATED HERO ===== */}
       <DataLabHero />
+
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path="/data-lab" />
 
       {/* ===== CAPABILITIES ===== */}
       <DataLabCapabilities />
@@ -116,6 +120,10 @@ export default function DataLabPage() {
           </div>
         </div>
       </section>
+
+      {/* Promotion slots: CONTENT_BOTTOM + FOOTER */}
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/data-lab" />
+      <PromotionSlot slot="FOOTER" path="/data-lab" />
     </div>
   );
 }

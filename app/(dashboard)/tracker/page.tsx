@@ -62,6 +62,9 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
         </div>
       </section>
 
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path="/tracker" />
+
       {/* Sector landscape grid */}
       <section id="landscape" className="py-16 md:py-20 scroll-mt-16">
         <div className="max-w-7xl mx-auto px-6">
@@ -124,7 +127,7 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
         </div>
       </section>
 
-      <PromotionSlot placement="BETWEEN_CONTENT" path="/tracker" contentType="TRACKER" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/tracker" />
       <ContentFaq relatedType="PAGE" relatedSlug="tracker" title="Sector tracker questions" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="tracker" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="tracker" linkKind="CTA" />
@@ -144,6 +147,7 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
           </ScrollReveal>
         </div>
       </section>
+      <PromotionSlot slot="FOOTER" path="/tracker" />
     </div>
   );
 }

@@ -101,7 +101,7 @@ export default async function RadarPage({ searchParams }: Props) {
         </div>
       </section>
 
-      <PromotionSlot placement="BETWEEN_CONTENT" path="/radar" contentType="PAGE" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/radar" />
       <ContentFaq relatedType="PAGE" relatedSlug="radar" title="Radar methodology questions" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="radar" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="radar" linkKind="CTA" />

@@ -4,6 +4,7 @@ import { notFound } from 'next/navigation';
 import { CERTIFICATES, getCertificateBySlug } from '@/lib/certificates';
 import { buildCertificatePathwayJsonLd } from '@/lib/credentials';
 import JsonLd from '@/components/seo/JsonLd';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -74,6 +75,8 @@ export default async function CertificateDetailPage({ params }: Props) {
                     </p>
                 </div>
             </header>
+
+            <PromotionSlot slot="CONTENT_TOP" path={`/certificates/${certificate.slug}`} tags={[certificate.category]} />
 
             <main className="mx-auto grid max-w-4xl gap-8 px-6 py-12 md:grid-cols-3">
                 <div className="space-y-8 md:col-span-2">
@@ -156,6 +159,8 @@ export default async function CertificateDetailPage({ params }: Props) {
                     </div>
                 </aside>
             </main>
+            <PromotionSlot slot="CONTENT_BOTTOM" path={`/certificates/${certificate.slug}`} tags={[certificate.category]} />
+            <PromotionSlot slot="FOOTER" path={`/certificates/${certificate.slug}`} tags={[certificate.category]} />
         </div>
     );
 }

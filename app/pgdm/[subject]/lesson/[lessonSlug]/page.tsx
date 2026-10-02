@@ -8,6 +8,7 @@ import { scrollableTableComponents } from '@/components/content/scrollableTableC
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import { ContentPage } from '@/components/content/ContentLayout';
+import PromotionRailLayout from '@/components/promotions/PromotionRailLayout';
 import LessonCompletionControl from '@/components/learning/LessonCompletionControl';
 import { getSubject } from '@/lib/pgdm/curriculum';
 import { prisma } from '@/lib/prisma';
@@ -71,19 +72,26 @@ export default async function PgdmCmsLessonPage({ params }: Props) {
           {lesson.durationMinutes && <p className="mt-3 text-sm text-muted-foreground">Estimated lesson time: {lesson.durationMinutes} minutes</p>}
         </ContentPage>
       </header>
-      <ContentPage as="main" className="space-y-8 py-10">
-        <article className="cms-content prose-content rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8">
-          <MDXRemote source={lesson.content} components={scrollableTableComponents} />
-        </article>
-        <LessonCompletionControl courseSlug={courseSlug} lessonSlug={lessonSlug} returnTo={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} />
-        <div className="flex flex-wrap gap-3">
-          <Link href={`/pgdm/${courseSlug}`} className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-accent">Back to {subject.code}</Link>
-          <Link href={`/pgdm/${courseSlug}#final-test`} className="rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">Course final test</Link>
-        </div>
-      </ContentPage>
-      <PromotionSlot placement="COURSE_PAGE" path={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} contentType="COURSE" />
+      <PromotionRailLayout path={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} tags={[subject.track]}>
+        <ContentPage as="main" className="space-y-8 py-10">
+          {/* Promotion slot: CONTENT_TOP */}
+          <PromotionSlot slot="CONTENT_TOP" path={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} tags={[subject.track]} className="w-full" />
+          <article className="cms-content prose-content rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8">
+            <MDXRemote source={lesson.content} components={scrollableTableComponents} />
+          </article>
+          {/* Promotion slot: CONTENT_MIDDLE */}
+          <PromotionSlot slot="CONTENT_MIDDLE" path={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} tags={[subject.track]} className="w-full" />
+          <LessonCompletionControl courseSlug={courseSlug} lessonSlug={lessonSlug} returnTo={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} />
+          <div className="flex flex-wrap gap-3">
+            <Link href={`/pgdm/${courseSlug}`} className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-accent">Back to {subject.code}</Link>
+            <Link href={`/pgdm/${courseSlug}#final-test`} className="rounded-xl bg-primary px-4 py-3 text-sm font-semibold text-primary-foreground">Course final test</Link>
+          </div>
+        </ContentPage>
+      </PromotionRailLayout>
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} tags={[subject.track]} />
       <RelatedContentSection sourceType="COURSE" sourceSlug={courseSlug} />
       <ContentFaq relatedType="COURSE_LESSON" relatedSlug={`${courseSlug}/${lessonSlug}`} />
+      <PromotionSlot slot="FOOTER" path={`/pgdm/${courseSlug}/lesson/${lessonSlug}`} tags={[subject.track]} />
     </div>
   );
 }

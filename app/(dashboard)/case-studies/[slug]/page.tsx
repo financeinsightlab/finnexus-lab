@@ -76,6 +76,7 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             </div>
           </ContentPage>
         </header>
+        <PromotionSlot slot="CONTENT_TOP" path={`/case-studies/${slug}`} tags={Array.isArray(dbPost.tags) ? dbPost.tags.map(String) : []} />
 
         <ContentPage className="py-10 md:py-14">
           <ContentLayout>
@@ -85,10 +86,11 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           </ContentLayout>
         </ContentPage>
 
-        <PromotionSlot placement="ARTICLE_PAGE" path={`/case-studies/${slug}`} contentType="CASE_STUDY" />
+        <PromotionSlot slot="CONTENT_BOTTOM" path={`/case-studies/${slug}`} tags={Array.isArray(dbPost.tags) ? dbPost.tags.map(String) : []} />
         <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={slug} />
         <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={slug} linkKind="CTA" />
         <ContentFaq relatedType="CASE_STUDY" relatedSlug={slug} />
+        <PromotionSlot slot="FOOTER" path={`/case-studies/${slug}`} tags={Array.isArray(dbPost.tags) ? dbPost.tags.map(String) : []} />
       </div>
     );
   }
@@ -204,6 +206,9 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
         </ContentPage>
       </header>
 
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path={`/case-studies/${caseStudy.slug}`} tags={[caseStudy.industry ?? '', ...(caseStudy.tags ?? [])]} />
+
       {/* ═══════════ FRAMEWORKS & METHODS ═══════════ */}
       {caseStudy.frameworks && caseStudy.frameworks.length > 0 && (
         <section className="border-b border-border bg-muted/40">
@@ -248,6 +253,9 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
       </ContentPage>
 
 
+      {/* Promotion slot: CONTENT_MIDDLE */}
+      <PromotionSlot slot="CONTENT_MIDDLE" path={`/case-studies/${caseStudy.slug}`} tags={[caseStudy.industry ?? '', ...(caseStudy.tags ?? [])]} />
+
       {/* ═══════════ MORE CASE STUDIES ═══════════ */}
       <section className="border-t border-border bg-muted/40">
         <ContentPage className="py-14">
@@ -286,11 +294,11 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           </div>
         </ContentPage>
       </section>
-
-      <PromotionSlot placement="ARTICLE_PAGE" path={`/case-studies/${caseStudy.slug}`} contentType="CASE_STUDY" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/case-studies/${caseStudy.slug}`} tags={[caseStudy.industry ?? '', ...(caseStudy.tags ?? [])]} />
       <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={caseStudy.slug} />
       <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={caseStudy.slug} linkKind="CTA" />
       <ContentFaq relatedType="CASE_STUDY" relatedSlug={caseStudy.slug} />
+      <PromotionSlot slot="FOOTER" path={`/case-studies/${caseStudy.slug}`} tags={[caseStudy.industry ?? '', ...(caseStudy.tags ?? [])]} />
     </div>
   );
 }

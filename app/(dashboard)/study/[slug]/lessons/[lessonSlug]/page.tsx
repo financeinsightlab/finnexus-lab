@@ -8,6 +8,7 @@ import { scrollableTableComponents } from '@/components/content/scrollableTableC
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import { ContentPage } from '@/components/content/ContentLayout';
+import PromotionRailLayout from '@/components/promotions/PromotionRailLayout';
 import LessonCompletionControl from '@/components/learning/LessonCompletionControl';
 import { getStudyMaterialBySlug } from '@/lib/study';
 import { prisma } from '@/lib/prisma';
@@ -68,18 +69,23 @@ export default async function StudyCmsLessonPage({ params }: Props) {
           {lesson.durationMinutes && <p className="mt-3 text-sm text-muted-foreground">Estimated lesson time: {lesson.durationMinutes} minutes</p>}
         </ContentPage>
       </header>
-      <ContentPage as="main" className="space-y-8 py-10">
-        <article className="cms-content prose-content rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8">
-          <MDXRemote source={lesson.content} components={scrollableTableComponents} />
-        </article>
-        <LessonCompletionControl courseSlug={courseSlug} lessonSlug={lessonSlug} returnTo={`/study/${courseSlug}/lessons/${lessonSlug}`} />
-        <div className="flex flex-wrap gap-3">
-          <Link href={`/study/${courseSlug}`} className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-accent">Back to course</Link>
-        </div>
-      </ContentPage>
-      <PromotionSlot placement="COURSE_PAGE" path={`/study/${courseSlug}/lessons/${lessonSlug}`} contentType="COURSE" />
+      <PromotionRailLayout path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]}>
+        <ContentPage as="main" className="space-y-8 py-10">
+          <PromotionSlot slot="CONTENT_TOP" path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]} className="w-full" />
+          <article className="cms-content prose-content rounded-2xl border border-border bg-card p-5 shadow-sm sm:p-8">
+            <MDXRemote source={lesson.content} components={scrollableTableComponents} />
+          </article>
+          <PromotionSlot slot="CONTENT_MIDDLE" path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]} className="w-full" />
+          <LessonCompletionControl courseSlug={courseSlug} lessonSlug={lessonSlug} returnTo={`/study/${courseSlug}/lessons/${lessonSlug}`} />
+          <div className="flex flex-wrap gap-3">
+            <Link href={`/study/${courseSlug}`} className="rounded-xl border border-border px-4 py-3 text-sm font-semibold text-foreground hover:bg-accent">Back to course</Link>
+          </div>
+        </ContentPage>
+      </PromotionRailLayout>
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]} />
       <RelatedContentSection sourceType="STUDY_COURSE" sourceSlug={courseSlug} />
       <ContentFaq relatedType="COURSE_LESSON" relatedSlug={`${courseSlug}/${lessonSlug}`} />
+      <PromotionSlot slot="FOOTER" path={`/study/${courseSlug}/lessons/${lessonSlug}`} tags={[course.category.name]} />
     </div>
   );
 }

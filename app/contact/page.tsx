@@ -2,6 +2,7 @@ import { Suspense } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 import ContactForm from './ContactForm';
 import ContentFaq from '@/components/content/ContentFaq';
 
@@ -146,6 +147,7 @@ export default function ContactPage() {
 
         <ContentFaq relatedType="PAGE" relatedSlug="contact" title="Contact questions" />
       </section>
+      <PromotionSlot slot="FOOTER" path="/contact" />
     </div>
   );
 }

@@ -20,7 +20,8 @@ import {
   Image as ImageIcon,
   MessageSquare,
   CreditCard,
-  Megaphone
+  Megaphone,
+  BadgePercent
 } from "lucide-react"
 
 interface CollapsibleSidebarProps {
@@ -88,6 +89,7 @@ export default function CollapsibleSidebar({
     { label: "Media Library", href: "/admin/media", icon: ImageIcon },
     { label: "Study Material", href: "/admin/study", icon: FileText },
     { label: "Product Content", href: "/admin/product-content", icon: Megaphone },
+    { label: "Promotions", href: "/admin/product-content?tab=promotions", icon: BadgePercent },
     { label: "Predictions", href: "/admin/predictions", icon: Target },
     { label: "User Management", href: "/admin/users", icon: Users, adminOnly: true },
     { label: "UPI Payments", href: "/admin/payments", icon: CreditCard, adminOnly: true },

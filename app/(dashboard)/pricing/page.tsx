@@ -134,7 +134,7 @@ export default function PricingPage() {
         </div>
       </section>
 
-      <PromotionSlot placement="BETWEEN_CONTENT" path="/pricing" contentType="PAGE" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/pricing" />
       <RelatedContentSection sourceType="PAGE" sourceSlug="pricing" linkKind="CTA" />
       <ContentFaq relatedType="PAGE" relatedSlug="pricing" title="Pricing questions" />
 
@@ -150,8 +150,13 @@ export default function PricingPage() {
           <Link href="/enterprise" className="btn-white">
             Organization enquiry
           </Link>
+          {/* Promotion slot: CTA_SECTION */}
+          <div className="pt-10">
+            <PromotionSlot slot="CTA_SECTION" path="/pricing" />
+          </div>
         </div>
       </section>
+      <PromotionSlot slot="FOOTER" path="/pricing" />
     </div>
   );
 }

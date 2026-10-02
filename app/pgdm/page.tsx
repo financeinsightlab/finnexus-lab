@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { GraduationCap, BookOpen, Clock3, Layers, ArrowRight, FlaskConical, CircleDot } from 'lucide-react';
 import { SUBJECTS, getLiveLectureCount, getTotalLectureCount } from '@/lib/pgdm/curriculum';
 import { TRACK_META } from '@/lib/pgdm/types';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export const metadata: Metadata = {
   title: { absolute: 'PGDM Curriculum — Finance Major & Business Analytics Minor' },
@@ -213,15 +214,22 @@ export default function PgdmPage() {
           </button>
         </form>
 
+        {/* Promotion slot: CONTENT_TOP */}
+        <PromotionSlot slot="CONTENT_TOP" path="/pgdm" className="w-full" />
+
         {renderTrack('CORE')}
         {renderTrack('FINANCE')}
         {renderTrack('ANALYTICS')}
+
+        {/* Promotion slot: CONTENT_BOTTOM */}
+        <PromotionSlot slot="CONTENT_BOTTOM" path="/pgdm" className="w-full" />
 
         <p className="text-center text-xs text-gray-500 pb-4 flex items-center justify-center gap-2">
           <FlaskConical className="w-3.5 h-3.5" />
           Curriculum transcribed from the PGDM (2025–27) handbook · new lectures publish weekly — Finance major first
         </p>
       </main>
+      <PromotionSlot slot="FOOTER" path="/pgdm" />
     </div>
   );
 }

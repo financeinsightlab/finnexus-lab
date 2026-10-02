@@ -163,6 +163,9 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
         </div>
       </div>
 
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path={`/tracker/${t.slug}`} />
+
       {/* KPIs */}
       <section id="overview" className="py-14 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
@@ -340,7 +343,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
         </div>
       </section>
 
-      <PromotionSlot placement="BETWEEN_CONTENT" path={`/tracker/${t.slug}`} contentType="TRACKER" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/tracker/${t.slug}`} />
       <ContentFaq relatedType="TRACKER" relatedSlug={t.slug} title={`${t.name} tracker questions`} />
       <RelatedContentSection sourceType="TRACKER" sourceSlug={t.slug} />
       <RelatedContentSection sourceType="TRACKER" sourceSlug={t.slug} linkKind="CTA" />
@@ -369,6 +372,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
           <span className="text-xs text-slate-400">© {new Date().getFullYear()} Kunwar Analytics · Sector Intelligence</span>
         </div>
       </div>
+      <PromotionSlot slot="FOOTER" path={`/tracker/${t.slug}`} />
     </div>
   );
 }

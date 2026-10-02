@@ -36,6 +36,7 @@ import { GlobalForecastingTicker } from '@/components/ui/GlobalForecastingTicker
 import CoursesSection from '@/components/study/CoursesSection';
 import SectorVideo from '@/components/tracker/SectorVideo';
 import HomeDataLabSection from '@/components/data-lab/HomeDataLabSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 async function getHomePagePosts() {
   // Try to get DB-driven featured selections first; fall back to static
@@ -129,6 +130,8 @@ export default async function HomePage() {
     <>
       {/* ===== CINEMATIC HERO ===== */}
       <CinematicHero />
+      {/* Promotion slot: HOME_HERO (collapses when nothing is scheduled) */}
+      <PromotionSlot slot="HOME_HERO" path="/" />
       <FinanceTermsCarousel terms={featuredTerms} />
 
       {/* ===== PLATFORM PILLARS ===== */}
@@ -189,6 +192,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Promotion slot: HOME_SECTION */}
+      <PromotionSlot slot="HOME_SECTION" path="/" />
 
       {/* ===== COURSES ===== */}
       <CoursesSection />
@@ -317,6 +323,10 @@ export default async function HomePage() {
             </div>
           </ScrollReveal>
         </div>
+        {/* Promotion slot: CTA_SECTION */}
+        <div className="relative z-10 pt-10">
+          <PromotionSlot slot="CTA_SECTION" path="/" />
+        </div>
       </section>
 
       {/* ===== PODCAST ===== */}
@@ -387,6 +397,9 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+
+      {/* Promotion slot: FOOTER */}
+      <PromotionSlot slot="FOOTER" path="/" />
 
       {/* Global Forecasting Ticker */}
       <GlobalForecastingTicker />

@@ -3,6 +3,7 @@
 import type { Metadata } from 'next'
 import PlacementPrepClient from '@/components/placement-prep/PlacementPrepClient'
 import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd'
+import PromotionSlot from '@/components/promotions/PromotionSlot'
 
 export const metadata: Metadata = {
   title: 'Placement Preparation Tracker | Study Material | Kunwar Analytics',
@@ -76,7 +77,10 @@ export default function PlacementPrepPage() {
     <>
       <JsonLd data={crumbs} />
       <JsonLd data={courseLd} />
+      <PromotionSlot slot="CONTENT_TOP" path="/study/placement-prep" />
       <PlacementPrepClient />
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/study/placement-prep" />
+      <PromotionSlot slot="FOOTER" path="/study/placement-prep" />
     </>
   )
 }

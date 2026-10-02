@@ -77,6 +77,8 @@ export default async function FinanceTermDetailPage({ params }: Props) {
         </ContentPage>
       </header>
 
+      <PromotionSlot slot="CONTENT_TOP" path={`/finance-terms/${term.slug}`} tags={[term.category]} />
+
       <ContentPage className="py-10">
         <ContentLayout
           asideSticky
@@ -142,6 +144,9 @@ export default async function FinanceTermDetailPage({ params }: Props) {
               </section>
             )}
 
+            {/* Promotion slot: FINANCE_TERM_RELATED — inside the related-resources area */}
+            <PromotionSlot slot="FINANCE_TERM_RELATED" path={`/finance-terms/${term.slug}`} tags={[term.category]} className="w-full" />
+
             {related.length > 0 && (
               <section aria-labelledby="related-terms-heading">
                 <h2 id="related-terms-heading" className="mb-4 text-2xl font-bold text-foreground">Related finance terms</h2>
@@ -161,10 +166,11 @@ export default async function FinanceTermDetailPage({ params }: Props) {
         </ContentLayout>
       </ContentPage>
 
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/finance-terms/${term.slug}`} tags={[term.category]} />
       <RelatedContentSection sourceType="FINANCE_TERM" sourceSlug={term.slug} />
       <RelatedContentSection sourceType="FINANCE_TERM" sourceSlug={term.slug} linkKind="CTA" />
-      <PromotionSlot placement="ARTICLE_PAGE" path={`/finance-terms/${term.slug}`} contentType="FINANCE_TERM" />
       <ContentFaq relatedType="FINANCE_TERM" relatedSlug={term.slug} />
+      <PromotionSlot slot="FOOTER" path={`/finance-terms/${term.slug}`} tags={[term.category]} />
     </div>
   );
 }

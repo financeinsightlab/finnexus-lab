@@ -13,6 +13,7 @@ import CourseAssessmentPanel from '@/components/learning/CourseAssessmentPanel'
 import ContentFaq from '@/components/content/ContentFaq'
 import RelatedContentSection from '@/components/content/RelatedContentSection'
 import PromotionSlot from '@/components/promotions/PromotionSlot'
+import PromotionRailLayout from '@/components/promotions/PromotionRailLayout'
 import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms'
 import { ContentPage } from '@/components/content/ContentLayout'
 
@@ -197,16 +198,23 @@ export default async function StudyMaterialPage({ params }: PageProps) {
         </ContentPage>
       </section>
 
-      {/* ─── Content ─── */}
-      <ContentPage as="article" className="py-12">
-        <div className="cms-content prose-content article-body">
-          {material.content ? (
-            <MDXRemote source={material.content} components={scrollableTableComponents} />
-          ) : (
-            <p className="text-center italic text-gray-500">Content not available.</p>
-          )}
-        </div>
-      </ContentPage>
+      {/* Promotion slot: CONTENT_TOP */}
+      <PromotionSlot slot="CONTENT_TOP" path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]} />
+
+      {/* ─── Content (with optional COURSE_SIDEBAR rail) ─── */}
+      <PromotionRailLayout path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]}>
+        <ContentPage as="article" className="py-12">
+          <div className="cms-content prose-content article-body">
+            {material.content ? (
+              <MDXRemote source={material.content} components={scrollableTableComponents} />
+            ) : (
+              <p className="text-center italic text-gray-500">Content not available.</p>
+            )}
+          </div>
+          {/* Promotion slot: CONTENT_MIDDLE */}
+          <PromotionSlot slot="CONTENT_MIDDLE" path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]} className="mt-10 w-full" />
+        </ContentPage>
+      </PromotionRailLayout>
 
       {/* ─── Related Materials ─── */}
       {related.length > 0 && (
@@ -243,10 +251,11 @@ export default async function StudyMaterialPage({ params }: PageProps) {
         </ContentPage>
       )}
       <RelatedFinanceTerms categories={[material.category.name]} keywords={[material.slug, ...material.tags]} title="Related finance terms" />
-      <PromotionSlot placement="STUDY_PAGE" path={`/study/${material.slug}`} contentType="STUDY" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]} />
       <RelatedContentSection sourceType="STUDY" sourceSlug={material.slug} />
       <RelatedContentSection sourceType="STUDY" sourceSlug={material.slug} linkKind="CTA" />
       <ContentFaq relatedType="STUDY" relatedSlug={material.slug} />
+      <PromotionSlot slot="FOOTER" path={`/study/${material.slug}`} tags={[material.category.name, ...material.tags]} />
     </div>
   )
 }

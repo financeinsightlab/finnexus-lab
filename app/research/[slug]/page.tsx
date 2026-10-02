@@ -18,6 +18,7 @@ import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import { ContentPage, ContentLayout } from '@/components/content/ContentLayout';
+import PromotionSidebar from '@/components/promotions/PromotionSidebar';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -209,12 +210,16 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
           </ContentPage>
         )}
 
+        {/* Promotion slot: CONTENT_TOP */}
+        <PromotionSlot slot="CONTENT_TOP" path={`/research/${slug}`} tags={[...tags, sector]} />
+
         {/* ── MAIN CONTENT & SIDEBAR ── */}
         <ContentPage className="py-10 md:py-14">
           <ContentLayout
             asideSticky
             aside={
               <>
+                <PromotionSidebar path={`/research/${slug}`} tags={[...tags, sector]} />
                 {/* Institutional metadata */}
                 <div className="rounded-2xl border border-border bg-card p-5 shadow-sm">
                   <h3 className="flex items-center gap-2 text-xs font-bold uppercase tracking-wider text-primary">
@@ -306,6 +311,9 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
                 dangerouslySetInnerHTML={{ __html: renderedHtml }}
               />
 
+              {/* Promotion slot: CONTENT_MIDDLE */}
+              <PromotionSlot slot="CONTENT_MIDDLE" path={`/research/${slug}`} tags={[...tags, sector]} className="mt-10 w-full" />
+
               {/* Topic Tags */}
               {tags.length > 0 && (
                 <div className="mt-12 flex flex-wrap items-center gap-2 border-t border-border pt-7">
@@ -334,10 +342,11 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
           </ContentLayout>
         </ContentPage>
       </div>
-      <PromotionSlot placement="RESEARCH_PAGE" path={`/research/${slug}`} contentType="RESEARCH" />
+      <PromotionSlot slot="CONTENT_BOTTOM" path={`/research/${slug}`} tags={[...tags, sector]} />
       <RelatedContentSection sourceType="RESEARCH" sourceSlug={slug} />
       <RelatedContentSection sourceType="RESEARCH" sourceSlug={slug} linkKind="CTA" />
       <ContentFaq relatedType="RESEARCH" relatedSlug={slug} />
+      <PromotionSlot slot="FOOTER" path={`/research/${slug}`} tags={[...tags, sector]} />
     </>
   );
 }

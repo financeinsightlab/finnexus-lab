@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { prisma } from '@/lib/prisma';
 import { SUBJECTS } from '@/lib/pgdm/curriculum';
 import ProductContentAdminClient, { type AdminCourseOption } from './ProductContentAdminClient';
@@ -32,5 +33,9 @@ export default async function ProductContentAdminPage() {
     })),
   ];
 
-  return <ProductContentAdminClient courses={courses} />;
+  return (
+    <Suspense fallback={<p className="p-6 text-sm text-muted-foreground">Loading product content…</p>}>
+      <ProductContentAdminClient courses={courses} />
+    </Suspense>
+  );
 }
