@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
 import "katex/dist/katex.min.css";
-import { Inter, IBM_Plex_Mono, Source_Serif_4 } from "next/font/google";
+import localFont from "next/font/local";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { GoogleAnalytics } from '@next/third-parties/google';
@@ -17,25 +17,28 @@ import CommandPalette from "@/components/ui/CommandPalette";
 import ServiceWorkerRegistrar from "@/components/pwa/ServiceWorkerRegistrar";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 
-/* ── Self-hosted fonts via next/font — zero external requests ── */
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["300", "400", "500", "600", "700", "800"],
+/* ── Self-hosted fonts via next/font — no build-time network fetches ── */
+const inter = localFont({
+  src: "./fonts/inter-latin-variable.woff2",
+  weight: "100 900",
   display: "swap",
   variable: "--font-inter",
 });
 
-const ibmPlexMono = IBM_Plex_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500"],
+const ibmPlexMono = localFont({
+  src: [
+    { path: "./fonts/ibm-plex-mono-latin-400-normal.woff2", weight: "400", style: "normal" },
+    { path: "./fonts/ibm-plex-mono-latin-500-normal.woff2", weight: "500", style: "normal" },
+  ],
   display: "swap",
   variable: "--font-mono",
 });
 
-const sourceSerif = Source_Serif_4({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  style: ["normal", "italic"],
+const sourceSerif = localFont({
+  src: [
+    { path: "./fonts/source-serif-4-latin-variable-normal.woff2", weight: "200 900", style: "normal" },
+    { path: "./fonts/source-serif-4-latin-variable-italic.woff2", weight: "200 900", style: "italic" },
+  ],
   display: "swap",
   variable: "--font-serif",
 });
@@ -170,7 +173,8 @@ export default function RootLayout({
                   <Analytics />
                 </Suspense>
                 <PageTracker />
-                <main className="flex-1 relative z-10">{children}</main>
+                <a className="skip-link" href="#main-content">Skip to main content</a>
+                <main id="main-content" tabIndex={-1} className="flex-1 relative z-10 outline-none">{children}</main>
                 <Footer />
                 <ServiceWorkerRegistrar />
               </ClientShell>

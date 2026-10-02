@@ -38,13 +38,35 @@ describe('resolvePlan', () => {
         ).toBe('PRO');
     });
 
-    it('downgrades to FREE when a paid subscription is not active', () => {
+    it('downgrades to FREE when a paid subscription is not active or has expired', () => {
         expect(
             resolvePlan({ role: 'MEMBER', subscriptionPlan: 'PRO', subscriptionStatus: 'CANCELED' }),
         ).toBe('FREE');
         expect(resolvePlan({ role: 'MEMBER', subscriptionPlan: 'ELITE', subscriptionStatus: null })).toBe(
             'FREE',
         );
+        expect(resolvePlan({
+            role: 'MEMBER',
+            subscriptionPlan: 'PRO',
+            subscriptionStatus: 'ACTIVE',
+            subscriptionExpiresAt: new Date(0),
+        })).toBe('FREE');
+        expect(resolvePlan({
+            role: 'MEMBER',
+            subscriptionPlan: 'ELITE',
+            subscriptionStatus: 'ACTIVE',
+            subscriptionExpiresAt: new Date('2999-01-01T00:00:00.000Z'),
+        })).toBe('ELITE');
+    });
+
+    it('preserves legacy/admin grants with no expiry, and does not expire staff access', () => {
+        expect(resolvePlan({
+            role: 'MEMBER',
+            subscriptionPlan: 'PRO',
+            subscriptionStatus: 'ACTIVE',
+            subscriptionExpiresAt: null,
+        })).toBe('PRO');
+        expect(resolvePlan({ role: 'ADMIN', subscriptionExpiresAt: new Date(0) })).toBe('ENTERPRISE');
     });
 
     it('returns FREE for anonymous users', () => {

@@ -13,25 +13,66 @@ export type StudyCategoryWithCount = Awaited<ReturnType<typeof getStudyCategorie
 // Prisma returns `Date` objects; client components need serializable strings.
 // These explicit types replace the previous `as any` pass-through in the page.
 
-export type SerializedStudyMaterial = Omit<
-  StudyMaterialWithCategory,
-  'publishedAt' | 'createdAt' | 'updatedAt'
-> & {
+export type SerializedStudyMaterial = {
+  id: string;
+  title: string;
+  slug: string;
+  description: string;
+  type: string;
+  difficulty: string;
+  duration: number | null;
+  viewCount: number;
+  coverImage: string | null;
+  tags: string[];
+  featured: boolean;
   publishedAt: string | null;
+  category: { id: string; name: string; slug: string; icon: string | null; color: string | null };
+  author: { id: string; name: string | null };
 };
 
-export type SerializedStudyCategory = StudyCategoryWithCount;
+export type SerializedStudyCategory = {
+  id: string;
+  name: string;
+  slug: string;
+  icon: string | null;
+  color: string | null;
+  _count: { materials: number };
+};
 
 export function serializeStudyMaterial(material: StudyMaterialWithCategory): SerializedStudyMaterial {
-  const { createdAt: _createdAt, updatedAt: _updatedAt, ...rest } = material;
   return {
-    ...rest,
+    id: material.id,
+    title: material.title,
+    slug: material.slug,
+    description: material.description,
+    type: material.type,
+    difficulty: material.difficulty,
+    duration: material.duration,
+    viewCount: material.viewCount,
+    coverImage: material.coverImage,
+    tags: material.tags,
+    featured: material.featured,
     publishedAt: material.publishedAt ? material.publishedAt.toISOString() : null,
+    category: {
+      id: material.category.id,
+      name: material.category.name,
+      slug: material.category.slug,
+      icon: material.category.icon,
+      color: material.category.color,
+    },
+    author: { id: material.author.id, name: material.author.name },
   };
 }
 
 export function serializeStudyCategory(category: StudyCategoryWithCount): SerializedStudyCategory {
-  return category;
+  return {
+    id: category.id,
+    name: category.name,
+    slug: category.slug,
+    icon: category.icon,
+    color: category.color,
+    _count: category._count,
+  };
 }
 
 // ─── Read: Public ──────────────────────────────────────────────────────────────
@@ -39,7 +80,12 @@ export function serializeStudyCategory(category: StudyCategoryWithCount): Serial
 export async function getStudyCategories() {
   return prisma.studyCategory.findMany({
     orderBy: { order: 'asc' },
-    include: {
+    select: {
+      id: true,
+      name: true,
+      slug: true,
+      icon: true,
+      color: true,
       _count: {
         select: {
           materials: {
@@ -98,7 +144,21 @@ export async function getPublishedStudyMaterials(options?: {
     orderBy: order,
     take: limit,
     skip: offset,
-    include: {
+    // Listing, dashboard and search callers do not need the full article body.
+    // Keep the content field on getStudyMaterialBySlug for the detail route.
+    select: {
+      id: true,
+      title: true,
+      slug: true,
+      description: true,
+      type: true,
+      difficulty: true,
+      duration: true,
+      viewCount: true,
+      coverImage: true,
+      tags: true,
+      featured: true,
+      publishedAt: true,
       category: { select: { id: true, name: true, slug: true, icon: true, color: true } },
       author: { select: { id: true, name: true } },
     },

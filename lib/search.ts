@@ -19,6 +19,7 @@ import {
 import { SUBJECTS } from '@/lib/pgdm/curriculum';
 import { TOOLS } from '@/lib/tools-registry';
 import { getPublishedStudyMaterials } from '@/lib/study';
+import { getFinanceTermIndex } from '@/lib/finance-terms';
 import { logger } from '@/lib/logger';
 import { tokenize } from '@/lib/search-utils';
 import { contentFields, hybridScore } from '@/lib/search-hybrid';
@@ -32,7 +33,8 @@ export type SearchKind =
     | 'pgdm-subject'
     | 'pgdm-lecture'
     | 'tool'
-    | 'study';
+    | 'study'
+    | 'finance-term';
 
 export interface SearchItem {
     kind: SearchKind;
@@ -65,6 +67,7 @@ const KIND_LABELS: Record<SearchKind, string> = {
     'pgdm-lecture': 'PGDM Lectures',
     tool: 'Tools',
     study: 'Study Material',
+    'finance-term': 'Finance Terms',
 };
 
 /**
@@ -243,6 +246,26 @@ async function collectStudy(tokens: string[], query: string, limit: number): Pro
     }
 }
 
+async function collectFinanceTerms(tokens: string[], query: string, limit: number): Promise<SearchItem[]> {
+    try {
+        const { terms } = await getFinanceTermIndex({ query, pageSize: limit });
+        return terms
+            .map((term) => makeItem({
+                kind: 'finance-term',
+                title: term.term,
+                description: term.simpleMeaning,
+                url: `/finance-terms/${term.slug}`,
+                tags: [term.category, term.difficulty, ...term.keywords, ...term.synonyms],
+            }, tokens))
+            .filter((item): item is SearchItem => item !== null);
+    } catch (error) {
+        logger.warn('Finance term search skipped (database or migration unavailable)', {
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return [];
+    }
+}
+
 /**
  * Search every content type. Results are grouped by kind, each group sorted by
  * relevance and capped at `perKind`. Empty groups are omitted.
@@ -259,12 +282,13 @@ export async function searchContent(
         return { query, total: 0, groups: [] };
     }
 
-    const [staticItems, studyItems] = await Promise.all([
+    const [staticItems, studyItems, financeTerms] = await Promise.all([
         Promise.resolve(collectStatic(tokens)),
         collectStudy(tokens, query, perKind),
+        collectFinanceTerms(tokens, query, perKind),
     ]);
 
-    const allItems = [...staticItems, ...studyItems];
+    const allItems = [...staticItems, ...studyItems, ...financeTerms];
 
     const byKind = new Map<SearchKind, SearchItem[]>();
     for (const item of allItems) {
@@ -290,6 +314,7 @@ export async function searchContent(
         'pgdm-subject',
         'pgdm-lecture',
         'study',
+        'finance-term',
         'tool',
         'podcast',
     ];

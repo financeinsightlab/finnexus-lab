@@ -30,44 +30,43 @@ export const PLAN_CATALOG: Record<PlanId, PlanDefinition> = {
         id: 'FREE',
         name: 'Free',
         tagline: 'Access to public research and insights.',
-        benefits: ['Public research & insights', 'Weekly newsletter', 'Community access'],
+        benefits: ['Public research & insights', 'Community access', 'Open financial tools'],
         paid: false,
     },
     PRO: {
         id: 'PRO',
         name: 'Pro',
-        tagline: 'For serious analysts who need the edge.',
+        tagline: 'One calendar month of manually approved access to content marked Pro.',
         benefits: [
-            'Everything in Free',
-            'Priority research access',
-            'Faster updates & briefs',
-            'Advanced filtering in search',
+            'Free public research and insights',
+            'Access to Pro-gated calculators',
+            'Access to Pro-gated sector tracker sections',
         ],
         paid: true,
     },
     ELITE: {
         id: 'ELITE',
         name: 'Elite',
-        tagline: 'Deep research and premium coverage.',
+        tagline: 'Current Elite access uses the same content gates as Pro.',
         benefits: [
-            'Everything in Pro',
-            'Deep-dive market reports',
-            'Early access to premium insights',
+            'Everything in Free',
+            'Access to currently Pro-gated content',
+            'No separate Elite-only features or priority service are currently offered',
         ],
         paid: true,
     },
     TEAM: {
         id: 'TEAM',
         name: 'Team',
-        tagline: 'Shared access for desks and classrooms.',
-        benefits: ['Everything in Elite', 'Shared seats', 'Team analytics'],
+        tagline: 'Team access requires a separate scope and availability review.',
+        benefits: ['Contact-led scope discussion', 'No self-service seats or team analytics are currently offered'],
         paid: true,
     },
     ENTERPRISE: {
         id: 'ENTERPRISE',
         name: 'Enterprise',
-        tagline: 'Custom data, SSO and API access.',
-        benefits: ['Everything in Team', 'SSO & seat management', 'API access'],
+        tagline: 'Enterprise requirements are considered individually.',
+        benefits: ['Contact for current availability', 'No published SSO, API, or service-level commitments'],
         paid: true,
     },
 };
@@ -97,29 +96,29 @@ export const PLAN_PRICING: Record<PlanId, PlanPricing> = {
     PRO: {
         price: '₹999',
         period: '/month',
-        description: 'For serious investors and professionals',
+        description: 'Manual UPI payment; access starts after administrator approval and lasts one calendar month.',
         cta: 'Start Pro',
         href: '/checkout/pro',
     },
     ELITE: {
         price: '₹1,999',
         period: '/month',
-        description: 'For high-net-worth individuals and institutions',
-        cta: 'Become Elite',
+        description: 'One calendar month after manual approval; current content access is the same as Pro.',
+        cta: 'Review Elite details',
         href: '/checkout/elite',
     },
     TEAM: {
-        price: '₹3,999',
-        period: '/month',
-        description: 'For investment teams and small firms',
-        cta: 'Contact for Team',
-        href: '/contact?service=Team',
+        price: 'Not listed',
+        period: '',
+        description: 'Team availability, features, and terms require a separate review.',
+        cta: 'Enquire about Team',
+        href: '/contact?service=Enterprise%20%2F%20Team%20Plan',
     },
     ENTERPRISE: {
-        price: 'Custom',
+        price: 'Not listed',
         period: '',
-        description: 'Custom data, SSO and API access for large organisations',
-        cta: 'Talk to Sales',
+        description: 'Scope and availability must be confirmed before any engagement.',
+        cta: 'Make an enquiry',
         href: '/enterprise',
     },
 };
@@ -133,6 +132,8 @@ export interface EntitledUser {
     role?: UserRole | null;
     subscriptionStatus?: SubscriptionStatus | null;
     subscriptionPlan?: string | null;
+    /** Null/undefined preserves legacy or administrator-managed grants. */
+    subscriptionExpiresAt?: Date | null;
 }
 
 /** Normalise an arbitrary stored plan string to a known {@link PlanId}. */
@@ -147,7 +148,7 @@ export function normalizePlan(plan: string | null | undefined): PlanId {
  *
  * Staff (ADMIN/ANALYST) always resolve to ENTERPRISE — they need full access
  * regardless of billing state. Everyone else only has their paid plan while
- * their subscription is ACTIVE (or TRIALING); otherwise they fall back to FREE.
+ * ACTIVE (or TRIALING), and before any recorded expiry; otherwise they are FREE.
  */
 export function resolvePlan(user: EntitledUser | null | undefined): PlanId {
     if (!user) return 'FREE';
@@ -157,7 +158,8 @@ export function resolvePlan(user: EntitledUser | null | undefined): PlanId {
     if (!PLAN_CATALOG[plan].paid) return 'FREE';
 
     const active = user.subscriptionStatus === 'ACTIVE' || user.subscriptionStatus === 'TRIALING';
-    return active ? plan : 'FREE';
+    const unexpired = !user.subscriptionExpiresAt || user.subscriptionExpiresAt.getTime() > Date.now();
+    return active && unexpired ? plan : 'FREE';
 }
 
 export function getPlanDefinition(plan: PlanId): PlanDefinition {

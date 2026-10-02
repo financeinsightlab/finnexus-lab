@@ -2,8 +2,8 @@
 //
 // Persistent storage and notification engine for Contact Form submissions.
 // Saves to PostgreSQL (with fallback to local JSON file).
-// When an admin replies, notifies the user via in-app notification (if registered)
-// and dispatches/logs an email from kunwaranalytics@gmail.com.
+// When an admin replies, it can send an in-app notification to a registered user.
+// Email delivery is not configured.
 
 import fs from 'fs';
 import path from 'path';
@@ -52,8 +52,8 @@ function writeJsonInquiries(inquiries: ContactInquiry[]): void {
   try {
     ensureFileStore();
     fs.writeFileSync(JSON_FILE, JSON.stringify(inquiries, null, 2), 'utf8');
-  } catch (err) {
-    console.error('Error writing inquiries to JSON fallback:', err);
+  } catch {
+    console.error('Failed to write contact inquiries to the local fallback.');
   }
 }
 
@@ -79,8 +79,8 @@ async function ensureDbTable(): Promise<void> {
       );
     `);
     tableEnsured = true;
-  } catch (err) {
-    console.warn('Could not ensure contact_inquiries table in Postgres (using JSON fallback):', err);
+  } catch {
+    console.warn('Could not ensure the contact inquiry table; using the local fallback.');
   }
 }
 
@@ -91,7 +91,6 @@ export async function createContactInquiry(data: {
   subject: string;
   budget?: string;
   message: string;
-  ip?: string;
 }): Promise<ContactInquiry> {
   const id = `cinq_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   const now = new Date().toISOString();
@@ -105,7 +104,7 @@ export async function createContactInquiry(data: {
     budget: data.budget || null,
     message: data.message,
     status: 'UNREAD',
-    ip: data.ip || null,
+    ip: null,
     createdAt: now,
   };
 
@@ -126,8 +125,8 @@ export async function createContactInquiry(data: {
       inquiry.ip,
       new Date(inquiry.createdAt)
     );
-  } catch (dbErr) {
-    console.warn('Postgres insert failed for contact inquiry, saving to JSON fallback:', dbErr);
+  } catch {
+    console.warn('Postgres insert failed for contact inquiry; using JSON fallback.');
   }
 
   // 2. Always persist to JSON fallback
@@ -172,8 +171,8 @@ export async function getContactInquiries(statusFilter?: string): Promise<{
         createdAt: r.createdAt ? new Date(r.createdAt).toISOString() : new Date().toISOString(),
       }));
     }
-  } catch (err) {
-    console.warn('Error reading inquiries from Postgres, loading from JSON:', err);
+  } catch {
+    console.warn('Could not read contact inquiries from Postgres; loading the local fallback.');
   }
 
   // Merge with JSON file items in case any was stored offline
@@ -230,8 +229,8 @@ export async function replyToContactInquiry(params: {
       repliedBy,
       id
     );
-  } catch (err) {
-    console.warn('Postgres update failed for reply:', err);
+  } catch {
+    console.warn('Could not update the contact inquiry in Postgres.');
   }
 
   // 2. Update JSON fallback
@@ -276,21 +275,13 @@ export async function replyToContactInquiry(params: {
       });
       notifiedInApp = true;
     }
-  } catch (notifErr) {
-    console.warn('Failed to insert in-app notification:', notifErr);
+  } catch {
+    console.warn('Failed to insert the in-app contact reply notification.');
   }
 
-  // 4. Email notification dispatch (kunwaranalytics@gmail.com -> user.email)
-  let notifiedEmail = false;
-  try {
-    console.log(`[DISPATCH EMAIL] To: ${target.email} | From: kunwaranalytics@gmail.com`);
-    console.log(`Subject: Re: ${target.subject} — Kunwar Analytics`);
-    console.log(`Body: ${replyText}`);
-    // If an email provider key is configured in the future, it triggers here.
-    notifiedEmail = true;
-  } catch (emailErr) {
-    console.warn('Failed to dispatch notification email:', emailErr);
-  }
+  // No email provider is configured. Keep this false and do not log recipient
+  // addresses or message contents as a substitute for delivery.
+  const notifiedEmail = false;
 
   return {
     success: true,

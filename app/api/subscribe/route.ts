@@ -3,59 +3,35 @@ import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 const subscribeSchema = z.object({
-  email: z.string().email('Invalid email format'),
-  tag: z.string().max(50).optional(),
+  email: z.string().trim().email('Invalid email format').max(254, 'Email address is too long'),
+  tag: z.string().trim().max(50).optional(),
 });
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-
-    // Validate input with Zod
     const parsed = subscribeSchema.safeParse(body);
     if (!parsed.success) {
       return NextResponse.json(
         { error: parsed.error.issues[0]?.message ?? 'Invalid input' },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
-    const { email, tag } = parsed.data;
-
-    // ⚠ Uncomment this block and add CONVERTKIT_API_KEY and CONVERTKIT_FORM_ID to Vercel env vars
-    /*
-    const response = await fetch(`https://api.convertkit.com/v3/forms/${process.env.CONVERTKIT_FORM_ID}/subscribe`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        api_key: process.env.CONVERTKIT_API_KEY,
-        email: email,
-        tags: tag ? [tag] : [],
-      }),
-    });
-
-    if (!response.ok) {
-      throw new Error('Failed to subscribe to newsletter');
+    // Legacy calculator forms used this endpoint as a client-side unlock toggle.
+    // Do not persist or log the submitted address, and do not treat it as a
+    // newsletter subscription. Protected tools are gated separately on the server.
+    if (parsed.data.tag?.startsWith('unlocked_')) {
+      return NextResponse.json({ success: true, subscriptionRecorded: false });
     }
 
-    const data = await response.json();
-    */
-
-    // Active implementation - log to console
-    console.log('Newsletter subscription:', {
-      email,
-      tag: tag || 'general',
-      timestamp: new Date().toISOString()
-    });
-
-    return NextResponse.json({ success: true });
-  } catch (error) {
-    console.error('Subscription error:', error);
+    // No email provider or durable subscription store is configured. Fail
+    // honestly instead of claiming that a newsletter signup was completed.
     return NextResponse.json(
-      { error: 'Internal server error' },
-      { status: 500 }
+      { error: 'Newsletter sign-up is currently unavailable. Your email was not saved.' },
+      { status: 503 },
     );
+  } catch {
+    return NextResponse.json({ error: 'Invalid request' }, { status: 400 });
   }
 }

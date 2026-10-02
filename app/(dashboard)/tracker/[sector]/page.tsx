@@ -1,7 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { auth } from '@/auth';
 import { getTrackerBySlug, getQuarter, getLatestQuarter, getQuarterByKey, temperatureColor, shortLabel, type Direction, type Impact, type Status } from '@/lib/trackerData';
 import { MetricTrendChart, SubSectorDonut, ProjectionChart, TemperatureGauge } from '@/components/tracker/TrackerCharts';
 import SectorVideo from '@/components/tracker/SectorVideo';
@@ -9,6 +8,9 @@ import QuarterSelector from '@/components/tracker/QuarterSelector';
 import ScrollReveal from '@/components/ui/ScrollReveal';
 import SectionHeader from '@/components/ui/SectionHeader';
 import JsonLd from '@/components/seo/JsonLd';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 import { getSectorConsensus } from '@/lib/sentimentEngine';
 import { getAllResearch } from '@/lib/content';
 import { canAccess } from '@/lib/entitlements';
@@ -40,6 +42,16 @@ const catalystStyles: Record<string, string> = {
 };
 const trendBadge: Record<Direction, string> = { up: 'text-green-600 dark:text-green-400', down: 'text-red-600 dark:text-red-400', flat: 'text-slate-500 dark:text-slate-400' };
 
+async function getSessionFailClosed() {
+  try {
+    const { auth } = await import('@/auth');
+    return await auth();
+  } catch {
+    // If session lookup is unavailable, render only the public/free projection.
+    return null;
+  }
+}
+
 interface Props { params: Promise<{ sector: string }>; searchParams: Promise<{ q?: string }> }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -60,7 +72,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
   const t = getTrackerBySlug(sector);
   if (!t) notFound();
 
-  const session = await auth();
+  const session = await getSessionFailClosed();
   // Entitlement check derived from plan + billing state (staff always qualify).
   const isPro = canAccess(session?.user, 'PRO');
 
@@ -68,7 +80,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
   const quarterKey = quarterRef.key;
   const q = getQuarter(t, quarterKey);
   const color = temperatureColor(q.temperature, q.consensus);
-  const live = getSectorConsensus(t.name, quarterKey);
+  const contentSignals = getSectorConsensus(t.name, quarterKey);
   const related = getAllResearch().filter((p) => p.sector === t.name).slice(0, 3);
 
   const sections = [
@@ -108,7 +120,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
                 <QuarterSelector base={`/tracker/${sector}`} activeKey={quarterKey} light />
               </div>
               <div className="flex flex-wrap gap-3 mt-6">
-                <span className="inline-flex items-center gap-2 text-xs font-semibold bg-teal-600/90 text-white px-3 py-1.5 rounded-full">Data as of {quarterRef.label}</span>
+                <span className="inline-flex items-center gap-2 text-xs font-semibold bg-teal-600/90 text-white px-3 py-1.5 rounded-full">{quarterRef.kind}: {quarterRef.label}</span>
                 <span className="inline-flex items-center gap-2 text-xs font-semibold bg-white/10 text-slate-200 px-3 py-1.5 rounded-full">{quarterRef.kind} snapshot</span>
               </div>
               <div className="mt-8 rounded-2xl border border-white/10 bg-white/5 p-6 backdrop-blur">
@@ -118,10 +130,10 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
               <div className="mt-5 rounded-2xl border border-white/10 bg-white/5 p-5 backdrop-blur">
                 <div className="flex flex-wrap items-center gap-3">
                   <span className="relative flex h-2.5 w-2.5"><span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-teal-400 opacity-75" /><span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-teal-500" /></span>
-                  <p className="text-sm font-bold text-white">Consensus temperature</p>
-                  <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: `${color}22`, color }}>{live.temperature}° · {shortLabel(live.label)}</span>
-                  {live.liveTemperature !== null && <span className="text-xs px-2.5 py-1 rounded-full bg-amber-400/15 text-amber-300">Live content signal: {live.liveTemperature}°</span>}
-                  <span className="text-xs text-slate-400">Single source of truth — mirrors the {quarterRef.label} tracker snapshot.</span>
+                  <p className="text-sm font-bold text-white">Site-defined indicator</p>
+                  <span className="text-xs font-bold px-2.5 py-1 rounded-full" style={{ background: `${color}22`, color }}>{q.temperature}° · {shortLabel(q.consensus)}</span>
+                  {contentSignals.total > 0 && <span className="text-xs px-2.5 py-1 rounded-full bg-amber-400/15 text-amber-300">Keyword heuristic: {contentSignals.bullishCount} bullish, {contentSignals.bearishCount} bearish, {contentSignals.total - contentSignals.bullishCount - contentSignals.bearishCount} neutral content items</span>}
+                  <span className="text-xs text-slate-400">Stored {quarterRef.kind.toLowerCase()} snapshot; the indicator is not measured market consensus.</span>
                 </div>
               </div>
             </div>
@@ -129,7 +141,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
               <div className="rounded-2xl border bg-white/5 border-white/10 p-6 text-center">
                 <TemperatureGauge value={q.temperature} color={color} />
                 <p className="text-sm font-bold uppercase tracking-widest mt-3" style={{ color }}>{shortLabel(q.consensus)}</p>
-                <p className="text-xs text-slate-400 mt-1">Consensus Temperature · {quarterRef.label}</p>
+                <p className="text-xs text-slate-400 mt-1">Site-defined indicator · {quarterRef.kind} {quarterRef.label}</p>
                 <Link href="/radar" className="text-xs text-teal-400 hover:underline inline-block mt-4">View full radar →</Link>
               </div>
               <div className="relative rounded-2xl overflow-hidden border border-white/10 h-52 bg-[#0b1623]">
@@ -155,7 +167,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       <section id="overview" className="py-14 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-wrap items-end justify-between gap-4">
-            <SectionHeader label="Dashboard" title={`Key performance indicators — ${quarterRef.label}`} subtitle="Core metrics tracked each quarter, with historical trend." />
+            <SectionHeader label={`${quarterRef.kind} snapshot`} title={`Key performance indicators — ${quarterRef.label}`} subtitle="Values and supplied trend lines in the selected stored snapshot; update timing is not guaranteed." />
             <div className="mb-2"><QuarterSelector base={`/tracker/${sector}`} activeKey={quarterKey} /></div>
           </div>
           <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4" id="kpis">
@@ -289,7 +301,7 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       {/* Outlook */}
       <section id="outlook" className="py-14 scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
-          <SectionHeader label="Forecast" title="Future outlook" subtitle={`Projected market trajectory to 2027 (CAGR ${t.outlook.cagr}).`} />
+          <SectionHeader label="Scenario estimate" title="Future outlook" subtitle={`Stored estimate for market size in 2027 (CAGR assumption ${t.outlook.cagr}); outcomes may differ.`} />
           <div className="mt-8 grid lg:grid-cols-[1fr_420px] gap-8">
             <ScrollReveal><div className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-6">
               <div className="flex items-end justify-between mb-2"><p className="text-sm font-semibold text-slate-500 dark:text-slate-400">Market size projection</p><p className="text-2xl font-extrabold text-teal-600 dark:text-teal-400">{t.outlook.marketSize2027}</p></div>
@@ -306,50 +318,32 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       {/* Pro metrics */}
       <section id="pro" className="py-14 bg-slate-50 dark:bg-[#0d1526] scroll-mt-20">
         <div className="max-w-7xl mx-auto px-6">
-          <SectionHeader label="Pro Access" title="Deeper metrics" subtitle="Proprietary profitability metrics and benchmarks that power our forward modelling." />
-          <div className="mt-8 relative">
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <SectionHeader label="Pro Access" title="Additional metrics" subtitle="Additional metrics and benchmark entries in this sector's stored tracker data." />
+          {isPro ? (
+            <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {t.proMetrics.map((m) => (
                 <div key={m.label} className="rounded-2xl border border-slate-200 dark:border-white/10 bg-white dark:bg-[#111c31] p-5">
-                  <div className="flex items-center justify-between"><p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">🔒 {m.label}</p><span className={`text-sm font-bold ${trendBadge[m.trend]}`}>{m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '→'}</span></div>
+                  <div className="flex items-center justify-between"><p className="text-[11px] font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400">{m.label}</p><span className={`text-sm font-bold ${trendBadge[m.trend]}`}>{m.trend === 'up' ? '↑' : m.trend === 'down' ? '↓' : '→'}</span></div>
                   <p className="mt-2 text-2xl font-extrabold text-slate-900 dark:text-white">{m.value}</p>
                   <p className="text-xs text-slate-400 mt-1">{m.note}</p>
                 </div>
               ))}
             </div>
-            {!isPro && (
-              <div className="absolute inset-0 flex items-center justify-center rounded-2xl bg-white/70 dark:bg-[#0a1120]/70 backdrop-blur-md">
-                <div className="text-center px-6 py-8 max-w-md">
-                  <div className="text-4xl mb-3">🔒</div>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Unlock with Pro</h3>
-                  <p className="text-sm text-slate-600 dark:text-slate-300 mb-5">Get the full deep-dive: {t.proMetrics.length}+ proprietary metrics, benchmark tables, quarterly trend database and forward scenarios for every sector.</p>
-                  <div className="flex flex-wrap justify-center gap-3"><Link href="/pricing" className="btn-primary">Subscribe from ₹999/month →</Link><Link href="/contact" className="btn-outline">Talk to the research desk</Link></div>
-                </div>
-              </div>
-            )}
-          </div>
+          ) : (
+            <div className="mt-8 rounded-2xl border border-slate-200 bg-white p-8 text-center dark:border-white/10 dark:bg-[#111c31]">
+              <div className="text-4xl mb-3" aria-hidden>🔒</div>
+              <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">Unlock with Pro</h3>
+              <p className="text-sm text-slate-600 dark:text-slate-300 mb-5">Pro access reveals the additional metrics and benchmark entries in this stored sector dataset. It does not include a live market-data feed.</p>
+              <div className="flex flex-wrap justify-center gap-3"><Link href="/checkout/pro" className="btn-primary">Pro · ₹999 for one month →</Link><Link href="/contact" className="btn-outline">Send an enquiry</Link></div>
+            </div>
+          )}
         </div>
       </section>
 
-      {/* FAQ */}
-      <section id="faq" className="py-14 bg-white dark:bg-[#0a1120] scroll-mt-20">
-        <div className="max-w-3xl mx-auto px-6">
-          <SectionHeader label="FAQ" title="Frequently asked questions" subtitle={`Answers about the ${t.name} sector tracker.`} align="center" />
-          <div className="mt-10 space-y-4">
-            {[
-              { q: `What does the ${t.name} tracker cover?`, a: `Quarter-updated KPIs, sub-sector breakdown, competitive landscape, market trends, regulatory timeline, SWOT and forward outlook for ${t.name} — all drawn from a single verified source.` },
-              { q: `What is the current ${t.name} consensus?`, a: `The consensus temperature for ${quarterRef.label} is ${q.temperature}° (${shortLabel(q.consensus)}), sourced from the same curated dataset used across all our trackers and the Contrarian Signal Radar.` },
-              { q: 'How do I compare quarters?', a: 'Use the quarter selector at the top of the page to switch between quarter snapshots and see how each KPI, headline and temperature changed.' },
-              { q: 'Is this financial advice?', a: 'No. These trackers are educational market-intelligence dashboards for research and analysis; they are not investment advice or a recommendation to buy or sell any security.' },
-            ].map((f) => (
-              <details key={f.q} className="group rounded-2xl border border-slate-200 dark:border-white/10 bg-slate-50 dark:bg-[#111c31] open:shadow-lg transition-all">
-                <summary className="flex items-center justify-between gap-4 cursor-pointer px-6 py-5 font-semibold text-slate-900 dark:text-white list-none"><span>{f.q}</span><span className="text-teal-600 dark:text-teal-400 text-lg transition-transform group-open:rotate-45 flex-shrink-0">+</span></summary>
-                <p className="px-6 pb-5 text-sm text-slate-600 dark:text-slate-300 leading-relaxed">{f.a}</p>
-              </details>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PromotionSlot placement="BETWEEN_CONTENT" path={`/tracker/${t.slug}`} contentType="TRACKER" />
+      <ContentFaq relatedType="TRACKER" relatedSlug={t.slug} title={`${t.name} tracker questions`} />
+      <RelatedContentSection sourceType="TRACKER" sourceSlug={t.slug} />
+      <RelatedContentSection sourceType="TRACKER" sourceSlug={t.slug} linkKind="CTA" />
 
       {/* Related research */}
       {related.length > 0 && (

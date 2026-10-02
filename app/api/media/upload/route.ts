@@ -1,18 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { auth } from '@/auth'
+import { authorizeApi, STAFF_ROLES } from '@/lib/auth-guards'
 import { mediaStorage } from '@/lib/media'
 import { parseUploadFormData, validateFiles, saveMediaToDatabase, MediaUploadResult } from '@/lib/media-utils'
 
 export async function POST(request: NextRequest) {
   try {
-    // Check authentication
-    const session = await auth()
-    if (!session?.user) {
-      return NextResponse.json(
-        { success: false, error: 'Authentication required' },
-        { status: 401 }
-      )
-    }
+    const authorization = await authorizeApi(STAFF_ROLES)
+    if (!authorization.ok) return authorization.response
 
     // Parse form data
     const { files, fields } = await parseUploadFormData(request)
@@ -44,7 +38,7 @@ export async function POST(request: NextRequest) {
         // Save to database
         const media = await saveMediaToDatabase(
           mediaFile,
-          session.user.id!,
+          authorization.user.id,
           fields.altText,
           fields.caption,
           fields.description
@@ -54,12 +48,9 @@ export async function POST(request: NextRequest) {
           success: true,
           media
         })
-      } catch (error: unknown) {
-        console.error('Failed to process file:', error)
-        results.push({
-          success: false,
-          error: error instanceof Error ? error.message : 'Unknown error'
-        })
+      } catch {
+        console.error('Media upload processing failed.')
+        results.push({ success: false, error: 'Upload failed' })
       }
     }
 
@@ -76,13 +67,10 @@ export async function POST(request: NextRequest) {
       status: allSuccess ? 200 : 207 // 207 Multi-Status for partial success
     })
 
-  } catch (error: unknown) {
-    console.error('Upload API error:', error)
+  } catch {
+    console.error('Media upload API failed.')
     return NextResponse.json(
-      { 
-        success: false, 
-        error: error instanceof Error ? error.message : 'Internal server error' 
-      },
+      { success: false, error: 'Unable to upload media' },
       { status: 500 }
     )
   }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
+import { safeAskHref } from './safe-ask-link';
 
 interface Citation {
     index: number;
@@ -19,6 +20,12 @@ interface AskResponse {
     provider: string;
     noAnswer: boolean;
 }
+
+const PROVIDER_LABELS: Record<string, string> = {
+    'huggingface-mistral': 'Hugging Face inference',
+    'kunwar-knowledge-engine': 'Platform knowledge',
+    'local-extractive': 'Local source extraction',
+};
 
 const SUGGESTIONS = [
     'What features and tools does Kunwar Analytics have?',
@@ -79,8 +86,8 @@ export default function AskKunwar() {
                 tokens.push(renderFormatting(text.slice(lastIndex, match.index), tokens.length));
             }
             const label = match[1];
-            const url = match[2];
-            tokens.push(
+            const url = safeAskHref(match[2]);
+            tokens.push(url ? (
                 <Link
                     key={tokens.length}
                     href={url}
@@ -88,7 +95,7 @@ export default function AskKunwar() {
                 >
                     {label}
                 </Link>
-            );
+            ) : <span key={tokens.length}>{label}</span>);
             lastIndex = match.index + match[0].length;
         }
 
@@ -178,7 +185,7 @@ export default function AskKunwar() {
                     <div className="rounded-xl border border-neutral-200 bg-white p-5 shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
                         <p className="text-xs font-semibold uppercase tracking-widest text-neutral-400">
                             Answer · sourced from {result.citations.length} page
-                            {result.citations.length === 1 ? '' : 's'}
+                            {result.citations.length === 1 ? '' : 's'} · {PROVIDER_LABELS[result.provider] ?? 'Source-grounded answer'}
                         </p>
                         <div className="mt-3 text-sm leading-relaxed text-neutral-800 dark:text-neutral-100 whitespace-pre-line space-y-2">
                             {renderMarkdown(result.answer)}
@@ -187,12 +194,10 @@ export default function AskKunwar() {
 
                     {result.citations.length > 0 && (
                         <ol className="space-y-2">
-                            {result.citations.map((citation) => (
-                                <li key={citation.index}>
-                                    <Link
-                                        href={citation.url}
-                                        className="flex gap-3 rounded-lg border border-neutral-200 p-3 transition hover:border-amber-400 hover:bg-amber-50/50 dark:border-neutral-800 dark:hover:bg-neutral-800/50"
-                                    >
+                            {result.citations.map((citation) => {
+                                const href = safeAskHref(citation.url);
+                                const citationContent = (
+                                    <>
                                         <span className="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-amber-100 text-xs font-bold text-amber-700 dark:bg-amber-900/40 dark:text-amber-300">
                                             {citation.index}
                                         </span>
@@ -204,9 +209,22 @@ export default function AskKunwar() {
                                                 {citation.snippet}
                                             </span>
                                         </span>
-                                    </Link>
-                                </li>
-                            ))}
+                                    </>
+                                );
+                                return (
+                                    <li key={citation.index}>
+                                        {href ? (
+                                            <Link href={href} className="flex gap-3 rounded-lg border border-neutral-200 p-3 transition hover:border-amber-400 hover:bg-amber-50/50 dark:border-neutral-800 dark:hover:bg-neutral-800/50">
+                                                {citationContent}
+                                            </Link>
+                                        ) : (
+                                            <div className="flex gap-3 rounded-lg border border-neutral-200 p-3 dark:border-neutral-800">
+                                                {citationContent}
+                                            </div>
+                                        )}
+                                    </li>
+                                );
+                            })}
                         </ol>
                     )}
                 </div>

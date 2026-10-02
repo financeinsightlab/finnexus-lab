@@ -67,7 +67,7 @@ describe('answerFromSources', () => {
         expect(answer.citations).toEqual([]);
     });
 
-    it('honours a custom provider', async () => {
+    it('honours a custom provider when it cites a retrieved passage', async () => {
         const stub: AnswerProvider = {
             name: 'stub',
             async synthesize() {
@@ -77,6 +77,23 @@ describe('answerFromSources', () => {
         const answer = await answerFromSources('inflation', sources, { provider: stub });
         expect(answer.provider).toBe('stub');
         expect(answer.answer).toBe('A synthesized answer. [1]');
+    });
+
+    it('rejects uncited or fabricated citation markers from a provider', async () => {
+        const uncited: AnswerProvider = {
+            name: 'uncited',
+            async synthesize() { return 'A confident but unsupported claim.'; },
+        };
+        const fabricated: AnswerProvider = {
+            name: 'fabricated',
+            async synthesize() { return 'A claim [99].'; },
+        };
+        const [first, second] = await Promise.all([
+            answerFromSources('inflation', sources, { provider: uncited }),
+            answerFromSources('inflation', sources, { provider: fabricated }),
+        ]);
+        expect(first.noAnswer).toBe(true);
+        expect(second.noAnswer).toBe(true);
     });
 });
 

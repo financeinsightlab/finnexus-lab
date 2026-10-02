@@ -3,14 +3,14 @@ import { CERTIFICATES, CERTIFICATE_CATEGORIES } from '@/lib/certificates';
 import CertificatesClient from './CertificatesClient';
 
 export const metadata: Metadata = {
-    title: 'Certificates | Kunwar Analytics',
+    title: 'Certificate Pathways | Kunwar Analytics',
     description:
-        'Verifiable finance, analytics and strategy credentials. Earn a certificate, add it to LinkedIn, and let anyone confirm it with a public verification record.',
+        'Explore finance, analytics and strategy pathway listings. These catalogue entries are not earned credentials. Eligible course completions are recorded privately after lesson criteria and a passing final test; no public or cryptographic verification is provided.',
     alternates: { canonical: 'https://kunwaranalytics.in/certificates' },
     openGraph: {
-        title: 'Certificates | Kunwar Analytics',
+        title: 'Certificate Pathways | Kunwar Analytics',
         description:
-            'Verifiable finance, analytics and strategy credentials with public verification records.',
+            'Catalogue of finance, analytics and strategy learning pathways; listings are not credentials, and private course-completion records are unsigned and not publicly verifiable.',
         url: 'https://kunwaranalytics.in/certificates',
         type: 'website',
     },

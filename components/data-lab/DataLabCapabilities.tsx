@@ -8,42 +8,42 @@ const CAPABILITIES = [
   {
     icon: BrainCircuit,
     title: 'Predictive Modelling',
-    desc: 'S-curve forecasts, penetration models, and scenario bands calibrated on real registrations and filings.',
+    desc: 'Some project pages show forecasts or scenarios based on stored assumptions; they are illustrative, not validated predictions.',
     color: 'text-cinema-violet',
     glow: 'rgba(124,58,237,0.4)',
   },
   {
     icon: Database,
     title: 'Unit Economics',
-    desc: 'Store-level and cohort-level P&L builds that pinpoint contribution-margin break-even thresholds.',
+    desc: 'Example unit-economics metrics appear in selected projects. Coverage and supporting evidence vary by project.',
     color: 'text-cinema-cyan',
     glow: 'rgba(6,182,212,0.4)',
   },
   {
     icon: Code2,
     title: 'Python & Pandas',
-    desc: 'Clean, reproducible data pipelines with scipy, matplotlib, and scikit-learn for serious analysis.',
+    desc: 'Python and data-analysis tools are referenced in selected project pages; code and source files are not provided on every page.',
     color: 'text-cinema-aurora',
     glow: 'rgba(16,185,129,0.4)',
   },
   {
     icon: Presentation,
-    title: 'Power BI Dashboards',
-    desc: 'Interactive executive dashboards that turn raw datasets into decision-ready visuals.',
+    title: 'Power BI & Dashboards',
+    desc: 'Some project pages reference dashboard or visualization tools. A live external dashboard is not included unless a page explicitly says so.',
     color: 'text-cinema-amber',
     glow: 'rgba(245,158,11,0.4)',
   },
   {
     icon: Sheet,
-    title: 'Excel Financial Models',
-    desc: 'Transparent, auditable model builds — every assumption surfaced, every driver adjustable.',
+    title: 'Excel & Financial Models',
+    desc: 'Selected pages demonstrate financial formulas and model assumptions; this does not promise a custom model build.',
     color: 'text-cinema-glow-blue',
     glow: 'rgba(59,130,246,0.4)',
   },
   {
     icon: Workflow,
-    title: 'End-to-End Workflows',
-    desc: 'From raw data sourcing to validated insights — documented methodology on every project.',
+    title: 'Data Workflows',
+    desc: 'Sources, methods, and available downloads vary. Review each project page for its actual contents and limitations.',
     color: 'text-cinema-cyan',
     glow: 'rgba(6,182,212,0.4)',
   },
@@ -56,9 +56,9 @@ export default function DataLabCapabilities() {
       <div className="wrap relative z-10 max-w-6xl py-24">
         <ScrollReveal>
           <SectionHeader
-            label="What We Build"
-            title="The Full Analytics Toolkit"
-            subtitle="Every Data Lab project ships with transparent methodology, interactive exploration, and downloadable data."
+            label="Examples in the Collection"
+            title="Methods and Tools Shown on This Site"
+            subtitle="These cards describe topics represented in existing content; they are not a commitment to provide a service or deliverable."
             align="center"
             light
           />
@@ -76,7 +76,6 @@ export default function DataLabCapabilities() {
                 </div>
                 <h3 className="text-xl font-bold text-white mb-3">{cap.title}</h3>
                 <p className="text-sm text-gray-400 leading-relaxed">{cap.desc}</p>
-                {/* subtle glow on hover */}
                 <div
                   className="pointer-events-none absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
                   style={{ boxShadow: `inset 0 0 0 1px ${cap.glow}, 0 0 30px ${cap.glow}` }}

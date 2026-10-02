@@ -7,6 +7,11 @@ import {
 } from 'lucide-react';
 import { SUBJECTS, getLecture } from '@/lib/pgdm/curriculum';
 import JsonLd from '@/components/seo/JsonLd';
+import LessonCompletionControl from '@/components/learning/LessonCompletionControl';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
+import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms';
 import { TRACK_META } from '@/lib/pgdm/types';
 
 interface PageProps {
@@ -100,19 +105,6 @@ export default async function LecturePage({ params }: PageProps) {
         { '@type': 'ListItem', position: 3, name: lecture.title, item: `${BASE}/pgdm/${subject.slug}/${lecture.slug}` },
       ],
     },
-    ...(lecture.practice.length >= 3
-      ? [
-          {
-            '@context': 'https://schema.org',
-            '@type': 'FAQPage',
-            mainEntity: lecture.practice.slice(0, 5).map((p) => ({
-              '@type': 'Question',
-              name: p.q,
-              acceptedAnswer: { '@type': 'Answer', text: p.a },
-            })),
-          },
-        ]
-      : []),
   ];
 
   return (
@@ -420,6 +412,15 @@ export default async function LecturePage({ params }: PageProps) {
           </section>
         )}
 
+        {lecture.status === 'live' && (
+          <LessonCompletionControl
+            courseSlug={subject.slug}
+            lessonSlug={lecture.slug}
+            returnTo={`/pgdm/${subject.slug}/${lecture.slug}`}
+          />
+        )}
+        <RelatedFinanceTerms categories={[subject.track, TRACK_META[subject.track].label]} keywords={[subject.slug, subject.code.toLowerCase()]} title="Key finance terms in this lecture" limit={3} />
+
         {/* ── NEXT ── */}
         <nav className="flex items-center justify-between pt-6 border-t border-white/5">
           <Link href={`/pgdm/${subject.slug}`} className="text-xs text-gray-500 hover:text-teal-300 transition-colors font-medium">
@@ -430,6 +431,10 @@ export default async function LecturePage({ params }: PageProps) {
           </Link>
         </nav>
       </main>
+      <PromotionSlot placement="COURSE_PAGE" path={`/pgdm/${subject.slug}/${lecture.slug}`} contentType="COURSE" />
+      <RelatedContentSection sourceType="COURSE_LESSON" sourceSlug={`${subject.slug}/${lecture.slug}`} />
+      <RelatedContentSection sourceType="COURSE_LESSON" sourceSlug={`${subject.slug}/${lecture.slug}`} linkKind="CTA" />
+      <ContentFaq relatedType="COURSE_LESSON" relatedSlug={`${subject.slug}/${lecture.slug}`} />
     </div>
   );
 }

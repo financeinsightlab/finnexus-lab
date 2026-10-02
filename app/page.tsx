@@ -2,7 +2,11 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import Image from 'next/image';
 import SectionHeader from '@/components/ui/SectionHeader';
-import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
+import FinanceTermsCarousel from '@/components/finance-terms/FinanceTermsCarousel';
+import { getFeaturedFinanceTerms } from '@/lib/finance-terms';
 
 export const metadata: Metadata = {
   title: 'Home | Kunwar Analytics',
@@ -28,7 +32,6 @@ import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import RevealText from '@/components/ui/RevealText';
 import CinematicHero from '@/components/home/CinematicHero';
 import { getFeaturedResearch, getFeaturedInsights } from '@/lib/content';
-import { prisma } from '@/lib/prisma';
 import type { ResearchPost, InsightPost } from '@/types';
 import { GlobalForecastingTicker } from '@/components/ui/GlobalForecastingTicker';
 import CoursesSection from '@/components/study/CoursesSection';
@@ -39,7 +42,8 @@ async function getHomePagePosts() {
   // Try to get DB-driven featured selections first; fall back to static
   // content when the database is unreachable (e.g. local dev without a DB).
   try {
-    // Try to get DB-driven featured selections first
+    // Import only inside the guarded path so static content remains renderable without a database client.
+    const { prisma } = await import('@/lib/prisma');
     const [dbResearch, dbInsights, dbHeroStats, dbTrackers] = await Promise.all([
       prisma.featuredContent.findMany({ where: { section: 'RESEARCH' }, orderBy: { order: 'asc' } }),
       prisma.featuredContent.findMany({ where: { section: 'INSIGHTS' }, orderBy: { order: 'asc' } }),
@@ -100,44 +104,18 @@ async function getHomePagePosts() {
 }
 
 export default async function HomePage() {
-  const { research, insights, heroStats, trackers } = await getHomePagePosts();
-
-  // FAQ schema for GEO
-  const homeFaq = faqSchema([
-    {
-      question: 'What is Kunwar Analytics?',
-      answer:
-        'Kunwar Analytics is a financial intelligence platform that provides data-driven insights on markets, strategy, and capital. It offers institutional-quality research, business analytics, investment analysis, and educational study materials covering finance, data science, economics, and research methods.',
-    },
-    {
-      question: 'What topics does Kunwar Analytics cover?',
-      answer:
-        'Kunwar Analytics covers financial analysis, market research, business analytics, investment analysis, data science, economics, quantitative research methods, and portfolio management — with a focus on Indian and global markets.',
-    },
-    {
-      question: 'Is Kunwar Analytics free to use?',
-      answer:
-        'Yes, Kunwar Analytics provides free access to institutional-quality research, insights, and study materials. The platform also offers premium services and enterprise solutions for advanced analytics needs.',
-    },
-    {
-      question: 'What study materials are available on Kunwar Analytics?',
-      answer:
-        'The Study Material section offers educational resources across categories including Finance, Business Analytics, Research Methods, Data Science, Economics, and Investment Analysis. Materials range from beginner to advanced difficulty and include articles, courses, videos, PDFs, and notes.',
-    },
-    {
-      question: 'Who is Kunwar Analytics for?',
-      answer:
-        'Kunwar Analytics serves retail investors, financial analysts, business strategists, MBA students, and data science professionals seeking rigorous, data-backed financial intelligence and market analysis.',
-    },
-  ])
+  const [{ research, insights, heroStats, trackers }, featuredTerms] = await Promise.all([
+    getHomePagePosts(),
+    getFeaturedFinanceTerms(6).catch(() => []),
+  ]);
 
   const pillars = [
     { icon: '📊', title: 'Research Intelligence', desc: 'Deep-dive reports on market trends, competitive analysis, and strategic positioning.', href: '/research', glow: 'blue' as const, image: '/images/pillars/research-intelligence-v2.jpg' },
-    { icon: '📈', title: 'Data Analytics', desc: 'Quantitative insights with proprietary models and financial metrics.', href: '/about', glow: 'cyan' as const, image: '/images/pillars/data-analytics-v2.jpg' },
+    { icon: '📈', title: 'Data Analytics', desc: 'Quantitative perspectives and financial metrics for analysis.', href: '/about', glow: 'cyan' as const, image: '/images/pillars/data-analytics-v2.jpg' },
     { icon: '🧠', title: 'Strategic Insights', desc: 'Expert commentary on sector developments and investment opportunities.', href: '/insights', glow: 'violet' as const, image: '/images/pillars/strategic-insights-v2.jpg' },
     { icon: '🔧', title: 'Financial Tools', desc: 'Practical frameworks and calculators for financial analysis.', href: '/tools', glow: 'amber' as const, image: '/images/pillars/financial-tools-v2.jpg' },
     { icon: '📊', title: 'Data Lab', desc: 'Analytics projects, Power BI dashboards, and Python data analyses.', href: '/data-lab', glow: 'aurora' as const, image: '/images/pillars/data-lab-v2.jpg' },
-    { icon: '📁', title: 'Case Studies', desc: 'Consulting-quality engagements — Challenge to Outcome narratives.', href: '/case-studies', glow: 'blue' as const, image: '/images/pillars/case-studies-v2.jpg' },
+    { icon: '📁', title: 'Case Studies', desc: 'Case studies documenting challenges, analyses, and stated outcomes.', href: '/case-studies', glow: 'blue' as const, image: '/images/pillars/case-studies-v2.jpg' },
     { icon: '🎓', title: 'Study Material', desc: 'Learn finance, business analytics, and research methods — from beginner to advanced.', href: '/study', glow: 'cyan' as const, image: '/images/pillars/study-material-v2.jpg' },
   ]
 
@@ -150,11 +128,10 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* SEO + GEO: FAQ structured data for AI/LLM engines */}
-      <JsonLd data={homeFaq} />
-
       {/* ===== CINEMATIC HERO ===== */}
       <CinematicHero />
+      <FinanceTermsCarousel terms={featuredTerms} />
+      <PromotionSlot placement="HOME_SECTION" path="/" contentType="HOME" />
 
       {/* ===== PLATFORM PILLARS ===== */}
       <section className="relative py-28 bg-cinema-ink overflow-hidden">
@@ -246,9 +223,9 @@ export default async function HomePage() {
         <div className="wrap relative z-10">
           <ScrollReveal>
             <SectionHeader
-              label="Live Intelligence"
+              label="Stored Sector Indicators"
               title="Sector Intelligence Trackers"
-              subtitle="Quarterly-updated data across 8 Indian market sectors"
+              subtitle="Selected figures from stored sector content. This summary is not a live feed; source and refresh details are not shown for every figure."
               align="center"
               light
             />
@@ -278,7 +255,7 @@ export default async function HomePage() {
                     <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">{tracker.label}</p>
                     <p className="text-sm text-gray-400 mb-4">{tracker.metric}</p>
                     <div className="inline-flex items-center gap-1 px-3 py-1 glass-cinema-light text-amber-300 text-xs rounded-full">
-                      🔒 Full data: subscribers
+                      🔒 Full tracker sections require Pro access
                     </div>
                     </div>
                   </Link>
@@ -334,7 +311,7 @@ export default async function HomePage() {
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <MagneticButton3D href="/services" variant="solid" className="px-7 py-3 text-base">
-                Explore Services
+                View Enquiry Topics
               </MagneticButton3D>
               <MagneticButton3D href="/contact" variant="outline" className="px-7 py-3 text-base">
                 Get in Touch
@@ -389,6 +366,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      <RelatedContentSection sourceType="PAGE" sourceSlug="home" />
+      <ContentFaq relatedType="PAGE" relatedSlug="home" title="Frequently asked questions" />
+
       {/* ===== NEWSLETTER ===== */}
       <section className="relative py-24 bg-cinema-ink overflow-hidden">
         <div className="absolute inset-0 cinema-mesh opacity-30" />
@@ -397,8 +377,8 @@ export default async function HomePage() {
             <ScrollReveal>
               <SectionHeader
                 label="Stay Updated"
-                title="Subscribe to Our Newsletter"
-                subtitle="Get the latest research, insights, and market analysis delivered to your inbox"
+                title="Research Updates"
+                subtitle="Explore the latest research, insights, and market analysis. Newsletter email delivery is not currently configured."
                 align="center"
                 light
               />

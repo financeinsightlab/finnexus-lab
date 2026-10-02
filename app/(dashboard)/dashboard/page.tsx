@@ -13,6 +13,7 @@ import HeroBackground from '@/components/ui/HeroBackground';
 import { activeStreak, computeCourseProgress, rankNextLessons } from '@/lib/learning-progress';
 import { getActivityDates, listEnrollments } from '@/lib/learning-store';
 import { getCourse, getCourses } from '@/lib/pgdm/learning-adapter';
+import { resolveLearningCourse } from '@/lib/learning-courses';
 import {
   collectFreshContent,
   insightToItem,
@@ -23,6 +24,9 @@ import { getAllInsights, getAllResearch } from '@/lib/content';
 import { getPublishedStudyMaterials } from '@/lib/study';
 import { readLastVisit } from '@/lib/visit-store';
 import VisitMarker from '@/components/dashboard/VisitMarker';
+
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 function initialsFrom(nameOrEmail: string | null | undefined) {
   const str = (nameOrEmail ?? '').trim();
@@ -121,20 +125,20 @@ export default async function DashboardPage() {
 
   const streak = activeStreak(activityDates, new Date().toISOString().slice(0, 10));
 
-  const courseProgress = enrollments
-    .map((enrollment) => {
-      const course = getCourse(enrollment.courseSlug);
-      if (!course) return null;
-      const progress = computeCourseProgress(course, toStates(course.slug));
-      const nextLesson = course.lessons.find((l) => l.slug === progress.nextLessonSlug) ?? null;
-      return { course, progress, nextLesson };
-    })
-    .filter((value): value is NonNullable<typeof value> => value !== null);
+  const resolvedCourseProgress = await Promise.all(enrollments.map(async (enrollment) => {
+    const course = await resolveLearningCourse(enrollment.courseSlug).catch(() => undefined);
+    if (!course) return null;
+    const progress = computeCourseProgress(course, toStates(course.slug));
+    const nextLesson = course.lessons.find((lesson) => lesson.slug === progress.nextLessonSlug) ?? null;
+    return { course, progress, nextLesson, isPgdm: Boolean(getCourse(course.slug)) };
+  }));
+  const courseProgress = resolvedCourseProgress.filter((value): value is NonNullable<typeof value> => value !== null);
 
   const activeCourse =
-    courseProgress.find((c) => !c.progress.isComplete) ?? courseProgress[0] ?? null;
+    courseProgress.find((course) => !course.progress.isComplete) ?? courseProgress[0] ?? null;
 
   const recommendationCourse = activeCourse?.course ?? getCourses()[0];
+  const recommendationIsPgdm = activeCourse?.isPgdm ?? Boolean(recommendationCourse && getCourse(recommendationCourse.slug));
   const recommendations = recommendationCourse
     ? rankNextLessons(recommendationCourse, toStates(recommendationCourse.slug), {
       recentTags: recommendationCourse.tags,
@@ -142,6 +146,10 @@ export default async function DashboardPage() {
     })
     : [];
   const recommendationCourseSlug = recommendationCourse?.slug ?? '';
+  const courseHref = (courseSlug: string, lessonSlug?: string | null, pgdm = true) => {
+    if (!pgdm) return lessonSlug ? `/study/${courseSlug}/lessons/${lessonSlug}` : `/study/${courseSlug}`;
+    return lessonSlug ? `/pgdm/${courseSlug}/${lessonSlug}` : `/pgdm/${courseSlug}`;
+  };
 
   // ─── New since your last visit (Pillar F4) ──────────────────────────────────
   // `readLastVisit` returns the marker recorded on the previous visit; on a
@@ -216,8 +224,7 @@ export default async function DashboardPage() {
                   complete
                 </p>
                 <Link
-                  href={`/pgdm/${activeCourse.course.slug}${activeCourse.nextLesson ? `/${activeCourse.nextLesson.slug}` : ''
-                    }`}
+                  href={courseHref(activeCourse.course.slug, activeCourse.nextLesson?.slug, activeCourse.isPgdm)}
                   className="btn btn-primary mt-4 inline-flex"
                 >
                   {activeCourse.nextLesson
@@ -240,7 +247,7 @@ export default async function DashboardPage() {
                     recommendations.map((rec) => (
                       <li key={rec.lesson.slug}>
                         <Link
-                          href={`/pgdm/${recommendationCourseSlug}/${rec.lesson.slug}`}
+                          href={courseHref(recommendationCourseSlug, rec.lesson.slug, recommendationIsPgdm)}
                           className="font-semibold text-brand-navy hover:text-brand-teal line-clamp-1"
                         >
                           {rec.lesson.title}
@@ -271,7 +278,7 @@ export default async function DashboardPage() {
               {courseProgress.map((c) => (
                 <Link
                   key={c.course.slug}
-                  href={`/pgdm/${c.course.slug}`}
+                  href={courseHref(c.course.slug, undefined, c.isPgdm)}
                   className="text-xs font-semibold text-brand-slate hover:text-brand-teal"
                 >
                   {c.course.title} · {c.progress.percent}%

@@ -9,6 +9,9 @@ export const metadata: Metadata = {
     'Monitor the freshness of all statistics cited across Kunwar Analytics research. Identify stale data before it misleads.',
 };
 
+// This page includes database-backed research; do not bake a DB fallback into static output.
+export const dynamic = 'force-dynamic';
+
 // Only runs server-side — reads MDX files
 function getStatusLabel(status: ParsedFreshStat['status']) {
   if (status === 'fresh') return '🟢 Fresh';

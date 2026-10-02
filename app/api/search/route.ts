@@ -10,16 +10,24 @@ export const dynamic = 'force-dynamic';
  * GET /api/search?q=quick+commerce&perKind=8
  */
 export async function GET(request: NextRequest) {
-    const q = request.nextUrl.searchParams.get('q') ?? '';
+    const q = (request.nextUrl.searchParams.get('q') ?? '').trim();
+    if (q.length > 200) {
+        return NextResponse.json({ error: 'Search query is too long.' }, { status: 400 });
+    }
     const perKindRaw = Number(request.nextUrl.searchParams.get('perKind'));
-    const perKind = Number.isFinite(perKindRaw) && perKindRaw > 0 ? Math.min(perKindRaw, 50) : 8;
+    const perKind = Number.isFinite(perKindRaw) && perKindRaw > 0 ? Math.min(perKindRaw, 20) : 8;
 
     try {
         const result = await searchContent(q, { perKind });
-        return NextResponse.json(result);
+        return NextResponse.json(result, {
+            headers: {
+                // Results depend only on the public query and public content.
+                'Cache-Control': 'public, s-maxage=60, stale-while-revalidate=300',
+            },
+        });
     } catch (error) {
         logger.error('Unified search failed', {
-            query: q,
+            queryLength: q.length,
             error: error instanceof Error ? error.message : String(error),
         });
         return NextResponse.json({ error: 'Search failed' }, { status: 500 });

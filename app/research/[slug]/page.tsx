@@ -13,6 +13,9 @@ import { ChevronLeft, Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, S
 import React from 'react';
 import { CommentSection } from '@/components/ui/CommentSection';
 import JsonLd, { articleSchema } from '@/components/seo/JsonLd';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -307,6 +310,10 @@ export default async function ResearchReportPage({ params }: { params: Promise<{
           </div>
         </main>
       </div>
+      <PromotionSlot placement="RESEARCH_PAGE" path={`/research/${slug}`} contentType="RESEARCH" />
+      <RelatedContentSection sourceType="RESEARCH" sourceSlug={slug} />
+      <RelatedContentSection sourceType="RESEARCH" sourceSlug={slug} linkKind="CTA" />
+      <ContentFaq relatedType="RESEARCH" relatedSlug={slug} />
     </>
   );
 }

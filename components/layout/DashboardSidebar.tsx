@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useSession } from 'next-auth/react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -28,9 +29,13 @@ const CLUSTER_ICONS: Record<string, LucideIcon> = {
 };
 
 export default function DashboardSidebar() {
+  const { status } = useSession();
   const [collapsed, setCollapsed] = useState(false);
   const [expanded, setExpanded] = useState<string | null>(null);
   const pathname = usePathname();
+
+  // Keep session-dependent navigation out of the server-rendered public shell.
+  if (status !== 'authenticated') return null;
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
 

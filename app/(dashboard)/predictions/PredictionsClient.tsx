@@ -1,9 +1,10 @@
 "use client"
 
 import { useState, useMemo } from 'react'
+import { useSession } from 'next-auth/react'
 import Link from 'next/link'
 import HeroBackground from '@/components/ui/HeroBackground'
-import type { PredictionWithAuthor } from '@/lib/predictions'
+import type { PublicPrediction } from '@/lib/predictions'
 import { createCommunityPrediction } from '@/actions/community-predictions'
 import { VerificationBadge } from '@/components/ui/VerificationBadge'
 import CommentsSection from '@/components/comments/CommentsSection'
@@ -19,11 +20,9 @@ interface PredictionStats {
 }
 
 interface PredictionsClientProps {
-  predictions: PredictionWithAuthor[]
+  predictions: PublicPrediction[]
   sectors: string[]
   stats: PredictionStats
-  isLoggedIn: boolean
-  isAdmin: boolean
 }
 
 const STATUS_CONFIG = {
@@ -37,7 +36,10 @@ function slugify(str: string) {
   return (str ?? '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')
 }
 
-export default function PredictionsClient({ predictions, sectors, stats, isLoggedIn, isAdmin }: PredictionsClientProps) {
+export default function PredictionsClient({ predictions, sectors, stats }: PredictionsClientProps) {
+  const { data: session, status: sessionStatus } = useSession()
+  const isLoggedIn = sessionStatus === 'authenticated'
+  const isAdmin = isLoggedIn && session?.user?.role === 'ADMIN'
   const [activeSector, setActiveSector] = useState('All')
   const [activeStatus, setActiveStatus] = useState('All')
 
@@ -165,9 +167,13 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
 
                       <div className="flex items-center justify-between pt-4 border-t border-white/5 text-xs">
                         <div className="flex items-center gap-2">
-                          <Link href={`/authors/${authorSlug}`} className="font-bold text-teal-400 hover:text-teal-300">
-                            {p.author.name}
-                          </Link>
+                          {p.author.id === 'private' ? (
+                            <span className="font-bold text-slate-400">Private analyst</span>
+                          ) : (
+                            <Link href={`/authors/${authorSlug}`} className="font-bold text-teal-400 hover:text-teal-300">
+                              {p.author.name}
+                            </Link>
+                          )}
                         </div>
                         <span className={isPast ? 'text-red-400 font-mono font-bold' : 'text-slate-400 font-mono'}>
                           {isPast ? `Resolved ${Math.abs(daysLeft)}d ago` : `${daysLeft}d left`}
@@ -193,7 +199,9 @@ export default function PredictionsClient({ predictions, sectors, stats, isLogge
             </h2>
 
             {/* Input Form */}
-            {isLoggedIn ? (
+            {sessionStatus === 'loading' ? (
+              <div role="status" aria-label="Checking sign-in status" className="h-24 rounded-2xl bg-[#1A1F2E] border border-white/10 animate-pulse" />
+            ) : isLoggedIn ? (
               <form action={createCommunityPrediction} className="bg-[#1A1F2E] p-4 rounded-2xl border border-teal-500/30 shadow-[0_0_15px_rgba(13,110,110,0.15)] space-y-3">
                 <p className="text-xs font-bold text-teal-400 uppercase tracking-widest mb-2">Publish a Prediction</p>
                 <textarea

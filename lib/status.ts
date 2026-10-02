@@ -1,16 +1,18 @@
 // lib/status.ts — product surface status (what's live vs. configured)
 //
-// Small, shared helper so the UI and the docs agree on which optional
-// integrations are active. Everything here is derived from env at runtime, so
-// adding a key "lights up" the corresponding feature with no code change.
+// Small, shared helper so the UI and public status endpoint describe actual
+// feature availability. Intentionally disabled capabilities stay disabled even
+// if a legacy provider key is present.
 
 export interface FeatureStatus {
     /** Stable key, e.g. `stripe`. */
     id: string;
     label: string;
-    /** True when the feature is fully usable right now. */
+    /** True when the feature is available in the current application. */
     enabled: boolean;
-    /** What unlocks it when disabled. */
+    /** Distinguish configuration gaps from features intentionally disabled by policy. */
+    state: 'available' | 'not-configured' | 'disabled';
+    /** Current availability note or what would be needed to unlock it. */
     requires: string;
     pillar: string;
 }
@@ -26,63 +28,72 @@ export function featureStatus(): FeatureStatus[] {
             id: 'ask-kunwar',
             label: 'Ask Kunwar (retrieval Q&A)',
             enabled: true,
-            requires: '—',
+            state: 'available',
+            requires: 'Local grounded answers work without a provider; Hugging Face is separately opt-in.',
             pillar: 'B1',
         },
         {
             id: 'hybrid-search',
-            label: 'Hybrid search (lexical + optional vectors)',
+            label: 'Site search (lexical retrieval)',
             enabled: true,
-            requires: 'Lexical works now; vectors need EMBEDDING_API_KEY',
+            state: 'available',
+            requires: 'Lexical retrieval is available; vector/embedding search is not enabled.',
             pillar: 'B2',
         },
         {
             id: 'live-metrics',
             label: 'Live metrics (FX + World Bank)',
             enabled: true,
-            requires: '—',
+            state: 'available',
+            requires: 'Daily reference FX and World Bank data; not intraday market quotes.',
             pillar: 'C1',
         },
         {
             id: 'freshness-sla',
             label: 'Freshness SLAs + worklist',
             enabled: true,
-            requires: '—',
+            state: 'available',
+            requires: 'Freshness checks and the existing worklist are available.',
             pillar: 'C4',
         },
         {
             id: 'progress',
             label: 'Persisted learning progress',
             enabled: env('DATABASE_URL'),
-            requires: 'DATABASE_URL + Enrollment migration',
+            state: env('DATABASE_URL') ? 'available' : 'not-configured',
+            requires: 'Database-backed progress features depend on DATABASE_URL and the available schema.',
             pillar: 'E1/E3',
         },
         {
             id: 'pwa',
             label: 'Installable PWA',
             enabled: true,
+            state: 'available',
             requires: '—',
             pillar: 'F3',
         },
         {
             id: 'error-reporting',
-            label: 'Error reporting sink',
+            label: 'Application error logging',
             enabled: true,
-            requires: 'Logs now; set SENTRY_DSN for Sentry/any sink',
+            state: 'available',
+            requires: 'Server logs are available; no external monitoring service is configured by this feature.',
             pillar: 'G1',
         },
         {
             id: 'stripe',
-            label: 'Stripe billing (checkout + portal + webhooks)',
-            enabled: env('STRIPE_SECRET_KEY'),
-            requires: 'STRIPE_SECRET_KEY + STRIPE_WEBHOOK_SECRET (free test mode)',
+            label: 'Stripe checkout and billing',
+            enabled: false,
+            state: 'disabled',
+            requires: 'Intentionally disabled; paid self-service checkout uses manual UPI with administrator review.',
             pillar: 'A1',
         },
         {
             id: 'email',
-            label: 'Transactional email (digests, alerts)',
-            enabled: env('RESEND_API_KEY'),
-            requires: 'RESEND_API_KEY (free tier)',
+            label: 'Transactional email delivery',
+            enabled: false,
+            state: 'disabled',
+            requires: 'Email delivery is not implemented; no provider key activates certificate or payment emails.',
             pillar: 'D3/G3',
         },
     ];

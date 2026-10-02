@@ -2,12 +2,7 @@
 
 import { useMemo, useState } from 'react';
 import Link from 'next/link';
-import {
-    CERTIFICATE_VERIFY_BASE,
-    type Certificate,
-    type CertificateCategory,
-    type CertificateLevel,
-} from '@/lib/certificates';
+import type { Certificate, CertificateCategory, CertificateLevel } from '@/lib/certificates';
 
 interface CertificatesClientProps {
     certificates: Certificate[];
@@ -30,56 +25,14 @@ const LEVEL_STYLE: Record<CertificateLevel, string> = {
     Professional: 'bg-rose-100 text-rose-700 dark:bg-rose-500/10 dark:text-rose-300',
 };
 
-function linkedInUrl(certificate: Certificate): string {
-    const params = new URLSearchParams({
-        startTask: 'CERTIFICATION_NAME',
-        name: certificate.title,
-        organizationName: 'Kunwar Analytics',
-        issueYear: String(new Date().getFullYear()),
-        certUrl: `${CERTIFICATE_VERIFY_BASE}/${certificate.slug}`,
-        certId: certificate.slug,
-    });
-    certificate.skills.slice(0, 5).forEach((skill) => params.append('skill', skill));
-    return `https://www.linkedin.com/profile/add?${params.toString()}`;
-}
-
-function VerifyWidget() {
-    const [credentialId, setCredentialId] = useState('');
-    const trimmed = credentialId.trim();
-    const href = trimmed ? `${CERTIFICATE_VERIFY_BASE}/${encodeURIComponent(trimmed)}` : '';
-
+function CredentialStatusNotice() {
     return (
-        <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#111c31]">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Verify a credential</h3>
-            <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-                Enter the credential ID printed on the certificate to confirm it was issued by Kunwar Analytics.
+        <aside className="rounded-2xl border border-amber-300/30 bg-amber-50 p-6 dark:border-amber-400/20 dark:bg-amber-500/5">
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">Credential status</h2>
+            <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+                These pages are pathway catalogue listings, not proof of completion. Where a course has a published final test, a private completion record is created only after all published lessons are completed and the learner passes. That record is unsigned and has no public or cryptographic verification. Do not list a pathway entry as an earned certificate.
             </p>
-            <div className="mt-4 flex flex-col gap-3 sm:flex-row">
-                <input
-                    type="text"
-                    value={credentialId}
-                    onChange={(event) => setCredentialId(event.target.value)}
-                    placeholder="e.g. financial-modelling-foundation"
-                    aria-label="Credential ID"
-                    className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 outline-none focus:border-teal-500 focus:ring-2 focus:ring-teal-500/20 dark:border-white/15 dark:bg-[#0f1522] dark:text-white"
-                />
-                <Link
-                    href={href || '#'}
-                    aria-disabled={!trimmed}
-                    className={`inline-flex shrink-0 items-center justify-center gap-1 rounded-lg px-4 py-2 text-sm font-semibold transition-colors ${trimmed
-                            ? 'bg-teal-600 text-white hover:bg-teal-700'
-                            : 'pointer-events-none bg-slate-200 text-slate-400 dark:bg-white/10 dark:text-slate-500'
-                        }`}
-                >
-                    Verify →
-                </Link>
-            </div>
-            {trimmed && (
-                <p className="mt-3 break-all text-xs text-slate-400">
-                    Verification record: <span className="font-mono text-slate-500 dark:text-slate-300">{href}</span>
-                </p>
-            )}
-        </div>
+        </aside>
     );
 }
 
@@ -97,8 +50,6 @@ export default function CertificatesClient({ certificates, categories }: Certifi
         [certificates, category, level],
     );
 
-    const freeCount = certificates.filter((certificate) => certificate.free).length;
-
     return (
         <div className="min-h-screen bg-slate-50 dark:bg-[#0a1120]">
             {/* Hero */}
@@ -109,18 +60,16 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                     <nav className="mb-6 flex items-center gap-2 text-sm text-slate-400">
                         <Link href="/" className="transition-colors hover:text-white">Home</Link>
                         <span>/</span>
-                        <span className="text-teal-300">Certificates</span>
+                        <span className="text-teal-300">Certificate pathways</span>
                     </nav>
                     <p className="mb-4 text-xs font-semibold uppercase tracking-[0.25em] text-teal-300">
-                        Verifiable credentials
+                        Learning-pathway catalogue
                     </p>
                     <h1 className="max-w-3xl text-3xl font-bold leading-tight md:text-4xl">
-                        Earn credentials that prove what you can actually do
+                        Explore finance, analytics and strategy pathways
                     </h1>
                     <p className="mt-5 max-w-2xl text-lg text-white/70">
-                        Each certificate maps to a learning track and is assessed on real deliverables.
-                        {' '}{freeCount} of {certificates.length} credentials can be earned for free, and every
-                        issued credential has a public verification record.
+                        These entries describe learning pathways and proposed assessments; they are not themselves credentials. Separately, an enabled course may issue a private, unsigned completion record after the published lesson criteria and final test are passed. No public credential verification is provided.
                     </p>
                 </div>
             </header>
@@ -178,11 +127,6 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                                     <span className={`rounded-full px-3 py-1 text-xs font-semibold ${LEVEL_STYLE[certificate.level]}`}>
                                         {certificate.level}
                                     </span>
-                                    {certificate.free && (
-                                        <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-semibold text-emerald-700 dark:bg-emerald-500/10 dark:text-emerald-300">
-                                            Free
-                                        </span>
-                                    )}
                                 </div>
 
                                 <h2 className="text-lg font-bold text-slate-900 dark:text-white">{certificate.title}</h2>
@@ -194,7 +138,7 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                                     <div className="flex items-center gap-2 text-slate-500 dark:text-slate-400">
                                         <span className="font-semibold text-slate-700 dark:text-slate-200">⏱ {certificate.hours}h</span>
                                         <span aria-hidden>•</span>
-                                        <span>{certificate.assessment}</span>
+                                        <span>Proposed assessment (not available): {certificate.proposedAssessment}</span>
                                     </div>
                                 </dl>
 
@@ -217,14 +161,12 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                                         {certificate.track.label}
                                         <span className="transition-transform group-hover:translate-x-0.5">→</span>
                                     </Link>
-                                    <a
-                                        href={linkedInUrl(certificate)}
-                                        target="_blank"
-                                        rel="noopener noreferrer"
-                                        className="text-xs font-medium text-slate-400 transition-colors hover:text-[#0a66c2]"
+                                    <Link
+                                        href={`/certificates/${certificate.slug}`}
+                                        className="text-xs font-medium text-slate-400 transition-colors hover:text-teal-500"
                                     >
-                                        Add to LinkedIn
-                                    </a>
+                                        Pathway details →
+                                    </Link>
                                 </div>
                             </article>
                         ))}
@@ -232,7 +174,7 @@ export default function CertificatesClient({ certificates, categories }: Certifi
                 )}
 
                 <div className="mt-12">
-                    <VerifyWidget />
+                    <CredentialStatusNotice />
                 </div>
             </main>
         </div>

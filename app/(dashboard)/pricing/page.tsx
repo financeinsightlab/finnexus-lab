@@ -1,7 +1,10 @@
-﻿// FILE: app/(dashboard)/pricing/page.tsx
+// FILE: app/(dashboard)/pricing/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 import {
   PLAN_CATALOG,
   getPlanDefinition,
@@ -12,6 +15,7 @@ import {
 export const metadata: Metadata = {
   title: 'Pricing | Kunwar Analytics',
   description: 'Simple, transparent pricing for financial intelligence. Start free and upgrade as you grow.',
+  alternates: { canonical: '/pricing' },
 };
 
 /** Presentation-only styling per plan; commercial + feature data comes from the catalog. */
@@ -45,28 +49,6 @@ const PLANS = (Object.keys(PLAN_CATALOG) as PlanId[]).map((id) => {
   };
 });
 
-const FAQS = [
-  {
-    question: 'Can I cancel my subscription at any time?',
-    answer: 'Yes, you can cancel your subscription at any time. Your access will continue until the end of your current billing period, and you won\'t be charged for the next cycle.',
-  },
-  {
-    question: 'What payment methods do you accept?',
-    answer: 'We accept all major credit cards (Visa, MasterCard, American Express), UPI, and bank transfers. All payments are processed securely through our payment partners.',
-  },
-  {
-    question: 'What is the API access included in Pro plans?',
-    answer: 'Pro subscribers get access to our REST API for programmatic access to research data, market insights, and analytical tools. The API includes 100 requests per day with higher limits available for Elite plans.',
-  },
-  {
-    question: 'Can I get a refund if I\'m not satisfied?',
-    answer: 'We offer a 30-day money-back guarantee for all paid plans. If you\'re not completely satisfied with our service, contact our support team within 30 days of your first payment for a full refund.',
-  },
-  {
-    question: 'Is there a student or academic discount?',
-    answer: 'Yes! We offer 50% off for verified students and academic institutions. Contact our team with your academic credentials to apply for the discount.',
-  },
-];
 
 export default function PricingPage() {
   return (
@@ -152,36 +134,21 @@ export default function PricingPage() {
         </div>
       </section>
 
-      {/* FAQ Section */}
-      <section className="bg-brand-silver py-16">
-        <div className="max-w-4xl mx-auto px-6">
-          <h2 className="text-3xl font-bold text-center text-brand-navy mb-12">
-            Frequently Asked Questions
-          </h2>
-          <div className="space-y-6">
-            {FAQS.map((faq, index) => (
-              <div key={index} className="card p-5">
-                <h3 className="text-lg font-bold text-brand-navy mb-3">
-                  {faq.question}
-                </h3>
-                <p className="text-gray-700">{faq.answer}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+      <PromotionSlot placement="BETWEEN_CONTENT" path="/pricing" contentType="PAGE" />
+      <RelatedContentSection sourceType="PAGE" sourceSlug="pricing" linkKind="CTA" />
+      <ContentFaq relatedType="PAGE" relatedSlug="pricing" title="Pricing questions" />
 
       {/* Enterprise CTA */}
       <section className="bg-brand-navy py-16 text-center">
         <div className="max-w-4xl mx-auto px-6">
           <h2 className="text-3xl font-bold text-white mb-4">
-            Need a team or enterprise plan?
+            Have a team or enterprise enquiry?
           </h2>
           <p className="text-xl text-gray-300 mb-8">
-            Custom solutions for large teams and enterprises with advanced features and dedicated support.
+            Team and Enterprise packages are not available through self-service checkout. Contact us to ask about current availability; no features or service level are promised by this enquiry.
           </p>
           <Link href="/enterprise" className="btn-white">
-            Learn About Enterprise
+            Organization enquiry
           </Link>
         </div>
       </section>

@@ -131,8 +131,8 @@ export default function ContactForm() {
         <div>
           <h2 className="text-xl font-bold text-brand-navy dark:text-white">Message sent</h2>
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            Thanks for reaching out. I'll get back to you within 24–48 hours. If it's urgent,
-            email <a href="mailto:kunwaranalytics@gmail.com" className="text-brand-teal underline">kunwaranalytics@gmail.com</a>.
+            Thanks for reaching out. Your enquiry has been submitted for review; response timing may vary.
+            You can also contact <a href="mailto:kunwaranalytics@gmail.com" className="text-brand-teal underline">kunwaranalytics@gmail.com</a>.
           </p>
         </div>
         <button

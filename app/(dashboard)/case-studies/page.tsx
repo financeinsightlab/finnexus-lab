@@ -12,6 +12,9 @@ export const metadata: Metadata = {
   description: 'Business and strategy case studies with data — how Indian companies price, scale and compete, with the numbers behind each decision.',
 };
 
+// Runtime database reads keep CMS case studies fresh when the build has no DB access.
+export const dynamic = 'force-dynamic';
+
 const BASE = 'https://kunwaranalytics.in';
 
 export default async function CaseStudiesPage() {
@@ -24,6 +27,7 @@ export default async function CaseStudiesPage() {
     dbStudies = await (prisma as any).post.findMany({
       where: { type: 'CASE_STUDY', published: true },
       orderBy: { createdAt: 'desc' },
+      select: { slug: true, title: true, createdAt: true, excerpt: true },
     });
   } catch (e) {
     console.error('Case Studies DB fetch failed:', e);

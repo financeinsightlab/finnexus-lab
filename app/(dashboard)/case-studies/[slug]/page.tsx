@@ -9,6 +9,9 @@ import { getCaseStudyBySlug, getAllCaseStudies } from '@/lib/content';
 import JsonLd from '@/components/seo/JsonLd';
 import { prisma } from '@/lib/prisma';
 import ContentRenderer from '@/components/ContentRenderer';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 const BASE = 'https://kunwaranalytics.in';
 
@@ -75,6 +78,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
             <ContentRenderer content={dbPost.content} contentType={dbPost.contentType} blocks={dbPost.blockContent} />
           </div>
         </article>
+        <PromotionSlot placement="ARTICLE_PAGE" path={`/case-studies/${slug}`} contentType="CASE_STUDY" />
+        <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={slug} />
+        <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={slug} linkKind="CTA" />
+        <ContentFaq relatedType="CASE_STUDY" relatedSlug={slug} />
       </div>
     );
   }
@@ -268,6 +275,10 @@ export default async function CaseStudyPage({ params }: { params: Promise<{ slug
           </div>
         </div>
       </section>
+      <PromotionSlot placement="ARTICLE_PAGE" path={`/case-studies/${caseStudy.slug}`} contentType="CASE_STUDY" />
+      <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={caseStudy.slug} />
+      <RelatedContentSection sourceType="CASE_STUDY" sourceSlug={caseStudy.slug} linkKind="CTA" />
+      <ContentFaq relatedType="CASE_STUDY" relatedSlug={caseStudy.slug} />
     </div>
   );
 }

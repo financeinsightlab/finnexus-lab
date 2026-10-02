@@ -38,8 +38,6 @@ export const metadata: Metadata = {
   ],
 }
 
-export const dynamic = 'force-dynamic'
-
 export default function PlacementPrepPage() {
   const crumbs = breadcrumbSchema([
     { name: 'Home', url: 'https://kunwaranalytics.in' },

@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-    brierScore,
     buildCalibration,
     countByStatus,
     outcomeOf,
@@ -60,23 +59,6 @@ describe('countByStatus', () => {
     });
 });
 
-describe('brierScore', () => {
-    it('is 0 for a perfect record', () => {
-        expect(brierScore([prediction('CONFIRMED'), prediction('CONFIRMED')])).toBe(0);
-    });
-
-    it('penalises misses and ignores pending predictions', () => {
-        // two misses → (0-1)^2 averaged = 1
-        expect(brierScore([prediction('INCORRECT'), prediction('INCORRECT')])).toBe(1);
-        // one hit, one miss → 0.5
-        expect(brierScore([prediction('CONFIRMED'), prediction('INCORRECT')])).toBe(0.5);
-        // partial counts as 0.5 → (0.5-1)^2 = 0.25
-        expect(brierScore([prediction('PARTIAL')])).toBe(0.25);
-        // pending is not scored
-        expect(brierScore([prediction('PENDING')])).toBe(0);
-    });
-});
-
 describe('streaks', () => {
     it('finds the longest and current runs of confirmed results', () => {
         const result = streaks(
@@ -112,8 +94,8 @@ describe('buildCalibration', () => {
         expect(stats.resolved).toBe(3);
         // (1 + 0.5 + 0) / 3 * 100 = 50
         expect(stats.weightedAccuracy).toBe(50);
-        // ((0)^2 + (0.5)^2 + (1)^2) / 3 = 0.4166… → 0.417
-        expect(stats.brierScore).toBe(0.417);
+        // Strict hit rate is 1 confirmed out of 3 resolved predictions.
+        expect(stats.hitRate).toBe(33.3);
         expect(stats.distinctSectors).toBe(2);
         expect(stats.earliestResolve?.toISOString()).toBe('2026-01-01T00:00:00.000Z');
     });
@@ -122,7 +104,7 @@ describe('buildCalibration', () => {
         const stats = buildCalibration([], AS_OF);
         expect(stats.total).toBe(0);
         expect(stats.weightedAccuracy).toBe(0);
-        expect(stats.brierScore).toBe(0);
+        expect(stats.hitRate).toBeNull();
         expect(stats.earliestResolve).toBeNull();
     });
 });

@@ -46,14 +46,9 @@ study materials, in one Next.js application.
    npm install
    ```
 
-2. **Configure environment** — copy the template and fill in the values:
-
-   ```bash
-   cp .env.example .env.local
-   ```
-
-   Required at minimum: `DATABASE_URL`, `AUTH_SECRET`, `AUTH_URL`. See [`.env.example`](.env.example)
-   for the full list (Google OAuth, Blob storage, Algolia, GA4, Search Console).
+2. **Configure environment** — set the required server variables `DATABASE_URL`, `AUTH_SECRET`, and
+   `AUTH_URL` in `.env.local` (keep that file out of Git). Add optional integration secrets only when
+   needed; see [`docs/ASK-KUNWAR.md`](docs/ASK-KUNWAR.md) for the Hugging Face opt-in and handling rules.
 
 3. **Set up the database**
 
@@ -142,38 +137,53 @@ Unit tests live alongside the code in `lib/**/*.test.ts` and focus on pure domai
 
 ## V2 roadmap status
 
-The [V2 product vision](docs/V2-PRODUCT-VISION.md) is delivered in pillars. The self-contained,
-provider-agnostic pieces ship today; the rest are staged behind a service key or a schema migration.
+This branch contains an incremental V2 hardening pass. ESLint passes with existing warnings, and the
+new pure-domain tests pass. A successful Prisma client generation, full test run, typecheck, and production
+build are still blocked or incomplete in this environment. See the pull
+request summary for exact verification results and remaining blockers.
 
-### Shipped
+### Current branch changes
 
-| Pillar | What | Where |
-| --- | --- | --- |
-| C — Trust | Public **Prediction Ledger** with transparent calibration (weighted accuracy, Brier score, streaks), per-sector breakdown, CSV export, and a schema.org `Dataset` for answer engines | [`lib/calibration.ts`](lib/calibration.ts:1), [`app/(dashboard)/predictions/ledger/page.tsx`](<app/(dashboard)/predictions/ledger/page.tsx:1>) |
-| E — Credentials | **W3C Verifiable Credential / Open Badge 3.0** documents emitted as JSON-LD on every certificate page (verifiable URN + code) | [`lib/credentials.ts`](lib/credentials.ts:1), [`app/(dashboard)/certificates/[slug]/page.tsx`](<app/(dashboard)/certificates/[slug]/page.tsx:1>) |
-| F — Experience | Global **⌘K / Ctrl-K command palette** wired to the unified search API, arrow-key navigation | [`components/ui/CommandPalette.tsx`](components/ui/CommandPalette.tsx:1) |
-| F — PWA | **Installable PWA**: web-app manifest with shortcuts + production service-worker registrar | [`public/manifest.json`](public/manifest.json:1), [`components/pwa/ServiceWorkerRegistrar.tsx`](components/pwa/ServiceWorkerRegistrar.tsx:1) |
-| A — Monetization | **Stripe Checkout + Billing Portal + signed webhooks** with dependency-free REST client; maps the subscription lifecycle (including `PAST_DUE` dunning) onto `subscriptionPlan`/`subscriptionStatus` so entitlements always match reality. Checkout `/checkout/[plan]`, account Billing tab | [`lib/billing.ts`](lib/billing.ts:1), [`lib/stripe.ts`](lib/stripe.ts:1), [`app/api/checkout/route.ts`](app/api/checkout/route.ts:1), [`app/api/webhooks/stripe/route.ts`](app/api/webhooks/stripe/route.ts:1) |
-| B — "Ask Kunwar" RAG | Retrieval Q&A with citations and a **free local fallback**; only embeddings are optional | [`lib/retrieval-qa.ts`](lib/retrieval-qa.ts:1), [`app/api/ask/route.ts`](app/api/ask/route.ts:1) |
-| C — Live data | **Free public APIs** (FX + World Bank) with per-metric provenance and ingest cron | [`lib/live-data.ts`](lib/live-data.ts:1), [`app/api/metrics/live/route.ts`](app/api/metrics/live/route.ts:1) |
-| D — Comments 2.0 | Threaded comments, reactions, follow graph and notification preferences | [`lib/comments-store.ts`](lib/comments-store.ts:1), [`components/comments/CommentsSection.tsx`](components/comments/CommentsSection.tsx:1) |
-| E — Progress | Persisted, adaptive learning paths with streaks and recommendations | [`lib/learning-progress.ts`](lib/learning-progress.ts:1), [`app/api/learning/route.ts`](app/api/learning/route.ts:1) |
-| F — i18n | Dependency-free locale layer (en-IN / en-US) with formatters + navbar switcher | [`lib/i18n/`](lib/i18n/config.ts:1), [`components/i18n/LocaleSwitcher.tsx`](components/i18n/LocaleSwitcher.tsx:1) |
-| G — Observability | Error-reporting sink (logs by default, `SENTRY_DSN` optional) + job queue + publish pipeline | [`lib/observability.ts`](lib/observability.ts:1), [`lib/jobs-store.ts`](lib/jobs-store.ts:1) |
+- Manual UPI submissions are stored as `PENDING` until an administrator approves or rejects them.
+  Only approval grants a one-calendar-month entitlement; renewal is another manually reviewed payment.
+  No payment screenshots or card data are stored. The additive migration is
+  [`prisma/migrations/add_manual_upi_payments/migration.sql`](prisma/migrations/add_manual_upi_payments/migration.sql)
+  and has **not** been applied to production.
+- Premium calculator/sector metrics are gated on the server. Public prediction and comment responses
+  omit private account data, private profiles are excluded from author pages, and public comments are
+  limited to visible records. Rate limits use the existing PostgreSQL database.
+- Ask Kunwar uses retrieved site knowledge, citations, and a local fallback. Optional Hugging Face
+  inference is off unless `HUGGINGFACE_INFERENCE_ENABLED=true` and the existing server-side
+  `HUGGINGFACE_API_KEY` is present. No live Hugging Face call has been verified. See
+  [`docs/ASK-KUNWAR.md`](docs/ASK-KUNWAR.md).
+- The public prediction ledger reports outcomes, weighted accuracy, confirmed hit rate, and streaks.
+  It does not publish a Brier score because stored predictions do not contain forecast probabilities.
+- Certificate URLs remain public catalogue pages, but they are not represented as individual issued or
+  verified credentials. Assessment delivery and learner-specific completion/issuance tracking are not
+  currently available.
 
-### Staged (blocked on a key or migration)
+### Explicitly not activated
 
-| Pillar | Requires |
-| --- | --- |
-| A — Stripe go-live | Add the free **test-mode** keys `STRIPE_SECRET_KEY`, `STRIPE_WEBHOOK_SECRET`, `STRIPE_PRICE_{PRO,ELITE,TEAM}` (plus the `add_billing_subscription` migration). The routes are already built and stay inert until then |
-| B — "Ask Kunwar" vectors | An embedding/LLM provider key and PostgreSQL `pgvector` (lexical retrieval already works without them) |
-| G — Email | `RESEND_API_KEY` (free tier) for transactional digests/alerts |
+- **Stripe checkout, portal, and webhooks are disabled.** Existing legacy Stripe helpers do not authorize
+  Stripe use; the supported paid self-service route is manual UPI only.
+- No new paid AI, email, observability, market-data, vector-database, or authentication service is
+  required by this branch. No API key has been added, printed, or committed.
+- Vector search, intraday market quotes, automated payment verification, email delivery of certificates,
+  and signed certificate issuance are not claimed as live features.
+
+### Existing systems retained
+
+The work builds on the repository's existing learning/community features, live reference data, search,
+freshness checks, PWA/i18n, analytics, PostgreSQL job queue, publish systems, SEO/GEO metadata, public
+URLs/content, and FOT optimizations. Roadmap items that were not implemented in this branch remain
+partial or pending; they are not described as complete here.
 
 ## Deployment
 
-Deployed on Vercel. Set the environment variables from [`.env.example`](.env.example) in the project
-settings, then deploy. The Algolia index is intentionally **not** rebuilt during `npm run build` —
-run `npm run index` as a separate step or post-deploy job so an Algolia outage cannot fail a build.
+Deployed on Vercel. Configure required server environment variables in the project settings; keep
+optional provider credentials server-side and off unless explicitly enabled. The Algolia index is
+intentionally **not** rebuilt during `npm run build` — run `npm run index` as a separate step or
+post-deploy job so an Algolia outage cannot fail a build.
 
 Scheduled jobs are declared in [`vercel.json`](vercel.json) and protected by `CRON_SECRET`.
 

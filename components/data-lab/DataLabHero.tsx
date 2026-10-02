@@ -9,10 +9,9 @@ import { ArrowUpRight, PlayCircle } from 'lucide-react';
 const ParticleField = dynamic(() => import('@/components/three/ParticleField'), { ssr: false });
 
 const HERO_STATS = [
-  { value: 6, suffix: '+', label: 'Interactive Models' },
-  { value: 4, suffix: '', label: 'Core Tools' },
-  { value: 5, suffix: '+', label: 'Sectors Analysed' },
-  { value: 100, suffix: '%', label: 'Dataset-driven' },
+  { value: 7, suffix: '', label: 'Published Project Pages' },
+  { value: 8, suffix: '', label: 'Tracked Sectors' },
+  { value: 16, suffix: '', label: 'Financial Calculators' },
 ];
 
 export default function DataLabHero() {
@@ -55,8 +54,7 @@ export default function DataLabHero() {
           </span>
 
           <p className="text-xl md:text-2xl text-gray-300 max-w-2xl leading-relaxed mb-10 anim-fade-up delay-300">
-            Interactive models, live simulators, and downloadable datasets —
-            the analytical backbone of Kunwar Analytics, built to be explored.
+            Explore published project pages, interactive views, and downloads where provided. Source and update details vary by project; no intraday market-data feed is included.
           </p>
 
           <div className="flex flex-wrap gap-4 anim-fade-up delay-300">
@@ -77,7 +75,7 @@ export default function DataLabHero() {
           </div>
 
           {/* Animated stat counters */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mt-16 anim-fade delay-500">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mt-16 anim-fade delay-500">
             {HERO_STATS.map((stat) => (
               <div
                 key={stat.label}

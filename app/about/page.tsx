@@ -1,4 +1,4 @@
-﻿import { Metadata } from 'next';
+import { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
 
@@ -65,7 +65,7 @@ const METHODOLOGY: MethodologyStep[] = [
   {
     n: '02',
     title: 'Data Sources',
-    desc: 'Identify and collect data from primary sources, industry reports, financial statements, and proprietary databases.'
+    desc: 'Identify available sources such as public filings, industry material, and financial statements; source coverage varies by topic.'
   },
   {
     n: '03',
@@ -80,7 +80,7 @@ const METHODOLOGY: MethodologyStep[] = [
   {
     n: '05',
     title: 'Stress Test',
-    desc: 'Validate conclusions through sensitivity analysis, scenario testing, and peer review to ensure robustness.'
+    desc: 'Where modelling is used, examine sensitivity and scenario assumptions. These checks do not guarantee that estimates will be correct.'
   },
   {
     n: '06',
@@ -137,20 +137,20 @@ export default function AboutPage() {
           {/* Right Column - Stats */}
           <div className="grid grid-cols-2 gap-4">
             <div className="card p-5 text-center">
-              <div className="text-2xl font-bold text-brand-teal mb-1">10+</div>
+              <div className="text-2xl font-bold text-brand-teal mb-1">10</div>
               <div className="text-sm text-brand-slate">Research Reports</div>
             </div>
             <div className="card p-5 text-center">
-              <div className="text-2xl font-bold text-brand-teal mb-1">5+</div>
-              <div className="text-sm text-brand-slate">Sectors</div>
+              <div className="text-2xl font-bold text-brand-teal mb-1">8</div>
+              <div className="text-sm text-brand-slate">Tracked Sectors</div>
             </div>
             <div className="card p-5 text-center">
-              <div className="text-2xl font-bold text-brand-teal mb-1">8+</div>
-              <div className="text-sm text-brand-slate">Data Projects</div>
+              <div className="text-2xl font-bold text-brand-teal mb-1">7</div>
+              <div className="text-sm text-brand-slate">Data Lab Projects</div>
             </div>
             <div className="card p-5 text-center">
-              <div className="text-2xl font-bold text-brand-teal mb-1">20+</div>
-              <div className="text-sm text-brand-slate">Insights Written</div>
+              <div className="text-2xl font-bold text-brand-teal mb-1">11</div>
+              <div className="text-sm text-brand-slate">Insights</div>
             </div>
           </div>
         </div>
@@ -216,9 +216,9 @@ export default function AboutPage() {
       <section className="bg-brand-silver py-20">
         <div className="wrap">
           <div className="text-center mb-12">
-            <p className="section-label mb-4">Enterprise Solutions</p>
+            <p className="section-label mb-4">Organization Enquiries</p>
             <h2 className="text-3xl font-bold text-brand-navy">
-              Built for Teams & Organizations
+              Organization Enquiries
             </h2>
           </div>
 
@@ -226,52 +226,53 @@ export default function AboutPage() {
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
                 <h3 className="text-xl font-bold text-brand-navy mb-4">
-                  Enterprise-Grade Research Intelligence
+                  Organization Enquiries
                 </h3>
                 <p className="text-brand-slate mb-6">
-                  Our enterprise solutions provide dedicated support, custom research capabilities,
-                  and team management tools for organizations that need reliable market intelligence
-                  at scale.
+                  Team and enterprise features are not available through self-service checkout. The
+                  current paid plans are Pro and Elite, using manually reviewed UPI payments. Contact
+                  us with an enquiry; no team seats, custom research, API limits, or service levels are
+                  promised unless they are separately confirmed in writing.
                 </p>
                 <ul className="space-y-2 mb-6">
                   <li className="flex items-center gap-2">
-                    <span className="text-brand-teal">✓</span>
-                    <span className="text-sm">Dedicated account managers</span>
+                    <span className="text-brand-teal">•</span>
+                    <span className="text-sm">Pro and Elite are the only self-service paid plans; current content access is the same for both.</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-brand-teal">✓</span>
-                    <span className="text-sm">Custom research requests</span>
+                    <span className="text-brand-teal">•</span>
+                    <span className="text-sm">Team seats, SSO, and team analytics are not currently offered.</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-brand-teal">✓</span>
-                    <span className="text-sm">Team dashboards & analytics</span>
+                    <span className="text-brand-teal">•</span>
+                    <span className="text-sm">API limits, custom research, and SLAs are not published offers.</span>
                   </li>
                   <li className="flex items-center gap-2">
-                    <span className="text-brand-teal">✓</span>
-                    <span className="text-sm">Priority API access</span>
+                    <span className="text-brand-teal">•</span>
+                    <span className="text-sm">Any organization engagement requires separate written confirmation.</span>
                   </li>
                 </ul>
                 <Link href="/enterprise" className="btn-primary">
-                  View Enterprise Plans
+                  Enquire about availability
                 </Link>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="card p-4 text-center">
-                  <div className="text-2xl font-bold text-brand-teal mb-1">50+</div>
-                  <div className="text-xs text-brand-slate">Enterprise Clients</div>
+                  <div className="text-xl font-bold text-brand-teal mb-1">Pro + Elite</div>
+                  <div className="text-xs text-brand-slate">Only self-service paid plans</div>
                 </div>
                 <div className="card p-4 text-center">
-                  <div className="text-2xl font-bold text-brand-teal mb-1">24/7</div>
-                  <div className="text-xs text-brand-slate">Support SLA</div>
+                  <div className="text-xl font-bold text-brand-teal mb-1">Manual UPI</div>
+                  <div className="text-xs text-brand-slate">No card checkout</div>
                 </div>
                 <div className="card p-4 text-center">
-                  <div className="text-2xl font-bold text-brand-teal mb-1">48h</div>
-                  <div className="text-xs text-brand-slate">Custom Research</div>
+                  <div className="text-xl font-bold text-brand-teal mb-1">Admin review</div>
+                  <div className="text-xs text-brand-slate">Payment approval required</div>
                 </div>
                 <div className="card p-4 text-center">
-                  <div className="text-2xl font-bold text-brand-teal mb-1">99.9%</div>
-                  <div className="text-xs text-brand-slate">Uptime SLA</div>
+                  <div className="text-xl font-bold text-brand-teal mb-1">One month</div>
+                  <div className="text-xs text-brand-slate">Renew with a new approved payment</div>
                 </div>
               </div>
             </div>
@@ -286,7 +287,7 @@ export default function AboutPage() {
             Let us work together.
           </h2>
           <p className="text-xl text-white/80 mb-8 max-w-2xl mx-auto">
-            Have a research question or need custom analysis? We&apos;d love to hear from you.
+            Have a research question? Use the contact form to enquire about current availability; response timing and any engagement are not guaranteed.
           </p>
           <Link href="/contact" className="btn btn-primary text-lg px-8 py-3">
             Get in Touch

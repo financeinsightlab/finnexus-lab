@@ -5,7 +5,7 @@ import { z } from 'zod';
 const contactSchema = z.object({
   name: z.string().trim().min(2, 'Please enter your name').max(100, 'Name too long'),
   organisation: z.string().trim().max(200).optional(),
-  email: z.string().trim().email('Invalid email format'),
+  email: z.string().trim().email('Invalid email format').max(254, 'Email address is too long'),
   subject: z.string().trim().min(1, 'Subject is required').max(200, 'Subject too long'),
   budget: z.string().trim().max(100).optional(),
   message: z
@@ -69,33 +69,13 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: true });
     }
 
-    // Save contact submission to persistent storage (Postgres DB + JSON fallback)
+    // Save the inquiry without persisting the transient IP used for throttling.
     const { createContactInquiry } = await import('@/lib/contact-inquiries');
-    const saved = await createContactInquiry({
-      name,
-      organisation,
-      email,
-      subject,
-      budget,
-      message,
-      ip,
-    });
+    await createContactInquiry({ name, organisation, email, subject, budget, message });
 
-    console.log('Contact form submission saved:', {
-      id: saved.id,
-      name,
-      organisation: organisation || 'Not provided',
-      email,
-      subject,
-      budget: budget || 'Not provided',
-      recipientEmail: 'kunwaranalytics@gmail.com',
-      ip,
-      timestamp: new Date().toISOString(),
-    });
-
-    return NextResponse.json({ success: true, id: saved.id });
-  } catch (error) {
-    console.error('Contact form error:', error);
+    return NextResponse.json({ success: true });
+  } catch {
+    console.error('Contact form processing failed');
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

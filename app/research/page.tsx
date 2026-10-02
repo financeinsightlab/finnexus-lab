@@ -3,7 +3,9 @@ import { getAllResearch } from '@/lib/content';
 import { prisma } from '@/lib/prisma';
 import ResearchClient from '@/components/research/ResearchClient';
 import type { ResearchPost } from '@/types';
-import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export const metadata: Metadata = {
   title: { absolute: 'Research Library — Institutional Market Reports' },
@@ -53,28 +55,13 @@ export default async function ResearchPage() {
     ...fileResearch.filter((p) => !slugSet.has(p.slug)),
   ];
 
-  const researchFaq = faqSchema([
-    {
-      question: 'What methodology does Kunwar Analytics use for research reports?',
-      answer:
-        'Kunwar Analytics employs quantitative valuation models, bottom-up unit economics, macroeconomic liquidity framework analysis, and primary supply chain verification.',
-    },
-    {
-      question: 'How frequently are research reports updated?',
-      answer:
-        'Sector reports and financial metrics are reviewed quarterly and updated whenever major structural regulatory or financial inflections occur.',
-    },
-    {
-      question: 'Can I cite Kunwar Analytics research for institutional analysis?',
-      answer:
-        'Yes, institutional investors, media, and academic researchers may cite our papers with proper attribution and link back to the research report.',
-    },
-  ]);
-
   return (
     <>
-      <JsonLd data={researchFaq} />
       <ResearchClient posts={mergedPosts} />
+      <PromotionSlot placement="RESEARCH_PAGE" path="/research" contentType="RESEARCH" />
+      <RelatedContentSection sourceType="PAGE" sourceSlug="research" />
+      <RelatedContentSection sourceType="PAGE" sourceSlug="research" linkKind="CTA" />
+      <ContentFaq relatedType="PAGE" relatedSlug="research" />
     </>
   );
 }

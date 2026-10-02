@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
-import { getAllPredictions } from '@/lib/predictions';
-import { auth } from '@/auth';
+import { getPublicPredictionBoard } from '@/lib/predictions';
 import PredictionsClient from './PredictionsClient';
 
 export const metadata: Metadata = {
@@ -12,7 +11,7 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic';
 
 export default async function PredictionsBoardPage() {
-  const predictions = await getAllPredictions();
+  const predictions = await getPublicPredictionBoard();
 
   // Unique sectors for filter pills
   const sectors = [...new Set(predictions.map((p) => p.sector))].sort() as string[];
@@ -25,18 +24,12 @@ export default async function PredictionsBoardPage() {
     partial:   predictions.filter((p) => p.status === 'PARTIAL').length,
   };
 
-  const session = await auth();
-  const isLoggedIn = !!session?.user;
-  const isAdmin = session?.user?.role === "ADMIN";
-
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
       <PredictionsClient
         predictions={predictions}
         sectors={sectors}
         stats={stats}
-        isLoggedIn={isLoggedIn}
-        isAdmin={isAdmin}
       />
     </div>
   );

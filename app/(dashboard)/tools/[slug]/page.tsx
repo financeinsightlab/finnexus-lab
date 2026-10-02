@@ -5,6 +5,11 @@ import { getTool } from '@/lib/tools-registry';
 import Image from 'next/image';
 import { auth } from '@/auth';
 import { hasPremiumAccess } from '@/lib/utils';
+import Paywall from '@/components/premium/Paywall';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
+import RelatedFinanceTerms from '@/components/finance-terms/RelatedFinanceTerms';
 
 import SaaSCalc from '@/components/calculators/SaaSCalc';
 import AiRoiCalc from '@/components/calculators/AiRoiCalc';
@@ -47,8 +52,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 export default async function CalculatorPage({ params }: PageProps) {
   const { slug } = await params;
   const session = await auth();
-  
-  const isPremiumUser = hasPremiumAccess(session?.user || {});
+  const tool = getTool(slug);
+  const hasPlanPremiumAccess = hasPremiumAccess(session?.user || {});
+  // Server-side tool.gated check below is authoritative. Public tools stay
+  // usable without triggering the calculators' legacy client-only trial UI.
+  const isCalculatorAvailable = hasPlanPremiumAccess || !tool?.gated;
 
   // Select Hero Image
   let heroImg = '/card-valuation-3d.png';
@@ -56,16 +64,16 @@ export default async function CalculatorPage({ params }: PageProps) {
   if (['saas-ltv-cac-model', 'ai-agent-roi-calculator', 'b2b-enterprise-marketing-roi', 'q-commerce-model'].includes(slug)) heroImg = '/card-saas-3d.png';
 
   let Component;
-  if (slug === 'saas-ltv-cac-model') Component = <SaaSCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === 'ai-agent-roi-calculator') Component = <AiRoiCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === 'b2b-enterprise-marketing-roi') Component = <B2BMarketingCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === 'dcf-valuation-model') Component = <DcfCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === 'crypto-tokenomics-model') Component = <CryptoTokenomicsCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === 'cca-valuation') Component = <CcaValuationCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === '3-statement-model') Component = <ThreeStatementCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === 'q-commerce-model') Component = <QCommerceCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === 'market-sizing-framework') Component = <MarketSizingCalc slug={slug} isPremiumUser={isPremiumUser} />;
-  else if (slug === 'porters-five-forces') Component = <PortersFiveForcesCalc slug={slug} isPremiumUser={isPremiumUser} />;
+  if (slug === 'saas-ltv-cac-model') Component = <SaaSCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === 'ai-agent-roi-calculator') Component = <AiRoiCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === 'b2b-enterprise-marketing-roi') Component = <B2BMarketingCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === 'dcf-valuation-model') Component = <DcfCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === 'crypto-tokenomics-model') Component = <CryptoTokenomicsCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === 'cca-valuation') Component = <CcaValuationCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === '3-statement-model') Component = <ThreeStatementCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === 'q-commerce-model') Component = <QCommerceCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === 'market-sizing-framework') Component = <MarketSizingCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  else if (slug === 'porters-five-forces') Component = <PortersFiveForcesCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
   else if (slug === 'wacc-calculator') Component = <WaccCalc />;
   else if (slug === 'time-value-machine') Component = <TimeValueCalc />;
   else if (slug === 'portfolio-risk-lab') Component = <PortfolioRiskCalc />;
@@ -73,7 +81,6 @@ export default async function CalculatorPage({ params }: PageProps) {
   else if (slug === 'ratio-analyzer') Component = <RatioAnalyzerCalc />;
   else notFound();
 
-  const tool = getTool(slug);
   const toolSchema = tool ? [
     {
       '@context': 'https://schema.org',
@@ -83,7 +90,9 @@ export default async function CalculatorPage({ params }: PageProps) {
       applicationCategory: 'BusinessApplication',
       operatingSystem: 'Web browser',
       url: `https://kunwaranalytics.in/tools/${slug}`,
-      offers: { '@type': 'Offer', price: tool.gated ? '0' : '0', priceCurrency: 'INR' },
+      offers: tool.gated
+        ? { '@type': 'Offer', description: 'Included with an active Pro or higher subscription.', url: `https://kunwaranalytics.in/checkout/pro` }
+        : { '@type': 'Offer', price: '0', priceCurrency: 'INR' },
       publisher: { '@type': 'Organization', name: 'Kunwar Analytics' },
     },
     {
@@ -96,6 +105,19 @@ export default async function CalculatorPage({ params }: PageProps) {
       ],
     },
   ] : [];
+
+  if (tool?.gated && !hasPlanPremiumAccess) {
+    return (
+      <div className="mx-auto min-h-screen w-full max-w-5xl bg-[#faf9f6] px-6 py-16 dark:bg-[#0a1120]">
+        <JsonLd data={toolSchema} />
+        <p className="text-xs font-semibold uppercase tracking-widest text-teal-600">Premium financial tool</p>
+        <h1 className="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">{tool.title}</h1>
+        <Paywall user={session?.user} minimumPlan="PRO" preview={<p className="mt-3 text-slate-600 dark:text-slate-300">{tool.desc}</p>}>
+          {null}
+        </Paywall>
+      </div>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col min-h-screen relative bg-[#faf9f6] dark:bg-[#0a1120]">
@@ -111,6 +133,11 @@ export default async function CalculatorPage({ params }: PageProps) {
        <div className="-mt-16 z-10 relative">
           {Component}
        </div>
+       {tool && <RelatedFinanceTerms categories={tool.category ? [tool.category] : []} keywords={[slug, tool.title]} title="Related finance terms" limit={4} />}
+       <PromotionSlot placement="CALCULATOR_PAGE" path={`/tools/${slug}`} contentType="TOOL" />
+       <RelatedContentSection sourceType="TOOL" sourceSlug={slug} />
+       <RelatedContentSection sourceType="TOOL" sourceSlug={slug} linkKind="CTA" />
+       <ContentFaq relatedType="TOOL" relatedSlug={slug} />
     </div>
   );
 }

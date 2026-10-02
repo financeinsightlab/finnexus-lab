@@ -6,6 +6,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import Tag from '@/components/ui/Tag';
 import JsonLd from '@/components/seo/JsonLd';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 import DataLabChart from '@/components/data-lab/DataLabChart';
 import DataLabDownload from '@/components/data-lab/DataLabDownload';
 import DataLabToc from '@/components/data-lab/DataLabToc';
@@ -75,7 +78,7 @@ const PROJECT_DATA: Record<string, { chart: any; download: Record<string, unknow
   'qcommerce-unit-economics-model': {
     chart: {
       title: 'Contribution Margin vs. Daily Order Volume',
-      subtitle: 'Drag the model inputs in the simulator below to see live movement on this curve',
+      subtitle: 'Adjust the inputs below to see how this stored model curve changes.',
       xKey: 'orders',
       type: 'line',
       series: [
@@ -458,11 +461,11 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
         <section className="wrap max-w-6xl pb-12">
           <div className="glass-cinema rounded-2xl border border-white/10 p-6 md:p-8">
             <span className="inline-flex items-center gap-2 text-cinema-aurora text-xs font-semibold uppercase tracking-widest">
-              <Wrench className="w-4 h-4" /> Live Simulator
+              <Wrench className="w-4 h-4" /> Interactive Model
             </span>
             <h2 className="mt-2 text-2xl md:text-3xl font-bold text-white">Try the Unit Economics Model</h2>
-            <p className="text-gray-400 mt-2 mb-6">Adjust the inputs — orders, AOV, costs — and watch contribution margin recompute live.</p>
-            <QCommerceCalc slug={slug} isPremiumUser={false} />
+            <p className="text-gray-400 mt-2 mb-6">Adjust the sample inputs — orders, AOV, costs — to recompute the displayed contribution-margin scenario. This is not a live market-data feed.</p>
+            <QCommerceCalc slug={slug} isPremiumUser />
           </div>
         </section>
       )}
@@ -565,6 +568,10 @@ export default async function DataLabProjectPage({ params }: { params: Promise<{
           )}
         </section>
       )}
+      <PromotionSlot placement="ARTICLE_PAGE" path={`/data-lab/${slug}`} contentType="DATASET" />
+      <RelatedContentSection sourceType="DATASET" sourceSlug={slug} />
+      <RelatedContentSection sourceType="DATASET" sourceSlug={slug} linkKind="CTA" />
+      <ContentFaq relatedType="DATASET" relatedSlug={slug} />
     </div>
   );
 }

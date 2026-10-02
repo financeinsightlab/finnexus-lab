@@ -1,7 +1,6 @@
 // FILE: app/sitemap.ts
 import { MetadataRoute } from 'next';
 import { getAllResearch, getAllInsights, getAllDataLab, getAllCaseStudies, getAllPodcastEpisodes } from '@/lib/content';
-import { prisma } from '@/lib/prisma';
 import { SUBJECTS } from '@/lib/pgdm/curriculum';
 import { TOOLS } from '@/lib/tools-registry';
 import { CERTIFICATES } from '@/lib/certificates';
@@ -73,16 +72,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // ─── Certificate verification records ───
+  // ─── Public certificate-pathway catalogue pages ───
   const certificatePages: MetadataRoute.Sitemap = CERTIFICATES.map((c) => ({
     url: `${BASE}/certificates/${c.slug}`,
     changeFrequency: 'monthly' as const,
     priority: 0.7,
   }));
 
-  // ─── Database Content: Study Materials ───
+  // ─── Database-backed public learning and glossary content ───
   let studyMaterials: MetadataRoute.Sitemap = [];
+  let financeTerms: MetadataRoute.Sitemap = [];
+  let cmsLessons: MetadataRoute.Sitemap = [];
   try {
+    // Keep file-backed routes available when the database is not configured.
+    const { prisma } = await import('@/lib/prisma');
     const materials = await prisma.studyMaterial.findMany({
       where: { published: true },
       select: { slug: true, updatedAt: true, publishedAt: true },
@@ -95,7 +98,44 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     }));
   } catch {
-    // StudyMaterial table may not exist yet — skip silently
+    // StudyMaterial table may not exist yet — skip silently.
+  }
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    const terms = await prisma.financeTerm.findMany({
+      where: { published: true, seoVisible: true },
+      select: { slug: true, updatedAt: true },
+      orderBy: { displayOrder: 'asc' },
+      take: 5000,
+    });
+    financeTerms = terms.map((term) => ({
+      url: `${BASE}/finance-terms/${term.slug}`,
+      lastModified: safeDate(term.updatedAt),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
+  } catch {
+    // The additive glossary migration may not be applied yet.
+  }
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    const lessons = await prisma.courseLesson.findMany({
+      where: { published: true },
+      select: { courseSlug: true, slug: true, updatedAt: true },
+      orderBy: [{ courseSlug: 'asc' }, { displayOrder: 'asc' }],
+      take: 5000,
+    });
+    const pgdmCourseSlugs = new Set(SUBJECTS.map((subject) => subject.slug));
+    cmsLessons = lessons.map((lesson) => ({
+      url: pgdmCourseSlugs.has(lesson.courseSlug)
+        ? `${BASE}/pgdm/${lesson.courseSlug}/lesson/${lesson.slug}`
+        : `${BASE}/study/${lesson.courseSlug}/lessons/${lesson.slug}`,
+      lastModified: safeDate(lesson.updatedAt),
+      changeFrequency: 'monthly' as const,
+      priority: 0.6,
+    }));
+  } catch {
+    // The additive course-content migration may not be applied yet.
   }
 
   // ─── Static Pages ───
@@ -105,6 +145,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/insights`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
     { url: `${BASE}/pgdm`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.9 },
     { url: `${BASE}/study`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
+    { url: `${BASE}/finance-terms`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE}/study/placement-prep`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
     { url: `${BASE}/data-lab`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
     { url: `${BASE}/tracker`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.8 },
@@ -123,9 +164,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/projects`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE}/certificates`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
     { url: `${BASE}/contact`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
+    { url: `${BASE}/privacy`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.3 },
+    { url: `${BASE}/terms`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.3 },
+    { url: `${BASE}/cookies`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.2 },
+    { url: `${BASE}/gdpr`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.2 },
+    { url: `${BASE}/security`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.2 },
+    { url: `${BASE}/ethics`, lastModified: new Date(), changeFrequency: 'yearly' as const, priority: 0.3 },
     { url: `${BASE}/radar`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.6 },
     { url: `${BASE}/data-freshness`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.5 },
   ];
 
-  return [...statics, ...utilityPages, ...research, ...insights, ...dataLab, ...caseStudies, ...podcasts, ...studyMaterials, ...pgdmPages, ...toolPages, ...certificatePages];
+  return [...statics, ...utilityPages, ...research, ...insights, ...dataLab, ...caseStudies, ...podcasts, ...studyMaterials, ...financeTerms, ...cmsLessons, ...pgdmPages, ...toolPages, ...certificatePages];
 }

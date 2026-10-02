@@ -1,16 +1,11 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getCurrentUser } from '@/lib/auth-guards';
-import {
-    billingConfig,
-    isCheckoutPlan,
-    toCheckoutPlan,
-    type CheckoutPlan,
-} from '@/lib/billing';
-import { PLAN_CATALOG, PLAN_PRICING } from '@/lib/entitlements';
+import { manualUPIProvider } from '@/lib/payments/manual-upi-provider';
+import { PLAN_CATALOG } from '@/lib/entitlements';
 import CheckoutClient from './CheckoutClient';
 
-// Checkout must reflect the live session, so never statically cache it.
+// Checkout displays the current user session and payment state; never cache it.
 export const dynamic = 'force-dynamic';
 
 interface CheckoutPageProps {
@@ -19,8 +14,10 @@ interface CheckoutPageProps {
 
 export async function generateMetadata({ params }: CheckoutPageProps): Promise<Metadata> {
     const { plan } = await params;
-    const checkoutPlan = toCheckoutPlan(plan);
-    const name = checkoutPlan ? PLAN_CATALOG[checkoutPlan].name : 'Upgrade';
+    const normalizedPlan = plan.toUpperCase();
+    const name = manualUPIProvider.supports(normalizedPlan)
+        ? PLAN_CATALOG[normalizedPlan].name
+        : 'Upgrade';
     return {
         title: `Checkout — ${name}`,
         robots: { index: false, follow: false },
@@ -29,15 +26,14 @@ export async function generateMetadata({ params }: CheckoutPageProps): Promise<M
 
 export default async function CheckoutPage({ params }: CheckoutPageProps) {
     const { plan } = await params;
+    const normalizedPlan = plan.toUpperCase();
 
-    if (!isCheckoutPlan(plan)) {
+    if (!manualUPIProvider.supports(normalizedPlan)) {
         return (
             <div className="mx-auto max-w-md px-6 py-24 text-center">
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                    Unknown plan
-                </h1>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Unknown plan</h1>
                 <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-                    We couldn't find a checkout for &ldquo;{plan}&rdquo;.
+                    Manual UPI checkout is currently available for Pro and Elite plans.
                 </p>
                 <Link
                     href="/pricing"
@@ -49,28 +45,22 @@ export default async function CheckoutPage({ params }: CheckoutPageProps) {
         );
     }
 
-    const checkoutPlan = plan.toUpperCase() as CheckoutPlan;
-    const config = billingConfig();
+    const instructions = manualUPIProvider.instructions(normalizedPlan);
     const user = await getCurrentUser();
-    const pricing = PLAN_PRICING[checkoutPlan];
 
     return (
         <div className="min-h-[70vh] bg-slate-50 px-6 py-20 dark:bg-[#0a1120]">
             <CheckoutClient
-                plan={checkoutPlan}
-                planName={PLAN_CATALOG[checkoutPlan].name}
-                price={pricing.price}
-                period={pricing.period}
-                configured={config.configured}
-                missing={config.missing}
+                plan={instructions.plan}
+                planName={PLAN_CATALOG[instructions.plan].name}
+                amountLabel={instructions.amountLabel}
+                period={instructions.periodLabel}
+                upiId={instructions.upiId}
+                qrPath={instructions.qrPath}
                 signedIn={Boolean(user)}
             />
             <p className="mx-auto mt-8 max-w-md text-center text-xs text-slate-400">
-                Prefer a custom agreement?{' '}
-                <Link href="/contact?service=Team" className="underline">
-                    Talk to us
-                </Link>
-                .
+                Manual transfer? Access begins only after an administrator verifies the payment reference.
             </p>
         </div>
     );

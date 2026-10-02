@@ -115,25 +115,25 @@ export default function AccountHub() {
 }
 
 interface BillingState {
-    configured: boolean;
-    missing: string[];
+    provider: 'MANUAL_UPI' | string;
     plan: string | null;
     status: string;
     resolvedPlan: string;
-    hasCustomer: boolean;
+    expiresAt: string | null;
+    renewalHref: string;
+    renewalRequiresApproval: boolean;
 }
 
 function BillingPanel() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [state, setState] = useState<BillingState | null>(null);
-    const [busy, setBusy] = useState(false);
 
     const load = useCallback(async () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch('/api/billing');
+            const response = await fetch('/api/billing', { cache: 'no-store' });
             const data = (await response.json().catch(() => null)) as BillingState | null;
             if (!response.ok || !data) throw new Error('Could not load billing details.');
             setState(data);
@@ -148,31 +148,8 @@ function BillingPanel() {
         void load();
     }, [load]);
 
-    const openPortal = async () => {
-        setBusy(true);
-        setError(null);
-        try {
-            const response = await fetch('/api/billing/portal', { method: 'POST' });
-            const data = (await response.json().catch(() => null)) as
-                | { url?: string; error?: string }
-                | null;
-            if (response.ok && data?.url) {
-                window.location.href = data.url;
-                return;
-            }
-            throw new Error(data?.error ?? 'Could not open the billing portal.');
-        } catch (e) {
-            setError(e instanceof Error ? e.message : 'Something went wrong.');
-        } finally {
-            setBusy(false);
-        }
-    };
-
     const statusTone: Record<string, string> = {
         ACTIVE: 'bg-emerald-100 text-emerald-700 dark:bg-emerald-500/15 dark:text-emerald-300',
-        TRIALING: 'bg-sky-100 text-sky-700 dark:bg-sky-500/15 dark:text-sky-300',
-        PAST_DUE: 'bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300',
-        CANCELED: 'bg-rose-100 text-rose-700 dark:bg-rose-500/15 dark:text-rose-300',
         INACTIVE: 'bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300',
     };
 
@@ -196,72 +173,45 @@ function BillingPanel() {
         );
     }
 
+    const expiresOn = state.expiresAt
+        ? new Intl.DateTimeFormat('en-IN', { dateStyle: 'medium', timeZone: 'Asia/Kolkata' }).format(new Date(state.expiresAt))
+        : null;
+
     return (
         <div className="max-w-2xl space-y-6">
             <div className="rounded-2xl border border-slate-200 bg-white p-6 dark:border-white/10 dark:bg-[#0f1c2d]">
                 <div className="flex flex-wrap items-center justify-between gap-3">
                     <div>
-                        <p className="text-xs font-semibold uppercase tracking-widest text-brand-slate dark:text-slate-400">
-                            Current plan
-                        </p>
-                        <h2 className="mt-1 text-xl font-bold text-brand-navy dark:text-white">
-                            {state.resolvedPlan}
-                        </h2>
+                        <p className="text-xs font-semibold uppercase tracking-widest text-brand-slate dark:text-slate-400">Current plan</p>
+                        <h2 className="mt-1 text-xl font-bold text-brand-navy dark:text-white">{state.resolvedPlan}</h2>
                         {state.plan && state.plan !== state.resolvedPlan && (
-                            <p className="mt-1 text-xs text-brand-slate dark:text-slate-400">
-                                Subscribed to {state.plan}
-                            </p>
+                            <p className="mt-1 text-xs text-brand-slate dark:text-slate-400">Previous plan: {state.plan}</p>
                         )}
                     </div>
-                    <span
-                        className={`rounded-full px-3 py-1 text-xs font-semibold ${statusTone[state.status] ?? statusTone.INACTIVE
-                            }`}
-                    >
+                    <span className={`rounded-full px-3 py-1 text-xs font-semibold ${statusTone[state.status] ?? statusTone.INACTIVE}`}>
                         {state.status}
                     </span>
                 </div>
 
+                {expiresOn ? (
+                    <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">Premium access expires {expiresOn}.</p>
+                ) : state.resolvedPlan !== 'FREE' ? (
+                    <p className="mt-4 text-sm text-slate-600 dark:text-slate-300">No expiry date is recorded for this legacy or administrator-managed grant.</p>
+                ) : null}
+
                 <div className="mt-5 flex flex-wrap gap-3">
-                    {state.configured && state.hasCustomer ? (
-                        <button
-                            onClick={() => void openPortal()}
-                            disabled={busy}
-                            className="rounded-lg bg-brand-teal px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110 disabled:opacity-60"
-                        >
-                            {busy ? 'Opening…' : 'Manage subscription'}
-                        </button>
-                    ) : (
-                        <a
-                            href="/pricing"
-                            className="rounded-lg bg-brand-teal px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110"
-                        >
-                            {state.resolvedPlan === 'FREE' ? 'Choose a plan' : 'View plans'}
-                        </a>
-                    )}
-                    <a
-                        href="/pricing"
-                        className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/5"
-                    >
+                    <a href={state.renewalHref} className="rounded-lg bg-brand-teal px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-110">
+                        {state.resolvedPlan === 'FREE' ? 'Choose a plan' : 'Renew with UPI'}
+                    </a>
+                    <a href="/pricing" className="rounded-lg border border-slate-300 px-5 py-2.5 text-sm font-medium text-slate-700 transition hover:bg-slate-50 dark:border-white/15 dark:text-slate-200 dark:hover:bg-white/5">
                         Compare plans
                     </a>
                 </div>
             </div>
 
-            {!state.configured && (
-                <div className="rounded-2xl border border-amber-300/50 bg-amber-50 p-5 text-sm text-amber-800 dark:border-amber-500/30 dark:bg-amber-500/10 dark:text-amber-200">
-                    <p className="font-semibold">Billing is not switched on yet.</p>
-                    <p className="mt-1">
-                        Add the Stripe test-mode keys to enable self-serve upgrades.
-                    </p>
-                    {state.missing.length > 0 && (
-                        <p className="mt-2 text-xs">
-                            Missing:{' '}
-                            <code className="font-mono">{state.missing.join(', ')}</code>
-                        </p>
-                    )}
-                </div>
-            )}
-
+            <div className="rounded-2xl border border-teal-200/60 bg-teal-50 p-5 text-sm text-teal-900 dark:border-teal-500/20 dark:bg-teal-500/10 dark:text-teal-100">
+                Manual UPI payments are reviewed by an administrator. A renewal is another one-month payment that takes effect only after approval; there is no automatic renewal or Stripe checkout.
+            </div>
             {error && <p className="text-sm text-rose-600 dark:text-rose-400">{error}</p>}
         </div>
     );

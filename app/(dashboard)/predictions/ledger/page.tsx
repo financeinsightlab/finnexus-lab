@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getAllPredictions } from '@/lib/predictions';
+import { getPublicPredictionLedger } from '@/lib/predictions';
 import {
     buildCalibration,
     sectorBreakdown,
@@ -14,7 +14,7 @@ import { filterLedger, parseLedgerFilters } from './ledger-utils';
 export const metadata: Metadata = {
     title: 'Public Prediction Ledger | Kunwar Analytics',
     description:
-        'Every prediction Kunwar Analytics has ever published — timestamped, resolved in public, and scored with transparent calibration metrics (weighted accuracy, Brier score, streaks).',
+        'Every prediction Kunwar Analytics has published — timestamped, resolved in public, with weighted accuracy, confirmed hit rate, and streaks calculated from recorded outcomes.',
     alternates: { canonical: 'https://kunwaranalytics.in/predictions/ledger' },
 };
 
@@ -41,7 +41,7 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
     const resolved = await searchParams;
     const filters = parseLedgerFilters(resolved);
 
-    const all = (await getAllPredictions()) as unknown as LedgerPrediction[];
+    const all = (await getPublicPredictionLedger()) as LedgerPrediction[];
     const stats = buildCalibration(all);
     const sectors = [...new Set(all.map((prediction) => prediction.sector))].sort();
     const rows = filterLedger(all, filters).sort(
@@ -52,7 +52,7 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
 
     const headline = [
         { label: 'Weighted Accuracy', value: `${stats.weightedAccuracy}%`, sub: `${stats.resolved} resolved` },
-        { label: 'Brier Score', value: stats.brierScore.toFixed(3), sub: 'lower is better' },
+        { label: 'Hit Rate', value: stats.hitRate === null ? '—' : `${stats.hitRate}%`, sub: `${stats.confirmed}/${stats.resolved} confirmed` },
         { label: 'Longest Streak', value: `${stats.longestStreak}`, sub: `current ${stats.currentStreak}` },
         { label: 'Open Predictions', value: `${stats.pending}`, sub: `${stats.overdue} overdue` },
     ];
@@ -78,9 +78,9 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
                         📒 Prediction Ledger
                     </h1>
                     <p className="max-w-3xl text-lg text-slate-400">
-                        Every call, timestamped and resolved in public. The maths is open: weighted accuracy gives
-                        partial credit for directionally-correct calls, and the Brier score grades the misses. As of{' '}
-                        {formatDate(stats.asOf)}.
+                        Every call is timestamped and resolved in public. Weighted accuracy gives partial credit for
+                        partial outcomes; hit rate is the share marked confirmed. No Brier score is published because
+                        forecast probabilities are not stored. As of {formatDate(stats.asOf)}.
                     </p>
 
                     <div className="mt-10 grid max-w-4xl grid-cols-2 gap-4 md:grid-cols-4">
@@ -207,10 +207,10 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
 
                 <p className="mt-10 text-xs text-slate-500">
                     Method: weighted accuracy = mean(outcome) × 100, where CONFIRMED → 1, PARTIAL → 0.5,
-                    INCORRECT → 0 and PENDING is unscored. Brier score = mean((outcome − 1)²). Every published
-                    call is treated as a directional forecast with probability 1.0, so a miss costs the full
-                    1.0. This dataset is available to machines at{' '}
-                    <span className="font-mono text-slate-400">/predictions/ledger</span> via schema.org JSON-LD.
+                    INCORRECT → 0 and PENDING is unscored. Hit rate = CONFIRMED ÷ resolved × 100, so partial
+                    outcomes remain in the denominator. Streaks count consecutive confirmed outcomes by resolve date.
+                    Forecast probabilities are not stored, so no Brier score is calculated. This dataset is available
+                    to machines at <span className="font-mono text-slate-400">/predictions/ledger</span> via schema.org JSON-LD.
                 </p>
             </main>
         </div>

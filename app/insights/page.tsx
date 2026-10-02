@@ -3,7 +3,9 @@ import { getAllInsights } from '@/lib/content';
 import InsightsClient from '../../components/insights/InsightsClient';
 import { prisma } from "@/lib/prisma";
 import type { InsightPost } from '@/types';
-import JsonLd, { faqSchema } from '@/components/seo/JsonLd';
+import ContentFaq from '@/components/content/ContentFaq';
+import RelatedContentSection from '@/components/content/RelatedContentSection';
+import PromotionSlot from '@/components/promotions/PromotionSlot';
 
 export const metadata: Metadata = {
   title: { absolute: 'Strategic Insights — Market Briefs & Notes' },
@@ -53,23 +55,13 @@ export default async function InsightsPage() {
     ...fileInsights.filter((p) => !slugSet.has(p.slug)),
   ];
 
-  const insightsFaq = faqSchema([
-    {
-      question: 'What is the format of Kunwar Analytics Insights?',
-      answer:
-        'Insights are concise, high-conviction executive briefs (6–9 min read) designed for CXOs, fund managers, and board members, focusing on actionable inflections.',
-    },
-    {
-      question: 'How do Insights differ from Research Reports?',
-      answer:
-        'Research reports provide exhaustive 6,000+ word deep dives with complete DCF valuation models, whereas Insights deliver focused tactical commentary on specific catalysts.',
-    },
-  ]);
-
   return (
     <>
-      <JsonLd data={insightsFaq} />
       <InsightsClient posts={mergedPosts} />
+      <PromotionSlot placement="ARTICLE_PAGE" path="/insights" contentType="INSIGHT" />
+      <RelatedContentSection sourceType="PAGE" sourceSlug="insights" />
+      <RelatedContentSection sourceType="PAGE" sourceSlug="insights" linkKind="CTA" />
+      <ContentFaq relatedType="PAGE" relatedSlug="insights" />
     </>
   );
 }

@@ -10,7 +10,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 export interface CommentNode {
     id: string;
     content: string;
-    authorId: string;
     authorName: string | null;
     authorImage: string | null;
     parentId: string | null;
