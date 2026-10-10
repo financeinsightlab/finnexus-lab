@@ -11,13 +11,15 @@ import { markdownToBlocks, type Block } from '@/lib/blocks/registry';
 import { extractHeadings } from '@/lib/content-toc';
 import { ChevronLeft, Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, Sparkles, ShieldCheck, List } from 'lucide-react';
 import React from 'react';
-import { CommentSection } from '@/components/ui/CommentSection';
+import CommentsSection from '@/components/comments/CommentsSection';
+import { auth } from '@/auth';
 import JsonLd, { articleSchema } from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import { ContentPage, ContentLayout } from '@/components/content/ContentLayout';
 import PromotionSidebar from '@/components/promotions/PromotionSidebar';
+import ExplainThisWidget from '@/components/ai/ExplainThisWidget';
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
@@ -68,6 +70,7 @@ export async function generateStaticParams() {
 
 export default async function InsightDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
+  const session = await auth();
 
   // 1. Check CMS post first
   let dbPost: any = null;
@@ -238,6 +241,7 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
                     ))}
                   </dl>
                 </div>
+                <ExplainThisWidget contextTitle={title} />
 
                 {headings.length > 1 && (
                   <nav
@@ -325,9 +329,9 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
 
               {/* Comments Section */}
               <div className="mt-12 border-t border-border pt-10">
-                <CommentSection
-                  postId={dbPost?.id}
-                  currentPath={`/insights/${slug}`}
+                <CommentsSection
+                  postId={dbPost?.id || slug}
+                  isLoggedIn={Boolean(session?.user)}
                 />
               </div>
             </article>

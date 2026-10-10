@@ -23,6 +23,13 @@ export default function Footer() {
     { name: 'Organization access', href: '/enterprise' },
   ];
 
+  const transparencyTopics = [
+    { name: 'Public Prediction Ledger', href: '/predictions/ledger' },
+    { name: 'Data Freshness SLAs', href: '/data-freshness' },
+    { name: 'Platform Status', href: '/status' },
+    { name: 'Financial Terms Glossary', href: '/finance-terms' },
+  ];
+
   const exploreClusters = NAV_CLUSTERS;
   const policies = [
     { name: 'Privacy information', href: '/privacy' },
@@ -127,6 +134,22 @@ export default function Footer() {
                       </li>
                     ))}
                   </ul>
+
+                  <div className="mt-8 border-t border-border pt-6">
+                    <h3 className="mb-4 flex items-center gap-2 text-xs uppercase tracking-widest text-content-muted">
+                      <span>⚖️</span> TRUST &amp; TRANSPARENCY
+                    </h3>
+                    <ul className="space-y-2.5">
+                      {transparencyTopics.map((item) => (
+                        <li key={item.name}>
+                          <Link href={item.href} className="group flex items-center gap-2 text-xs text-content-secondary transition-colors hover:text-content-primary">
+                            <ChevronRight className="h-3 w-3 opacity-0 transition-opacity group-hover:opacity-100" />
+                            {item.name}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
                 {exploreClusters.map((cluster) => (

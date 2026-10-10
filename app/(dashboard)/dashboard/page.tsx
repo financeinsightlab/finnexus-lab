@@ -26,6 +26,7 @@ import { getPublishedStudyMaterials } from '@/lib/study';
 import { readLastVisit } from '@/lib/visit-store';
 import VisitMarker from '@/components/dashboard/VisitMarker';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import SpacedRepetitionCard from '@/components/learning/SpacedRepetitionCard';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -48,7 +49,7 @@ export default async function DashboardPage() {
   if (!session?.user?.id) redirect('/auth/signin');
 
   const userId = session.user.id as string;
-  const [saved, member] = await Promise.all([
+  const [saved, member, userBadges] = await Promise.all([
     prisma.savedArticle.findMany({
       where: { userId },
       orderBy: { savedAt: 'desc' },
@@ -57,6 +58,12 @@ export default async function DashboardPage() {
     prisma.user.findUnique({
       where: { id: userId },
       select: { createdAt: true },
+    }),
+    prisma.userBadge.findMany({
+      where: { userId },
+      include: { badge: true },
+      orderBy: { awardedAt: 'desc' },
+      take: 6,
     }),
   ]);
 
@@ -302,6 +309,10 @@ export default async function DashboardPage() {
             </div>
           )}
         </div>
+        {/* Card 0c — Daily Active Recall & Spaced Repetition (Pillar E3) */}
+        <div className="md:col-span-3">
+          <SpacedRepetitionCard />
+        </div>
         {/* Card 0b — New since your last visit (Pillar F4) */}
         <div className="card p-6 md:col-span-3">
           <div className="flex flex-wrap items-center justify-between gap-3">
@@ -401,6 +412,36 @@ export default async function DashboardPage() {
                 Logout
               </button>
             </form>
+          </div>
+
+          {/* Earned Badges & Milestones (Pillar D4) */}
+          <div className="mt-6 border-t border-border pt-4">
+            <div className="flex items-center justify-between text-xs mb-2.5">
+              <span className="font-bold text-foreground flex items-center gap-1.5">
+                <span>🏆</span> Badges &amp; Milestones
+              </span>
+              <Link href="/account" className="text-primary hover:underline text-[11px] font-semibold">
+                View all ({userBadges.length}) &rarr;
+              </Link>
+            </div>
+            {userBadges.length === 0 ? (
+              <p className="text-xs text-muted-foreground">
+                Earn badges by completing courses, learning streaks, and community research.
+              </p>
+            ) : (
+              <div className="flex flex-wrap gap-2">
+                {userBadges.map((ub) => (
+                  <span
+                    key={ub.id}
+                    title={ub.badge.description || ub.badge.name}
+                    className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-surface border border-border text-xs font-semibold text-foreground shadow-sm"
+                  >
+                    <span>{ub.badge.icon || '🏅'}</span>
+                    <span>{ub.badge.name}</span>
+                  </span>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 

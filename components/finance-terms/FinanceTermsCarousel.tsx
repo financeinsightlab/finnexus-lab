@@ -19,6 +19,8 @@ import {
   Layers,
   HelpCircle,
   TrendingUp,
+  ChevronDown,
+  RotateCcw,
 } from 'lucide-react';
 import { COMPREHENSIVE_FINANCE_TERMS, type FinanceTermSlideData } from '@/lib/finance-terms-data';
 
@@ -278,66 +280,95 @@ export default function FinanceTermsCarousel({
           )}
         </div>
 
-        {/* Categories & Subcategories Filter Tabs */}
-        <div className="mb-6 space-y-3">
-          {/* Main Category Tabs */}
-          <div className="flex flex-wrap items-center gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-muted-foreground mr-1">
-              Category:
-            </span>
-            {allCategories.map((cat) => (
-              <button
-                key={cat}
-                type="button"
-                onClick={() => {
-                  setActiveCategory(cat);
-                  setActiveSubCategory('All');
-                }}
-                className={`rounded-full px-3.5 py-1.5 text-xs font-semibold transition-all ${
-                  activeCategory === cat
-                    ? 'bg-primary text-primary-foreground shadow-md shadow-teal-500/20'
-                    : 'border border-border bg-card/70 text-muted-foreground hover:border-teal-500/40 hover:text-foreground'
-                }`}
-              >
-                {cat}
-              </button>
-            ))}
-          </div>
-
-          {/* Subcategories Pills */}
-          {allSubCategories.length > 0 && (
-            <div className="flex flex-wrap items-center gap-1.5 pt-1">
-              <span className="text-[11px] font-semibold text-muted-foreground mr-1 flex items-center gap-1">
-                <Layers className="h-3 w-3" />
-                Subcategory:
-              </span>
-              <button
-                type="button"
-                onClick={() => setActiveSubCategory('All')}
-                className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all ${
-                  activeSubCategory === 'All'
-                    ? 'bg-teal-500/20 text-teal-700 dark:text-teal-300 border border-teal-500/40 font-semibold'
-                    : 'border border-border/60 bg-background/60 text-muted-foreground hover:bg-muted'
-                }`}
-              >
-                All
-              </button>
-              {allSubCategories.map((sub) => (
-                <button
-                  key={sub}
-                  type="button"
-                  onClick={() => setActiveSubCategory(sub)}
-                  className={`rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all ${
-                    activeSubCategory === sub
-                      ? 'bg-teal-500/20 text-teal-700 dark:text-teal-300 border border-teal-500/40 font-semibold shadow-sm'
-                      : 'border border-border/60 bg-background/60 text-muted-foreground hover:bg-muted hover:text-foreground'
-                  }`}
+        {/* Categories & Subcategories Compact Filter Controls (Replaces multi-line pill lists) */}
+        <div className="mb-6 rounded-2xl border border-border bg-card/75 p-3.5 sm:p-4 shadow-sm backdrop-blur-md">
+          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            {/* Dropdowns group */}
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3 w-full sm:w-auto">
+              {/* Category Select */}
+              <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 min-w-0">
+                <label
+                  htmlFor="carousel-category-select"
+                  className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground shrink-0"
                 >
-                  {sub}
+                  <Layers className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" aria-hidden="true" />
+                  <span>Category:</span>
+                </label>
+                <div className="relative w-full sm:w-auto">
+                  <select
+                    id="carousel-category-select"
+                    value={activeCategory}
+                    onChange={(e) => {
+                      setActiveCategory(e.target.value);
+                      setActiveSubCategory('All');
+                    }}
+                    className="min-h-[44px] w-full sm:w-[220px] rounded-xl border border-input bg-background/90 px-3.5 pr-8 py-2 text-xs sm:text-sm font-semibold text-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary cursor-pointer appearance-none"
+                    aria-label="Filter terms by category"
+                  >
+                    {allCategories.map((cat) => (
+                      <option key={cat} value={cat}>
+                        {cat === 'All' ? `All Categories (${combinedTerms.length})` : cat}
+                      </option>
+                    ))}
+                  </select>
+                  <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                </div>
+              </div>
+
+              {/* Subcategory Select */}
+              {allSubCategories.length > 0 && (
+                <div className="flex flex-col sm:flex-row sm:items-center gap-1.5 min-w-0">
+                  <label
+                    htmlFor="carousel-subcategory-select"
+                    className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-muted-foreground shrink-0"
+                  >
+                    <Sparkles className="h-3.5 w-3.5 text-teal-600 dark:text-teal-400" aria-hidden="true" />
+                    <span>Subcategory:</span>
+                  </label>
+                  <div className="relative w-full sm:w-auto">
+                    <select
+                      id="carousel-subcategory-select"
+                      value={activeSubCategory}
+                      onChange={(e) => setActiveSubCategory(e.target.value)}
+                      className="min-h-[44px] w-full sm:w-[220px] rounded-xl border border-input bg-background/90 px-3.5 pr-8 py-2 text-xs sm:text-sm font-semibold text-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:border-primary cursor-pointer appearance-none"
+                      aria-label="Filter terms by subcategory"
+                    >
+                      <option value="All">All Subcategories ({allSubCategories.length})</option>
+                      {allSubCategories.map((sub) => (
+                        <option key={sub} value={sub}>
+                          {sub}
+                        </option>
+                      ))}
+                    </select>
+                    <ChevronDown className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" aria-hidden="true" />
+                  </div>
+                </div>
+              )}
+
+              {/* Reset button if filtered */}
+              {(activeCategory !== 'All' || activeSubCategory !== 'All') && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveCategory('All');
+                    setActiveSubCategory('All');
+                  }}
+                  className="min-h-[44px] inline-flex items-center gap-1 rounded-xl px-3 py-2 text-xs font-semibold text-teal-700 dark:text-teal-300 hover:bg-teal-500/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary transition-all self-start sm:self-auto"
+                >
+                  <RotateCcw className="h-3.5 w-3.5" aria-hidden="true" />
+                  <span>Reset</span>
                 </button>
-              ))}
+              )}
             </div>
-          )}
+
+            {/* Selection Status Badge */}
+            <div className="flex items-center gap-2 text-xs font-medium text-muted-foreground pt-1 sm:pt-0 sm:ml-auto">
+              <span className="inline-block h-2 w-2 rounded-full bg-teal-500" aria-hidden="true" />
+              <span>
+                Showing <strong className="text-foreground">{slides.length}</strong> {slides.length === 1 ? 'slide' : 'slides'}
+              </span>
+            </div>
+          </div>
         </div>
 
         {/* ── Slide Container with BOTH-SIDE Navigation Arrows ── */}

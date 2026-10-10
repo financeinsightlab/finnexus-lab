@@ -210,7 +210,7 @@ export default function AlgoliaSearch() {
               </div>
 
               <div className="flex flex-wrap gap-6">
-                <div className="min-w-[220px] flex-1">
+                <div className="min-w-0 flex-1 sm:min-w-[220px]">
                   <p className="section-label mb-3">Sector</p>
                   <RefinementList
                     attribute="sector"
@@ -233,7 +233,7 @@ export default function AlgoliaSearch() {
                   />
                 </div>
 
-                <div className="min-w-[220px] flex-1">
+                <div className="min-w-0 flex-1 sm:min-w-[220px]">
                   <p className="section-label mb-3">Type</p>
                   <RefinementList
                     attribute="type"

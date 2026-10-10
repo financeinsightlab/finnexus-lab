@@ -7,7 +7,7 @@ import { useTheme } from 'next-themes';
 import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 import GlobalSearch from '@/components/layout/GlobalSearch';
 import LocaleSwitcher from '@/components/i18n/LocaleSwitcher';
-import { lockBodyScroll } from '@/components/ui/bodyScrollLock';
+import NotificationBell from '@/components/notifications/NotificationBell';
 import { useSession, signOut } from 'next-auth/react';
 import { NAV_CLUSTERS, NAV_CTA, type NavCluster } from '@/lib/navigation';
 
@@ -90,7 +90,6 @@ export default function Navbar() {
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
   const searchButtonRef = useRef<HTMLButtonElement>(null);
   const mobileDrawerRef = useRef<HTMLElement>(null);
-  const wasMobileOpenRef = useRef(false);
   const [openCluster, setOpenCluster] = useState<string | null>(null);
   const [userOpen, setUserOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
@@ -296,7 +295,8 @@ export default function Navbar() {
                   Sign In
                 </Link>
               ) : (
-                <div className="relative">
+                <div className="relative flex items-center gap-2">
+                  <NotificationBell />
                   <button
                     ref={userTriggerRef}
                     onClick={() => setUserOpen(v => !v)}
@@ -508,6 +508,7 @@ export default function Navbar() {
                     <p className="text-sm font-medium text-content-primary truncate mt-0.5">{session.user?.email}</p>
                   </div>
                   <div className="grid grid-cols-2 gap-2">
+                    <Link href="/account" onClick={() => setMobileOpen(false)} className="col-span-2 flex items-center justify-between px-3 py-2 border border-border text-content-secondary rounded-xl text-xs font-medium hover:bg-accent transition-all"><span>👤 Account, Notifications &amp; Badges</span><span>&rarr;</span></Link>
                     <Link href="/dashboard" onClick={() => setMobileOpen(false)} className="flex items-center justify-center gap-2 py-2.5 border border-brand/40 text-brand rounded-xl text-sm font-medium hover:bg-brand-muted transition-all">
                       Dashboard
                     </Link>

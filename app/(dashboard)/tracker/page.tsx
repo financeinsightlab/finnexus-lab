@@ -10,6 +10,7 @@ import JsonLd from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import LiveMacroTicker from '@/components/tracker/LiveMacroTicker';
 
 export const metadata: Metadata = {
   title: 'Sector Intelligence Trackers',
@@ -68,6 +69,7 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
       {/* Sector landscape grid */}
       <section id="landscape" className="py-16 md:py-20 scroll-mt-16">
         <div className="max-w-7xl mx-auto px-6">
+          <LiveMacroTicker />
           <div className="flex flex-wrap items-end justify-between gap-4">
             <ScrollReveal>
               <SectionHeader label={`${quarter.kind} snapshot · ${quarter.label}`} title="Sector landscape" subtitle="Site-defined indicator, headline, and trend for the selected stored quarter. Open a tracker for its available detail." />

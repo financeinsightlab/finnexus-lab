@@ -9,7 +9,6 @@ import { useRouter } from 'next/navigation';
 import { X } from 'lucide-react';
 import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 import type { SearchItem, SearchResult } from '@/lib/search';
-import { useDialogAccessibility } from '@/components/ui/useDialogAccessibility';
 
 const STATIC_ACTIONS: SearchItem[] = [
     { kind: 'research', title: 'Dashboard', description: 'Your saved items and plan', url: '/dashboard', tags: ['account'], score: 1 },

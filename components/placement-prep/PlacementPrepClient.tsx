@@ -460,7 +460,7 @@ function DayQuote({ day }: { day: number }) {
   return (
     <div className="rounded-2xl bg-brand-navy text-white p-5 mb-6 shadow-lg border border-white/10">
       <div className="flex items-start justify-between gap-4 flex-wrap">
-        <div className="flex-1 min-w-[250px]">
+        <div className="flex-1 min-w-0 sm:min-w-[250px]">
           <div className="text-xs uppercase tracking-widest text-brand font-bold">
             Unique Quote for Day {day}
           </div>

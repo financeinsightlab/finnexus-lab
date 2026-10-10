@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { getAllResearch } from '@/lib/content';
 import { parseFreshStats, calculateReportFreshness, type ParsedFreshStat } from '@/lib/freshness';
+import LiveMacroTicker from '@/components/tracker/LiveMacroTicker';
 
 export const metadata: Metadata = {
   title: 'Data Freshness Dashboard | Kunwar Analytics',
@@ -166,6 +167,7 @@ export default async function DataFreshnessDashboard() {
       </section>
 
       <div className="max-w-6xl mx-auto px-6 py-12 space-y-12">
+        <LiveMacroTicker />
         {/* ─── No stats yet ─── */}
         {rows.length === 0 && (
           <div className="text-center py-24 text-gray-400">
