@@ -66,12 +66,11 @@ export default function AutonomousWorkforceCalc({ slug, isPremiumUser }: { slug:
     const annualEbitdaExpansion = legacyAnnualRunRate - swarmAnnualRunRate;
     const grossMarginExpansion = ((legacyAnnualRunRate - swarmAnnualRunRate) / legacyAnnualRunRate) * 100;
 
-    // 5. Valuation Re-rating (Enterprise Value Delta)
-    const legacyEvContribution = legacyAnnualRunRate * currentMultiple; // Approximate value assigned to this org output
-    const swarmEvContribution = legacyAnnualRunRate * projectedMultiple; // Tech multiplier on same output
-    const valueCreation = swarmEvContribution - legacyEvContribution;
+    // 5. Valuation Re-rating: Enterprise Value Delta from EBITDA Expansion
+    const grossValueCreation = annualEbitdaExpansion > 0 ? annualEbitdaExpansion * projectedMultiple : 0;
+    const valueCreation = Math.max(0, grossValueCreation - totalRestructuringCapex);
 
-    const paybackMonths = (totalRestructuringCapex / (annualEbitdaExpansion / 12));
+    const paybackMonths = annualEbitdaExpansion > 0 ? (totalRestructuringCapex / (annualEbitdaExpansion / 12)) : Infinity;
 
     // Time-series mapping (60 months / 5 years)
     const chartData = [];

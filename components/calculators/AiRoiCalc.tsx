@@ -62,8 +62,8 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
     const netAnnualSavings = netMonthlySavings * 12;
     
     // Gross ROI on Capex = (Net Annual Savings / Capex) * 100
-    const roi = capex > 0 ? (netAnnualSavings / capex) * 100 : 9999;
-    const paybackMonths = netMonthlySavings > 0 ? capex / netMonthlySavings : 999;
+    const roi = capex > 0 ? (netAnnualSavings / capex) * 100 : Infinity;
+    const paybackMonths = netMonthlySavings > 0 ? capex / netMonthlySavings : Infinity;
 
     // Generate Chart and Excel Data (36 months cumulative cost comparison)
     const chartData = [];

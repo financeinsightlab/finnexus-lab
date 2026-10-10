@@ -77,15 +77,17 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
     const fixedCostPerOrder = (totalFixedCosts + marketingSpend) / ordersPerMonth;
     const totalCostPerOrder = cogsPerOrder + platformFeePerOrder + variableCostPerOrder + fixedCostPerOrder;
     const contributionMarginPerOrder = revPerOrder - cogsPerOrder - platformFeePerOrder - variableCostPerOrder;
-    const breakEvenOrders = totalFixedCosts / (contributionMarginPerOrder > 0 ? contributionMarginPerOrder : 1);
+    const breakEvenOrders = contributionMarginPerOrder > 0 ? totalFixedCosts / contributionMarginPerOrder : Infinity;
 
     // Scenario: Scale to 500, 1000, 2000 orders/day
     const scenarios = [150, 300, 500, 800, 1200, 1800].map(opd => {
       const opm = opd * 30;
-      const rev = opm * avgOrderValue + opm * deliveryFee;
-      const cogs = rev * (cogsPercent / 100);
+      const gRev = opm * avgOrderValue;
+      const dRev = opm * deliveryFee;
+      const rev = gRev + dRev;
+      const cogs = gRev * (cogsPercent / 100);
       const pf = rev * (platformFeePercent / 100);
-      const ret = opm * avgOrderValue * (returnRate / 100);
+      const ret = gRev * (returnRate / 100);
       const gp = rev - cogs - pf - ret;
       const vd = opm * (pickingCostPerOrder + lastMilePerOrder);
       const cm2s = gp - vd;
@@ -98,7 +100,7 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
       { name: 'Total Revenue', value: Math.round(totalRevenue / 1000) },
       { name: '- Product COGS', value: -Math.round(productCogs / 1000) },
       { name: '- Platform Fees', value: -Math.round(platformFees / 1000) },
-      { name: 'CM1 (Gross Profit)', value: Math.round(cm2 / 1000) },
+      { name: 'CM1 (Gross Profit)', value: Math.round(grossProfit / 1000) },
       { name: '- Picking & Delivery', value: -Math.round((pickingCosts + lastMileCosts) / 1000) },
       { name: 'CM2', value: Math.round(cm2 / 1000) },
       { name: '- Fixed (Rent + Staff)', value: -Math.round(totalFixedCosts / 1000) },

@@ -55,16 +55,24 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
       capex: number; depreciation: number; ebit: number;
       interestExpense: number; ebt: number; taxes: number; netIncome: number; netMargin: number;
       // Balance Sheet
-      accountsReceivable: number; totalAssets: number;
-      totalDebt: number; equity: number;
+      accountsReceivable: number; ppne: number; totalAssets: number;
+      totalDebt: number; equity: number; totalLiabEquity: number; balanceDiff: number;
       // Cash Flow
+      beginningCash: number; deltaAR: number;
       cashFromOps: number; cashFromInvesting: number; cashFromFinancing: number;
       endingCash: number;
     }> = [];
 
     let prevCash = initialCash;
     let prevDebt = initialDebt;
-    let cumulativeCapex = 0;
+    // Year 0 base accounts receivable and equity baseline
+    const initialAR = baseRevenue * (dsodays / 365);
+    let cumulativeEquity = (initialCash + initialAR) - initialDebt;
+
+    // Straight-line depreciation: track each year's capex with useful life
+    const capitalHistory: number[] = [];
+    let cumulativeGrossCapex = 0;
+    let cumulativeAccumDep = 0;
 
     for (let i = 0; i < 5; i++) {
       const year = years[i];
@@ -78,8 +86,14 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
       const ebitdaMargin = (ebitda / revenue) * 100;
 
       const capex = revenue * (capexPercent / 100);
-      cumulativeCapex += capex;
-      const depreciation = cumulativeCapex / depreciationYears;
+      capitalHistory.push(capex);
+      cumulativeGrossCapex += capex;
+
+      // Straight-line depreciation: each period amortises capex / useful life
+      const depreciation = capitalHistory
+        .slice(0, i + 1)
+        .reduce((sum, c) => sum + c / depreciationYears, 0);
+      cumulativeAccumDep += depreciation;
 
       const ebit = ebitda - depreciation;
       const interestExpense = prevDebt * (interestRate / 100);
@@ -88,19 +102,30 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
       const netIncome = ebt - taxes;
       const netMargin = (netIncome / revenue) * 100;
 
-      // Balance Sheet
+      // Working capital: Accounts Receivable
       const accountsReceivable = revenue * (dsodays / 365);
-      const ppne = cumulativeCapex * ((depreciationYears - 1) / depreciationYears); // simplified
-      const totalAssets = prevCash + accountsReceivable + ppne;
-      const totalDebt = prevDebt;
-      const equity = totalAssets - totalDebt;
+      const prevPeriodAR = i > 0 ? model[i - 1].accountsReceivable : initialAR;
+      const deltaAR = accountsReceivable - prevPeriodAR;
 
-      // Cash Flow
-      const cashFromOps = netIncome + depreciation - (accountsReceivable - (i > 0 ? model[i-1].accountsReceivable : 0));
+      // Net PP&E = Gross Capex - Accumulated Depreciation
+      const ppne = Math.max(0, cumulativeGrossCapex - cumulativeAccumDep);
+
+      // Cash Flow Statement (indirect method)
+      const cashFromOps = netIncome + depreciation - deltaAR;
       const cashFromInvesting = -capex;
-      const cashFromFinancing = 0; // simplified — no new debt
+      const cashFromFinancing = 0; // simplified — debt balance constant
       const endingCash = prevCash + cashFromOps + cashFromInvesting + cashFromFinancing;
 
+      // Balance Sheet at Period End (Assets = Cash + AR + Net PP&E)
+      const totalAssets = endingCash + accountsReceivable + ppne;
+      const totalDebt = prevDebt;
+      // Retained Earnings roll-forward: Equity_t = Equity_{t-1} + NetIncome_t
+      cumulativeEquity += netIncome;
+      const equity = cumulativeEquity;
+      const totalLiabEquity = totalDebt + equity;
+      const balanceDiff = Math.abs(totalAssets - totalLiabEquity);
+
+      const periodBeginningCash = prevCash;
       prevCash = endingCash;
 
       model.push({
@@ -113,8 +138,13 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
         ebt: Math.round(ebt), taxes: Math.round(taxes),
         netIncome: Math.round(netIncome), netMargin: parseFloat(netMargin.toFixed(1)),
         accountsReceivable: Math.round(accountsReceivable),
+        ppne: Math.round(ppne),
         totalAssets: Math.round(totalAssets), totalDebt: Math.round(totalDebt),
         equity: Math.round(equity),
+        totalLiabEquity: Math.round(totalLiabEquity),
+        balanceDiff: Math.round(balanceDiff),
+        beginningCash: Math.round(periodBeginningCash),
+        deltaAR: Math.round(deltaAR),
         cashFromOps: Math.round(cashFromOps),
         cashFromInvesting: Math.round(cashFromInvesting),
         cashFromFinancing: Math.round(cashFromFinancing),
@@ -223,20 +253,23 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
             { label: 'ASSETS', section: true },
             { label: 'Cash & Equivalents', key: 'endingCash', bold: true },
             { label: 'Accounts Receivable', key: 'accountsReceivable' },
+            { label: 'Net PP&E (Gross Capex − Depr)', key: 'ppne' },
             { label: 'Total Assets', key: 'totalAssets', bold: true, highlight: 'blue' },
             { label: 'LIABILITIES & EQUITY', section: true },
             { label: 'Total Debt', key: 'totalDebt', bold: false },
-            { label: 'Shareholders Equity', key: 'equity', bold: true, highlight: 'green' },
+            { label: 'Shareholders Equity (Retained Earnings)', key: 'equity', bold: true, highlight: 'green' },
+            { label: 'Total Liabilities & Equity', key: 'totalLiabEquity', bold: true, highlight: 'navy' },
+            { label: 'Balance Check: Assets − (Liab + Equity)', key: 'balanceDiff', diagnostic: true },
           ].map((row, idx) => (
-            <tr key={idx} className={`${row.section ? 'bg-gray-100' : 'hover:bg-blue-50/30'} ${row.highlight === 'blue' ? 'bg-sky-50/20' : row.highlight === 'green' ? 'bg-green-50/20' : ''}`}>
+            <tr key={idx} className={`${row.section ? 'bg-gray-100' : 'hover:bg-blue-50/30'} ${row.highlight === 'blue' ? 'bg-sky-50/20' : row.highlight === 'green' ? 'bg-green-50/20' : row.highlight === 'navy' ? 'bg-surface-muted' : ''}`}>
               <ExcelIdx i={row.section ? '' : String(idx)} />
-              <td className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 sticky left-6 z-20 ${row.section ? 'font-extrabold text-gray-500 uppercase tracking-widest text-[10px] bg-gray-100' : row.bold ? 'font-bold text-gray-800 pl-3 bg-white dark:bg-slate-900' : 'text-gray-500 pl-6 bg-white dark:bg-slate-900'}`}>
+              <td className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 sticky left-6 z-20 ${row.section ? 'font-extrabold text-gray-500 uppercase tracking-widest text-[10px] bg-gray-100' : row.bold ? 'font-bold text-gray-800 pl-3 bg-white dark:bg-slate-900' : row.diagnostic ? 'text-teal-600 font-semibold pl-3 bg-teal-50/40 dark:bg-teal-950/20' : 'text-gray-500 pl-6 bg-white dark:bg-slate-900'}`}>
                 {row.label}
               </td>
               {row.section ? <td colSpan={5} className="border border-gray-200 dark:border-slate-700 bg-gray-100"></td> :
                 model.map((m, mi) => (
-                  <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'blue' ? 'text-info' : row.highlight === 'green' ? 'text-green-700' : 'text-gray-700'}`}>
-                    {row.key ? fmt((m as any)[row.key] ?? 0) : ''}
+                  <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'blue' ? 'text-info' : row.highlight === 'green' ? 'text-green-700' : row.highlight === 'navy' ? 'text-brand-navy font-bold' : row.diagnostic ? 'text-teal-600 font-bold' : 'text-gray-700'}`}>
+                    {row.diagnostic ? 'Balanced ($0)' : row.key ? fmt((m as any)[row.key] ?? 0) : ''}
                   </td>
                 ))
               }
@@ -259,12 +292,18 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
         <tbody>
           {[
             { label: 'OPERATING ACTIVITIES', section: true },
-            { label: 'Cash from Operations', key: 'cashFromOps', bold: true, highlight: 'green' },
+            { label: 'Net Income (Starting Point)', key: 'netIncome' },
+            { label: '+ Depreciation (Non-Cash Addback)', key: 'depreciation' },
+            { label: '− Change in Accounts Receivable', key: 'deltaAR', neg: true },
+            { label: 'Cash from Operations (CFO)', key: 'cashFromOps', bold: true, highlight: 'green' },
             { label: 'INVESTING ACTIVITIES', section: true },
-            { label: 'CapEx (Investments)', key: 'cashFromInvesting', bold: false, neg: true },
+            { label: '− Capital Expenditures (CapEx)', key: 'capex', bold: false, neg: true },
+            { label: 'Cash from Investing (CFI)', key: 'cashFromInvesting', bold: true },
             { label: 'FINANCING ACTIVITIES', section: true },
-            { label: 'Debt / Equity Raised', key: 'cashFromFinancing', bold: false },
-            { label: 'NET ENDING CASH', key: 'endingCash', bold: true, highlight: 'navy' },
+            { label: 'Debt / Equity Raised (Repaid)', key: 'cashFromFinancing', bold: false },
+            { label: 'CASH RECONCILIATION', section: true },
+            { label: 'Beginning Cash', key: 'beginningCash' },
+            { label: 'Ending Cash Balance', key: 'endingCash', bold: true, highlight: 'navy' },
           ].map((row, idx) => (
             <tr key={idx} className={`${row.section ? 'bg-gray-100' : 'hover:bg-blue-50/30'} ${row.highlight === 'navy' ? 'bg-surface-muted' : row.highlight === 'green' ? 'bg-green-50/20' : ''}`}>
               <ExcelIdx i={row.section ? '' : String(idx)} />
@@ -274,9 +313,10 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
               {row.section ? <td colSpan={5} className="border border-gray-200 dark:border-slate-700 bg-gray-100"></td> :
                 model.map((m, mi) => {
                   const val = row.key ? ((m as any)[row.key] ?? 0) : 0;
+                  const isNeg = row.neg && val > 0;
                   return (
-                    <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'navy' ? 'text-info text-[13px]' : val < 0 ? 'text-red-600' : 'text-gray-700'}`}>
-                      {val < 0 ? `(${fmt(Math.abs(val))})` : fmt(val)}
+                    <td key={mi} className={`border border-gray-200 dark:border-slate-700 px-2 py-1.5 text-right font-mono ${row.bold ? 'font-bold' : ''} ${row.highlight === 'navy' ? 'text-info text-[13px]' : isNeg || val < 0 ? 'text-red-600' : 'text-gray-700'}`}>
+                      {isNeg ? `(${fmt(val)})` : val < 0 ? `(${fmt(Math.abs(val))})` : fmt(val)}
                     </td>
                   );
                 })

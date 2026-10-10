@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect, useMemo } from 'react';
 import {
@@ -17,6 +17,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
   const [revenue, setRevenue] = useState<number | string>(10000000); // 10M
   const [revGrowth, setRevGrowth] = useState<number | string>(15); // 15%
   const [ebitdaMargin, setEbitdaMargin] = useState<number | string>(20); // 20%
+  const [dnaRate, setDnaRate] = useState<number | string>(5); // D&A as % of revenue, default 5%
   const [taxRate, setTaxRate] = useState<number | string>(21); // 21%
   const [capexNwcRate, setCapexNwcRate] = useState<number | string>(5); // 5%
   const [ltGrowth, setLtGrowth] = useState<number | string>(2.5); // 2.5%
@@ -64,6 +65,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
     const _rev = num(revenue);
     const _revGr = num(revGrowth);
     const _ebitdaM = num(ebitdaMargin);
+    const _dnaR = num(dnaRate);    // D&A % of revenue
     const _taxR = num(taxRate);
     const _capexR = num(capexNwcRate);
     const _ltGr = num(ltGrowth);
@@ -75,16 +77,20 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
     const modelError = _wacc <= _ltGr;
     
     // Yr 0 (Current) Baselines
+    // EBIT = EBITDA − D&A
     const yr0Ebitda = _rev * (_ebitdaM / 100);
-    const yr0Tax = yr0Ebitda * (_taxR / 100);
-    const yr0Nopat = yr0Ebitda - yr0Tax;
-    const yr0Capex = _rev * (_capexR / 100);
-    const yr0Fcf = yr0Nopat - yr0Capex;
+    const yr0Dna    = _rev * (_dnaR / 100);
+    const yr0Ebit   = yr0Ebitda - yr0Dna;
+    // NOPAT = EBIT × (1 − t)  — the canonical free cash flow starting point
+    const yr0Nopat  = yr0Ebit * (1 - _taxR / 100);
+    const yr0Capex  = _rev * (_capexR / 100);
+    // UFCF = NOPAT + D&A − Capex  (D&A is non-cash, add back; NWC change ≈ 0 at base)
+    const yr0Fcf    = yr0Nopat + yr0Dna - yr0Capex;
 
     // Excel Matrix Arrays (Initialized w/ Yr 0)
     const rowRev: (number | string)[] = [_rev];
     const rowEbitda: (number | string)[] = [yr0Ebitda];
-    const rowTax: (number | string)[] = [-yr0Tax];
+    const rowTax: (number | string)[] = [-(yr0Ebit * _taxR / 100)];
     const rowNopat: (number | string)[] = [yr0Nopat];
     const rowCapex: (number | string)[] = [-yr0Capex];
     const rowFcf: (number | string)[] = [yr0Fcf];
@@ -101,10 +107,13 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
     for (let year = 1; year <= 5; year++) {
       currentPeriodRev = currentPeriodRev * (1 + (_revGr / 100)); // Grow Topline
       const cEbitda = currentPeriodRev * (_ebitdaM / 100);
-      const cTax = cEbitda * (_taxR / 100);
-      const cNopat = cEbitda - cTax;
-      const cCapex = currentPeriodRev * (_capexR / 100);
-      const cFcf = cNopat - cCapex; // Unlevered Free Cash Flow
+      const cDna    = currentPeriodRev * (_dnaR / 100);
+      const cEbit   = cEbitda - cDna;
+      // NOPAT = EBIT × (1 − t)  [tax on operating earnings only]
+      const cNopat  = cEbit * (1 - _taxR / 100);
+      const cCapex  = currentPeriodRev * (_capexR / 100);
+      // UFCF = NOPAT + D&A − Capex
+      const cFcf    = cNopat + cDna - cCapex;
       
       const df = Math.pow(1 + (_wacc / 100), year); // Discount Factor
       const pvFcf = cFcf / df; // PV of FCF
@@ -114,7 +123,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
 
       rowRev.push(Math.round(currentPeriodRev));
       rowEbitda.push(Math.round(cEbitda));
-      rowTax.push(Math.round(-cTax));
+      rowTax.push(Math.round(-cEbit * _taxR / 100));
       rowNopat.push(Math.round(cNopat));
       rowCapex.push(Math.round(-cCapex));
       rowFcf.push(Math.round(cFcf));
@@ -195,7 +204,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
       rowPv,
       insightText
     };
-  }, [revenue, revGrowth, ebitdaMargin, taxRate, capexNwcRate, ltGrowth, wacc, cashEq, totalDebt, shares]);
+  }, [revenue, revGrowth, ebitdaMargin, dnaRate, taxRate, capexNwcRate, ltGrowth, wacc, cashEq, totalDebt, shares]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -278,6 +287,15 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                   </div>
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider" title="D&A as % Revenue — EBIT = EBITDA − D&A">D&amp;A % Rev</label>
+                <div className="relative">
+                  <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={dnaRate} onChange={e => setDnaRate(e.target.value)} />
+                  <span className="absolute right-3 top-2.5 text-gray-400">%</span>
+                </div>
+                <p className="text-[10px] text-gray-400 mt-0.5">NOPAT = EBIT×(1−t), FCF = NOPAT+D&amp;A−Capex</p>
               </div>
 
               <div className="grid grid-cols-2 gap-2">
@@ -475,7 +493,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
 
                     <tr className="hover:bg-info-muted/40 group bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
                       <ExcelRowIndex i="4" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white pl-3 font-semibold group-hover:bg-info-muted/0">Net Operating Profit (NOPAT)</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white pl-3 font-semibold group-hover:bg-info-muted/0">NOPAT = EBIT × (1−t)</td>
                       {calculations.rowNopat.map((val, idx) => (
                         <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-semibold text-black ${idx===0 ? 'text-blue-700 bg-warning-muted' : 'border-t border-t-gray-400'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}
@@ -496,7 +514,7 @@ export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremi
                     {/* UFCF */}
                     <tr className="bg-info-muted/30 group">
                       <ExcelRowIndex i="6" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-info-muted/40 text-brand-navy dark:text-white pl-3 uppercase tracking-wider text-[10px]">Unlevered Free Cash Flow</td>
+                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-info-muted/40 text-brand-navy dark:text-white pl-3 uppercase tracking-wider text-[10px]">UFCF = NOPAT + D&amp;A − Capex</td>
                       {calculations.rowFcf.map((val, idx) => (
                         <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-brand-navy dark:text-white bg-info-muted/40 ${idx===0 ? 'text-blue-700 bg-warning-muted' : 'border-t-2 border-t-gray-400'}`}>
                           {typeof val === 'number' ? val.toLocaleString() : val}

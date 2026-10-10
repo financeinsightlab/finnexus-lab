@@ -67,10 +67,11 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
   // Calculations
   const calculations = useMemo(() => {
     // Helper to calculate EV and Multiples securely
-    const calcPeer = (mc: number, debt: number, rev: number, ebitda: number) => {
-      const ev = mc + debt;
+    // Helper to calculate EV and Multiples securely
+    const calcPeer = (mc: number, netDebt: number, rev: number, ebitda: number) => {
+      const ev = mc + netDebt;
       const evRev = rev > 0 ? ev / rev : 0;
-      const evEbitda = ebitda > 0 ? ev / ebitda : 0;
+      const evEbitda = ebitda > 0 ? ev / ebitda : NaN;
       return { ev, evRev, evEbitda };
     };
 
@@ -78,36 +79,38 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
     const peerB = calcPeer(peerBMc, peerBDebt, peerBRev, peerBEbitda);
     const peerC = calcPeer(peerCMc, peerCDebt, peerCRev, peerCEbitda);
 
-    const evRevArray = [peerA.evRev, peerB.evRev, peerC.evRev].sort((a,b)=>a-b);
-    const evEbitdaArray = [peerA.evEbitda, peerB.evEbitda, peerC.evEbitda].sort((a,b)=>a-b);
+    const evRevArray = [peerA.evRev, peerB.evRev, peerC.evRev].filter(x => Number.isFinite(x) && x > 0).sort((a,b)=>a-b);
+    const evEbitdaArray = [peerA.evEbitda, peerB.evEbitda, peerC.evEbitda].filter(x => Number.isFinite(x) && x > 0).sort((a,b)=>a-b);
 
-    const meanEvRev = (peerA.evRev + peerB.evRev + peerC.evRev) / 3;
-    const meanEvEbitda = (peerA.evEbitda + peerB.evEbitda + peerC.evEbitda) / 3;
+    const meanEvRev = evRevArray.length > 0 ? evRevArray.reduce((a,b)=>a+b, 0) / evRevArray.length : 0;
+    const meanEvEbitda = evEbitdaArray.length > 0 ? evEbitdaArray.reduce((a,b)=>a+b, 0) / evEbitdaArray.length : 0;
     
-    // Median is the middle element of the sorted 3-item array
-    const medianEvRev = evRevArray[1];
-    const medianEvEbitda = evEbitdaArray[1];
+    // Median calculation
+    const medianEvRev = evRevArray.length > 0 ? evRevArray[Math.floor(evRevArray.length / 2)] : 0;
+    const medianEvEbitda = evEbitdaArray.length > 0 ? evEbitdaArray[Math.floor(evEbitdaArray.length / 2)] : 0;
 
     // Valuation Output
     const targetEvFromRev = targetRev * medianEvRev;
-    const targetEvFromEbitda = targetEbitda * medianEvEbitda;
+    const targetEvFromEbitda = medianEvEbitda > 0 ? targetEbitda * medianEvEbitda : targetEvFromRev;
     
-    // Blended EV (50% Rev Multiple, 50% EBITDA Multiple)
-    const blendedEv = (targetEvFromRev + targetEvFromEbitda) / 2;
+    // Blended EV (Equal-weighted between Rev and EBITDA when EBITDA is positive)
+    const blendedEv = medianEvEbitda > 0 ? (targetEvFromRev + targetEvFromEbitda) / 2 : targetEvFromRev;
     
-    // Apply Liquidity Discount
-    const discountedEv = blendedEv * (1 - (privateDiscount / 100));
+    // Equity Bridge: Pre-discount Equity = Enterprise Value − Net Debt
+    const preDiscountEquity = blendedEv - targetNetDebt;
 
-    // Equity Bridge
-    const impliedEquityValue = discountedEv - targetNetDebt;
+    // DLOM (Discount for Lack of Marketability) applies strictly to Equity Value in corporate finance
+    const discountAmount = preDiscountEquity > 0 ? preDiscountEquity * (privateDiscount / 100) : 0;
+    const impliedEquityValue = Math.max(0, preDiscountEquity - discountAmount);
     const impliedSharePrice = targetShares > 0 ? impliedEquityValue / targetShares : 0;
+    const discountedEv = blendedEv; // Enterprise value is operational
 
     // Charting Data
     const chartData = [
-      { name: 'Peer A (Fast Growth)', evEbitda: Number(peerA.evEbitda.toFixed(1)), evRev: Number(peerA.evRev.toFixed(1)) },
-      { name: 'Peer B (Average Match)', evEbitda: Number(peerB.evEbitda.toFixed(1)), evRev: Number(peerB.evRev.toFixed(1)) },
-      { name: 'Peer C (Laggard)', evEbitda: Number(peerC.evEbitda.toFixed(1)), evRev: Number(peerC.evRev.toFixed(1)) },
-      { name: 'Median Target', evEbitda: Number(medianEvEbitda.toFixed(1)), evRev: Number(medianEvRev.toFixed(1)) }
+      { name: 'Peer A (Fast Growth)', evEbitda: Number.isFinite(peerA.evEbitda) ? Number(peerA.evEbitda.toFixed(1)) : 0, evRev: Number(peerA.evRev.toFixed(1)) },
+      { name: 'Peer B (Average Match)', evEbitda: Number.isFinite(peerB.evEbitda) ? Number(peerB.evEbitda.toFixed(1)) : 0, evRev: Number(peerB.evRev.toFixed(1)) },
+      { name: 'Peer C (Laggard)', evEbitda: Number.isFinite(peerC.evEbitda) ? Number(peerC.evEbitda.toFixed(1)) : 0, evRev: Number(peerC.evRev.toFixed(1)) },
+      { name: 'Median Benchmark', evEbitda: Number(medianEvEbitda.toFixed(1)), evRev: Number(medianEvRev.toFixed(1)) }
     ];
 
     // Excel Matrix Rows
@@ -119,17 +122,16 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
 
     // Analyst Summary
     let insightText = '';
-    const discountAmount = blendedEv - discountedEv;
-    const multipleSpread = evEbitdaArray[2] - evEbitdaArray[0];
+    const multipleSpread = evEbitdaArray.length >= 2 ? (evEbitdaArray[evEbitdaArray.length - 1] - evEbitdaArray[0]) : 0;
 
     if (multipleSpread > 15) {
-      insightText = `Volatile Peer Group Warning: Your selected peers have a massive ${multipleSpread.toFixed(1)}x spread between the highest and lowest EV/EBITDA multiple. This indicates these companies operate in wildly different margin structures or growth trajectories, breaking the core principle of a "Comparable" analysis. We forcibly applied the Median EV/EBITDA (${medianEvEbitda.toFixed(1)}x) to filter out the outliers, resulting in an Implied Target Enterprise Value of $${Math.round(discountedEv).toLocaleString()}M. We recommend replacing the highest and lowest peers to tighten the grouping.`;
-    } else if (impliedEquityValue <= 0) {
-      insightText = `Insolvent Valuation Detected: Based on the industry median EV/EBITDA multiple of ${medianEvEbitda.toFixed(1)}x, your Subject Company's Enterprise Value ($${Math.round(discountedEv)}M) is physically lower than its outstanding Net Debt load ($${targetNetDebt}M). This means the Equity Value of the business is $0.00 and the company is functionally insolvent. You must either rapidly pay down debt, aggressively expand EBITDA, or restructure to avoid bankruptcy.`;
+      insightText = `Volatile Peer Group Warning: Your selected peers have a wide ${multipleSpread.toFixed(1)}x spread between the highest and lowest EV/EBITDA multiple. This indicates peers operate with materially different margin profiles or growth stages. We applied the Median EV/EBITDA (${medianEvEbitda.toFixed(1)}x) to filter out outlier skew, establishing an Enterprise Value of $${Math.round(blendedEv).toLocaleString()}M. We recommend tightening the peer group with more comparable sector peers.`;
+    } else if (preDiscountEquity <= 0) {
+      insightText = `Debt Overhang / Distress Detected: Based on the peer median multiples, your Target Company's Enterprise Value ($${Math.round(blendedEv)}M) is lower than its Net Debt obligation ($${targetNetDebt}M). This leaves equity holders with zero residual value ($0.00). The company requires operational turnaround, debt restructuring, or rapid EBITDA expansion to create positive equity value.`;
     } else if (privateDiscount >= 30) {
-      insightText = `Heavy Liquidity Penalty: You are applying a massive ${privateDiscount}% Private Company Illiquidity Discount. While stripping $${Math.round(discountAmount)}M off your Enterprise Value protects the buyer from the risk of holding private stock, it severely damages the Founder's buyout returns. If you want to achieve closer to the public market multiple of ${medianEvEbitda.toFixed(1)}x, you must focus on improving the target's financial reporting standards and customer concentration to reduce the perceived private market risk before entering M&A talks.`;
+      insightText = `Conservative Liquidity Discount: You are applying a substantial ${privateDiscount}% Private Company Illiquidity Discount (DLOM), reducing pre-discount equity of $${Math.round(preDiscountEquity)}M by $${Math.round(discountAmount)}M down to $${Math.round(impliedEquityValue)}M ($${impliedSharePrice.toFixed(2)}/share). This is appropriate for minority illiquid stakes in early-stage firms, but control acquisitions of mature cash-flow positive targets often warrant tighter 15–20% discounts.`;
     } else {
-      insightText = `Stable Trading Benchmark: We have established a firm mathematical baseline for M&A negotiations. By analyzing the market's current premium on Peer B and C, we derived a median industry EV/EBITDA multiple of ${medianEvEbitda.toFixed(1)}x. Applying this to your Target's $${targetEbitda}M EBITDA, and safely deducting the ${privateDiscount}% illiquidity discount, we arrive at a defensible $${Math.round(discountedEv)}M Enterprise Value. After sweeping your $${targetNetDebt}M debt balance, the final fair-market Equity Value is $${Math.round(impliedEquityValue)}M, or $${impliedSharePrice.toFixed(2)} per share.`;
+      insightText = `Defensible M&A Baseline: Based on peer trading multiples (median EV/EBITDA of ${medianEvEbitda.toFixed(1)}x, EV/Sales of ${medianEvRev.toFixed(1)}x), the Target yields an Enterprise Value of $${Math.round(blendedEv)}M. After deducting $${targetNetDebt}M Net Debt and applying a ${privateDiscount}% DLOM ($${Math.round(discountAmount)}M haircut), the fair implied Equity Value is $${Math.round(impliedEquityValue)}M, or $${impliedSharePrice.toFixed(2)} per share across ${targetShares}M diluted shares.`;
     }
 
     return { 

@@ -126,7 +126,7 @@ const INTENSITY_COLORS: Record<number, string> = {
 };
 
 export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
-  const [companyName, setCompanyName] = useState('GeoSeoLab');
+  const [companyName, setCompanyName] = useState('Kunwar Analytics Lab');
   const [industry, setIndustry] = useState('Indian Fintech');
   const [notes, setNotes] = useState<Record<ForceId, string>>(INDUSTRY_TEMPLATES.fintech.notes);
   const [ratings, setRatings] = useState<ForceRatings>(INDUSTRY_TEMPLATES.fintech.ratings);

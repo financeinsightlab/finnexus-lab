@@ -60,10 +60,10 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
     const closedWon = sqls * (winRate / 100);
     
     // Prevent division by zero if 0 won
-    const blendedCac = closedWon > 0 ? marketingSpend / closedWon : marketingSpend;
+    const blendedCac = closedWon > 0 ? marketingSpend / closedWon : 0;
     
     const revenue = closedWon * acv;
-    const roi = marketingSpend > 0 ? ((revenue - marketingSpend) / marketingSpend) * 100 : 9999;
+    const roi = marketingSpend > 0 ? ((revenue - marketingSpend) / marketingSpend) * 100 : (revenue > 0 ? Infinity : 0);
 
     // Funnel Data (Chart)
     const chartData = [

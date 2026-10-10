@@ -60,11 +60,11 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
     const mGrossProfit = arpu * (margin / 100);
     const ltv = mGrossProfit / (safeChurn / 100);
     
-    // Payback Period (Months)
-    const payback = cac / mGrossProfit;
+    // Payback Period (Months) — requires positive gross margin
+    const payback = mGrossProfit > 0 ? cac / mGrossProfit : Infinity;
     
     // LTV : CAC Ratio
-    const ltvCac = ltv / cac;
+    const ltvCac = cac > 0 ? ltv / cac : Infinity;
 
     // Generate Chart and Excel Data (36 months cohort retention and profit)
     const chartData = [];

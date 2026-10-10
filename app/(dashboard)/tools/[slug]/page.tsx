@@ -26,6 +26,7 @@ import TimeValueCalc from '@/components/calculators/TimeValueCalc';
 import PortfolioRiskCalc from '@/components/calculators/PortfolioRiskCalc';
 import CpmCalc from '@/components/calculators/CpmCalc';
 import RatioAnalyzerCalc from '@/components/calculators/RatioAnalyzerCalc';
+import AutonomousWorkforceCalc from '@/components/calculators/AutonomousWorkforceCalc';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
@@ -79,6 +80,7 @@ export default async function CalculatorPage({ params }: PageProps) {
   else if (slug === 'portfolio-risk-lab') Component = <PortfolioRiskCalc />;
   else if (slug === 'critical-path-simulator') Component = <CpmCalc />;
   else if (slug === 'ratio-analyzer') Component = <RatioAnalyzerCalc />;
+  else if (slug === 'autonomous-workforce') Component = <AutonomousWorkforceCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
   else notFound();
 
   const toolSchema = tool ? [
@@ -106,31 +108,12 @@ export default async function CalculatorPage({ params }: PageProps) {
     },
   ] : [];
 
-  if (tool?.gated && !hasPlanPremiumAccess) {
-    return (
-
-      <div className="content-page min-h-screen py-16">
-
-        <JsonLd data={toolSchema} />
-        <p className="text-xs font-semibold uppercase tracking-widest text-teal-600">Premium financial tool</p>
-        <h1 className="mt-3 text-3xl font-extrabold text-slate-900 dark:text-white">{tool.title}</h1>
-        <Paywall user={session?.user} minimumPlan="PRO" preview={<p className="mt-3 text-slate-600 dark:text-slate-300">{tool.desc}</p>}>
-          {null}
-        </Paywall>
-      </div>
-    );
-  }
-
   return (
-
     <div className="relative flex min-h-screen w-full flex-col bg-background text-foreground">
-
        {/* 3D Hero Banner */}
        <div className="relative w-full h-48 md:h-64 border-b border-border overflow-hidden">
           <Image src={heroImg} alt={slug} fill priority loading="eager" className="object-cover opacity-90 dark:opacity-70 dark:mix-blend-lighten mix-blend-multiply" />
-
           <div className="absolute inset-0 bg-gradient-to-t from-background to-transparent" />
-
        </div>
        
        <JsonLd data={toolSchema} />
@@ -140,9 +123,21 @@ export default async function CalculatorPage({ params }: PageProps) {
           <PromotionSlot slot="CONTENT_TOP" path={`/tools/${slug}`} tags={tool?.category ? [tool.category] : []} />
        </div>
 
-       {/* Calculator Component */}
+       {/* Calculator Component or Paywall */}
        <div className="-mt-16 z-10 relative">
-          {Component}
+          {tool?.gated && !hasPlanPremiumAccess ? (
+            <div className="content-page py-8">
+              <div className="rounded-2xl border border-border bg-card p-6 md:p-8 shadow-sm">
+                <p className="text-xs font-semibold uppercase tracking-widest text-teal-600 mb-2">Institutional Financial Tool</p>
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground mb-3">{tool.title}</h1>
+                <Paywall user={session?.user} minimumPlan="PRO" preview={<p className="text-muted-foreground leading-relaxed">{tool.desc}</p>}>
+                  {Component}
+                </Paywall>
+              </div>
+            </div>
+          ) : (
+            Component
+          )}
        </div>
        {/* Promotion slot: CALCULATOR_RESULT — directly under the calculator */}
        <PromotionSlot slot="CALCULATOR_RESULT" path={`/tools/${slug}`} tags={tool?.category ? [tool.category] : []} />

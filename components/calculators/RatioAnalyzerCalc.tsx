@@ -72,11 +72,34 @@ const DEFAULTS = {
   payables: 55, totalDebt: 160, equity: 190, totalAssets: 430,
 };
 
+const PRESETS: Record<string, typeof DEFAULTS> = {
+  default: DEFAULTS,
+  itServices: {
+    revenue: 1000, cogs: 620, ebitda: 250, dep: 30, ebit: 220, interest: 2, pat: 170,
+    cash: 320, inventory: 0, receivables: 180, currentAssets: 550, currentLiabilities: 120,
+    payables: 60, totalDebt: 10, equity: 650, totalAssets: 780,
+  },
+  manufacturing: {
+    revenue: 800, cogs: 560, ebitda: 110, dep: 45, ebit: 65, interest: 28, pat: 28,
+    cash: 30, inventory: 120, receivables: 110, currentAssets: 280, currentLiabilities: 210,
+    payables: 95, totalDebt: 260, equity: 220, totalAssets: 690,
+  },
+  retail: {
+    revenue: 600, cogs: 420, ebitda: 45, dep: 15, ebit: 30, interest: 8, pat: 16,
+    cash: 40, inventory: 35, receivables: 10, currentAssets: 90, currentLiabilities: 140,
+    payables: 90, totalDebt: 50, equity: 70, totalAssets: 260,
+  },
+};
+
 export default function RatioAnalyzerCalc() {
   const [f, setF] = useState(DEFAULTS);
-  const set = (k: keyof typeof DEFAULTS) => (v: number) => setF((s) => ({ ...s, [k]: v }));
+  const [copied, setCopied] = useState(false);
+  const set = (k: keyof typeof DEFAULTS) => (v: number) => setF((s) => ({ ...s, [k]: Number.isFinite(v) ? v : 0 }));
 
   const safe = (a: number, b: number) => (b === 0 ? NaN : a / b);
+
+  const isNegEquity = f.equity <= 0;
+  const isZeroInterest = f.interest === 0;
 
   const current = safe(f.currentAssets, f.currentLiabilities);
   const quick = safe(f.currentAssets - f.inventory, f.currentLiabilities);
@@ -86,22 +109,68 @@ export default function RatioAnalyzerCalc() {
   const ebitM = safe(f.ebit, f.revenue) * 100;
   const netM = safe(f.pat, f.revenue) * 100;
   const roa = safe(f.pat, f.totalAssets) * 100;
-  const roe = safe(f.pat, f.equity) * 100;
-  const roce = safe(f.ebit, f.totalAssets - f.currentLiabilities) * 100;
-  const de = safe(f.totalDebt, f.equity);
+  const roe = isNegEquity ? NaN : safe(f.pat, f.equity) * 100;
+  const capitalEmployed = f.totalAssets - f.currentLiabilities;
+  const roce = safe(f.ebit, capitalEmployed) * 100;
+  const de = isNegEquity ? Infinity : safe(f.totalDebt, f.equity);
   const debtRatio = safe(f.totalDebt, f.totalAssets);
-  const intCov = safe(f.ebit, f.interest);
+  const intCov = isZeroInterest ? Infinity : safe(f.ebit, f.interest);
   const invDays = safe(f.inventory, f.cogs) * 365;
   const recDays = safe(f.receivables, f.revenue) * 365;
   const payDays = safe(f.payables, f.cogs) * 365;
   const ccc = invDays + recDays - payDays;
   const at = safe(f.revenue, f.totalAssets);
-  const eqMult = safe(f.totalAssets, f.equity);
+  const eqMult = isNegEquity ? NaN : safe(f.totalAssets, f.equity);
   const dupontParts = [netM / 100, at, eqMult];
-  const dupontCheck = dupontParts.reduce((x, y) => x * y, 1) * 100;
+  const dupontCheck = isNegEquity ? NaN : dupontParts.reduce((x, y) => x * y, 1) * 100;
 
-  const fmt = (v: number, d = 2) => (Number.isFinite(v) ? v.toFixed(d) : '—');
-  const pct = (v: number) => (Number.isFinite(v) ? `${v.toFixed(1)}%` : '—');
+  const fmt = (v: number, d = 2) => {
+    if (!Number.isFinite(v)) {
+      if (v === Infinity) return '∞ (No Debt/Cover)';
+      return 'NM (Not Meaningful)';
+    }
+    return v.toFixed(d);
+  };
+  const pct = (v: number) => {
+    if (!Number.isFinite(v)) return 'NM (Neg Equity)';
+    return `${v.toFixed(1)}%`;
+  };
+
+  const copySummary = () => {
+    const summary = `Kunwar Analytics — 18 Financial Ratios Summary
+----------------------------------------
+Liquidity:
+- Current Ratio: ${fmt(current)}x
+- Quick Ratio: ${fmt(quick)}x
+- Cash Ratio: ${fmt(cashR)}x
+
+Profitability:
+- Gross Margin: ${pct(grossM)}
+- EBITDA Margin: ${pct(ebitdaM)}
+- Operating Margin: ${pct(ebitM)}
+- Net Profit Margin: ${pct(netM)}
+- ROA: ${pct(roa)}
+- ROE: ${pct(roe)}
+- ROCE: ${pct(roce)}
+
+Leverage:
+- Debt / Equity: ${fmt(de)}x
+- Debt Ratio: ${fmt(debtRatio)}x
+- Interest Coverage: ${fmt(intCov)}x
+
+Operating Efficiency:
+- Inventory Days: ${fmt(invDays, 0)} days
+- Receivable Days: ${fmt(recDays, 0)} days
+- Payable Days: ${fmt(payDays, 0)} days
+- Cash Conversion Cycle: ${fmt(ccc, 0)} days
+- Asset Turnover: ${fmt(at)}x
+
+DuPont Breakdown:
+- ROE = Net Margin (${pct(netM)}) × Asset Turnover (${fmt(at)}x) × Equity Multiplier (${fmt(eqMult)}x)`;
+    navigator.clipboard.writeText(summary);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2500);
+  };
 
   const groups: { title: string; rows: { name: string; value: string; unit: string; band: Band | null; note: string }[] }[] = [
     {
@@ -120,24 +189,24 @@ export default function RatioAnalyzerCalc() {
         { name: 'Operating margin', value: pct(ebitM), unit: 'EBIT / Rev', band: judge(ebitM, 8, 15), note: 'Core operating profitability after depreciation.' },
         { name: 'Net margin', value: pct(netM), unit: 'PAT / Rev', band: judge(netM, 5, 10), note: 'The residual for shareholders per rupee of sales.' },
         { name: 'ROA', value: pct(roa), unit: 'PAT / Total assets', band: judge(roa, 5, 10), note: 'Asset productivity regardless of financing.' },
-        { name: 'ROE', value: pct(roe), unit: 'PAT / Equity', band: judge(roe, 12, 20), note: 'Shareholder return — check DuPont below for HOW it is earned.' },
-        { name: 'ROCE', value: pct(roce), unit: 'EBIT / (TA − CL)', band: judge(roce, 12, 18), note: 'Return on capital employed — vs WACC is the value test.' },
+        { name: 'ROE', value: isNegEquity ? 'NM' : pct(roe), unit: 'PAT / Equity', band: isNegEquity ? 'risk' : judge(roe, 12, 20), note: isNegEquity ? 'Negative equity: company is in technical insolvency; ROE is economically distorted.' : 'Shareholder return — check DuPont below for HOW it is earned.' },
+        { name: 'ROCE', value: pct(roce), unit: 'EBIT / (TA − CL)', band: judge(roce, 12, 18), note: 'Return on capital employed — vs WACC is the value creation test.' },
       ],
     },
     {
       title: 'Leverage — how is it financed?',
       rows: [
-        { name: 'Debt / Equity', value: fmt(de) + '×', unit: 'Total debt / Equity', band: judge(de, 0.5, 1.0, true), note: 'Indian corporate comfort zone ≈ 0.25–1.0×; lenders covenant here.' },
+        { name: 'Debt / Equity', value: isNegEquity ? 'NM (Neg Eq)' : fmt(de) + '×', unit: 'Total debt / Equity', band: isNegEquity ? 'risk' : judge(de, 0.5, 1.0, true), note: isNegEquity ? 'Insolvent debt overhang: liabilities exceed assets.' : 'Indian corporate comfort zone ≈ 0.25–1.0×; lenders covenant here.' },
         { name: 'Debt ratio', value: fmt(debtRatio) + '×', unit: 'Debt / Total assets', band: judge(debtRatio, 0.33, 0.5, true), note: 'Share of the balance sheet funded by debt.' },
-        { name: 'Interest coverage', value: fmt(intCov) + '×', unit: 'EBIT / Interest', band: judge(intCov, 2.5, 4), note: 'Below ~2× distress territory; banks price loans off this.' },
+        { name: 'Interest coverage', value: isZeroInterest ? '∞ (No Debt)' : fmt(intCov) + '×', unit: 'EBIT / Interest', band: isZeroInterest ? 'good' : judge(intCov, 2.5, 4), note: 'Below ~2× distress territory; banks price credit risk off this.' },
       ],
     },
     {
       title: 'Efficiency — how fast does it turn?',
       rows: [
-        { name: 'Inventory days', value: fmt(invDays, 0) + 'd', unit: 'Inv / COGS × 365', band: judge(invDays, 60, 90, true), note: 'Cash locked in stock (F06: NWC drag in FCFF).' },
-        { name: 'Receivable days', value: fmt(recDays, 0) + 'd', unit: 'AR / Revenue × 365', band: judge(recDays, 30, 60, true), note: 'Credit given to customers — creeping up = quiet lending.' },
-        { name: 'Payable days', value: fmt(payDays, 0) + 'd', unit: 'AP / COGS × 365', band: judge(payDays, 30, 60), note: 'Credit taken from suppliers — longer is free financing (to a point).' },
+        { name: 'Inventory days', value: fmt(invDays, 0) + 'd', unit: 'Inv / COGS × 365', band: judge(invDays, 60, 90, true), note: 'Cash locked in stock (NWC drag in free cash flow).' },
+        { name: 'Receivable days', value: fmt(recDays, 0) + 'd', unit: 'AR / Revenue × 365', band: judge(recDays, 30, 60, true), note: 'Credit given to customers — creeping up = quiet customer lending.' },
+        { name: 'Payable days', value: fmt(payDays, 0) + 'd', unit: 'AP / COGS × 365', band: judge(payDays, 30, 60), note: 'Credit taken from suppliers — longer is free supplier financing (to a point).' },
         { name: 'Cash conversion cycle', value: fmt(ccc, 0) + 'd', unit: 'InvD + RecD − PayD', band: judge(ccc, 45, 90, true), note: 'Days cash stays stuck in operations; negative = the retail dream.' },
         { name: 'Asset turnover', value: fmt(at) + '×', unit: 'Revenue / Total assets', band: judge(at, 0.8, 1.5), note: 'Sales generated per rupee of assets.' },
       ],
@@ -162,6 +231,43 @@ export default function RatioAnalyzerCalc() {
             DCF Valuation
           </Link>.
         </p>
+      </div>
+
+      {/* Sector Presets and Export Toolbar */}
+      <div className="flex flex-wrap items-center justify-between gap-3 bg-surface border border-border rounded-2xl p-4">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-[10px] font-bold uppercase tracking-widest text-content-muted mr-1">Sector Presets:</span>
+          <button
+            onClick={() => setF(PRESETS.default)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-surface-raised hover:border-brand transition-colors text-content-primary"
+          >
+            Base Case
+          </button>
+          <button
+            onClick={() => setF(PRESETS.itServices)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-surface-raised hover:border-brand transition-colors text-content-primary"
+          >
+            IT Services (Asset-Light)
+          </button>
+          <button
+            onClick={() => setF(PRESETS.manufacturing)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-surface-raised hover:border-brand transition-colors text-content-primary"
+          >
+            Manufacturing (Capital-Intensive)
+          </button>
+          <button
+            onClick={() => setF(PRESETS.retail)}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg border border-border bg-surface-raised hover:border-brand transition-colors text-content-primary"
+          >
+            Retail / FMCG
+          </button>
+        </div>
+        <button
+          onClick={copySummary}
+          className="text-xs font-bold px-4 py-1.5 rounded-lg bg-brand text-brand-contrast hover:opacity-90 transition-opacity flex items-center gap-1.5"
+        >
+          {copied ? '✓ Copied Report!' : '📋 Copy 18-Ratio Summary'}
+        </button>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-2xl border border-border bg-surface p-5">

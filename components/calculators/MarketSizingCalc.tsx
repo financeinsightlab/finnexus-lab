@@ -36,12 +36,21 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
 
   const calculations = useMemo(() => {
     // Top-Down TAM/SAM/SOM
-    const tam = (totalPopulation * (targetSegmentPercent / 100)) * avgRevenuePerUser;
-    const sam = tam * (addressablePercent / 100);
-    const som = sam * (obtainablePercent / 100);
+    const pop = Math.max(0, Number(totalPopulation) || 0);
+    const seg = Math.min(100, Math.max(0, Number(targetSegmentPercent) || 0));
+    const addr = Math.min(100, Math.max(0, Number(addressablePercent) || 0));
+    const obt = Math.min(100, Math.max(0, Number(obtainablePercent) || 0));
+    const arpu = Math.max(0, Number(avgRevenuePerUser) || 0);
+    const cust = Math.max(0, Number(targetCustomers) || 0);
+    const atv = Math.max(0, Number(avgTransactionValue) || 0);
+    const tpy = Math.max(0, Number(transactionsPerYear) || 0);
+
+    const tam = (pop * (seg / 100)) * arpu;
+    const sam = tam * (addr / 100);
+    const som = sam * (obt / 100);
 
     // Bottom-Up Validation
-    const bottomUpRev = targetCustomers * avgTransactionValue * transactionsPerYear;
+    const bottomUpRev = cust * atv * tpy;
 
     // 5-Year Forward Projections
     const projections = [0, 1, 2, 3, 4].map(y => ({
