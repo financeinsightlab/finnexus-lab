@@ -1,0 +1,102 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="b2b-bg" x1="0" y1="0" x2="600" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#190610" />
+      <stop offset="50%" stop-color="#2D0B1C" />
+      <stop offset="100%" stop-color="#12040B" />
+    </linearGradient>
+    <linearGradient id="funnel-won" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#F43F5E" />
+      <stop offset="100%" stop-color="#FB7185" />
+    </linearGradient>
+    <filter id="rose-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="340" fill="url(#b2b-bg)" />
+  <path d="M40 50 H560 M40 110 H560 M40 170 H560 M40 230 H560" stroke="#4C1430" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.6" />
+
+  <!-- Header -->
+  <g transform="translate(45, 25)">
+    <text x="0" y="14" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="10" font-weight="700" letter-spacing="1">B2B ENTERPRISE GO-TO-MARKET ATTRIBUTION</text>
+    <text x="0" y="34" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Pipeline Velocity, CAC Payback &amp; Revenue Attribution</text>
+  </g>
+
+  <!-- LEFT: Full Funnel Stages -->
+  <g transform="translate(45, 75)">
+    <rect x="0" y="0" width="250" height="175" rx="8" fill="#1C0913" stroke="#5C1637" stroke-width="1.2" />
+    <text x="14" y="22" fill="#FECDD3" font-family="system-ui, sans-serif" font-size="10" font-weight="700">ENTERPRISE PIPELINE FUNNEL</text>
+
+    <!-- Stage 1: Leads -->
+    <g transform="translate(14, 36)">
+      <rect x="0" y="0" width="220" height="20" rx="4" fill="#4C1430" />
+      <text x="8" y="14" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Top of Funnel Leads (1,200)</text>
+      <text x="180" y="14" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="9">₹450 / lead</text>
+    </g>
+
+    <!-- Stage 2: MQL -->
+    <g transform="translate(24, 62)">
+      <rect x="0" y="0" width="195" height="20" rx="4" fill="#701A44" />
+      <text x="8" y="14" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Marketing Qualified MQL (240)</text>
+      <text x="160" y="14" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="9">20% Conv</text>
+    </g>
+
+    <!-- Stage 3: SQL -->
+    <g transform="translate(34, 88)">
+      <rect x="0" y="0" width="170" height="20" rx="4" fill="#9F1239" />
+      <text x="8" y="14" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="9" font-weight="600">Sales Qualified SQL (72)</text>
+      <text x="135" y="14" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="9">30% Conv</text>
+    </g>
+
+    <!-- Stage 4: Closed Won -->
+    <g transform="translate(44, 114)">
+      <rect x="0" y="0" width="145" height="24" rx="4" fill="url(#funnel-won)" filter="url(#rose-glow)" />
+      <text x="8" y="16" fill="#FFF" font-family="system-ui, sans-serif" font-size="10" font-weight="800">Closed Won (22 Deals)</text>
+      <text x="110" y="16" fill="#FFF" font-family="system-ui, sans-serif" font-size="10" font-weight="800">30.5%</text>
+    </g>
+
+    <text x="14" y="162" fill="#34D399" font-family="system-ui, sans-serif" font-size="10" font-weight="700">Total Booked ARR: ₹4.84 Cr</text>
+  </g>
+
+  <!-- RIGHT: CAC & Payback Metrics -->
+  <g transform="translate(310, 75)">
+    <rect x="0" y="0" width="245" height="175" rx="8" fill="#1C0913" stroke="#5C1637" stroke-width="1.2" />
+    <text x="14" y="22" fill="#FECDD3" font-family="system-ui, sans-serif" font-size="10" font-weight="700">UNIT ECONOMICS &amp; MARKETING EFFICIENCY</text>
+
+    <!-- Metric Card 1 -->
+    <g transform="translate(14, 38)">
+      <rect x="0" y="0" width="102" height="52" rx="6" fill="#2E0C1E" stroke="#9F1239" stroke-width="1" />
+      <text x="10" y="16" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="8.5" font-weight="700">BLENDED CAC</text>
+      <text x="10" y="38" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="15" font-weight="800">₹3.85 Lakh</text>
+    </g>
+
+    <!-- Metric Card 2 -->
+    <g transform="translate(126, 38)">
+      <rect x="0" y="0" width="102" height="52" rx="6" fill="#2E0C1E" stroke="#9F1239" stroke-width="1" />
+      <text x="10" y="16" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="8.5" font-weight="700">LTV : CAC RATIO</text>
+      <text x="10" y="38" fill="#34D399" font-family="system-ui, sans-serif" font-size="15" font-weight="800">4.8× (Healthy)</text>
+    </g>
+
+    <!-- Metric Card 3 -->
+    <g transform="translate(14, 100)">
+      <rect x="0" y="0" width="214" height="60" rx="6" fill="#2E0C1E" stroke="#E11D48" stroke-width="1" />
+      <text x="12" y="18" fill="#FB7185" font-family="system-ui, sans-serif" font-size="9" font-weight="700">CAC PAYBACK PERIOD</text>
+      <text x="12" y="36" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="15" font-weight="800">6.2 Months</text>
+      <text x="12" y="50" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8.5">Magic Number: 1.28 (Top-Quartile SaaS)</text>
+    </g>
+  </g>
+
+  <!-- Bottom Metric Callout -->
+  <g transform="translate(45, 258)">
+    <rect x="0" y="0" width="510" height="42" rx="6" fill="#180510" stroke="#5C1637" stroke-width="1" />
+    <circle cx="20" cy="21" r="5" fill="#F43F5E" filter="url(#rose-glow)" />
+    <text x="32" y="25" fill="#FECDD3" font-family="system-ui, sans-serif" font-size="11" font-weight="700">ROI on Marketing Spend = (Net ARR - Spend) / Spend = 485%</text>
+  </g>
+
+  <!-- Footer -->
+  <rect x="0" y="312" width="600" height="28" fill="#0A0206" />
+  <circle cx="20" cy="326" r="3.5" fill="#F43F5E" />
+  <text x="32" y="330" fill="#64748B" font-family="ui-monospace, monospace" font-size="9">B2B MARKETING ROI ENGINE // PIPELINE REVENUE ATTRIBUTION</text>
+</svg>

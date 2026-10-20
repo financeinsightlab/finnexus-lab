@@ -379,3 +379,33 @@ describe('9. Quick Commerce Dark Store Economics', () => {
     expect(breakevenOrders).toBeCloseTo(6091.37, 1);
   });
 });
+
+describe('10. Calculator Visual Registry & Asset Integrity', () => {
+  it('guarantees 100% of registered tools have verified visual assets and exist on disk', async () => {
+    const fs = await import('fs');
+    const path = await import('path');
+    const { TOOLS } = await import('../lib/tools-registry');
+    const { CALCULATOR_VISUALS, FALLBACK_VISUAL } = await import('../lib/tool-images');
+
+    expect(TOOLS.length).toBe(16);
+
+    // Verify fallback asset
+    const fallbackPath = path.join(process.cwd(), 'public', FALLBACK_VISUAL.src);
+    expect(fs.existsSync(fallbackPath)).toBe(true);
+
+    for (const tool of TOOLS) {
+      const visual = CALCULATOR_VISUALS[tool.slug];
+      expect(visual, `Visual mapping missing for ${tool.slug}`).toBeDefined();
+      expect(visual.slug).toBe(tool.slug);
+      expect(visual.alt.length).toBeGreaterThan(20);
+      expect(visual.highlights.length).toBeGreaterThanOrEqual(3);
+
+      // Verify physical asset exists in public directory
+      const assetPath = path.join(process.cwd(), 'public', visual.src.replace(/^\//, ''));
+      expect(fs.existsSync(assetPath), `Asset file not found on disk: ${assetPath}`).toBe(true);
+      const stat = fs.statSync(assetPath);
+      expect(stat.size).toBeGreaterThan(100); // Non-empty file
+    }
+  });
+});
+

@@ -90,13 +90,18 @@ export default function ServicesPage() {
             >
               <div className="relative h-40 w-full border-b border-gray-200">
                 <CardImageBanner
-                  src={`/card-${topic.title.toLowerCase().replace(/\s+/g, '-')}.png`}
+                  src={
+                    topic.title === 'Market Research' ? '/card-market-sizing.png' :
+                    topic.title === 'Financial Modelling' ? '/card-dcf-model.png' :
+                    topic.title === 'Competitive Analysis' ? '/cards/card-porters-five-forces.svg' :
+                    topic.title === 'Data & Dashboards' ? '/cards/card-ratio-analyzer.svg' :
+                    topic.title === 'Strategy Research' ? '/cards/card-cca-valuation.svg' :
+                    '/cards/card-default-fallback.svg'
+                  }
                   alt={topic.title}
                   icon={topic.icon}
-                  gradientFrom="from-surface-raised"
-                  gradientTo="to-surface-muted"
-                  overlayOpacity="opacity-20"
-                  blendMode="mix-blend-luminosity"
+                  gradientFrom="from-slate-900"
+                  gradientTo="to-slate-800"
                 />
               </div>
 

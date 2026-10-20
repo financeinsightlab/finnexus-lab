@@ -1,0 +1,93 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="cpm-bg" x1="0" y1="0" x2="600" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14070C" />
+      <stop offset="50%" stop-color="#220B15" />
+      <stop offset="100%" stop-color="#0E0408" />
+    </linearGradient>
+    <linearGradient id="crit-glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#F43F5E" />
+      <stop offset="100%" stop-color="#BE123C" />
+    </linearGradient>
+    <filter id="cpm-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="340" fill="url(#cpm-bg)" />
+  <path d="M40 50 H560 M40 110 H560 M40 170 H560 M40 230 H560" stroke="#371221" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.6" />
+
+  <!-- Header -->
+  <g transform="translate(45, 25)">
+    <text x="0" y="14" fill="#FDA4AF" font-family="system-ui, sans-serif" font-size="10" font-weight="700" letter-spacing="1">OPERATIONS RESEARCH &amp; NETWORK ANALYSIS</text>
+    <text x="0" y="34" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="16" font-weight="700">CPM / PERT Critical Path &amp; Slack Topology</text>
+  </g>
+
+  <!-- Network Diagram Graph Area -->
+  <g transform="translate(40, 75)">
+    <!-- CRITICAL PATH EDGES (Start -> B -> D -> End) (Thick glowing red) -->
+    <path d="M 50 80 L 170 35 L 340 35 L 470 80" stroke="#F43F5E" stroke-width="3.5" filter="url(#cpm-glow)" fill="none" />
+    <path d="M 50 80 L 170 35 L 340 35 L 470 80" stroke="#FFE4E6" stroke-width="2" fill="none" />
+
+    <!-- SUB-CRITICAL / SLACK EDGES (Start -> A -> C -> End) (Dashed slate) -->
+    <path d="M 50 80 L 170 125 L 340 125 L 470 80" stroke="#475569" stroke-width="1.8" stroke-dasharray="4 4" fill="none" />
+
+    <!-- NODE 1: START (0) -->
+    <g transform="translate(50, 80)">
+      <circle cx="0" cy="0" r="22" fill="#1E293B" stroke="#94A3B8" stroke-width="1.5" />
+      <text x="0" y="-3" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="10" font-weight="700" text-anchor="middle">START</text>
+      <text x="0" y="9" fill="#94A3B8" font-family="ui-monospace, monospace" font-size="8" text-anchor="middle">T=0</text>
+    </g>
+
+    <!-- NODE 2: Activity B (Critical, Duration 6d, Float 0) -->
+    <g transform="translate(170, 35)">
+      <circle cx="0" cy="0" r="24" fill="#881337" stroke="#F43F5E" stroke-width="2.5" filter="url(#cpm-glow)" />
+      <circle cx="0" cy="0" r="24" fill="#881337" stroke="#F43F5E" stroke-width="2" />
+      <text x="0" y="-3" fill="#FFF1F2" font-family="system-ui, sans-serif" font-size="11" font-weight="800" text-anchor="middle">TASK B</text>
+      <text x="0" y="10" fill="#FECDD3" font-family="ui-monospace, monospace" font-size="8" text-anchor="middle">d=6 · F=0</text>
+    </g>
+
+    <!-- NODE 3: Activity A (Slack, Duration 3d, Float 4d) -->
+    <g transform="translate(170, 125)">
+      <circle cx="0" cy="0" r="22" fill="#1E293B" stroke="#64748B" stroke-width="1.5" />
+      <text x="0" y="-3" fill="#E2E8F0" font-family="system-ui, sans-serif" font-size="10" font-weight="700" text-anchor="middle">TASK A</text>
+      <text x="0" y="9" fill="#94A3B8" font-family="ui-monospace, monospace" font-size="8" text-anchor="middle">d=3 · F=4d</text>
+    </g>
+
+    <!-- NODE 4: Activity D (Critical, Duration 8d, Float 0) -->
+    <g transform="translate(340, 35)">
+      <circle cx="0" cy="0" r="24" fill="#881337" stroke="#F43F5E" stroke-width="2.5" filter="url(#cpm-glow)" />
+      <circle cx="0" cy="0" r="24" fill="#881337" stroke="#F43F5E" stroke-width="2" />
+      <text x="0" y="-3" fill="#FFF1F2" font-family="system-ui, sans-serif" font-size="11" font-weight="800" text-anchor="middle">TASK D</text>
+      <text x="0" y="10" fill="#FECDD3" font-family="ui-monospace, monospace" font-size="8" text-anchor="middle">d=8 · F=0</text>
+    </g>
+
+    <!-- NODE 5: Activity C (Slack, Duration 4d, Float 4d) -->
+    <g transform="translate(340, 125)">
+      <circle cx="0" cy="0" r="22" fill="#1E293B" stroke="#64748B" stroke-width="1.5" />
+      <text x="0" y="-3" fill="#E2E8F0" font-family="system-ui, sans-serif" font-size="10" font-weight="700" text-anchor="middle">TASK C</text>
+      <text x="0" y="9" fill="#94A3B8" font-family="ui-monospace, monospace" font-size="8" text-anchor="middle">d=4 · F=4d</text>
+    </g>
+
+    <!-- NODE 6: FINISH (14d) -->
+    <g transform="translate(470, 80)">
+      <circle cx="0" cy="0" r="24" fill="#4C0519" stroke="#FB7185" stroke-width="2" />
+      <text x="0" y="-3" fill="#FFF" font-family="system-ui, sans-serif" font-size="10" font-weight="800" text-anchor="middle">END</text>
+      <text x="0" y="10" fill="#FDA4AF" font-family="ui-monospace, monospace" font-size="9" font-weight="700" text-anchor="middle">T=14d</text>
+    </g>
+  </g>
+
+  <!-- Legend & Bottom Details -->
+  <g transform="translate(50, 248)">
+    <rect x="0" y="0" width="500" height="48" rx="8" fill="#1C0A12" stroke="#501328" stroke-width="1" />
+    <circle cx="20" cy="24" r="5" fill="#F43F5E" />
+    <text x="32" y="28" fill="#FFF1F2" font-family="system-ui, sans-serif" font-size="11" font-weight="700">CRITICAL PATH: Start → B → D → End (14 Days Duration)</text>
+    <text x="340" y="28" fill="#FDA4AF" font-family="ui-monospace, monospace" font-size="10">PERT μ = (o+4m+p)/6</text>
+  </g>
+
+  <!-- Status Footer -->
+  <rect x="0" y="312" width="600" height="28" fill="#0A0205" />
+  <circle cx="20" cy="326" r="3.5" fill="#F43F5E" />
+  <text x="32" y="330" fill="#64748B" font-family="ui-monospace, monospace" font-size="9">FORWARD/BACKWARD PASS SOLVER // BOTTLENECK OPTIMIZATION</text>
+</svg>

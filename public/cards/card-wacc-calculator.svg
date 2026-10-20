@@ -1,0 +1,88 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="wacc-bg" x1="0" y1="0" x2="600" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#07131D" />
+      <stop offset="50%" stop-color="#0B1E2D" />
+      <stop offset="100%" stop-color="#050E17" />
+    </linearGradient>
+    <linearGradient id="wacc-equity" x1="0" y1="0" x2="0" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#14B8A6" />
+      <stop offset="100%" stop-color="#0D9488" />
+    </linearGradient>
+    <linearGradient id="wacc-debt" x1="0" y1="0" x2="0" y2="200" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#F59E0B" />
+      <stop offset="100%" stop-color="#D97706" />
+    </linearGradient>
+    <linearGradient id="sml-line" x1="60" y1="280" x2="320" y2="80" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#38BDF8" />
+      <stop offset="100%" stop-color="#818CF8" />
+    </linearGradient>
+    <filter id="glow-teal" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="600" height="340" fill="url(#wacc-bg)" />
+
+  <!-- Grid overlay -->
+  <path d="M40 60 H560 M40 120 H560 M40 180 H560 M40 240 H560 M40 300 H560" stroke="#1E3A4C" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.4" />
+  <path d="M100 40 V300 M180 40 V300 M260 40 V300 M340 40 V300 M420 40 V300 M500 40 V300" stroke="#1E3A4C" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.4" />
+
+  <!-- LEFT: Capital Structure Stack -->
+  <g transform="translate(60, 50)">
+    <!-- Header -->
+    <text x="0" y="20" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="11" font-weight="600" letter-spacing="1">CAPITAL STRUCTURE</text>
+    <text x="0" y="38" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Weights &amp; Hurdle</text>
+
+    <!-- Equity Block (65%) -->
+    <rect x="0" y="55" width="140" height="115" rx="8" fill="url(#wacc-equity)" opacity="0.95" />
+    <text x="16" y="85" fill="#042F2E" font-family="system-ui, sans-serif" font-size="11" font-weight="700">EQUITY (E/V)</text>
+    <text x="16" y="112" fill="#042F2E" font-family="system-ui, sans-serif" font-size="24" font-weight="800">65.0%</text>
+    <text x="16" y="132" fill="#0F766E" font-family="system-ui, sans-serif" font-size="11" font-weight="600">CAPM Re: 13.2%</text>
+
+    <!-- Debt Block (35%) -->
+    <rect x="0" y="176" width="140" height="62" rx="8" fill="url(#wacc-debt)" opacity="0.95" />
+    <text x="16" y="200" fill="#451A03" font-family="system-ui, sans-serif" font-size="11" font-weight="700">DEBT (D/V)</text>
+    <text x="16" y="224" fill="#451A03" font-family="system-ui, sans-serif" font-size="18" font-weight="800">35.0%</text>
+    <text x="75" y="223" fill="#78350F" font-family="system-ui, sans-serif" font-size="11" font-weight="600">Kd(1-t): 6.3%</text>
+  </g>
+
+  <!-- RIGHT: SML Curve & WACC Outcome -->
+  <g transform="translate(240, 50)">
+    <!-- Card Frame -->
+    <rect x="0" y="10" width="300" height="230" rx="12" fill="#0A1826" stroke="#1E3A4C" stroke-width="1.2" />
+
+    <!-- SML Axes -->
+    <line x1="35" y1="180" x2="270" y2="180" stroke="#475569" stroke-width="1.2" />
+    <line x1="35" y1="35" x2="35" y2="180" stroke="#475569" stroke-width="1.2" />
+    <text x="240" y="196" fill="#64748B" font-family="system-ui, sans-serif" font-size="10" font-weight="600">Beta (β)</text>
+    <text x="20" y="30" fill="#64748B" font-family="system-ui, sans-serif" font-size="10" font-weight="600">E[R]</text>
+
+    <!-- Rf dashed baseline -->
+    <line x1="35" y1="145" x2="270" y2="145" stroke="#64748B" stroke-width="1" stroke-dasharray="4 4" />
+    <text x="40" y="140" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="9">Rf = 7.1%</text>
+
+    <!-- SML Line -->
+    <line x1="35" y1="145" x2="260" y2="55" stroke="url(#sml-line)" stroke-width="3" stroke-linecap="round" />
+
+    <!-- Current Beta Point -->
+    <circle cx="160" cy="95" r="6" fill="#38BDF8" filter="url(#glow-teal)" />
+    <circle cx="160" cy="95" r="3" fill="#FFFFFF" />
+    <line x1="160" y1="95" x2="160" y2="180" stroke="#38BDF8" stroke-width="1" stroke-dasharray="2 2" />
+    <text x="145" y="196" fill="#38BDF8" font-family="system-ui, sans-serif" font-size="10" font-weight="700">β = 1.15</text>
+
+    <!-- WACC Result Highlight Box -->
+    <rect x="35" y="198" width="235" height="34" rx="6" fill="#0D9488" fill-opacity="0.15" stroke="#0D9488" stroke-width="1" />
+    <text x="48" y="219" fill="#2DD4BF" font-family="system-ui, sans-serif" font-size="11" font-weight="700">BLENDED WACC = 10.79%</text>
+    <text x="190" y="219" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="10">MRP = 5.3%</text>
+  </g>
+
+  <!-- Bottom Terminal Status Bar -->
+  <rect x="0" y="308" width="600" height="32" fill="#040B11" />
+  <line x1="0" y1="308" x2="600" y2="308" stroke="#1E293B" stroke-width="1" />
+  <circle cx="24" cy="324" r="4" fill="#10B981" />
+  <text x="36" y="328" fill="#94A3B8" font-family="ui-monospace, monospace" font-size="10">KUNWAR FINANCIAL TERMINAL // WACC &amp; CAPM BUILD-UP ENGINE</text>
+  <text x="500" y="328" fill="#14B8A6" font-family="ui-monospace, monospace" font-size="10" font-weight="600">LIVE SOLVER</text>
+</svg>

@@ -1,0 +1,113 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="tvm-bg" x1="0" y1="0" x2="600" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#05161A" />
+      <stop offset="50%" stop-color="#072A30" />
+      <stop offset="100%" stop-color="#030F12" />
+    </linearGradient>
+    <linearGradient id="comp-curve" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#2DD4BF" />
+      <stop offset="60%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+    <linearGradient id="emi-principal" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#10B981" />
+      <stop offset="100%" stop-color="#047857" />
+    </linearGradient>
+    <linearGradient id="emi-interest" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#F43F5E" />
+      <stop offset="100%" stop-color="#BE123C" />
+    </linearGradient>
+  </defs>
+
+  <rect width="600" height="340" fill="url(#tvm-bg)" />
+  <path d="M40 50 H560 M40 110 H560 M40 170 H560 M40 230 H560" stroke="#0D3B43" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.6" />
+
+  <!-- Header -->
+  <g transform="translate(45, 25)">
+    <text x="0" y="14" fill="#5EEAD4" font-family="system-ui, sans-serif" font-size="10" font-weight="700" letter-spacing="1">QUANTITATIVE TIME VALUE OF MONEY</text>
+    <text x="0" y="34" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Compounding, Discounting &amp; Amortization Dynamics</text>
+  </g>
+
+  <!-- LEFT: Compounding Exponential Curve -->
+  <g transform="translate(50, 75)">
+    <rect x="0" y="0" width="235" height="175" rx="10" fill="#061F24" stroke="#0F766E" stroke-width="1.2" />
+    <text x="16" y="22" fill="#5EEAD4" font-family="system-ui, sans-serif" font-size="10" font-weight="700">EXPONENTIAL GROWTH FV = PV(1+r)ᵗ</text>
+    
+    <!-- Axes -->
+    <line x1="25" y1="145" x2="215" y2="145" stroke="#334155" stroke-width="1" />
+    <line x1="25" y1="35" x2="25" y2="145" stroke="#334155" stroke-width="1" />
+    
+    <!-- Flat simple interest baseline -->
+    <line x1="25" y1="130" x2="210" y2="90" stroke="#64748B" stroke-width="1" stroke-dasharray="2 2" />
+    <text x="150" y="85" fill="#64748B" font-family="system-ui, sans-serif" font-size="8">Simple</text>
+
+    <!-- Compound curve -->
+    <path d="M 25 130 C 90 128, 140 115, 175 80 C 190 60, 200 45, 210 40" stroke="url(#comp-curve)" stroke-width="3" fill="none" />
+    
+    <circle cx="25" cy="130" r="4" fill="#2DD4BF" />
+    <text x="32" y="128" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8">PV ₹100k</text>
+
+    <circle cx="210" cy="40" r="5" fill="#F59E0B" />
+    <text x="160" y="36" fill="#FBBF24" font-family="system-ui, sans-serif" font-size="10" font-weight="700">FV ₹310k</text>
+    
+    <!-- Gordon Perpetuity formula box -->
+    <rect x="15" y="152" width="205" height="18" rx="4" fill="#042F2E" />
+    <text x="25" y="164" fill="#2DD4BF" font-family="ui-monospace, monospace" font-size="9">PV(Perpetuity) = CF₁ / (r - g)</text>
+  </g>
+
+  <!-- RIGHT: EMI Waterfall Amortization Schedule -->
+  <g transform="translate(305, 75)">
+    <rect x="0" y="0" width="245" height="175" rx="10" fill="#061F24" stroke="#0F766E" stroke-width="1.2" />
+    <text x="16" y="22" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="10" font-weight="700">REDUCING BALANCE EMI WATERFALL</text>
+
+    <!-- Bars representing loan tenure (Principal growing, Interest shrinking) -->
+    <!-- Bar 1 (Year 1) -->
+    <g transform="translate(25, 40)">
+      <rect x="0" y="0" width="28" height="65" rx="3" fill="url(#emi-interest)" />
+      <rect x="0" y="68" width="28" height="25" rx="3" fill="url(#emi-principal)" />
+      <text x="14" y="104" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">Yr 1</text>
+    </g>
+
+    <!-- Bar 2 (Year 3) -->
+    <g transform="translate(65, 40)">
+      <rect x="0" y="0" width="28" height="50" rx="3" fill="url(#emi-interest)" />
+      <rect x="0" y="53" width="28" height="40" rx="3" fill="url(#emi-principal)" />
+      <text x="14" y="104" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">Yr 3</text>
+    </g>
+
+    <!-- Bar 3 (Year 5) -->
+    <g transform="translate(105, 40)">
+      <rect x="0" y="0" width="28" height="35" rx="3" fill="url(#emi-interest)" />
+      <rect x="0" y="38" width="28" height="55" rx="3" fill="url(#emi-principal)" />
+      <text x="14" y="104" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">Yr 5</text>
+    </g>
+
+    <!-- Bar 4 (Year 7) -->
+    <g transform="translate(145, 40)">
+      <rect x="0" y="0" width="28" height="15" rx="3" fill="url(#emi-interest)" />
+      <rect x="0" y="18" width="28" height="75" rx="3" fill="url(#emi-principal)" />
+      <text x="14" y="104" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8" text-anchor="middle">Yr 7</text>
+    </g>
+
+    <!-- Legend -->
+    <g transform="translate(20, 150)">
+      <rect x="0" y="2" width="10" height="10" rx="2" fill="#10B981" />
+      <text x="14" y="10" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8">Principal</text>
+      <rect x="75" y="2" width="10" height="10" rx="2" fill="#F43F5E" />
+      <text x="89" y="10" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8">Interest (K)</text>
+    </g>
+  </g>
+
+  <!-- Bottom Metric Callouts -->
+  <g transform="translate(50, 260)">
+    <rect x="0" y="0" width="500" height="38" rx="6" fill="#041B20" stroke="#0E4E59" stroke-width="1" />
+    <text x="20" y="23" fill="#2DD4BF" font-family="system-ui, sans-serif" font-size="11" font-weight="700">EMI = P × r(1+r)ⁿ / ((1+r)ⁿ - 1)</text>
+    <text x="310" y="23" fill="#E2E8F0" font-family="system-ui, sans-serif" font-size="11">Exact Amortization Engine</text>
+  </g>
+
+  <!-- Status Bar -->
+  <rect x="0" y="312" width="600" height="28" fill="#010A0C" />
+  <circle cx="20" cy="326" r="3.5" fill="#10B981" />
+  <text x="32" y="330" fill="#64748B" font-family="ui-monospace, monospace" font-size="9">TIME-VALUE MACHINE // ACTUARIAL PRECISION &amp; TERMINAL ENGINE</text>
+</svg>

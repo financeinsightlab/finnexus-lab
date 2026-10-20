@@ -1,0 +1,89 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 340" width="100%" height="100%" fill="none">
+  <defs>
+    <linearGradient id="ai-bg" x1="0" y1="0" x2="600" y2="340" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#0E0720" />
+      <stop offset="50%" stop-color="#190F36" />
+      <stop offset="100%" stop-color="#090416" />
+    </linearGradient>
+    <linearGradient id="agent-glow" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#A855F7" />
+      <stop offset="100%" stop-color="#6366F1" />
+    </linearGradient>
+    <filter id="purple-glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="6" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <rect width="600" height="340" fill="url(#ai-bg)" />
+  <path d="M40 50 H560 M40 110 H560 M40 170 H560 M40 230 H560" stroke="#2B1954" stroke-width="0.8" stroke-dasharray="3 3" opacity="0.6" />
+
+  <!-- Title -->
+  <g transform="translate(45, 25)">
+    <text x="0" y="14" fill="#C084FC" font-family="system-ui, sans-serif" font-size="10" font-weight="700" letter-spacing="1">ENTERPRISE ARTIFICIAL INTELLIGENCE ROI</text>
+    <text x="0" y="34" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="16" font-weight="700">Agent Displaced Economics &amp; CapEx Amortization</text>
+  </g>
+
+  <!-- LEFT: Cost Comparison Bar Waterfall -->
+  <g transform="translate(50, 75)">
+    <rect x="0" y="0" width="245" height="175" rx="8" fill="#140C2B" stroke="#3B2270" stroke-width="1.2" />
+    <text x="14" y="24" fill="#E9D5FF" font-family="system-ui, sans-serif" font-size="11" font-weight="700">ANNUAL COST WATERFALL</text>
+
+    <!-- Legacy Human Payroll Bar -->
+    <g transform="translate(14, 42)">
+      <text x="0" y="14" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="10">Human FTE Payroll</text>
+      <rect x="0" y="20" width="215" height="20" rx="4" fill="#E11D48" opacity="0.8" />
+      <text x="8" y="34" fill="#FFF" font-family="system-ui, sans-serif" font-size="11" font-weight="700">₹1.80 Cr / yr</text>
+    </g>
+
+    <!-- Autonomous Agent + API Bar -->
+    <g transform="translate(14, 96)">
+      <text x="0" y="14" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="10">AI Agent Infra &amp; LLM API Cost</text>
+      <rect x="0" y="20" width="58" height="20" rx="4" fill="#10B981" />
+      <text x="66" y="34" fill="#34D399" font-family="system-ui, sans-serif" font-size="11" font-weight="700">₹0.38 Cr / yr (-79%)</text>
+    </g>
+
+    <line x1="14" y1="148" x2="230" y2="148" stroke="#3B2270" stroke-width="1" />
+    <text x="14" y="164" fill="#A855F7" font-family="system-ui, sans-serif" font-size="10" font-weight="700">Net Annual OpEx Savings: ₹1.42 Cr</text>
+  </g>
+
+  <!-- RIGHT: ROI Matrix & Payback Speed -->
+  <g transform="translate(315, 75)">
+    <rect x="0" y="0" width="235" height="175" rx="8" fill="#140C2B" stroke="#3B2270" stroke-width="1.2" />
+    <text x="14" y="24" fill="#E9D5FF" font-family="system-ui, sans-serif" font-size="11" font-weight="700">INVESTMENT PAYBACK SPEED</text>
+
+    <!-- ROI Metric Box 1 -->
+    <g transform="translate(14, 38)">
+      <rect x="0" y="0" width="98" height="52" rx="6" fill="#221345" stroke="#6B21A8" stroke-width="1" />
+      <text x="10" y="18" fill="#D8B4FE" font-family="system-ui, sans-serif" font-size="9" font-weight="600">PAYBACK</text>
+      <text x="10" y="38" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="16" font-weight="800">3.4 Mo</text>
+    </g>
+
+    <!-- ROI Metric Box 2 -->
+    <g transform="translate(122, 38)">
+      <rect x="0" y="0" width="98" height="52" rx="6" fill="#221345" stroke="#6B21A8" stroke-width="1" />
+      <text x="10" y="18" fill="#D8B4FE" font-family="system-ui, sans-serif" font-size="9" font-weight="600">3-YR ROI</text>
+      <text x="10" y="38" fill="#34D399" font-family="system-ui, sans-serif" font-size="16" font-weight="800">420%</text>
+    </g>
+
+    <!-- Productivity Multiplier Callout -->
+    <g transform="translate(14, 100)">
+      <rect x="0" y="0" width="206" height="60" rx="6" fill="#221345" stroke="#7C3AED" stroke-width="1" />
+      <text x="12" y="18" fill="#C084FC" font-family="system-ui, sans-serif" font-size="9" font-weight="700">THROUGHPUT MULTIPLIER</text>
+      <text x="12" y="36" fill="#F8FAFC" font-family="system-ui, sans-serif" font-size="14" font-weight="800">3.8× Ticket Velocity</text>
+      <text x="12" y="50" fill="#94A3B8" font-family="system-ui, sans-serif" font-size="8.5">CapEx Amortized over 24 Months</text>
+    </g>
+  </g>
+
+  <!-- Bottom Metric Callout -->
+  <g transform="translate(50, 258)">
+    <rect x="0" y="0" width="500" height="42" rx="6" fill="#150B2D" stroke="#3B2270" stroke-width="1" />
+    <circle cx="20" cy="21" r="5" fill="#A855F7" filter="url(#purple-glow)" />
+    <text x="32" y="25" fill="#E9D5FF" font-family="system-ui, sans-serif" font-size="11" font-weight="700">NPV = Σ [ΔCF_t / (1+r)ᵗ] - CapEx &gt; ₹3.15 Cr Net Present Value</text>
+  </g>
+
+  <!-- Footer -->
+  <rect x="0" y="312" width="600" height="28" fill="#05020B" />
+  <circle cx="20" cy="326" r="3.5" fill="#A855F7" />
+  <text x="32" y="330" fill="#64748B" font-family="ui-monospace, monospace" font-size="9">AI AGENT ROI SOLVER // CAPITAL ALLOCATION &amp; INFERENCE MARGINS</text>
+</svg>
