@@ -10,7 +10,9 @@ declare global {
 // Preview-safe Prisma: if client wasn't generated (e.g. no network for prisma generate),
 // we degrade to a proxy that throws only when actually queried — letting pages
 // that catch DB errors (like homepage) render from static MDX data.
-let prisma: any
+// NOTE: keep the export typed as PrismaClient — typing it `any` strips result
+// types from every query in the app (TS7006 implicit-any across DB consumers).
+let prisma: PrismaClient
 
 function createMockPrisma(): any {
   const handler = (path: string[] = []): any =>
@@ -43,7 +45,7 @@ try {
   if (process.env.NODE_ENV !== "production") globalForPrisma.prisma = prisma
 } catch (e) {
   console.warn("[prisma] preview fallback — using mock (no DB):", (e as Error)?.message)
-  prisma = createMockPrisma()
+  prisma = createMockPrisma() as PrismaClient
 }
 
 export { prisma }
