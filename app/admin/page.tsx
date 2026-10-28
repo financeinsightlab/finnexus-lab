@@ -91,7 +91,7 @@ export default async function AdminDashboard() {
     // SOURCE: Post.count where published=true (legacy boolean, kept for compatibility)
     prisma.post.count({ where: { published: true } }).catch(() => 0),
     // SOURCE: Post.groupBy contentStatus — workflow distribution (DRAFT/REVIEW/APPROVED/PUBLISHED)
-    (prisma.post.groupBy({ by: ["contentStatus" as any], _count: { id: true } }) as Promise<Array<{ contentStatus: string; _count: { id: number } }>>).catch(() => [] as any),
+    (prisma.post.groupBy({ by: ["contentStatus" as any], _count: { id: true } }) as Promise<any>).catch(() => [] as any),
     // SOURCE: Post where scheduledPublishAt != null AND future (scheduled queue)
     prisma.post
       .findMany({
