@@ -1,7 +1,8 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { runRatios, parseRatioInputs, ratioInputsToQuery, RATIO_DEFAULTS } from '@/lib/finance/ratios';
 
 /* PGDM Finance Lab — Ratio Analyzer
    Matches lectures: F06 · Three-Statement Architecture & DCF (credit analysis) */
@@ -95,34 +96,52 @@ export default function RatioAnalyzerCalc() {
   const [f, setF] = useState(DEFAULTS);
   const [copied, setCopied] = useState(false);
   const set = (k: keyof typeof DEFAULTS) => (v: number) => setF((s) => ({ ...s, [k]: Number.isFinite(v) ? v : 0 }));
+  const [linkCopied, setLinkCopied] = useState(false);
+  const AUTOSAVE_KEY = 'ka_ratios_autosave_v1';
+  useEffect(() => {
+    try {
+      let base = RATIO_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseRatioInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseRatioInputs(Object.fromEntries(params.entries()), base);
+      setF(base);
+    } catch { /* keep defaults */ }
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(f)); } catch { /* private mode */ }
+  }, [f]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${ratioInputsToQuery(f)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
 
-  const safe = (a: number, b: number) => (b === 0 ? NaN : a / b);
-
+  // All 18 ratios + DuPont come from the tested engine (lib/finance/ratios.ts);
+  // null = not meaningful → NaN keeps the existing NM display contract.
   const isNegEquity = f.equity <= 0;
   const isZeroInterest = f.interest === 0;
-
-  const current = safe(f.currentAssets, f.currentLiabilities);
-  const quick = safe(f.currentAssets - f.inventory, f.currentLiabilities);
-  const cashR = safe(f.cash, f.currentLiabilities);
-  const grossM = safe(f.revenue - f.cogs, f.revenue) * 100;
-  const ebitdaM = safe(f.ebitda, f.revenue) * 100;
-  const ebitM = safe(f.ebit, f.revenue) * 100;
-  const netM = safe(f.pat, f.revenue) * 100;
-  const roa = safe(f.pat, f.totalAssets) * 100;
-  const roe = isNegEquity ? NaN : safe(f.pat, f.equity) * 100;
-  const capitalEmployed = f.totalAssets - f.currentLiabilities;
-  const roce = safe(f.ebit, capitalEmployed) * 100;
-  const de = isNegEquity ? Infinity : safe(f.totalDebt, f.equity);
-  const debtRatio = safe(f.totalDebt, f.totalAssets);
-  const intCov = isZeroInterest ? Infinity : safe(f.ebit, f.interest);
-  const invDays = safe(f.inventory, f.cogs) * 365;
-  const recDays = safe(f.receivables, f.revenue) * 365;
-  const payDays = safe(f.payables, f.cogs) * 365;
-  const ccc = invDays + recDays - payDays;
-  const at = safe(f.revenue, f.totalAssets);
-  const eqMult = isNegEquity ? NaN : safe(f.totalAssets, f.equity);
-  const dupontParts = [netM / 100, at, eqMult];
-  const dupontCheck = isNegEquity ? NaN : dupontParts.reduce((x, y) => x * y, 1) * 100;
+  const r = runRatios(f);
+  const nm = (v: number | null) => (v === null ? NaN : v);
+  const current = nm(r.currentRatio);
+  const quick = nm(r.quickRatio);
+  const cashR = nm(r.cashRatio);
+  const grossM = nm(r.grossMarginPct);
+  const ebitdaM = nm(r.ebitdaMarginPct);
+  const ebitM = nm(r.operatingMarginPct);
+  const netM = nm(r.netMarginPct);
+  const roa = nm(r.roaPct);
+  const roe = nm(r.roePct);
+  const roce = nm(r.rocePct);
+  const de = isNegEquity ? Infinity : nm(r.debtEquity);
+  const debtRatio = nm(r.debtRatio);
+  const intCov = isZeroInterest ? Infinity : nm(r.interestCoverage);
+  const invDays = nm(r.inventoryDays);
+  const recDays = nm(r.receivableDays);
+  const payDays = nm(r.payableDays);
+  const ccc = nm(r.cashConversionCycleDays);
+  const at = nm(r.assetTurnover);
+  const eqMult = nm(r.dupont?.equityMultiplier ?? null);
+  const dupontCheck = nm(r.dupont?.roePct ?? null);
 
   const fmt = (v: number, d = 2) => {
     if (!Number.isFinite(v)) {
@@ -268,7 +287,20 @@ DuPont Breakdown:
         >
           {copied ? '✓ Copied Report!' : '📋 Copy 18-Ratio Summary'}
         </button>
+        <button
+          onClick={copyShareLink}
+          className="text-xs font-bold px-4 py-1.5 rounded-lg border border-border bg-surface-raised hover:border-brand transition-colors text-content-primary"
+        >
+          {linkCopied ? '✓ Link Copied' : '🔗 Share Link'}
+        </button>
       </div>
+
+      {r.warnings.length > 0 && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200">
+          <p className="font-bold text-xs uppercase tracking-widest mb-1">Statement consistency checks</p>
+          <ul className="list-disc pl-5">{r.warnings.map((w) => <li key={w}>{w}</li>)}</ul>
+        </div>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 rounded-2xl border border-border bg-surface p-5">
         <p className="col-span-full text-[10px] font-bold uppercase tracking-widest text-content-muted">Profit &amp; loss (₹ cr)</p>

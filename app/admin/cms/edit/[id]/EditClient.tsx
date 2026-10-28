@@ -1,6 +1,6 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import dynamic from "next/dynamic"
 import Editor from "@/components/admin/Editor"
 import { updatePost, PostFormData } from "@/actions/cms-actions"
@@ -31,6 +31,9 @@ import { contentTemplates, applyTemplate } from "@/lib/templates"
 import { Block, markdownToBlocks } from "@/lib/blocks/registry"
 import ContentRenderer from "@/components/ContentRenderer"
 import { useModalAccessibility } from "@/components/ui/useModalAccessibility"
+import { useAutosave, useUnsavedWarning } from "@/components/admin/editor/useAutosave"
+import ContentQualityPanel from "@/components/admin/editor/ContentQualityPanel"
+import InternalLinkSuggestions from "@/components/admin/editor/InternalLinkSuggestions"
 
 const BlockEditor = dynamic(() => import('@/components/admin/block-editor/BlockEditor'), { ssr: false })
 
@@ -42,6 +45,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
   const [activeTab, setActiveTab] = useState<ActiveTab>("general")
   const [sidebarOpen, setSidebarOpen] = useState(false) // default closed for more space!
   const [previewMode, setPreviewMode] = useState(false)
+  const [previewDevice, setPreviewDevice] = useState<"desktop" | "mobile">("desktop")
 
   // Content mode: markdown (Tiptap) or blocks (Visual Builder)
   const [contentType, setContentType] = useState<'MARKDOWN' | 'BLOCKS'>((post as any).contentType || 'BLOCKS')
@@ -110,6 +114,35 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
   })
   const [publishTime, setPublishTime] = useState("09:00")
 
+  const autosaveKey = "admin:cms:edit:" + post.id
+  const autosavePayload = { title, slug, excerpt, content, type, featuredImage, seoTitle, metaDescription, focusKeywords, ogTitle, ogImage, tags, difficulty, targetAudience, contentStatus, estimatedReadingTime, contentType, blocks }
+  const { status: autosaveStatus, lastSavedAt, hasRecoverable, recover, clear: clearDraft } = useAutosave({ key: autosaveKey, data: autosavePayload, debounceMs: 1200 })
+  const [hasUnsaved, setHasUnsaved] = useState(false)
+  useUnsavedWarning(hasUnsaved && !loading)
+  const initialRef = useRef(false)
+  useEffect(() => {
+    if (!initialRef.current) { initialRef.current = true; return }
+    setHasUnsaved(true)
+  }, [JSON.stringify(autosavePayload)])
+  const [slugState, setSlugState] = useState<any>({ checking: false, available: null, msg: null })
+  useEffect(() => {
+    const sa = slug.trim()
+    if (!sa || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(sa)) { setSlugState({ checking: false, available: sa ? false : null, msg: sa ? "Lowercase letters, numbers, hyphens only" : null }); return }
+    let cancelled = false
+    const t = setTimeout(async () => {
+      setSlugState({ checking: true, available: null, msg: null })
+      try {
+        const res = await fetch("/api/admin/cms/slug-check?slug=" + encodeURIComponent(sa) + "&excludeId=" + post.id)
+        const json = await res.json()
+        if (cancelled) return
+        if (json.available) setSlugState({ checking: false, available: true, msg: "Available (or your own)" })
+        else setSlugState({ checking: false, available: false, msg: json.collision ? "Taken by " + json.collision.title + " (" + json.collision.type + ")" : "Not available" })
+      } catch { if (!cancelled) setSlugState({ checking: false, available: null, msg: null })}
+    }, 500)
+    return () => { cancelled = true; clearTimeout(t) }
+  }, [slug, post.id])
+  const typeToPath = { RESEARCH: "research", INSIGHT: "insights", CASE_STUDY: "case-studies", MEDIA: "media", OTHER: "research" }
+
   // Convert markdown content to blocks when switching to block editor
   const handleSwitchToBlocks = () => {
     setContentType('BLOCKS')
@@ -122,7 +155,14 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
     }
   }
 
+  const confirmPublish = () => {
+    if (!confirm(`Publish "${title || "Untitled"}" now?\n\nType: ${type} · Slug: ${slug || "(missing)"} · Status will become PUBLISHED.`)) return
+    void handleSave(true)
+  }
+
   const handleSave = async (isPublishing: boolean) => {
+    if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug.trim())) { alert("Slug format invalid — use lowercase letters, numbers and hyphens"); return }
+    if (slugState.available === false) { if (!confirm("Slug \"" + slug + "\" is already taken. Continue?")) return }
     setLoading(true)
     try {
       // Calculate scheduled publish date if scheduling is enabled
@@ -173,11 +213,12 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
       }
       
       await updatePost(post.id, data)
+      clearDraft(); setHasUnsaved(false)
       router.push("/admin/cms")
       router.refresh()
     } catch (error) {
       console.error("Failed to save post:", error)
-      alert("Error saving post. Ensure database schema is updated.")
+      alert("Error saving post. If slug collision, change slug.")
     } finally {
       setLoading(false)
     }
@@ -309,7 +350,14 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
               onChange={(e) => setTitle(e.target.value)}
               className="min-w-0 bg-transparent text-sm font-bold text-white placeholder:text-slate-600 focus:outline-none w-[min(34vw,350px)] sm:w-[350px]"
             />
-            <span className="text-[10px] text-[#0D6E6E] font-bold uppercase tracking-widest mt-0.5">Editing Elite Report</span>
+            <span className="text-[10px] text-[#0D6E6E] font-bold uppercase tracking-widest mt-0.5">Editing Elite Report {hasUnsaved ? "· Unsaved" : "· Saved"} {autosaveStatus==="saving" ? "(autosaving…)" : autosaveStatus==="saved" && lastSavedAt ? "(autosaved " + new Date(lastSavedAt).toLocaleTimeString() + ")" : ""}</span>
+            {hasRecoverable && (
+              <div className="mt-1 hidden lg:flex items-center gap-2 text-[10px]">
+                <span className="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/20">Recoverable draft available</span>
+                <button type="button" onClick={() => { const d = recover(); if (d) { setTitle(d.title||title); setSlug(d.slug||slug); setExcerpt(d.excerpt||excerpt); setContent(d.content||content); }} } className="px-2 py-1 rounded-lg bg-brand text-white font-bold">Restore</button>
+                <button type="button" onClick={clearDraft} className="px-2 py-1 rounded-lg bg-white/10 text-slate-300">Dismiss</button>
+              </div>
+            )}
           </div>
         </div>
 
@@ -364,7 +412,7 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
               Save
             </button>
             <button
-              onClick={() => handleSave(true)}
+              onClick={confirmPublish}
               disabled={loading}
               className="btn-primary flex min-h-11 items-center gap-2 px-3 font-bold disabled:opacity-50 sm:px-6"
             >
@@ -467,19 +515,20 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
                 </div>
 
                 <div>
-                   <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">URL Identity (Slug)</label>
+                   <label className="block text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-2">URL Identity (Slug) — validated before save</label>
                    <div className="flex gap-2">
                      <input 
                        type="text" 
                        value={slug}
                        onChange={(e) => setSlug(e.target.value)}
                        placeholder="report-slug"
-                       className="flex-1 bg-white/5 border border-white/10 rounded-xl text-xs font-mono p-3 text-emerald-400 outline-none focus:border-[#0D6E6E]/50"
+                       className={"flex-1 border rounded-xl text-xs font-mono p-3 outline-none " + (slugState.available===false ? "bg-error/10 border-error/30 text-error" : slugState.available===true ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400" : "bg-white/5 border-white/10 text-emerald-400") + " focus:border-[#0D6E6E]/50"}
                      />
-                     <button onClick={generateSlug} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all" title="Generate">
+                     <button onClick={generateSlug} className="p-3 bg-white/5 hover:bg-white/10 rounded-xl transition-all" title="Generate from title" aria-label="Generate slug from title">
                        <Layout className="w-3.5 h-3.5 text-slate-400" />
                      </button>
                    </div>
+                   <p className={"mt-1.5 text-[11px] " + (slugState.available===false ? "text-error" : slugState.available===true ? "text-emerald-400" : "text-slate-500")}>{slugState.checking ? "Checking availability…" : slugState.msg ? slugState.msg : slug ? "Preview: /" + ((typeToPath as any)[type] ?? "research") + "/" + slug + " · Checked against Post.slug" : "Lowercase, hyphens only — checked live"}</p>
                 </div>
 
                 <div>
@@ -822,6 +871,13 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
                       </div>
                     )}
                   </div>
+                  <div className="pt-6 border-t border-white/10">
+                    <ContentQualityPanel
+                      data={{ title, slug, excerpt, content, type, featuredImage, seoTitle, metaDescription, focusKeywords, ogTitle, ogImage, tags, targetAudience, contentStatus }}
+                      publicPathPreview={slug ? "/" + ((typeToPath as any)[type] ?? "research") + "/" + slug : undefined}
+                    />
+                  <InternalLinkSuggestions query={title} excludeId={post.id} />
+                  </div>
                 </div>
               </div>
             )}
@@ -966,10 +1022,10 @@ export default function EditClient({ post }: { post: Post & { author: { name: st
           {previewMode && (
             <div className="absolute inset-0 z-[100] flex min-h-0 flex-col overflow-hidden bg-[#0F1117] anim-fade" role="region" aria-label="Article preview">
               <div className="sticky top-0 z-[110] flex shrink-0 justify-end border-b border-white/5 bg-[#0F1117]/95 p-3 backdrop-blur-xl sm:p-4">
-                <button onClick={() => setPreviewMode(false)} className="min-h-11 rounded-full bg-white px-6 py-2 font-bold text-black shadow-2xl transition-all hover:scale-105">Close Preview</button>
+                <div className="flex items-center gap-2"><div role="group" aria-label="Preview device" className="flex rounded-full bg-white/10 border border-white/15 p-1"><button type="button" onClick={() => setPreviewDevice("desktop")} aria-pressed={previewDevice==="desktop"} className={"min-h-9 rounded-full px-4 text-xs font-bold " + (previewDevice==="desktop" ? "bg-white text-black" : "text-slate-300")}>Desktop</button><button type="button" onClick={() => setPreviewDevice("mobile")} aria-pressed={previewDevice==="mobile"} className={"min-h-9 rounded-full px-4 text-xs font-bold " + (previewDevice==="mobile" ? "bg-white text-black" : "text-slate-300")}>Mobile</button></div><button onClick={() => setPreviewMode(false)} className="min-h-11 rounded-full bg-white px-6 py-2 font-bold text-black shadow-2xl transition-all hover:scale-105">Close Preview</button></div>
               </div>
               <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto p-4 sm:p-12" data-lenis-prevent>
-                <div className="content-page dark space-y-12">
+                <div className={"content-page dark space-y-12 " + (previewDevice==="mobile" ? "max-w-[390px] mx-auto border border-white/10 rounded-3xl p-4" : "")}>
                   <div className="space-y-4">
                     <div className="h-px w-20 bg-[#0D6E6E]" />
                     <h1 className="break-words [overflow-wrap:anywhere] text-6xl font-extrabold leading-[1.1] tracking-tight text-white">{title || "Untitled Elite Report"}</h1>

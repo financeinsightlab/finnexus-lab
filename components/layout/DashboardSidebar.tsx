@@ -17,27 +17,31 @@ import {
   ChevronDown,
   type LucideIcon,
 } from 'lucide-react';
-import { NAV_CLUSTERS, type NavCluster } from '@/lib/navigation';
+import { NAV_CLUSTERS, isNavActive, type NavCluster } from '@/lib/navigation';
 
 /** Map each navigation cluster to a lucide icon for the sidebar rail. */
 const CLUSTER_ICONS: Record<string, LucideIcon> = {
   research: BarChart3,
-  intelligence: Compass,
+  tools: BriefcaseBusiness,
+  markets: Compass,
   learn: GraduationCap,
-  portfolio: BriefcaseBusiness,
   company: Building2,
 };
 
 export default function DashboardSidebar() {
   const { status } = useSession();
-  const [collapsed, setCollapsed] = useState(false);
-  const [expanded, setExpanded] = useState<string | null>(null);
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+  // Start with the cluster containing the current route expanded, so users
+  // landing deep in a section see their context without hunting.
+  const [expanded, setExpanded] = useState<string | null>(
+    () => NAV_CLUSTERS.find((c) => isNavActive(pathname, c.href) || c.items.some((i) => isNavActive(pathname, i.href)))?.id ?? null
+  );
 
   // Keep session-dependent navigation out of the server-rendered public shell.
   if (status !== 'authenticated') return null;
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+  const isActive = (href: string) => isNavActive(pathname, href);
 
   const clusterActive = (cluster: NavCluster) =>
     isActive(cluster.href) || cluster.items.some((item) => isActive(item.href));
@@ -56,6 +60,7 @@ className="hidden md:flex min-h-0 flex-col h-[calc(100dvh-4rem)] sticky top-16 o
         <div className="mb-4">
           <Link
             href="/dashboard"
+            aria-current={pathname === '/dashboard' ? 'page' : undefined}
             title={collapsed ? 'Dashboard' : undefined}
             className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all duration-200 group ${isActive('/dashboard')
                 ? 'bg-brand-muted text-brand'
@@ -102,6 +107,7 @@ className="hidden md:flex min-h-0 flex-col h-[calc(100dvh-4rem)] sticky top-16 o
                 /* Collapsed: icon links straight to the cluster landing page */
                 <Link
                   href={cluster.href}
+                  aria-current={pathname === cluster.href ? 'page' : undefined}
                   title={cluster.label}
                   className={`flex items-center justify-center px-3 py-2.5 rounded-xl transition-all duration-200 ${active
                       ? 'bg-brand-muted text-brand'
@@ -143,6 +149,7 @@ className="hidden md:flex min-h-0 flex-col h-[calc(100dvh-4rem)] sticky top-16 o
                             <Link
                               key={`${cluster.id}-${item.href}`}
                               href={item.href}
+                              aria-current={pathname === item.href ? 'page' : undefined}
                               className={`flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm transition-colors ${itemActive
                                   ? 'bg-brand-muted text-brand font-medium'
                                   : 'text-content-muted hover:bg-accent hover:text-content-primary'

@@ -1,4 +1,5 @@
 import { notFound } from 'next/navigation';
+import Breadcrumbs from '@/components/ui/Breadcrumbs';
 import { Metadata } from 'next';
 import HeroBackground from '@/components/ui/HeroBackground';
 import Link from 'next/link';
@@ -9,7 +10,7 @@ import { prisma } from '@/lib/prisma';
 import { renderBlocks } from '@/lib/blocks/renderer';
 import { markdownToBlocks, type Block } from '@/lib/blocks/registry';
 import { extractHeadings } from '@/lib/content-toc';
-import { ChevronLeft, Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, Sparkles, ShieldCheck, List } from 'lucide-react';
+import { Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, Sparkles, ShieldCheck, List } from 'lucide-react';
 import React from 'react';
 import CommentsSection from '@/components/comments/CommentsSection';
 import { auth } from '@/auth';
@@ -147,15 +148,14 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
           <HeroBackground />
           <ContentPage className="relative z-10">
             <div className="mb-7 flex items-center justify-between gap-4">
-              <Link
-                href="/insights"
-
-                className="group inline-flex items-center gap-2 text-sm font-medium text-primary transition-colors hover:text-foreground"
-
-              >
-                <ChevronLeft className="h-4 w-4 transition-transform group-hover:-translate-x-1" />
-                Back to All Insights
-              </Link>
+              <Breadcrumbs
+                className=""
+                items={[
+                  { label: 'Home', href: '/' },
+                  { label: 'Insights', href: '/insights' },
+                  { label: title },
+                ]}
+              />
               <div className="flex items-center gap-3">
                 <SaveButton slug={slug} type="insight" />
               </div>

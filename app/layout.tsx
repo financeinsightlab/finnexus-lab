@@ -13,7 +13,6 @@ import PageTracker from "@/components/analytics/PageTracker";
 import { Suspense } from "react";
 import JsonLd, { organizationSchema, websiteSchema } from "@/components/seo/JsonLd";
 import ClientShell from "@/components/ui/ClientShell";
-import CommandPalette from "@/components/ui/CommandPalette";
 import ServiceWorkerRegistrar from "@/components/pwa/ServiceWorkerRegistrar";
 import { LocaleProvider } from "@/lib/i18n/LocaleProvider";
 
@@ -172,7 +171,6 @@ export default function RootLayout({
             <AuthProvider>
               <ClientShell>
                 <Navbar />
-                <CommandPalette />
                 <ScrollProgress />
                 {/* Wrap Analytics in Suspense so it doesn't block the shell render */}
                 <Suspense fallback={null}>

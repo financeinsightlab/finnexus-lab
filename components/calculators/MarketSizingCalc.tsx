@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell } from 'recharts';
+import { runMarketSizing, parseMarketSizingInputs, marketSizingToQuery, MS_DEFAULTS, type MarketSizingInputs } from '@/lib/finance/market-sizing';
 
 export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Market Parameters
@@ -21,49 +22,62 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     if (isPremiumUser) { setIsLocked(false); return; }
     const key = `used_tool_${slug}`;
     const firstUsed = localStorage.getItem(key);
     if (!firstUsed) { localStorage.setItem(key, Date.now().toString()); }
-    else if (Date.now() - parseInt(firstUsed) > 30 * 60 * 1000) setIsLocked(true);
+    else if (Date.now() - parseInt(firstUsed) > 30 * 60 * 1000) setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
   }, [slug, isPremiumUser]);
 
   useEffect(() => {
     if (isPremiumUser || localStorage.getItem(`unlocked_${slug}`)) setIsLocked(false);
   }, [slug, isPremiumUser]);
 
+  // Persistence via the tested engine codec.
+  const AUTOSAVE_KEY = 'ka_ms_autosave_v1';
+  const engineInputs: MarketSizingInputs = {
+    totalPopulation, targetSegmentPct: targetSegmentPercent / 100, addressablePct: addressablePercent / 100,
+    obtainablePct: obtainablePercent / 100, avgRevenuePerUser, marketGrowthRate: marketGrowthRate / 100,
+    targetCustomers, avgTransactionValue, transactionsPerYear, projectionYears: 5,
+  };
+  const applyInputs = (i: MarketSizingInputs) => {
+    setTotalPopulation(i.totalPopulation); setTargetSegmentPercent(i.targetSegmentPct * 100);
+    setAddressablePercent(i.addressablePct * 100); setObtainablePercent(i.obtainablePct * 100);
+    setAvgRevenuePerUser(i.avgRevenuePerUser); setMarketGrowthRate(i.marketGrowthRate * 100);
+    setTargetCustomers(i.targetCustomers); setAvgTransactionValue(i.avgTransactionValue); setTransactionsPerYear(i.transactionsPerYear);
+  };
+  useEffect(() => {
+    try {
+      let base = MS_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseMarketSizingInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseMarketSizingInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalPopulation, targetSegmentPercent, addressablePercent, obtainablePercent, avgRevenuePerUser, marketGrowthRate, avgTransactionValue, transactionsPerYear, targetCustomers]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${marketSizingToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
+
   const calculations = useMemo(() => {
-    // Top-Down TAM/SAM/SOM
-    const pop = Math.max(0, Number(totalPopulation) || 0);
-    const seg = Math.min(100, Math.max(0, Number(targetSegmentPercent) || 0));
-    const addr = Math.min(100, Math.max(0, Number(addressablePercent) || 0));
-    const obt = Math.min(100, Math.max(0, Number(obtainablePercent) || 0));
-    const arpu = Math.max(0, Number(avgRevenuePerUser) || 0);
-    const cust = Math.max(0, Number(targetCustomers) || 0);
-    const atv = Math.max(0, Number(avgTransactionValue) || 0);
-    const tpy = Math.max(0, Number(transactionsPerYear) || 0);
-
-    const tam = (pop * (seg / 100)) * arpu;
-    const sam = tam * (addr / 100);
-    const som = sam * (obt / 100);
-
-    // Bottom-Up Validation
-    const bottomUpRev = cust * atv * tpy;
-
-    // 5-Year Forward Projections
-    const projections = [0, 1, 2, 3, 4].map(y => ({
-      year: `Year ${y + 1}`,
-      TAM: Math.round(tam * Math.pow(1 + marketGrowthRate / 100, y)),
-      SAM: Math.round(sam * Math.pow(1 + marketGrowthRate / 100, y)),
-      SOM: Math.round(som * Math.pow(1 + marketGrowthRate / 100, y)),
-    }));
-
-    const convergenceRatio = bottomUpRev > 0 ? (som / bottomUpRev) : 0;
-    const tamUsers = totalPopulation * (targetSegmentPercent / 100);
-    const samUsers = tamUsers * (addressablePercent / 100);
-    const somUsers = samUsers * (obtainablePercent / 100);
+    // Engine validates percentages honestly (no silent 0–100 clamping) and
+    // derives users and money from ONE consistent assumption path.
+    const engine = runMarketSizing(engineInputs);
+    const tam = engine.tam ?? 0; const sam = engine.sam ?? 0; const som = engine.som ?? 0;
+    const bottomUpRev = engine.bottomUpRevenue ?? 0;
+    const projections = engine.projections.map((p) => ({ year: `Year ${p.year}`, TAM: Math.round(p.tam), SAM: Math.round(p.sam), SOM: Math.round(p.som) }));
+    const convergenceRatio = engine.convergenceRatio ?? 0;
+    const tamUsers = engine.tamUsers ?? 0; const samUsers = engine.samUsers ?? 0; const somUsers = engine.somUsers ?? 0;
 
     let insightText = '';
     if (convergenceRatio > 3) {
@@ -71,18 +85,19 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
     } else if (convergenceRatio < 0.5 && convergenceRatio > 0) {
       insightText = `Bottom-Up Ambition Exceeds Market: Your Bottom-Up Revenue plan (${formatNum(bottomUpRev)}) actually exceeds your estimated Top-Down SOM (${formatNum(som)}). This typically means you either need to raise your Obtainable Market % assumption OR you've underestimated the size of the addressable market. This is actually a great problem to have — you have identified demand that your TAM model is missing. Expand your market definition.`;
     } else {
-      insightText = `Strong Market Sizing Convergence: Your Top-Down SOM (${formatNum(som)}) and Bottom-Up Revenue Plan (${formatNum(bottomUpRev)}) are within ${(Math.abs(1 - convergenceRatio) * 100).toFixed(0)}% of each other — this is institutional-quality market sizing. A convergence ratio this tight will give Tier-1 VCs very high confidence in your financial projections. The TAM grows to ${formatNum(projections[4].TAM)} in Year 5 at a ${marketGrowthRate}% CAGR, strongly supporting an early Series A narrative.`;
+      insightText = `Strong Market Sizing Convergence: Your Top-Down SOM (${formatNum(som)}) and Bottom-Up Revenue Plan (${formatNum(bottomUpRev)}) are within ${(Math.abs(1 - convergenceRatio) * 100).toFixed(0)}% of each other — this is institutional-quality market sizing. A convergence ratio this tight will give Tier-1 VCs very high confidence in your financial projections. The TAM grows to ${formatNum(projections[4]?.TAM ?? 0)} in Year 5 at a ${marketGrowthRate}% CAGR, strongly supporting an early Series A narrative.`;
     }
 
-    return { tam, sam, som, bottomUpRev, projections, convergenceRatio, tamUsers, samUsers, somUsers, insightText };
+    return { tam, sam, som, bottomUpRev, projections, convergenceRatio, tamUsers, samUsers, somUsers, insightText, engine };
   }, [totalPopulation, targetSegmentPercent, addressablePercent, obtainablePercent, avgRevenuePerUser, marketGrowthRate, avgTransactionValue, transactionsPerYear, targetCustomers]);
 
   function formatNum(n: number) {
-    if (n >= 1e12) return `$${(n / 1e12).toFixed(2)}T`;
-    if (n >= 1e9) return `$${(n / 1e9).toFixed(1)}B`;
-    if (n >= 1e6) return `$${(n / 1e6).toFixed(1)}M`;
-    if (n >= 1e3) return `$${(n / 1e3).toFixed(0)}K`;
-    return `$${n}`;
+    // INR-first: this model sizes the India market (1.4B population default).
+    if (n >= 1e12) return `₹${(n / 1e12).toFixed(2)} lakh-crore`;
+    if (n >= 1e7) return `₹${(n / 1e7).toFixed(1)} crore`;
+    if (n >= 1e5) return `₹${(n / 1e5).toFixed(1)} lakh`;
+    if (n >= 1e3) return `₹${(n / 1e3).toFixed(0)}K`;
+    return `₹${n}`;
   }
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -114,6 +129,18 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(MS_DEFAULTS)} className="btn-secondary text-sm">Reset</button>
+          <span className="text-xs text-gray-500">Autosaves locally · percentages are validated, never silently clamped (audited fix)</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
+
         <div className="grid lg:grid-cols-4 gap-8 relative">
           {/* Sidebar */}
           <div className="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20 space-y-4">
@@ -126,7 +153,7 @@ export default function MarketSizingCalc({ slug, isPremiumUser }: { slug: string
                   { label: 'Target Segment of Population %', val: targetSegmentPercent, set: setTargetSegmentPercent, suffix: '%' },
                   { label: 'Digitally Addressable (SAM) %', val: addressablePercent, set: setAddressablePercent, suffix: '%' },
                   { label: 'Realistically Obtainable (SOM) %', val: obtainablePercent, set: setObtainablePercent, suffix: '%' },
-                  { label: 'Avg Revenue Per User (ARPU)', val: avgRevenuePerUser, set: setAvgRevenuePerUser, prefix: '$' },
+                  { label: 'Avg Revenue Per User / yr (ARPU)', val: avgRevenuePerUser, set: setAvgRevenuePerUser, prefix: '₹' },
                   { label: 'Annual Market Growth Rate %', val: marketGrowthRate, set: setMarketGrowthRate, suffix: '%' },
                 ].map(({ label, val, set, prefix, suffix }) => (
                   <div key={label}>

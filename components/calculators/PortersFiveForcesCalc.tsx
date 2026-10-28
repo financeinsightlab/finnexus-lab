@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, useMemo, useRef } from 'react';
+import { runPorters, FORCE_IDS as ENGINE_FORCE_IDS } from '@/lib/finance/porters';
 import { RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer, Tooltip } from 'recharts';
 import { useModalAccessibility } from '@/components/ui/useModalAccessibility';
 
@@ -179,15 +180,44 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
     const key = `used_tool_${slug}`;
     const firstUsed = localStorage.getItem(key);
     if (!firstUsed) { localStorage.setItem(key, Date.now().toString()); }
-    else if (Date.now() - parseInt(firstUsed) > 30 * 60 * 1000) setIsLocked(true);
+    else if (Date.now() - parseInt(firstUsed) > 30 * 60 * 1000) setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
   }, [slug, isPremiumUser]);
 
   useEffect(() => {
     if (isPremiumUser || localStorage.getItem(`unlocked_${slug}`)) setIsLocked(false);
   }, [slug, isPremiumUser]);
 
+  // Autosave (localStorage) — ratings/notes/company/industry. URL share is
+  // intentionally not offered here: free-text notes don't belong in links.
+  const AUTOSAVE_KEY = 'ka_porters_autosave_v1';
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (!saved) return;
+      const data = JSON.parse(saved) as { companyName?: string; industry?: string; ratings?: ForceRatings; notes?: Record<ForceId, string> };
+      if (typeof data.companyName === 'string') setCompanyName(data.companyName);
+      if (typeof data.industry === 'string') {
+        setIndustry(data.industry);
+        // prevent the template auto-detect effect from clobbering the restore
+        const lower = data.industry.toLowerCase();
+        for (const [key, template] of Object.entries(INDUSTRY_TEMPLATES)) {
+          if (key !== 'general' && template.keywords.some((kw: string) => lower.includes(kw))) { setLastDetectedIndustry(key); break; }
+        }
+      }
+      if (data.ratings) setRatings(data.ratings);
+      if (data.notes) setNotes(data.notes);
+    } catch { /* keep template defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ companyName, industry, ratings, notes })); } catch { /* private mode */ }
+  }, [companyName, industry, ratings, notes]);
+
   const calculations = useMemo(() => {
-    const average = (Object.values(ratings) as number[]).reduce((a, b) => a + b, 0) / 5;
+    // Scoring delegated to lib/finance/porters.ts (validated ratings, banding,
+    // dominant-force masking warning). Insight copy below keys off it.
+    const engine = runPorters({ newEntrants: ratings.newEntrants, supplierPower: ratings.supplierPower, buyerPower: ratings.buyerPower, substitutes: ratings.substitutes, rivalry: ratings.rivalry });
+    const average = engine.compositeScore ?? 0;
     const radarData = FORCE_DEFINITIONS.map(f => ({
       subject: f.name.split(' ').slice(-2).join(' '),
       value: ratings[f.id as ForceId],
@@ -216,7 +246,7 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
       insightText = `Rare Structural Advantage: An average force intensity of only ${average.toFixed(1)}/5 identifies an exceptionally favorable competitive environment. Low buyer power, minimal substitute threats, and high entry barriers create conditions for monopolistic or near-monopolistic profit margins — precisely the structure that allowed Berkshire Hathaway's portfolio to compound at 19% for five decades. Rush to capture market share aggressively before competitors inevitably recognize and enter this structural opportunity.`;
     }
 
-    return { average, radarData, attractiveness, attractivenessScore, insightText };
+    return { average, radarData, attractiveness: engine.attractiveness ?? attractiveness, attractivenessScore: engine.attractivenessScore ?? attractivenessScore, insightText, engine };
   }, [ratings]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -267,6 +297,13 @@ export default function PortersFiveForcesCalc({ slug, isPremiumUser }: { slug: s
           <div className="mb-6 flex flex-wrap items-center justify-between gap-4 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4" role="status">
             <p className="min-w-0 flex-1 text-sm text-brand-slate dark:text-slate-200">This model remains locked. You can continue browsing, or reopen the premium access options.</p>
             <button type="button" onClick={() => setLockDialogOpen(true)} className="btn btn-primary min-h-11 shrink-0">Unlock Premium Access</button>
+          </div>
+        )}
+
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-6 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200">
+            <ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul>
+            <p className="text-xs mt-2 opacity-75">Your work autosaves locally. Industry templates still auto-apply when you change sector — your edits after that are kept.</p>
           </div>
         )}
 

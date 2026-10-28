@@ -28,6 +28,11 @@ export default function MediaLibraryClient() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filterType, setFilterType] = useState<string>('all')
   const [selectedMedia, setSelectedMedia] = useState<string[]>([])
+  const [insights, setInsights] = useState<any>(null)
+  const [quickFilter, setQuickFilter] = useState<'all' | 'missing-alt' | 'unused'>('all')
+  useEffect(() => {
+    void fetch('/api/admin/media/insights').then((r) => (r.ok ? r.json() : null)).then((j) => j && setInsights(j)).catch(() => {})
+  }, [])
   const [uploadProgress, setUploadProgress] = useState(0)
 
   // Edit fields
@@ -221,6 +226,8 @@ export default function MediaLibraryClient() {
   }
 
   const filteredMedia = media.filter(item => {
+    if (quickFilter === 'missing-alt' && (item.altText && item.altText.trim())) return false
+    if (quickFilter === 'unused' && insights?.unusedSampleIds && !insights.unusedSampleIds.includes(item.id)) return false
     if (filterType === 'all') return true
     if (filterType === 'image') return item.mimeType.startsWith('image/')
     if (filterType === 'document') return item.mimeType.startsWith('application/')
@@ -236,9 +243,17 @@ export default function MediaLibraryClient() {
     <div className="min-h-screen min-w-0 bg-[#0B0D13] p-4 text-white sm:p-6 flex flex-col">
 
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6">
         <h1 className="text-3xl font-bold">Media Library</h1>
         <p className="text-content-secondary mt-2">Upload and manage your media files</p>
+        {insights && (
+          <div className="mt-4 flex flex-wrap gap-2 text-xs" aria-label="Media status">
+            <span className="px-3 py-1.5 rounded-full bg-surface-muted border border-border">{insights.total} assets · source: Media table</span>
+            <button type="button" onClick={() => setQuickFilter(quickFilter === 'missing-alt' ? 'all' : 'missing-alt')} aria-pressed={quickFilter === 'missing-alt'} className={`px-3 py-1.5 rounded-full border font-semibold ${quickFilter === 'missing-alt' ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-amber-500/10 border-amber-500/20 text-amber-300'}`}>{insights.missingAlt} missing alt text — fix for accessibility</button>
+            <button type="button" onClick={() => setQuickFilter(quickFilter === 'unused' ? 'all' : 'unused')} aria-pressed={quickFilter === 'unused'} className={`px-3 py-1.5 rounded-full border ${quickFilter === 'unused' ? 'bg-brand/20 border-brand/40 text-brand' : 'bg-surface-muted border border-border text-content-secondary'}`} title={insights.note}>{insights.usedInSampledPosts}/{insights.sampled} sampled assets referenced in posts (best-effort match)</button>
+            {quickFilter !== 'all' && <button type="button" onClick={() => setQuickFilter('all')} className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15">Clear filter</button>}
+          </div>
+        )}
       </div>
 
 

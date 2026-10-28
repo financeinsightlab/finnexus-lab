@@ -12,6 +12,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
+import { runSaas, parseSaasInputs, saasInputsToQuery, SAAS_DEFAULTS, type SaasInputs } from '@/lib/finance/saas';
 
 export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Inputs
@@ -19,6 +20,8 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
   const [margin, setMargin] = useState(85);
   const [churn, setChurn] = useState(2.5);
   const [cac, setCac] = useState(400);
+  const [discountPct, setDiscountPct] = useState(0); // optional monthly discount rate %
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const [isLocked, setIsLocked] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
@@ -40,7 +43,7 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
     } else {
       const msSinceFirstUse = Date.now() - parseInt(firstUsed);
       if (msSinceFirstUse > 30 * 60 * 1000) { // 30 minutes free session
-        setIsLocked(true);
+        setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
       }
     }
   }, [slug, isPremiumUser]);
@@ -51,59 +54,48 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
     }
   }, [slug, isPremiumUser]);
 
-  // Calculations
+  // Persistence (autosave + share links) via the tested engine codec.
+  const AUTOSAVE_KEY = 'ka_saas_autosave_v1';
+  const engineInputs: SaasInputs = {
+    arpuMonthly: arpu, grossMargin: margin / 100, monthlyChurn: churn / 100, cac,
+    horizonMonths: 36, monthlyDiscountRate: discountPct / 100,
+  };
+  const applyInputs = (i: SaasInputs) => {
+    setArpu(i.arpuMonthly); setMargin(i.grossMargin * 100); setChurn(i.monthlyChurn * 100);
+    setCac(i.cac); setDiscountPct(i.monthlyDiscountRate * 100);
+  };
+  useEffect(() => {
+    try {
+      let base = SAAS_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseSaasInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseSaasInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [arpu, margin, churn, cac, discountPct]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${saasInputsToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  // Calculations (delegated to lib/finance/saas.ts)
   const calculations = useMemo(() => {
-    // Prevent division by zero
-    const safeChurn = churn <= 0 ? 0.1 : churn;
-    
-    // LTV = (ARPU * Gross Margin) / Churn Rate
-    const mGrossProfit = arpu * (margin / 100);
-    const ltv = mGrossProfit / (safeChurn / 100);
-    
-    // Payback Period (Months) — requires positive gross margin
-    const payback = mGrossProfit > 0 ? cac / mGrossProfit : Infinity;
-    
-    // LTV : CAC Ratio
-    const ltvCac = cac > 0 ? ltv / cac : Infinity;
-
-    // Generate Chart and Excel Data (36 months cohort retention and profit)
-    const chartData = [];
-    const rowMonths = [];
-    const rowActiveCohort = [];
-    const rowMonthlyRev = [];
-    const rowGrossProfit = [];
-    const rowCumProfit = [];
-    
-    let cumulativeProfit = -cac; // Start at loss (CAC)
-
-    for (let month = 0; month <= 36; month++) {
-      rowMonths.push(`Mo ${month}`);
-      
-      if (month === 0) {
-        chartData.push({ month: `Month 0`, cumulativeProfit: -cac, breakeven: 0 });
-        rowActiveCohort.push('100.0%');
-        rowMonthlyRev.push(Math.round(arpu));
-        rowGrossProfit.push(Math.round(mGrossProfit));
-        rowCumProfit.push(Math.round(-cac));
-      } else {
-        const survivalRate = Math.pow(1 - (safeChurn / 100), month);
-        const monthlyExpectedProfit = mGrossProfit * survivalRate;
-        const expectedRevenue = arpu * survivalRate;
-        
-        cumulativeProfit += monthlyExpectedProfit;
-        
-        chartData.push({
-          month: `Month ${month}`,
-          cumulativeProfit: Math.round(cumulativeProfit),
-          breakeven: 0
-        });
-        
-        rowActiveCohort.push(`${(survivalRate * 100).toFixed(1)}%`);
-        rowMonthlyRev.push(Math.round(expectedRevenue));
-        rowGrossProfit.push(Math.round(monthlyExpectedProfit));
-        rowCumProfit.push(Math.round(cumulativeProfit));
-      }
-    }
+    const engine = runSaas(engineInputs);
+    const ltv = engine.ltv ?? 0;
+    const payback = engine.simplePaybackMonths ?? 0;
+    const ltvCac = engine.ltvCacRatio ?? 0;
+    const chartData = engine.series.map((m) => ({ month: `Month ${m.month}`, cumulativeProfit: Math.round(m.cumulativeNet), breakeven: 0 }));
+    const rowMonths = engine.series.map((m) => `Mo ${m.month}`);
+    const rowActiveCohort = engine.series.map((m) => `${(m.survivalRate * 100).toFixed(1)}%`);
+    const rowMonthlyRev = engine.series.map((m) => Math.round(m.expectedRevenue));
+    const rowGrossProfit = engine.series.map((m) => Math.round(m.expectedGrossProfit));
+    const rowCumProfit = engine.series.map((m) => Math.round(m.cumulativeNet));
 
     let insightText = '';
     if (ltvCac < 1) {
@@ -116,8 +108,8 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
       insightText = `Good Standing with Capital Constraints: Your expected lifetime value is strong at $${Math.round(ltv)}, providing a solid long-term profit margin per customer. However, your payback period is stretched to ${payback.toFixed(1)} months. This dynamic is completely acceptable for sticky Enterprise B2B SaaS where contracts take years to mature, but it is dangerous for SMB tools. Because it takes over a year to recover your $${cac} acquisition cost, scaling fast requires a massive upfront cash balance to absorb the temporary burn. Ensure you have significant venture backing or cash reserves safely secured to support this slow capital recovery cycle before leaning into targeted growth.`;
     }
 
-    return { ltv, payback, ltvCac, chartData, insightText, rowMonths, rowActiveCohort, rowMonthlyRev, rowGrossProfit, rowCumProfit };
-  }, [arpu, margin, churn, cac]);
+    return { ltv, payback, ltvCac, chartData, insightText, rowMonths, rowActiveCohort, rowMonthlyRev, rowGrossProfit, rowCumProfit, engine };
+  }, [arpu, margin, churn, cac, discountPct]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -180,6 +172,18 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(SAAS_DEFAULTS)} className="btn-secondary text-sm">Reset</button>
+          <span className="text-xs text-gray-500">Autosaves locally · Churn-adjusted payback: {calculations.engine.churnAdjustedPaybackMonth !== null ? `month ${calculations.engine.churnAdjustedPaybackMonth}` : 'never within 36mo'} · Expected lifetime: {calculations.engine.expectedLifetimeMonths !== null ? `${calculations.engine.expectedLifetimeMonths.toFixed(1)} months` : '∞ (0% churn)'}{calculations.engine.discountedLtv !== null && discountPct > 0 ? ` · Discounted LTV: $${calculations.engine.discountedLtv.toLocaleString(undefined, { maximumFractionDigits: 0 })}` : ''}</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
+
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
           {/* Inputs Sidebar */}
@@ -216,6 +220,14 @@ export default function SaaSCalc({ slug, isPremiumUser }: { slug: string; isPrem
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={cac} onChange={e => setCac(Number(e.target.value))} />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Monthly Discount Rate % (optional, for NPV LTV)</label>
+                <div className="relative">
+                  <input type="number" className="input w-full pr-8" step="0.1" value={discountPct} onChange={e => setDiscountPct(Number(e.target.value))} />
+                  <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                 </div>
               </div>
             </div>

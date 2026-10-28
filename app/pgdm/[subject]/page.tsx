@@ -116,10 +116,14 @@ export default async function SubjectPage({ params }: PageProps) {
         <div className={`absolute inset-0 bg-gradient-to-br ${style.gradient} pointer-events-none`} />
         <div className="content-page relative z-10">
           {/* breadcrumb */}
-          <nav className="flex items-center gap-1.5 text-xs text-gray-500 mb-5 font-medium">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-gray-500 mb-5 font-medium flex-wrap">
+            <Link href="/" className="hover:text-brand-hover transition-colors">Home</Link>
+            <ChevronRight className="w-3 h-3" aria-hidden="true" />
             <Link href="/pgdm" className="hover:text-brand-hover transition-colors">PGDM</Link>
-            <ChevronRight className="w-3 h-3" />
+            <ChevronRight className="w-3 h-3" aria-hidden="true" />
             <span className="text-gray-400">{subject.track === 'CORE' ? 'Semester III Core' : `${meta.label} ${meta.kind.toLowerCase()}`}</span>
+            <ChevronRight className="w-3 h-3" aria-hidden="true" />
+            <span className="text-gray-200" aria-current="page">{subject.name}</span>
           </nav>
 
           <div className="flex items-start gap-4">

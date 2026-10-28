@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend, ReferenceLine } from 'recharts';
+import { runQCommerce, parseQcInputs, qcInputsToQuery, QC_DEFAULTS, type QCommerceInputs } from '@/lib/finance/qcommerce';
 
 export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Dark Store Operations
@@ -26,80 +27,90 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   useEffect(() => {
     if (isPremiumUser) { setIsLocked(false); return; }
     const key = `used_tool_${slug}`;
     const firstUsed = localStorage.getItem(key);
     if (!firstUsed) { localStorage.setItem(key, Date.now().toString()); }
-    else if (Date.now() - parseInt(firstUsed) > 30 * 60 * 1000) setIsLocked(true);
+    else if (Date.now() - parseInt(firstUsed) > 30 * 60 * 1000) setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
   }, [slug, isPremiumUser]);
 
   useEffect(() => {
     if (isPremiumUser || localStorage.getItem(`unlocked_${slug}`)) setIsLocked(false);
   }, [slug, isPremiumUser]);
 
+  // Persistence via the tested engine codec.
+  const AUTOSAVE_KEY = 'ka_qc_autosave_v1';
+  const engineInputs: QCommerceInputs = {
+    ordersPerDay, avgOrderValue, deliveryFee, darkStoreRentMonthly: darkStoreRent,
+    staffCount, avgStaffSalaryMonthly: avgStaffSalary, pickingCostPerOrder,
+    lastMileCostPerOrder: lastMilePerOrder, cogsPct: cogsPercent / 100,
+    platformFeePct: platformFeePercent / 100, returnRatePct: returnRate / 100,
+    marketingPct: marketingPercent / 100, daysPerMonth: 30,
+  };
+  const applyInputs = (i: QCommerceInputs) => {
+    setOrdersPerDay(i.ordersPerDay); setAvgOrderValue(i.avgOrderValue); setDeliveryFee(i.deliveryFee);
+    setDarkStoreRent(i.darkStoreRentMonthly); setStaffCount(i.staffCount); setAvgStaffSalary(i.avgStaffSalaryMonthly);
+    setPickingCostPerOrder(i.pickingCostPerOrder); setLastMilePerOrder(i.lastMileCostPerOrder);
+    setCogsPercent(i.cogsPct * 100); setPlatformFeePercent(i.platformFeePct * 100);
+    setReturnRate(i.returnRatePct * 100); setMarketingPercent(i.marketingPct * 100);
+  };
+  useEffect(() => {
+    try {
+      let base = QC_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseQcInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseQcInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ordersPerDay, avgOrderValue, deliveryFee, darkStoreRent, staffCount, avgStaffSalary, pickingCostPerOrder, lastMilePerOrder, cogsPercent, platformFeePercent, returnRate, marketingPercent]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${qcInputsToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
+
   const calculations = useMemo(() => {
-    const ordersPerMonth = ordersPerDay * 30;
-    const grossRevenue = ordersPerMonth * avgOrderValue;
-    const deliveryRevenue = ordersPerMonth * deliveryFee;
-    const totalRevenue = grossRevenue + deliveryRevenue;
+    // Engine (lib/finance/qcommerce.ts). KEY FIX: contribution & break-even
+    // now include returns loss and revenue-linked marketing per order —
+    // legacy omitted both and understated break-even ~9.6× at defaults.
+    const engine = runQCommerce(engineInputs);
+    const ordersPerMonth = engine.ordersPerMonth ?? 0;
+    const totalRevenue = engine.totalRevenue ?? 0;
+    const grossProfit = engine.cm1 ?? 0;
+    const cm1Margin = engine.cm1MarginPct ?? 0;
+    const cm2 = engine.cm2 ?? 0;
+    const cm2Margin = engine.cm2MarginPct ?? 0;
+    const storeEbitda = engine.storeEbitda ?? 0;
+    const ebitdaMargin = engine.storeEbitdaMarginPct ?? 0;
+    const netStoreProfit = engine.netStoreProfit ?? 0;
+    const netMargin = engine.netMarginPct ?? 0;
+    const productCogs = engine.productCogs ?? 0;
+    const platformFees = engine.platformFees ?? 0;
+    const pickingCosts = engine.pickingCosts ?? 0;
+    const lastMileCosts = engine.lastMileCosts ?? 0;
+    const staffCosts = engine.staffCosts ?? 0;
+    const totalFixedCosts = engine.totalFixedCosts ?? 0;
+    const marketingSpend = engine.marketingSpend ?? 0;
+    const revPerOrder = engine.perOrder?.revenue ?? 0;
+    const totalCostPerOrder = ordersPerMonth > 0 ? (totalRevenue - netStoreProfit) / ordersPerMonth : 0;
+    const contributionMarginPerOrder = ordersPerMonth > 0 ? cm2 / ordersPerMonth : 0; // true CM2 per order
+    const breakEvenOrders = engine.breakEvenOrdersPerDay !== null ? engine.breakEvenOrdersPerDay * 30 : Infinity;
 
-    // COGS / Product Cost
-    const productCogs = grossRevenue * (cogsPercent / 100);
-    const platformFees = totalRevenue * (platformFeePercent / 100);
-    const returnsLoss = grossRevenue * (returnRate / 100);
-    const grossProfit = totalRevenue - productCogs - platformFees - returnsLoss;
-    const cm1Margin = (grossProfit / totalRevenue) * 100;
+    const scenarios = engine.scenarios.map((sc) => ({ orders: `${sc.ordersPerDay}/day`, EBITDA: Math.round(sc.storeEbitdaAfterMarketing), Revenue: Math.round(sc.revenue / 1000) }));
 
-    // Variable Delivery Costs
-    const pickingCosts = ordersPerMonth * pickingCostPerOrder;
-    const lastMileCosts = ordersPerMonth * lastMilePerOrder;
-    const cm2 = grossProfit - pickingCosts - lastMileCosts;
-    const cm2Margin = (cm2 / totalRevenue) * 100;
-
-    // Fixed Store Costs
-    const staffCosts = staffCount * avgStaffSalary;
-    const totalFixedCosts = darkStoreRent + staffCosts;
-    const storeEbitda = cm2 - totalFixedCosts;
-    const ebitdaMargin = (storeEbitda / totalRevenue) * 100;
-
-    // Marketing
-    const marketingSpend = totalRevenue * (marketingPercent / 100);
-    const netStoreProfit = storeEbitda - marketingSpend;
-    const netMargin = (netStoreProfit / totalRevenue) * 100;
-
-    // Unit Economics
-    const revPerOrder = totalRevenue / ordersPerMonth;
-    const cogsPerOrder = productCogs / ordersPerMonth;
-    const platformFeePerOrder = platformFees / ordersPerMonth;
-    const variableCostPerOrder = pickingCostPerOrder + lastMilePerOrder;
-    const fixedCostPerOrder = (totalFixedCosts + marketingSpend) / ordersPerMonth;
-    const totalCostPerOrder = cogsPerOrder + platformFeePerOrder + variableCostPerOrder + fixedCostPerOrder;
-    const contributionMarginPerOrder = revPerOrder - cogsPerOrder - platformFeePerOrder - variableCostPerOrder;
-    const breakEvenOrders = contributionMarginPerOrder > 0 ? totalFixedCosts / contributionMarginPerOrder : Infinity;
-
-    // Scenario: Scale to 500, 1000, 2000 orders/day
-    const scenarios = [150, 300, 500, 800, 1200, 1800].map(opd => {
-      const opm = opd * 30;
-      const gRev = opm * avgOrderValue;
-      const dRev = opm * deliveryFee;
-      const rev = gRev + dRev;
-      const cogs = gRev * (cogsPercent / 100);
-      const pf = rev * (platformFeePercent / 100);
-      const ret = gRev * (returnRate / 100);
-      const gp = rev - cogs - pf - ret;
-      const vd = opm * (pickingCostPerOrder + lastMilePerOrder);
-      const cm2s = gp - vd;
-      const ebitda = cm2s - totalFixedCosts - rev * (marketingPercent / 100);
-      return { orders: `${opd}/day`, EBITDA: Math.round(ebitda), Revenue: Math.round(rev / 1000) };
-    });
-
-    // Cost Waterfall
     const waterfall = [
       { name: 'Total Revenue', value: Math.round(totalRevenue / 1000) },
       { name: '- Product COGS', value: -Math.round(productCogs / 1000) },
       { name: '- Platform Fees', value: -Math.round(platformFees / 1000) },
+      { name: '- Returns Loss', value: -Math.round((engine.returnsLoss ?? 0) / 1000) },
       { name: 'CM1 (Gross Profit)', value: Math.round(grossProfit / 1000) },
       { name: '- Picking & Delivery', value: -Math.round((pickingCosts + lastMileCosts) / 1000) },
       { name: 'CM2', value: Math.round(cm2 / 1000) },
@@ -117,7 +128,7 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
       insightText = `Profitable Unit Economics: Congratulations — your dark store generates a healthy ₹${Math.round(netStoreProfit/1000)}K monthly store-level EBITDA at ${ebitdaMargin.toFixed(1)}% margin from ${ordersPerDay} daily orders. Contribution Margin 2 (after picking & delivery) is ₹${contributionMarginPerOrder.toFixed(0)}/order, meaning every incremental order above your breakeven of ${Math.ceil(breakEvenOrders)} monthly orders generates near-pure profit. You are ready to invest in geographic expansion to the next dark store catchment zone.`;
     }
 
-    return { ordersPerMonth, totalRevenue, grossProfit, cm1Margin, cm2, cm2Margin, storeEbitda, ebitdaMargin, netStoreProfit, netMargin, contributionMarginPerOrder, breakEvenOrders, revPerOrder, totalCostPerOrder, scenarios, waterfall, insightText, staffCosts, totalFixedCosts, pickingCosts, lastMileCosts, marketingSpend, platformFees, productCogs };
+    return { ordersPerMonth, totalRevenue, grossProfit, cm1Margin, cm2, cm2Margin, storeEbitda, ebitdaMargin, netStoreProfit, netMargin, contributionMarginPerOrder, breakEvenOrders, revPerOrder, totalCostPerOrder, scenarios, waterfall, insightText, engine, staffCosts, totalFixedCosts, pickingCosts, lastMileCosts, marketingSpend, platformFees, productCogs };
   }, [ordersPerDay, avgOrderValue, deliveryFee, darkStoreRent, staffCount, avgStaffSalary, pickingCostPerOrder, lastMilePerOrder, cogsPercent, platformFeePercent, returnRate, marketingPercent]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
@@ -148,6 +159,18 @@ export default function QCommerceCalc({ slug, isPremiumUser }: { slug: string; i
             </p>
           </div>
         </div>
+
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(QC_DEFAULTS)} className="btn-secondary text-sm">Reset</button>
+          <span className="text-xs text-gray-500">Autosaves locally · Break-even now includes returns + marketing per order — audited fix: legacy claimed ~348 orders/day at defaults; the honest figure is {calculations.engine.breakEvenOrdersPerDay !== null ? `~${Math.ceil(calculations.engine.breakEvenOrdersPerDay)}` : '∞ (contribution ≤ 0)'}.</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
 
         <div className="grid lg:grid-cols-4 gap-8 relative">
           {/* Sidebar */}

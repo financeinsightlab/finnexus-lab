@@ -13,6 +13,7 @@ import {
   AreaChart,
 } from 'recharts';
 import { Brain, Cpu, TrendingUp, DollarSign, Activity, Zap } from 'lucide-react';
+import { runWorkforce, parseWorkforceInputs, workforceToQuery, WORKFORCE_DEFAULTS, type WorkforceInputs } from '@/lib/finance/workforce';
 
 export default function AutonomousWorkforceCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Inputs
@@ -20,6 +21,8 @@ export default function AutonomousWorkforceCalc({ slug, isPremiumUser }: { slug:
   const [avgLoadedSalary, setAvgLoadedSalary] = useState(95000);
   
   const [replacementRatio, setReplacementRatio] = useState(4); // 1 agent replaces 4 humans
+  const [replacementSharePct, setReplacementSharePct] = useState(100); // 100 = legacy (full replacement, unrealistic)
+  const [linkCopied, setLinkCopied] = useState(false);
   const [apiCostPerAgent, setApiCostPerAgent] = useState(12000); // Annual inference/compute cost
   const [upfrontCapex, setUpfrontCapex] = useState(250000); // Build/Integration
   const [severanceMonths, setSeveranceMonths] = useState(3); // Severance package
@@ -44,67 +47,59 @@ export default function AutonomousWorkforceCalc({ slug, isPremiumUser }: { slug:
       localStorage.setItem(key, Date.now().toString());
     } else {
       const msSinceFirstUse = Date.now() - parseInt(firstUsed);
-      if (msSinceFirstUse > 30 * 60 * 1000) setIsLocked(true);
+      if (msSinceFirstUse > 30 * 60 * 1000) setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
     }
   }, [slug, isPremiumUser]);
 
-  // Calculations
+  // Persistence via the tested engine codec.
+  const AUTOSAVE_KEY = 'ka_workforce_autosave_v1';
+  const engineInputs: WorkforceInputs = {
+    currentHeadcount, avgLoadedSalary, replacementSharePct: replacementSharePct / 100,
+    replacementRatio, apiCostPerAgentAnnual: apiCostPerAgent, upfrontCapex, severanceMonths,
+    currentMultiple, projectedMultiple, horizonMonths: 60,
+  };
+  const applyInputs = (i: WorkforceInputs) => {
+    setCurrentHeadcount(i.currentHeadcount); setAvgLoadedSalary(i.avgLoadedSalary);
+    setReplacementSharePct(i.replacementSharePct * 100); setReplacementRatio(i.replacementRatio);
+    setApiCostPerAgent(i.apiCostPerAgentAnnual); setUpfrontCapex(i.upfrontCapex);
+    setSeveranceMonths(i.severanceMonths); setCurrentMultiple(i.currentMultiple); setProjectedMultiple(i.projectedMultiple);
+  };
+  useEffect(() => {
+    try {
+      let base = WORKFORCE_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseWorkforceInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseWorkforceInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentHeadcount, avgLoadedSalary, replacementSharePct, replacementRatio, apiCostPerAgent, upfrontCapex, severanceMonths, currentMultiple, projectedMultiple]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${workforceToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  // Calculations (delegated to lib/finance/workforce.ts)
   const calculations = useMemo(() => {
-    // 1. Legacy Human Baseline Calculate
-    const legacyAnnualRunRate = currentHeadcount * avgLoadedSalary;
-    
-    // 2. Swarm Economics
-    const requiredAgents = Math.ceil(currentHeadcount / replacementRatio);
-    const swarmAnnualRunRate = requiredAgents * apiCostPerAgent;
-    
-    // 3. Restructuring Hit
-    const severanceCostPerEmployee = (avgLoadedSalary / 12) * severanceMonths;
-    const totalSeverance = currentHeadcount * severanceCostPerEmployee;
-    const totalRestructuringCapex = upfrontCapex + totalSeverance;
-
-    // 4. Financial Arbitrage
-    const annualEbitdaExpansion = legacyAnnualRunRate - swarmAnnualRunRate;
-    const grossMarginExpansion = ((legacyAnnualRunRate - swarmAnnualRunRate) / legacyAnnualRunRate) * 100;
-
-    // 5. Valuation Re-rating: Enterprise Value Delta from EBITDA Expansion
-    const grossValueCreation = annualEbitdaExpansion > 0 ? annualEbitdaExpansion * projectedMultiple : 0;
-    const valueCreation = Math.max(0, grossValueCreation - totalRestructuringCapex);
-
-    const paybackMonths = annualEbitdaExpansion > 0 ? (totalRestructuringCapex / (annualEbitdaExpansion / 12)) : Infinity;
-
-    // Time-series mapping (60 months / 5 years)
-    const chartData = [];
-    let cumLegacyCost = 0;
-    let cumSwarmCost = totalRestructuringCapex; // Month 0 shock
-    
-    for (let m = 0; m <= 60; m+=3) { // Quarterly visualization essentially, plotted by month
-       if (m === 0) {
-         chartData.push({ month: `Mo 0`, legacyCost: 0, swarmCost: totalRestructuringCapex / 1000000 });
-       } else {
-         cumLegacyCost += (legacyAnnualRunRate / 12) * 3;
-         cumSwarmCost += (swarmAnnualRunRate / 12) * 3;
-         chartData.push({ 
-           month: `Mo ${m}`, 
-           legacyCost: cumLegacyCost / 1000000, 
-           swarmCost: cumSwarmCost / 1000000 
-         });
-       }
-    }
-
+    const engine = runWorkforce(engineInputs);
     return {
-      legacyAnnualRunRate,
-      swarmAnnualRunRate,
-      requiredAgents,
-      totalRestructuringCapex,
-      annualEbitdaExpansion,
-      grossMarginExpansion,
-      valueCreation,
-      paybackMonths,
-      chartData
+      legacyAnnualRunRate: engine.legacyAnnualRunRate ?? 0,
+      swarmAnnualRunRate: engine.swarmAnnualRunRate ?? 0,
+      requiredAgents: engine.requiredAgents ?? 0,
+      totalRestructuringCapex: engine.totalRestructuringCost ?? 0,
+      annualEbitdaExpansion: engine.annualCostSaving ?? 0,
+      grossMarginExpansion: engine.costReductionPct ?? 0, // honestly a cost-reduction %, not margin expansion
+      valueCreation: engine.valueAtProjectedMultiple ?? 0,
+      paybackMonths: engine.paybackMonths ?? Infinity,
+      chartData: engine.series.map((r) => ({ month: `Mo ${r.month}`, legacyCost: r.cumulativeLegacyCost / 1000000, swarmCost: r.cumulativeNewCost / 1000000 })),
+      engine,
     };
-
-  }, [currentHeadcount, avgLoadedSalary, replacementRatio, apiCostPerAgent, upfrontCapex, severanceMonths, currentMultiple, projectedMultiple]);
-
+  }, [currentHeadcount, avgLoadedSalary, replacementSharePct, replacementRatio, apiCostPerAgent, upfrontCapex, severanceMonths, currentMultiple, projectedMultiple]);
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -152,6 +147,18 @@ export default function AutonomousWorkforceCalc({ slug, isPremiumUser }: { slug:
             </p>
           </div>
         </div>
+
+        <div className="flex flex-wrap items-center gap-3 mb-4 relative z-10">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(WORKFORCE_DEFAULTS)} className="btn-secondary text-sm">Reset</button>
+          <span className="text-xs text-content-muted">Autosaves locally · Current multiple now actually used (it was a dead input): value at {currentMultiple}× = ${(calculations.engine.valueAtCurrentMultiple ?? 0).toLocaleString()} vs ${(calculations.engine.valueAtProjectedMultiple ?? 0).toLocaleString()} at {projectedMultiple}×.</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200 relative z-10"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200 relative z-10"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
 
         <div className="grid lg:grid-cols-12 gap-8 relative z-10">
           
@@ -208,6 +215,10 @@ export default function AutonomousWorkforceCalc({ slug, isPremiumUser }: { slug:
                     <div>
                       <label className="block text-xs text-content-secondary mb-1">Human Severance (Months)</label>
                       <input type="number" className="w-full bg-surface-muted border border-border rounded-lg p-2 px-3 text-content-primary font-mono text-sm outline-none" value={severanceMonths} onChange={e => setSeveranceMonths(Number(e.target.value))} />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold text-content-muted uppercase tracking-wider mb-2">Share of Headcount Actually Replaced %</label>
+                      <input type="number" className="w-full bg-surface-muted border border-border rounded-lg p-2 px-3 text-content-primary font-mono text-sm outline-none" value={replacementSharePct} onChange={e => setReplacementSharePct(Number(e.target.value))} />
                     </div>
                     <div className="grid grid-cols-2 gap-2">
                        <div>

@@ -6,6 +6,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend
 } from 'recharts';
+import { runThreeStatement, parseTsInputs, tsInputsToQuery, TS_DEFAULTS, type ThreeStatementInputs } from '@/lib/finance/three-statement';
 
 export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Income Statement Inputs
@@ -24,6 +25,10 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
   // Capital Expenditure
   const [capexPercent, setCapexPercent] = useState(5);
   const [depreciationYears, setDepreciationYears] = useState(5);
+  const [dioDays, setDioDays] = useState(0); // inventory days (0 = receivables-only, legacy)
+  const [dpoDays, setDpoDays] = useState(0); // payables days
+  const [debtRepayPct, setDebtRepayPct] = useState(0); // % of opening debt repaid yearly
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const [isLocked, setIsLocked] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
@@ -31,126 +36,65 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
   const [loading, setLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<'pl' | 'bs' | 'cf'>('pl');
 
+  // Access is enforced server-side (Paywall + entitlements); the legacy
+  // localStorage "30-minute trial" gate is removed — it granted nothing and
+  // could never be a real entitlement. isLocked stays false.
+  const AUTOSAVE_KEY = 'ka_ts_autosave_v1';
+  const engineInputs: ThreeStatementInputs = {
+    baseRevenue, revenueGrowth: revenueGrowth / 100, cogsPct: cogsPercent / 100,
+    opexPct: opexPercent / 100, taxRate: taxRate / 100, initialCash, initialDebt,
+    openingPpne: TS_DEFAULTS.openingPpne, dsoDays: dsodays, dioDays, dpoDays,
+    interestRate: interestRate / 100, capexPct: capexPercent / 100,
+    depreciationYears, debtRepaymentPct: debtRepayPct / 100, years: 5,
+  };
+  const applyInputs = (i: ThreeStatementInputs) => {
+    setBaseRevenue(i.baseRevenue); setRevenueGrowth(i.revenueGrowth * 100);
+    setCogsPercent(i.cogsPct * 100); setOpexPercent(i.opexPct * 100); setTaxRate(i.taxRate * 100);
+    setInitialCash(i.initialCash); setInitialDebt(i.initialDebt); setDsoDays(i.dsoDays);
+    setDioDays(i.dioDays); setDpoDays(i.dpoDays); setInterestRate(i.interestRate * 100);
+    setCapexPercent(i.capexPct * 100); setDepreciationYears(i.depreciationYears);
+    setDebtRepayPct(i.debtRepaymentPct * 100);
+  };
+  useEffect(() => { // restore: shared link wins over autosave
+    try {
+      let base = TS_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseTsInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseTsInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   useEffect(() => {
-    if (isPremiumUser) { setIsLocked(false); return; }
-    const key = `used_tool_${slug}`;
-    const firstUsed = localStorage.getItem(key);
-    if (!firstUsed) {
-      localStorage.setItem(key, Date.now().toString());
-    } else {
-      if (Date.now() - parseInt(firstUsed) > 30 * 60 * 1000) setIsLocked(true);
-    }
-  }, [slug, isPremiumUser]);
-
-  useEffect(() => {
-    if (isPremiumUser || localStorage.getItem(`unlocked_${slug}`)) setIsLocked(false);
-  }, [slug, isPremiumUser]);
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [baseRevenue, revenueGrowth, cogsPercent, opexPercent, taxRate, initialCash, initialDebt, dsodays, dioDays, dpoDays, interestRate, capexPercent, depreciationYears, debtRepayPct]);
+  const copyShareLink = async () => {
+    const url = `${window.location.origin}${window.location.pathname}?${tsInputsToQuery(engineInputs)}`;
+    try { await navigator.clipboard.writeText(url); } catch { /* clipboard blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
 
   const calculations = useMemo(() => {
-    const years = [1, 2, 3, 4, 5];
-    const model: Array<{
-      year: string;
-      revenue: number; cogs: number; grossProfit: number; grossMargin: number;
-      opex: number; ebitda: number; ebitdaMargin: number;
-      capex: number; depreciation: number; ebit: number;
-      interestExpense: number; ebt: number; taxes: number; netIncome: number; netMargin: number;
-      // Balance Sheet
-      accountsReceivable: number; ppne: number; totalAssets: number;
-      totalDebt: number; equity: number; totalLiabEquity: number; balanceDiff: number;
-      // Cash Flow
-      beginningCash: number; deltaAR: number;
-      cashFromOps: number; cashFromInvesting: number; cashFromFinancing: number;
-      endingCash: number;
-    }> = [];
-
-    let prevCash = initialCash;
-    let prevDebt = initialDebt;
-    // Year 0 base accounts receivable and equity baseline
-    const initialAR = baseRevenue * (dsodays / 365);
-    let cumulativeEquity = (initialCash + initialAR) - initialDebt;
-
-    // Straight-line depreciation: track each year's capex with useful life
-    const capitalHistory: number[] = [];
-    let cumulativeGrossCapex = 0;
-    let cumulativeAccumDep = 0;
-
-    for (let i = 0; i < 5; i++) {
-      const year = years[i];
-      const revenue = baseRevenue * Math.pow(1 + revenueGrowth / 100, year);
-      const cogs = revenue * (cogsPercent / 100);
-      const grossProfit = revenue - cogs;
-      const grossMargin = (grossProfit / revenue) * 100;
-
-      const opex = revenue * (opexPercent / 100);
-      const ebitda = grossProfit - opex;
-      const ebitdaMargin = (ebitda / revenue) * 100;
-
-      const capex = revenue * (capexPercent / 100);
-      capitalHistory.push(capex);
-      cumulativeGrossCapex += capex;
-
-      // Straight-line depreciation: each period amortises capex / useful life
-      const depreciation = capitalHistory
-        .slice(0, i + 1)
-        .reduce((sum, c) => sum + c / depreciationYears, 0);
-      cumulativeAccumDep += depreciation;
-
-      const ebit = ebitda - depreciation;
-      const interestExpense = prevDebt * (interestRate / 100);
-      const ebt = ebit - interestExpense;
-      const taxes = Math.max(0, ebt * (taxRate / 100));
-      const netIncome = ebt - taxes;
-      const netMargin = (netIncome / revenue) * 100;
-
-      // Working capital: Accounts Receivable
-      const accountsReceivable = revenue * (dsodays / 365);
-      const prevPeriodAR = i > 0 ? model[i - 1].accountsReceivable : initialAR;
-      const deltaAR = accountsReceivable - prevPeriodAR;
-
-      // Net PP&E = Gross Capex - Accumulated Depreciation
-      const ppne = Math.max(0, cumulativeGrossCapex - cumulativeAccumDep);
-
-      // Cash Flow Statement (indirect method)
-      const cashFromOps = netIncome + depreciation - deltaAR;
-      const cashFromInvesting = -capex;
-      const cashFromFinancing = 0; // simplified — debt balance constant
-      const endingCash = prevCash + cashFromOps + cashFromInvesting + cashFromFinancing;
-
-      // Balance Sheet at Period End (Assets = Cash + AR + Net PP&E)
-      const totalAssets = endingCash + accountsReceivable + ppne;
-      const totalDebt = prevDebt;
-      // Retained Earnings roll-forward: Equity_t = Equity_{t-1} + NetIncome_t
-      cumulativeEquity += netIncome;
-      const equity = cumulativeEquity;
-      const totalLiabEquity = totalDebt + equity;
-      const balanceDiff = Math.abs(totalAssets - totalLiabEquity);
-
-      const periodBeginningCash = prevCash;
-      prevCash = endingCash;
-
-      model.push({
-        year: `Year ${year}`,
-        revenue: Math.round(revenue), cogs: Math.round(cogs),
-        grossProfit: Math.round(grossProfit), grossMargin: parseFloat(grossMargin.toFixed(1)),
-        opex: Math.round(opex), ebitda: Math.round(ebitda), ebitdaMargin: parseFloat(ebitdaMargin.toFixed(1)),
-        capex: Math.round(capex), depreciation: Math.round(depreciation),
-        ebit: Math.round(ebit), interestExpense: Math.round(interestExpense),
-        ebt: Math.round(ebt), taxes: Math.round(taxes),
-        netIncome: Math.round(netIncome), netMargin: parseFloat(netMargin.toFixed(1)),
-        accountsReceivable: Math.round(accountsReceivable),
-        ppne: Math.round(ppne),
-        totalAssets: Math.round(totalAssets), totalDebt: Math.round(totalDebt),
-        equity: Math.round(equity),
-        totalLiabEquity: Math.round(totalLiabEquity),
-        balanceDiff: Math.round(balanceDiff),
-        beginningCash: Math.round(periodBeginningCash),
-        deltaAR: Math.round(deltaAR),
-        cashFromOps: Math.round(cashFromOps),
-        cashFromInvesting: Math.round(cashFromInvesting),
-        cashFromFinancing: Math.round(cashFromFinancing),
-        endingCash: Math.round(endingCash),
-      });
-    }
+    // Maths lives in lib/finance/three-statement.ts (tested). This maps the
+    // engine result onto the legacy row shape the tables/charts below use.
+    const engine = runThreeStatement(engineInputs);
+    const R = (n: number) => Math.round(n);
+    const model = engine.years.map((y) => ({
+      year: `Year ${y.year}`, revenue: R(y.revenue), cogs: R(y.cogs),
+      grossProfit: R(y.grossProfit), grossMargin: parseFloat(y.grossMarginPct.toFixed(1)),
+      opex: R(y.opex), ebitda: R(y.ebitda), ebitdaMargin: parseFloat(y.ebitdaMarginPct.toFixed(1)),
+      capex: R(y.capex), depreciation: R(y.depreciation), ebit: R(y.ebit),
+      interestExpense: R(y.interestExpense), ebt: R(y.ebt), taxes: R(y.taxes),
+      netIncome: R(y.netIncome), netMargin: parseFloat(y.netMarginPct.toFixed(1)),
+      accountsReceivable: R(y.accountsReceivable), inventory: R(y.inventory), accountsPayable: R(y.accountsPayable),
+      ppne: R(y.ppne), totalAssets: R(y.totalAssets), totalDebt: R(y.totalDebt),
+      equity: R(y.equity), totalLiabEquity: R(y.totalLiabEquity), balanceDiff: R(y.balanceDifference),
+      beginningCash: R(y.beginningCash), deltaAR: R(y.deltaWorkingCapital),
+      cashFromOps: R(y.cashFromOps), cashFromInvesting: R(y.cashFromInvesting),
+      cashFromFinancing: R(y.cashFromFinancing), endingCash: R(y.endingCash),
+    }));
 
     const chartData = model.map(m => ({
       name: m.year,
@@ -160,9 +104,11 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
       'Net Income': m.netIncome,
     }));
 
-    const yr5 = model[4];
+    const yr5 = model[4] ?? { netMargin: 0, ebitdaMargin: 0, interestExpense: 0, revenue: 0, cashFromOps: 0, capex: 0 };
     let insightText = '';
-    if (yr5.netMargin < 0) {
+    if (engine.errors.length > 0) {
+      insightText = 'Fix the input problems flagged above to run the model.';
+    } else if (yr5.netMargin < 0) {
       insightText = `Loss-Making Structure: Despite ${revenueGrowth}% growth, your company will remain unprofitable in Year 5 with a Net Margin of ${yr5.netMargin.toFixed(1)}%. The combined weight of COGS (${cogsPercent}%) and OpEx (${opexPercent}%) represents ${cogsPercent + opexPercent}% of Revenue—you are spending $${((cogsPercent + opexPercent) / 100).toFixed(2)} for every $1 earned. Immediately cut OpEx or raise pricing to reduce COGS pressure. Avoid further debt drawdown until you achieve at least 10%+ EBITDA margin.`;
     } else if (yr5.ebitdaMargin < 15) {
       insightText = `Margin Compression Warning: Year 5 EBITDA Margin of ${yr5.ebitdaMargin.toFixed(1)}% is below the 15% institutional investment threshold. With $${(yr5.interestExpense/1e6).toFixed(2)}M in annual interest costs from your $${(initialDebt/1e6).toFixed(1)}M debt, your P&L has very little buffer against revenue volatility. Consider accelerating debt paydown with Year 1-3 operating cash flows to reduce your interest burden before Year 4 growth scaling.`;
@@ -170,8 +116,8 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
       insightText = `Healthy 3-Statement Architecture: Your 5-year model projects a compounding revenue trajectory from $${(baseRevenue/1e6).toFixed(1)}M to $${(yr5.revenue/1e6).toFixed(1)}M. The Year 5 EBITDA margin of ${yr5.ebitdaMargin.toFixed(1)}% is strong for a growth-stage company. Cash from Operations ($${(yr5.cashFromOps/1e6).toFixed(1)}M in Year 5) substantially covers CapEx ($${(yr5.capex/1e6).toFixed(1)}M), indicating the business generates true free cash flow—a core prerequisite for institutional debt or equity financing.`;
     }
 
-    return { model, chartData, insightText };
-  }, [baseRevenue, revenueGrowth, cogsPercent, opexPercent, taxRate, initialCash, initialDebt, dsodays, interestRate, capexPercent, depreciationYears]);
+    return { model, chartData, insightText, engine };
+  }, [baseRevenue, revenueGrowth, cogsPercent, opexPercent, taxRate, initialCash, initialDebt, dsodays, dioDays, dpoDays, interestRate, capexPercent, depreciationYears, debtRepayPct]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -347,6 +293,21 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(TS_DEFAULTS)} className="btn-secondary text-sm">Reset model</button>
+          {calculations.engine.dcfHandoff && (
+            <a className="btn-secondary text-sm" href={`/tools/dcf-valuation-model?${new URLSearchParams(Object.entries(calculations.engine.dcfHandoff).filter(([, v]) => v !== undefined).map(([k, v]) => [k, String(v)])).toString()}`}>Value these drivers in the DCF →</a>
+          )}
+          <span className="text-xs text-gray-500">Autosaves locally · Depreciation now stops at end of each vintage&apos;s asset life (audited fix)</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
+
         <div className="grid lg:grid-cols-4 gap-8 relative">
           {/* Sidebar */}
           <div className="lg:col-span-1 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 h-fit sticky top-24 z-20 space-y-4">
@@ -383,6 +344,9 @@ export default function ThreeStatementCalc({ slug, isPremiumUser }: { slug: stri
                 { label: 'Interest Rate on Debt %', val: interestRate, set: setInterestRate, suffix: '%' },
                 { label: 'CapEx as % of Revenue', val: capexPercent, set: setCapexPercent, suffix: '%' },
                 { label: 'Asset Life (Depreciation Yrs)', val: depreciationYears, set: setDepreciationYears },
+                { label: 'DIO (Inventory Days, 0 = none)', val: dioDays, set: setDioDays },
+                { label: 'DPO (Payables Days, 0 = none)', val: dpoDays, set: setDpoDays },
+                { label: 'Debt Repaid per Year %', val: debtRepayPct, set: setDebtRepayPct, suffix: '%' },
               ].map(({ label, val, set, prefix, suffix }) => (
                 <div key={label}>
                   <label className="block text-xs font-medium text-gray-600 mb-1">{label}</label>

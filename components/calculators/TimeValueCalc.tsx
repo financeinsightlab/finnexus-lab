@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import { computeEmi, computePvFv, gordonValue } from '@/lib/finance/tvm';
 
 /* PGDM Finance Lab — Time-Value Machine
    Matches lecture: F06 · Time Value of Money & WACC
@@ -71,37 +72,56 @@ export default function TimeValueCalc() {
   const [waccG, setWaccG] = useState(12);
   const [g, setG] = useState(5);
 
-  // EMI calculations
-  const emiCalc = useMemo(() => {
-    const rM = annualRate / 100 / 12;
-    const nM = years * 12;
-    const emi = rM > 0 ? (principal * rM) / (1 - Math.pow(1 + rM, -nM)) : principal / nM;
-    const totalPay = emi * nM;
-    const interest = totalPay - principal;
+  // Persistence across all four modes (autosave + share links).
+  const AUTOSAVE_KEY = 'ka_tvm_autosave_v1';
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      const fromUrl = new URLSearchParams(window.location.search);
+      const read = (k: string): number | null => {
+        const rawU = fromUrl.get(k); const nU = rawU !== null ? Number(rawU) : NaN;
+        if (Number.isFinite(nU)) return nU;
+        if (saved) { const v = (JSON.parse(saved) as Record<string, number>)[k]; if (Number.isFinite(v)) return v; }
+        return null;
+      };
+      const p0 = read('principal'); if (p0 !== null) setPrincipal(p0);
+      const a0 = read('annualRate'); if (a0 !== null) setAnnualRate(a0);
+      const y0 = read('years'); if (y0 !== null) setYears(y0);
+      const c0 = read('cash'); if (c0 !== null) setCash(c0);
+      const d0 = read('discRate'); if (d0 !== null) setDiscRate(d0);
+      const n0 = read('periods'); if (n0 !== null) setPeriods(n0);
+      const cf = read('c1'); if (cf !== null) setC1(cf);
+      const w0 = read('waccG'); if (w0 !== null) setWaccG(w0);
+      const g0 = read('g'); if (g0 !== null) setG(g0);
+    } catch { /* keep defaults */ }
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ principal, annualRate, years, cash, discRate, periods, c1, waccG, g })); } catch { /* private mode */ }
+  }, [principal, annualRate, years, cash, discRate, periods, c1, waccG, g]);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const copyShareLink = async () => {
+    const q = new URLSearchParams({ principal: String(principal), annualRate: String(annualRate), years: String(years), cash: String(cash), discRate: String(discRate), periods: String(periods), c1: String(c1), waccG: String(waccG), g: String(g) });
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${q.toString()}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
 
-    // Amortization first 6 months
-    const amort: { m: number; int: number; prin: number; balance: number }[] = [];
-    let bal = principal;
-    for (let k = 0; k < 6; k++) {
-      const intK = bal * rM;
-      const prinK = emi - intK;
-      amort.push({ m: k + 1, int: intK, prin: prinK, balance: bal - prinK });
-      bal -= prinK;
-    }
-    return { rM, nM, emi, totalPay, interest, amort };
-  }, [principal, annualRate, years]);
+  // EMI calculations — delegated to the tested engine (lib/finance/tvm.ts).
+  const emiEngine = useMemo(() => computeEmi(principal, annualRate / 100, years), [principal, annualRate, years]);
+  const emiCalc = {
+    rM: emiEngine.monthlyRate ?? 0, nM: emiEngine.months ?? 0, emi: emiEngine.emi ?? 0,
+    totalPay: emiEngine.totalPayment ?? 0, interest: emiEngine.totalInterest ?? 0,
+    amort: emiEngine.schedule.slice(0, 6).map((row) => ({ m: row.month, int: row.interest, prin: row.principal, balance: row.balance })),
+  };
 
   // PV / FV calculations
-  const tvmCalc = useMemo(() => {
-    const r = discRate / 100;
-    const pv = cash / Math.pow(1 + r, periods);
-    const fv = cash * Math.pow(1 + r, periods);
-    const annFactor = r > 0 ? (1 - Math.pow(1 + r, -periods)) / r : periods;
-    return { pv, fv, annFactor };
-  }, [cash, discRate, periods]);
+  const tvmEngine = useMemo(() => computePvFv(cash, discRate / 100, periods), [cash, discRate, periods]);
+  const tvmCalc = { pv: tvmEngine.presentValue ?? 0, fv: tvmEngine.futureValue ?? 0, annFactor: tvmEngine.annuityFactor ?? 0 };
 
   // Gordon Growth Model
-  const gord = waccG > g ? c1 / ((waccG - g) / 100) : NaN;
+  const gordEngine = gordonValue(c1, waccG / 100, g / 100);
+  const gord = gordEngine.value ?? NaN;
+
+  const engineErrors = [...emiEngine.errors, ...tvmEngine.errors, ...(gordEngine.error ? [gordEngine.error] : [])];
 
   const activeMode = MODES.find(m => m.id === mode)!;
 
@@ -143,6 +163,14 @@ export default function TimeValueCalc() {
       <div className="rounded-xl bg-surface-muted border border-border px-4 py-2 text-center">
         <p className="text-[10px] text-content-muted font-mono">{activeMode.formula}</p>
       </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-3">
+        <button type="button" onClick={copyShareLink} className="text-xs font-bold px-4 py-2 rounded-xl border border-border bg-surface-raised hover:border-brand transition-colors text-content-primary">{linkCopied ? '✓ Link Copied' : '🔗 Copy Share Link'}</button>
+        <span className="text-xs text-content-muted">Inputs autosave locally · full amortisation schedule computed (first 6 rows shown)</span>
+      </div>
+      {engineErrors.length > 0 && (
+        <div role="alert" className="rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{engineErrors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+      )}
 
       {/* ── EMI MODE ── */}
       {mode === 'emi' && (

@@ -12,6 +12,7 @@ import {
   Legend,
   Cell
 } from 'recharts';
+import { runCca, parseCcaInputs, ccaInputsToQuery, CCA_DEFAULTS, type CcaInputs } from '@/lib/finance/cca';
 
 export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Target Company Inputs
@@ -43,6 +44,7 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
   const [showEmailGate, setShowEmailGate] = useState(false);
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   // Paywall / Gating Logic (Free Use Once)
   useEffect(() => {
@@ -59,66 +61,74 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
     } else {
       const msSinceFirstUse = Date.now() - parseInt(firstUsed);
       if (msSinceFirstUse > 30 * 60 * 1000) { 
-        setIsLocked(true);
+        setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
       }
     }
   }, [slug, isPremiumUser]);
 
-  // Calculations
+  // Persistence via the tested engine codec.
+  const AUTOSAVE_KEY = 'ka_cca_autosave_v1';
+  const engineInputs: CcaInputs = {
+    peers: [
+      { name: 'Competitor A', marketCap: peerAMc, netDebt: peerADebt, revenue: peerARev, ebitda: peerAEbitda },
+      { name: 'Competitor B', marketCap: peerBMc, netDebt: peerBDebt, revenue: peerBRev, ebitda: peerBEbitda },
+      { name: 'Competitor C', marketCap: peerCMc, netDebt: peerCDebt, revenue: peerCRev, ebitda: peerCEbitda },
+    ],
+    targetRevenue: targetRev, targetEbitda, targetNetDebt, targetShares, dlom: privateDiscount / 100,
+  };
+  const applyInputs = (i: CcaInputs) => {
+    setTargetRev(i.targetRevenue); setTargetEbitda(i.targetEbitda); setTargetNetDebt(i.targetNetDebt);
+    setTargetShares(i.targetShares); setPrivateDiscount(i.dlom * 100);
+    const [a, b, c] = i.peers;
+    if (a) { setPeerAMc(a.marketCap); setPeerADebt(a.netDebt); setPeerARev(a.revenue); setPeerAEbitda(a.ebitda); }
+    if (b) { setPeerBMc(b.marketCap); setPeerBDebt(b.netDebt); setPeerBRev(b.revenue); setPeerBEbitda(b.ebitda); }
+    if (c) { setPeerCMc(c.marketCap); setPeerCDebt(c.netDebt); setPeerCRev(c.revenue); setPeerCEbitda(c.ebitda); }
+  };
+  useEffect(() => {
+    try {
+      let base = CCA_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseCcaInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseCcaInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [targetRev, targetEbitda, targetNetDebt, targetShares, privateDiscount, peerAMc, peerADebt, peerARev, peerAEbitda, peerBMc, peerBDebt, peerBRev, peerBEbitda, peerCMc, peerCDebt, peerCRev, peerCEbitda]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${ccaInputsToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  // Calculations (delegated to lib/finance/cca.ts — proper even-count median)
   const calculations = useMemo(() => {
-    // Helper to calculate EV and Multiples securely
-    // Helper to calculate EV and Multiples securely
-    const calcPeer = (mc: number, netDebt: number, rev: number, ebitda: number) => {
-      const ev = mc + netDebt;
-      const evRev = rev > 0 ? ev / rev : 0;
-      const evEbitda = ebitda > 0 ? ev / ebitda : NaN;
-      return { ev, evRev, evEbitda };
-    };
+    const engine = runCca(engineInputs);
+    const medianEvRev = engine.evRevenueStats.median ?? 0;
+    const medianEvEbitda = engine.evEbitdaStats.median ?? 0;
+    const meanEvRev = engine.evRevenueStats.mean ?? 0;
+    const meanEvEbitda = engine.evEbitdaStats.mean ?? 0;
+    const blendedEv = engine.blendedEv ?? (engine.evFromRevenue ?? 0);
+    const discountedEv = blendedEv;
+    const preDiscountEquity = engine.preDiscountEquity ?? 0;
+    const discountAmount = engine.discountAmount ?? 0;
+    const impliedEquityValue = engine.impliedEquityValue ?? 0;
+    const impliedSharePrice = engine.impliedSharePrice ?? 0;
+    const evEbitdaArray = engine.evEbitdaStats.values;
 
-    const peerA = calcPeer(peerAMc, peerADebt, peerARev, peerAEbitda);
-    const peerB = calcPeer(peerBMc, peerBDebt, peerBRev, peerBEbitda);
-    const peerC = calcPeer(peerCMc, peerCDebt, peerCRev, peerCEbitda);
-
-    const evRevArray = [peerA.evRev, peerB.evRev, peerC.evRev].filter(x => Number.isFinite(x) && x > 0).sort((a,b)=>a-b);
-    const evEbitdaArray = [peerA.evEbitda, peerB.evEbitda, peerC.evEbitda].filter(x => Number.isFinite(x) && x > 0).sort((a,b)=>a-b);
-
-    const meanEvRev = evRevArray.length > 0 ? evRevArray.reduce((a,b)=>a+b, 0) / evRevArray.length : 0;
-    const meanEvEbitda = evEbitdaArray.length > 0 ? evEbitdaArray.reduce((a,b)=>a+b, 0) / evEbitdaArray.length : 0;
-    
-    // Median calculation
-    const medianEvRev = evRevArray.length > 0 ? evRevArray[Math.floor(evRevArray.length / 2)] : 0;
-    const medianEvEbitda = evEbitdaArray.length > 0 ? evEbitdaArray[Math.floor(evEbitdaArray.length / 2)] : 0;
-
-    // Valuation Output
-    const targetEvFromRev = targetRev * medianEvRev;
-    const targetEvFromEbitda = medianEvEbitda > 0 ? targetEbitda * medianEvEbitda : targetEvFromRev;
-    
-    // Blended EV (Equal-weighted between Rev and EBITDA when EBITDA is positive)
-    const blendedEv = medianEvEbitda > 0 ? (targetEvFromRev + targetEvFromEbitda) / 2 : targetEvFromRev;
-    
-    // Equity Bridge: Pre-discount Equity = Enterprise Value − Net Debt
-    const preDiscountEquity = blendedEv - targetNetDebt;
-
-    // DLOM (Discount for Lack of Marketability) applies strictly to Equity Value in corporate finance
-    const discountAmount = preDiscountEquity > 0 ? preDiscountEquity * (privateDiscount / 100) : 0;
-    const impliedEquityValue = Math.max(0, preDiscountEquity - discountAmount);
-    const impliedSharePrice = targetShares > 0 ? impliedEquityValue / targetShares : 0;
-    const discountedEv = blendedEv; // Enterprise value is operational
-
-    // Charting Data
     const chartData = [
-      { name: 'Peer A (Fast Growth)', evEbitda: Number.isFinite(peerA.evEbitda) ? Number(peerA.evEbitda.toFixed(1)) : 0, evRev: Number(peerA.evRev.toFixed(1)) },
-      { name: 'Peer B (Average Match)', evEbitda: Number.isFinite(peerB.evEbitda) ? Number(peerB.evEbitda.toFixed(1)) : 0, evRev: Number(peerB.evRev.toFixed(1)) },
-      { name: 'Peer C (Laggard)', evEbitda: Number.isFinite(peerC.evEbitda) ? Number(peerC.evEbitda.toFixed(1)) : 0, evRev: Number(peerC.evRev.toFixed(1)) },
-      { name: 'Median Benchmark', evEbitda: Number(medianEvEbitda.toFixed(1)), evRev: Number(medianEvRev.toFixed(1)) }
+      ...engine.peerStats.map((p) => ({ name: p.name, evEbitda: p.evEbitda !== null ? Number(p.evEbitda.toFixed(1)) : 0, evRev: p.evRevenue !== null ? Number(p.evRevenue.toFixed(1)) : 0 })),
+      { name: 'Median Benchmark', evEbitda: Number(medianEvEbitda.toFixed(1)), evRev: Number(medianEvRev.toFixed(1)) },
     ];
 
-    // Excel Matrix Rows
-    const excelComps = [
-      { name: 'Competitor A', mc: peerAMc, debt: peerADebt, ev: peerA.ev, rev: peerARev, ebitda: peerAEbitda, evRev: peerA.evRev, evEbitda: peerA.evEbitda },
-      { name: 'Competitor B', mc: peerBMc, debt: peerBDebt, ev: peerB.ev, rev: peerBRev, ebitda: peerBEbitda, evRev: peerB.evRev, evEbitda: peerB.evEbitda },
-      { name: 'Competitor C', mc: peerCMc, debt: peerCDebt, ev: peerC.ev, rev: peerCRev, ebitda: peerCEbitda, evRev: peerC.evRev, evEbitda: peerC.evEbitda },
-    ];
+    const excelComps = engine.peerStats.map((p, idx) => ({
+      name: p.name, mc: engineInputs.peers[idx].marketCap, debt: engineInputs.peers[idx].netDebt,
+      ev: p.enterpriseValue, rev: engineInputs.peers[idx].revenue, ebitda: engineInputs.peers[idx].ebitda,
+      evRev: p.evRevenue ?? NaN, evEbitda: p.evEbitda ?? NaN,
+    }));
 
     // Analyst Summary
     let insightText = '';
@@ -143,9 +153,10 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
       discountedEv,
       impliedEquityValue,
       impliedSharePrice,
-      chartData, 
+      chartData,
       insightText,
-      excelComps
+      excelComps,
+      engine
     };
   }, [targetRev, targetEbitda, targetNetDebt, targetShares, privateDiscount, peerAMc, peerADebt, peerARev, peerAEbitda, peerBMc, peerBDebt, peerBRev, peerBEbitda, peerCMc, peerCDebt, peerCRev, peerCEbitda]);
 
@@ -207,6 +218,18 @@ export default function CcaValuationCalc({ slug, isPremiumUser }: { slug: string
             </p>
           </div>
         </div>
+
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(CCA_DEFAULTS)} className="btn-secondary text-sm">Reset</button>
+          <span className="text-xs text-gray-500">Autosaves locally · True median (audited fix){calculations.engine.evRangeEbitda ? ` · EV/EBITDA football field: $${calculations.engine.evRangeEbitda.low.toFixed(0)}M–$${calculations.engine.evRangeEbitda.high.toFixed(0)}M EV` : ''}</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
 
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
