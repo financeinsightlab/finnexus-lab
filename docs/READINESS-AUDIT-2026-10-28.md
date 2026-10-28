@@ -172,3 +172,15 @@ and its staging checklist simultaneously clears H-1/H-2/H-3. The DCF convention 
 should ride along in the same window since it touches the flagship tool's trust story.
 
 *Audit ends. No fixes implemented — awaiting review and prioritisation.*
+
+---
+
+## Addendum — 2026-10-28, post-audit CI verification (PR #12)
+
+After this report was issued, the branch was committed, pushed, and opened as PR #12 against `main`. The audit's Blocker **B-1 is now partially resolved**, and **C-0 partially improved** — updating the record:
+
+- GitHub Actions run `40724346654` passed **every step**: Prisma client generation, `tsc --noEmit` (clean, on a fresh client), ESLint, Vitest 384/384, production `next build`, and Lighthouse budgets. A green type-check and production build have now actually been observed — the sandbox's stale-client ambiguity is closed.
+- Reaching green required three type-only fixes: typing the `lib/prisma.ts` export as `PrismaClient` (its `any` annotation had been cascading implicit-any errors across the codebase — this also confirms CI type-check could not have been green at `main`'s `d6c6e03` either), and two casts on the new "published vs draft" Prisma `groupBy` in `app/admin/page.tsx` (mirroring `app/admin/cms/page.tsx`). No behaviour changed.
+- The only failing PR check is Vercel: *account deployment blocked* — the same account-level pause recorded in C-0, not a code failure.
+- Governance: the work is now version-controlled and in review (PR #12). It remains **merged-pending and unshipped** — no end user is affected by any of it until a merge + deployment happens against an un-paused Vercel account.
+- Everything else in this report stands unchanged: authenticated/premium/payment/CMS journeys and the manual-UPI flow still need staging verification; the DCF terminal-value convention (C-1) is still open; the **Internal Testing** verdict stands.
