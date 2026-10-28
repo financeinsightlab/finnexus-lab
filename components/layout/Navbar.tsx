@@ -9,7 +9,7 @@ import GlobalSearch from '@/components/layout/GlobalSearch';
 import LocaleSwitcher from '@/components/i18n/LocaleSwitcher';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import { useSession, signOut } from 'next-auth/react';
-import { NAV_CLUSTERS, NAV_CTA, type NavCluster } from '@/lib/navigation';
+import { NAV_CLUSTERS, NAV_CTA, type NavCluster , isNavActive } from '@/lib/navigation';
 
 /* ─────────────────────── ICONS ─────────────────────── */
 
@@ -110,7 +110,7 @@ export default function Navbar() {
     return () => document.body.removeAttribute('data-public-navigation-open');
   }, [mobileOpen]);
 
-  const isActive = (href: string) => pathname === href || pathname.startsWith(href + '/');
+  const isActive = (href: string) => isNavActive(pathname, href);
 
   const clusterActive = (cluster: NavCluster) =>
     isActive(cluster.href) || cluster.items.some((item) => isActive(item.href));
@@ -205,6 +205,7 @@ export default function Navbar() {
                   onFocus={() => setOpenCluster(cluster.id)}
                   aria-expanded={openCluster === cluster.id}
                   aria-controls={`nav-cluster-menu-${cluster.id}`}
+                  aria-current={pathname === cluster.href ? 'page' : undefined}
                   className={clusterButtonClass(cluster)}
                 >
                   <span className="text-sm opacity-75">{cluster.icon}</span>
@@ -228,6 +229,7 @@ export default function Navbar() {
                           <Link
                             key={`${cluster.id}-${item.href}`}
                             href={item.href}
+                            aria-current={pathname === item.href ? 'page' : undefined}
                             onClick={() => setOpenCluster(null)}
                             className={`flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors group/item ${isActive(item.href)
                               ? 'bg-brand-muted'
@@ -471,6 +473,7 @@ export default function Navbar() {
                       <Link
                         key={`${cluster.id}-${item.href}`}
                         href={item.href}
+                        aria-current={pathname === item.href ? 'page' : undefined}
                         onClick={() => setMobileOpen(false)}
                         className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive(item.href)
                           ? 'bg-brand-muted text-brand border border-brand/20'

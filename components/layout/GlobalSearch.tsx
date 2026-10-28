@@ -2,12 +2,16 @@
 
 // components/layout/GlobalSearch.tsx
 //
-// Primary search modal — opens via the Search button in the Navbar or Ctrl+K.
+// THE site search modal — opens via the Search button in the Navbar or Ctrl+K.
+// (The former duplicate CommandPalette was removed; its arrow-key navigation
+// and "Jump to" quick actions were ported here so there is one coherent ⌘K.)
 // Since Algolia keys are optional, this ALWAYS uses our own server-side search
 // facade at /api/search — no Algolia dependency, zero keys needed.
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { QUICK_ACTIONS } from '@/lib/navigation';
 
 
 interface SearchHit {
@@ -50,7 +54,9 @@ type GlobalSearchProps = {
 };
 
 export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
+    const router = useRouter();
     const [query, setQuery] = useState('');
+    const [active, setActive] = useState(0);
     const [result, setResult] = useState<SearchResponse | null>(null);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -64,6 +70,7 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
             setQuery('');
             setResult(null);
             setError(null);
+            setActive(0);
         }
     }, [open]);
 
@@ -105,14 +112,43 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
         [result]
     );
 
+    // Flat, keyboard-navigable row list: quick actions before typing,
+    // grouped search hits (in display order) afterwards.
+    const rows = useMemo(() => {
+        if (query.trim().length < 2) {
+            return QUICK_ACTIONS.map((a) => ({ title: a.label, description: a.description ?? '', url: a.href }));
+        }
+        return result ? result.groups.flatMap((g) => g.items) : [];
+    }, [query, result]);
+
+    useEffect(() => { setActive(0); }, [rows.length, query]);
+
+    const goTo = useCallback(
+        (url: string) => { onClose(); router.push(url); },
+        [onClose, router]
+    );
+
     const handleSubmit = useCallback(
         (event: React.FormEvent) => {
             event.preventDefault();
+            // Enter opens the highlighted row; with no rows it falls back to
+            // the full research search (the footer's explicit action).
+            if (rows[active]) { goTo(rows[active].url); return; }
             const trimmed = query.trim();
             if (trimmed) window.location.href = `/research?q=${encodeURIComponent(trimmed)}`;
         },
-        [query]
+        [query, rows, active, goTo]
     );
+
+    const onInputKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+        if (event.key === 'ArrowDown') {
+            event.preventDefault();
+            setActive((v) => (rows.length ? (v + 1) % rows.length : 0));
+        } else if (event.key === 'ArrowUp') {
+            event.preventDefault();
+            setActive((v) => (rows.length ? (v - 1 + rows.length) % rows.length : 0));
+        }
+    };
 
     if (!open) return null;
 
@@ -172,6 +208,9 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                             ref={inputRef}
                             value={query}
                             onChange={(e) => setQuery(e.target.value)}
+                            onKeyDown={onInputKeyDown}
+                            aria-label="Search Kunwar Analytics"
+                            aria-describedby="global-search-hint"
                             type="search"
                             placeholder="Search research, insights, tools, courses…"
                             className="w-full rounded-xl border border-border bg-surface-muted py-3 pl-10 pr-10 text-sm text-content-primary placeholder:text-content-muted outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition"
@@ -189,7 +228,27 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                     {error ? (
                         <p className="px-4 py-12 text-center text-sm text-error">{error}</p>
                     ) : query.trim().length < 2 ? (
-                        <div className="px-4 py-10 text-center">
+                        <div>
+                            <p className="bg-surface-muted px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-content-muted">
+                                ⚡ Jump to
+                            </p>
+                            {QUICK_ACTIONS.map((action, index) => (
+                                <Link
+                                    key={action.href}
+                                    href={action.href}
+                                    onClick={onClose}
+                                    onMouseEnter={() => setActive(index)}
+                                    className={`flex min-h-[52px] flex-col justify-center gap-0.5 px-4 py-3 transition hover:bg-surface-muted ${index === active ? 'bg-surface-muted' : ''}`}
+                                >
+                                    <span className="break-words font-medium text-sm text-content-primary">
+                                        {action.icon} {action.label}
+                                    </span>
+                                    {action.description ? (
+                                        <span className="break-words text-xs text-content-muted">{action.description}</span>
+                                    ) : null}
+                                </Link>
+                            ))}
+                            <div className="px-4 py-6 text-center">
                             <p className="text-sm text-content-muted">
                                 Type at least 2 characters to search across research, insights, Data Lab, courses and tools.
                             </p>
@@ -205,6 +264,7 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                                     </button>
                                 ))}
                             </div>
+                            </div>
                         </div>
                     ) : loading && !result ? (
                         <p className="px-4 py-12 text-center text-sm text-content-muted">Searching…</p>
@@ -214,17 +274,22 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                         </p>
                     ) : (
                         <div className="flex flex-col divide-y divide-white/5">
-                            {result?.groups.map((group) => (
+                            {result?.groups.map((group, groupIndex) => {
+                                const groupStart = result.groups
+                                    .slice(0, groupIndex)
+                                    .reduce((sum, g) => sum + g.items.length, 0);
+                                return (
                                 <div key={group.kind}>
                                     <p className="bg-surface-muted px-4 py-1.5 text-[10px] font-bold uppercase tracking-widest text-content-muted">
                                         {KIND_ICON[group.kind] ?? '📄'} {group.label}
                                     </p>
-                                    {group.items.map((item) => (
+                                    {group.items.map((item, itemIndex) => (
                                         <Link
                                             key={`${group.kind}-${item.url}`}
                                             href={item.url}
                                             onClick={onClose}
-                                            className="flex min-h-[52px] flex-col justify-center gap-0.5 px-4 py-3 transition hover:bg-surface-muted"
+                                            onMouseEnter={() => setActive(groupStart + itemIndex)}
+                                            className={`flex min-h-[52px] flex-col justify-center gap-0.5 px-4 py-3 transition hover:bg-surface-muted ${groupStart + itemIndex === active ? 'bg-surface-muted' : ''}`}
                                         >
                                             <span className="break-words font-medium text-sm text-content-primary">
                                                 {item.title}
@@ -237,12 +302,16 @@ export default function GlobalSearch({ open, onClose }: GlobalSearchProps) {
                                         </Link>
                                     ))}
                                 </div>
-                            ))}
+                                );
+                            })}
                         </div>
                     )}
                 </div>
 
                 {/* Footer */}
+                <p id="global-search-hint" className="shrink-0 px-4 pt-2 text-[10px] text-content-muted">
+                    ↑↓ navigate · ↵ open · esc close
+                </p>
                 <div className="shrink-0 border-t border-border bg-surface-muted px-4 py-2.5">
                     <Link
                         href={query.trim() ? `/research?q=${encodeURIComponent(query.trim())}` : '/research'}

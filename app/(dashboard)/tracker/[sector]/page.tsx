@@ -105,10 +105,12 @@ export default async function SectorTrackerPage({ params, searchParams }: Props)
       <section className="relative overflow-hidden text-content-primary bg-surface-raised">
         <div className="absolute inset-0 opacity-25" style={{ background: `radial-gradient(800px 320px at 15% -10%, ${t.coverGradient[0]}66, transparent), radial-gradient(700px 320px at 95% 0%, ${t.coverGradient[1]}55, transparent)` }} />
         <div className="relative max-w-7xl mx-auto px-6 pt-6 pb-14">
-          <nav className="flex items-center gap-2 text-sm mb-8 flex-wrap">
-            <Link href="/tracker" className="inline-flex items-center gap-1.5 text-teal-400 hover:text-brand-hover font-semibold transition-colors">← All sector trackers</Link>
-            <span className="text-slate-600">|</span>
-            <Link href="/" className="text-slate-400 hover:text-brand-hover transition-colors">Home</Link><span className="text-slate-600">/</span><span className="text-slate-200">{t.name}</span>
+          <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-sm mb-8 flex-wrap">
+            <Link href="/" className="text-slate-400 hover:text-brand-hover transition-colors">Home</Link>
+            <span className="text-slate-600" aria-hidden="true">/</span>
+            <Link href="/tracker" className="text-slate-400 hover:text-brand-hover transition-colors">Sector Trackers</Link>
+            <span className="text-slate-600" aria-hidden="true">/</span>
+            <span className="text-slate-200" aria-current="page">{t.name}</span>
           </nav>
           <div className="grid lg:grid-cols-[1fr_300px] gap-10 items-start">
             <div>
