@@ -37,6 +37,7 @@ import CoursesSection from '@/components/study/CoursesSection';
 import SectorVideo from '@/components/tracker/SectorVideo';
 import HomeDataLabSection from '@/components/data-lab/HomeDataLabSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import FlagshipProductsSection from '@/components/home/FlagshipProductsSection';
 
 async function getHomePagePosts() {
   // Try to get DB-driven featured selections first; fall back to static
@@ -133,6 +134,9 @@ export default async function HomePage() {
       {/* Promotion slot: HOME_HERO (collapses when nothing is scheduled) */}
       <PromotionSlot slot="HOME_HERO" path="/" />
       <FinanceTermsCarousel terms={featuredTerms} />
+
+      {/* ===== FLAGSHIP PRO & INSTITUTIONAL PRODUCTS ===== */}
+      <FlagshipProductsSection />
 
       {/* ===== PLATFORM PILLARS ===== */}
       <section className="relative py-28 bg-cinema-ink overflow-hidden">

@@ -10,7 +10,7 @@ import { SUBJECTS, getSubject } from '@/lib/pgdm/curriculum';
 import { QUIZZES } from '@/lib/pgdm/quizzes';
 import Quiz from '@/components/pgdm/Quiz';
 import { TRACK_META } from '@/lib/pgdm/types';
-import JsonLd from '@/components/seo/JsonLd';
+import JsonLd, { breadcrumbSchema, courseSchema } from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
@@ -41,6 +41,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   return {
     title: { absolute: titleCap(`${subject.code} — ${subject.name} | Lectures & Syllabus`) },
     description: subject.description.slice(0, 155),
+    alternates: { canonical: `https://kunwaranalytics.in/pgdm/${slug}` },
+    openGraph: {
+      title: `${subject.code} — ${subject.name}`,
+      description: subject.description.slice(0, 200),
+      url: `https://kunwaranalytics.in/pgdm/${slug}`,
+      type: 'article',
+      ...(subject.heroImage ? { images: [{ url: subject.heroImage }] } : {}),
+    },
   };
 }
 
@@ -77,6 +85,20 @@ export default async function SubjectPage({ params }: PageProps) {
 
   return (
     <div className="min-h-screen bg-cinema-black text-gray-100">
+      {/* SEO/GEO: BreadcrumbList + Course structured data */}
+      <JsonLd data={breadcrumbSchema([
+        { name: 'Home', url: 'https://kunwaranalytics.in' },
+        { name: 'PGDM Curriculum', url: 'https://kunwaranalytics.in/pgdm' },
+        { name: `${subject.code} — ${subject.name}`, url: `https://kunwaranalytics.in/pgdm/${subject.slug}` },
+      ])} />
+      <JsonLd data={courseSchema({
+        title: `${subject.code} — ${subject.name}`,
+        description: subject.description,
+        url: `https://kunwaranalytics.in/pgdm/${subject.slug}`,
+        providerName: 'Kunwar Analytics',
+        category: subject.track,
+      })} />
+
       {/* ── HEADER ── */}
       <header className="relative overflow-hidden bg-cinema-ink py-12 md:py-16 border-b border-white/5">
         {subject.heroImage && (

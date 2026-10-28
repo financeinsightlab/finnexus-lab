@@ -285,6 +285,15 @@ export default function Navbar() {
             {/* Theme */}
             <ThemeToggle />
 
+            {/* Pro Plans */}
+            <Link
+              href="/pricing"
+              className="hidden lg:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-amber-500/15 to-orange-500/15 border border-amber-500/30 text-amber-400 hover:border-amber-400 hover:bg-amber-500/25 transition-all text-xs font-bold shadow-sm"
+            >
+              <span>⚡</span>
+              <span>Pro Plans</span>
+            </Link>
+
             {/* User dropdown — desktop */}
             <div className="hidden lg:flex items-center ml-1" data-user-dropdown>
               {!session ? (

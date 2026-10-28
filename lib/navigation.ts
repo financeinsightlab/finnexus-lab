@@ -55,6 +55,8 @@ export const NAV_CLUSTERS: NavCluster[] = [
         href: '/tools',
         description: 'Live trackers, interactive calculators and market signals.',
         items: [
+            { label: 'Company Intelligence', href: '/company', icon: '⚡', description: 'NSE/BSE AI analysis, DCF models & health scores' },
+            { label: 'Startup Financials', href: '/startup-financials', icon: '🚀', description: 'VC-ready 3-statement models & runway engine' },
             { label: 'Calculators', href: '/tools', icon: '🧮', description: '16 interactive finance calculators' },
             { label: 'Sector Trackers', href: '/tracker', icon: '📈', description: 'Quarterly KPIs across sectors' },
             { label: 'Contrarian Radar', href: '/radar', icon: '📡', description: 'Consensus temperature heatmap' },
@@ -69,6 +71,7 @@ export const NAV_CLUSTERS: NavCluster[] = [
         href: '/study',
         description: 'Structured courses, study material and credentials.',
         items: [
+            { label: 'Interview War Room', href: '/interview-war-room', icon: '🎯', description: "India's #1 AI finance interview simulator" },
             { label: 'Study Material', href: '/study', icon: '📖', description: 'Notes, formula sheets and revision' },
             { label: 'Finance Terms', href: '/finance-terms', icon: '📚', description: 'Search plain-language finance definitions' },
             { label: 'PGDM Program', href: '/pgdm', icon: '🏛️', description: '14 subjects, 73 lectures and quizzes' },

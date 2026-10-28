@@ -13,7 +13,7 @@ import { ChevronLeft, Calendar, User, BookOpen, Clock, Tag as TagIcon, Share2, S
 import React from 'react';
 import CommentsSection from '@/components/comments/CommentsSection';
 import { auth } from '@/auth';
-import JsonLd, { articleSchema } from '@/components/seo/JsonLd';
+import JsonLd, { articleSchema, breadcrumbSchema, faqSchema, speakableSchema } from '@/components/seo/JsonLd';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
@@ -30,13 +30,14 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       return {
         title: `${dbPost.title} | Kunwar Analytics Insights`,
         description: dbPost.excerpt || 'Strategic commentary and executive market intelligence.',
-        alternates: { canonical: `/insights/${slug}` },
+        alternates: { canonical: `https://kunwaranalytics.in/insights/${slug}` },
         openGraph: {
           title: dbPost.title,
           description: dbPost.excerpt || '',
           url: `https://kunwaranalytics.in/insights/${slug}`,
           type: 'article',
           images: dbPost.featuredImage ? [{ url: dbPost.featuredImage }] : [],
+          ...(dbPost.author ? { authors: [dbPost.author] } : {}),
         },
       };
     }
@@ -48,7 +49,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${post.title} | Kunwar Analytics Insights`,
     description: post.thesis,
-    alternates: { canonical: `/insights/${slug}` },
+    alternates: { canonical: `https://kunwaranalytics.in/insights/${slug}` },
     openGraph: {
       title: post.title,
       description: post.thesis,
@@ -56,6 +57,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       type: 'article',
       publishedTime: post.date,
       authors: [post.author],
+      ...(post.category ? { section: post.category } : {}),
+      ...(post.tags?.length ? { tags: post.tags } : {}),
       images: post.coverImage ? [{ url: post.coverImage }] : [],
     },
   };
@@ -301,6 +304,21 @@ export default async function InsightDetailPage({ params }: { params: Promise<{ 
               </>
             }
           >
+            {/* SEO/GEO: BreadcrumbList + Article + Speakable structured data */}
+            <JsonLd data={breadcrumbSchema([
+              { name: 'Home', url: 'https://kunwaranalytics.in' },
+              { name: 'Insights', url: 'https://kunwaranalytics.in/insights' },
+              { name: title, url: `https://kunwaranalytics.in/insights/${slug}` },
+            ])} />
+            <JsonLd data={articleSchema({
+              title,
+              description: thesis,
+              url: `https://kunwaranalytics.in/insights/${slug}`,
+              image: coverImage,
+              keywords: tags,
+            })} />
+            <JsonLd data={speakableSchema(['.cms-content', '.article-body'])} />
+
             <article className="rounded-3xl border border-border bg-card p-5 shadow-sm md:p-8 lg:p-10">
               <div
                 className="cms-content prose-content article-body"

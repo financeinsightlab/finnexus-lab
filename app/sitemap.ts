@@ -139,6 +139,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   // ─── Static Pages ───
+  // ─── Public author profile pages ──
+  let authorPages: MetadataRoute.Sitemap = [];
+  try {
+    const { prisma } = await import('@/lib/prisma');
+    const authors = await prisma.user.findMany({
+      where: {
+        profile: { is: { isPublic: true } },
+      },
+      select: { id: true, name: true, updatedAt: true },
+      orderBy: { updatedAt: 'desc' },
+    });
+    authorPages = authors.map((author) => ({
+      url: `${BASE}/authors/${(author.name ?? '').toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`,
+      lastModified: safeDate(author.updatedAt),
+      changeFrequency: 'weekly' as const,
+      priority: 0.5,
+    }));
+  } catch {
+    // Profile table may not exist yet — skip silently.
+  }
+
+  // ── Static Pages ──
   const statics: MetadataRoute.Sitemap = [
     { url: `${BASE}/`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 1.0 },
     { url: `${BASE}/research`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.9 },
@@ -174,5 +196,5 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/data-freshness`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.5 },
   ];
 
-  return [...statics, ...utilityPages, ...research, ...insights, ...dataLab, ...caseStudies, ...podcasts, ...studyMaterials, ...financeTerms, ...cmsLessons, ...pgdmPages, ...toolPages, ...certificatePages];
+  return [...statics, ...utilityPages, ...research, ...insights, ...dataLab, ...caseStudies, ...podcasts, ...studyMaterials, ...financeTerms, ...cmsLessons, ...authorPages, ...pgdmPages, ...toolPages, ...certificatePages];
 }

@@ -73,7 +73,11 @@ export const metadata: Metadata = {
   publisher: 'Kunwar Analytics',
   metadataBase: new URL('https://kunwaranalytics.in'),
   alternates: {
-    canonical: '/',
+    canonical: 'https://kunwaranalytics.in/',
+    languages: {
+      'en-IN': 'https://kunwaranalytics.in',
+      'en-US': 'https://kunwaranalytics.in/en-US',
+    },
   },
   openGraph: {
     type: 'website',
@@ -94,6 +98,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    site: '@kunwaranalytics',
+    creator: '@kunwaranalytics',
     title: 'Kunwar Analytics — Financial Intelligence Platform',
     description:
       'Data-driven insights on markets, strategy, and capital. Institutional-quality research and study materials.',
