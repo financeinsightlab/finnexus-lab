@@ -106,7 +106,11 @@ export default function PromotionManager() {
     }
   };
 
+  const nowMs = Date.now();
   const activeCount = promotions.filter((promotion) => promotion.active).length;
+  const liveNowCount = promotions.filter((p) => p.active && (!p.startsAt || new Date(p.startsAt).getTime() <= nowMs) && (!p.endsAt || new Date(p.endsAt).getTime() >= nowMs)).length;
+  const scheduledCount = promotions.filter((p) => p.active && p.startsAt && new Date(p.startsAt).getTime() > nowMs).length;
+  const expiredCount = promotions.filter((p) => p.endsAt && new Date(p.endsAt).getTime() < nowMs).length;
   const legacyCount = promotions.filter((promotion) => promotion.derivedFromLegacy).length;
 
   return (
@@ -121,7 +125,10 @@ export default function PromotionManager() {
           </div>
           <div className="flex flex-wrap gap-2 text-xs">
             <span className="rounded-full bg-muted px-3 py-1 font-semibold text-muted-foreground">{promotions.length} promotions</span>
-            <span className="rounded-full bg-emerald-500/10 px-3 py-1 font-semibold text-emerald-700 dark:text-emerald-300">{activeCount} active</span>
+            <span className="rounded-full bg-emerald-500/10 px-3 py-1 font-semibold text-emerald-700 dark:text-emerald-300" title="active flag on AND within startsAt/endsAt window">{liveNowCount} live now</span>
+            <span className="rounded-full bg-blue-500/10 px-3 py-1 font-semibold text-blue-700 dark:text-blue-300">{scheduledCount} scheduled</span>
+            <span className="rounded-full bg-zinc-500/10 px-3 py-1 font-semibold text-zinc-600 dark:text-zinc-300">{expiredCount} expired</span>
+            <span className="rounded-full bg-muted px-3 py-1 font-semibold text-muted-foreground">{activeCount} flag-active</span>
             {legacyCount > 0 && <span className="rounded-full bg-amber-500/10 px-3 py-1 font-semibold text-amber-700 dark:text-amber-300" title="Rules derived from legacy columns; open and save to make them explicit.">{legacyCount} with legacy rules</span>}
           </div>
         </div>

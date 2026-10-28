@@ -17,6 +17,18 @@ import React from "react"
 import ActionButtons from "./ActionButtons"
 import HeroBackground from "@/components/ui/HeroBackground"
 
+function contentStatusBadge(status: string | null | undefined) {
+  const s = (status || "DRAFT").toUpperCase()
+  const map: Record<string, string> = {
+    DRAFT: "bg-slate-500/10 text-slate-500 border border-slate-500/20",
+    REVIEW: "bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20",
+    APPROVED: "bg-blue-500/10 text-blue-600 dark:text-blue-300 border border-blue-500/20",
+    PUBLISHED: "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20",
+    ARCHIVED: "bg-zinc-500/10 text-zinc-500 border border-zinc-500/20 line-through",
+  }
+  return map[s] || map.DRAFT
+}
+
 type PostWithAuthor = Post & { author: { name: string | null } }
 
 export default async function CMSDashboard({
@@ -36,10 +48,21 @@ export default async function CMSDashboard({
   const pageSize = 15
   const skip = (page - 1) * pageSize
 
+  // Workflow: reuse existing Post.contentStatus (DRAFT/REVIEW/APPROVED/PUBLISHED) without introducing a parallel system.
+  // Legacy query param `published`/`draft` still works; new values map to contentStatus.
+  const statusFilter: Prisma.PostWhereInput = (() => {
+    if (!status) return {}
+    const s = status.toUpperCase()
+    if (["DRAFT", "REVIEW", "APPROVED", "PUBLISHED", "ARCHIVED"].includes(s)) return { contentStatus: s } as any
+    if (status === "published") return { published: true }
+    if (status === "draft") return { published: false }
+    return {}
+  })()
+
   const where: Prisma.PostWhereInput = {
     AND: [
       type ? { type } : {},
-      status === "published" ? { published: true } : status === "draft" ? { published: false } : {},
+      statusFilter,
       search
         ? {
             OR: [
@@ -54,12 +77,14 @@ export default async function CMSDashboard({
   let posts: PostWithAuthor[] = []
   let totalCount = 0
   const typeCounts: Record<string, number> = {}
+  const statusCounts: Record<string, number> = {}
+  let scheduledOverdue = 0
 
   try {
-    const [postsData, count, grouped] = await Promise.all([
+    const [postsData, count, grouped, byStatus, overdue] = await Promise.all([
       prisma.post.findMany({
         where,
-        orderBy: { createdAt: "desc" },
+        orderBy: { updatedAt: "desc" },
         skip,
         take: pageSize,
         include: {
@@ -68,13 +93,16 @@ export default async function CMSDashboard({
       }),
       prisma.post.count({ where }),
       prisma.post.groupBy({ by: ["type"], _count: { id: true } }),
+      (prisma.post.groupBy({ by: ["contentStatus" as any], _count: { id: true } }) as Promise<any>),
+      prisma.post.count({ where: { scheduledPublishAt: { lt: new Date() }, published: false } }),
     ])
     posts = postsData
     totalCount = count
     grouped.forEach((g) => { typeCounts[g.type] = (g._count as any).id })
+    ;(byStatus as any[]).forEach((g: any) => { statusCounts[g.contentStatus] = g._count.id })
+    scheduledOverdue = overdue
   } catch (e) {
     console.error("Prisma fetch failed:", e)
-    // Provide empty data to prevent page crash
     posts = []
     totalCount = 0
   }
@@ -150,7 +178,34 @@ export default async function CMSDashboard({
         ))}
       </div>
 
-      {/* Search + Status Filter */}
+      {/* Workflow pills — Idea→Draft→Review→Approve→Publish */}
+      <div className="bg-surface border border-border rounded-2xl p-4">
+        <p className="text-[10px] font-bold uppercase tracking-widest text-content-muted">Workflow — existing Post.contentStatus reused (no parallel status introduced)</p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {[
+            { label: "All", value: "", count: Object.values(statusCounts).reduce((a,b)=>a+b,0) },
+            { label: "Draft", value: "DRAFT", count: statusCounts.DRAFT ?? 0 },
+            { label: "In Review", value: "REVIEW", count: statusCounts.REVIEW ?? 0 },
+            { label: "Approved", value: "APPROVED", count: statusCounts.APPROVED ?? 0 },
+            { label: "Published", value: "PUBLISHED", count: statusCounts.PUBLISHED ?? 0 },
+            { label: "Archived", value: "ARCHIVED", count: statusCounts.ARCHIVED ?? 0 },
+          ].map((s) => (
+            <Link
+              key={s.value}
+              href={buildUrl({ status: s.value, page: "1" })}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold border transition-all inline-flex items-center gap-1.5 ${ (status ?? "").toUpperCase() === s.value ? "bg-brand text-primary-foreground border-brand" : s.value==="REVIEW" && s.count>0 ? "bg-warning-muted text-warning border-warning/20" : "bg-surface-muted border-border text-content-secondary hover:text-content-primary" }`}
+            >
+              {s.label} <span className="opacity-70">{s.count}</span>
+            </Link>
+          ))}
+          {scheduledOverdue > 0 && (
+            <span className="px-3 py-1.5 rounded-xl text-xs font-bold bg-error-muted text-error border border-error/20">Overdue scheduled: {scheduledOverdue}</span>
+          )}
+        </div>
+        <p className="text-[11px] text-content-muted mt-2">Source: <span className="font-mono">Post.contentStatus</span> + <span className="font-mono">scheduledPublishAt</span> where published=false. Review queue drives editorial handoff.</p>
+      </div>
+
+      {/* Search + Workflow Filter — keeps legacy published/draft for deep links */}
       <form method="GET" action="/admin/cms" className="grid grid-cols-1 md:grid-cols-4 gap-4 bg-surface p-4 rounded-2xl border border-border">
         <input type="hidden" name="type" value={type ?? ""} />
         <div className="md:col-span-2 relative group">
@@ -169,9 +224,13 @@ export default async function CMSDashboard({
             defaultValue={status ?? ""}
             className="appearance-none w-full bg-surface-muted border border-border rounded-2xl text-sm px-5 py-3 text-content-secondary outline-none focus:border-brand/50 transition-all cursor-pointer"
           >
-            <option value="">All Status</option>
-            <option value="published">Published</option>
-            <option value="draft">Drafts</option>
+            <option value="">All (workflow)</option>
+            <option value="DRAFT">Draft</option>
+            <option value="REVIEW">In Review</option>
+            <option value="APPROVED">Approved</option>
+            <option value="PUBLISHED">Published (status)</option>
+            <option value="published">Published (legacy bool)</option>
+            <option value="draft">Draft (legacy bool)</option>
           </select>
           <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 w-4 h-4 text-content-muted pointer-events-none" />
         </div>
@@ -211,17 +270,25 @@ export default async function CMSDashboard({
                       </span>
                     </td>
                     <td className="px-6 py-4">
-                      {post.published ? (
-                        <div className="flex items-center gap-1.5 text-emerald-400">
-                          <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
-                          <span className="text-[10px] font-bold uppercase">Live</span>
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-1.5 text-amber-500">
-                          <div className="w-1.5 h-1.5 rounded-full bg-amber-500 opacity-60" />
-                          <span className="text-[10px] font-bold uppercase">Draft</span>
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {post.published ? (
+                          <div className="flex items-center gap-1.5 text-emerald-400">
+                            <div className="w-1.5 h-1.5 rounded-full bg-emerald-500 shadow-[0_0_6px_rgba(16,185,129,0.5)]" />
+                            <span className="text-[10px] font-bold uppercase">Live</span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-1.5 text-amber-500">
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-500 opacity-60" />
+                            <span className="text-[10px] font-bold uppercase">Draft</span>
+                          </div>
+                        )}
+                        <span className={`inline-flex w-fit px-1.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-widest ${contentStatusBadge((post as any).contentStatus)}`}>
+                          {(post as any).contentStatus || "DRAFT"}
+                        </span>
+                        {(post as any).scheduledPublishAt && !post.published && (
+                          <span className="text-[10px] font-mono text-content-muted">⏰ {new Date((post as any).scheduledPublishAt).toLocaleDateString()}</span>
+                        )}
+                      </div>
                     </td>
                     <td className="px-6 py-4">
                       <span className="text-sm font-bold text-content-primary">{post.viewCount.toLocaleString()}</span>
