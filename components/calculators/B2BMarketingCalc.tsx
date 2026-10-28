@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   Cell
 } from 'recharts';
+import { runB2bRoi, parseB2bInputs, b2bInputsToQuery, B2B_DEFAULTS, type B2bInputs } from '@/lib/finance/b2b-roi';
 
 export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Inputs
@@ -19,6 +20,9 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
   const [sqlRate, setSqlRate] = useState(20);
   const [winRate, setWinRate] = useState(25);
   const [acv, setAcv] = useState(15000);
+  const [grossMarginPct, setGrossMarginPct] = useState(100); // 100% = legacy gross-ACV ROI
+  const [contractYears, setContractYears] = useState(1);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const [isLocked, setIsLocked] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
@@ -40,7 +44,7 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
     } else {
       const msSinceFirstUse = Date.now() - parseInt(firstUsed);
       if (msSinceFirstUse > 30 * 60 * 1000) { // 30 mins free session
-        setIsLocked(true);
+        setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
       }
     }
   }, [slug, isPremiumUser]);
@@ -51,53 +55,58 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
     }
   }, [slug, isPremiumUser]);
 
-  // Calculations
-  const calculations = useMemo(() => {
-    const safeLeads = totalLeads <= 0 ? 1 : totalLeads;
-    
-    const cpl = marketingSpend / safeLeads;
-    const sqls = safeLeads * (sqlRate / 100);
-    const closedWon = sqls * (winRate / 100);
-    
-    // Prevent division by zero if 0 won
-    const blendedCac = closedWon > 0 ? marketingSpend / closedWon : 0;
-    
-    const revenue = closedWon * acv;
-    const roi = marketingSpend > 0 ? ((revenue - marketingSpend) / marketingSpend) * 100 : (revenue > 0 ? Infinity : 0);
+  // Persistence via the tested engine codec.
+  const AUTOSAVE_KEY = 'ka_b2b_autosave_v1';
+  const engineInputs: B2bInputs = {
+    marketingSpend, totalLeads, sqlRate: sqlRate / 100, winRate: winRate / 100, acv,
+    grossMargin: grossMarginPct / 100, contractYears,
+  };
+  const applyInputs = (i: B2bInputs) => {
+    setMarketingSpend(i.marketingSpend); setTotalLeads(i.totalLeads); setSqlRate(i.sqlRate * 100);
+    setWinRate(i.winRate * 100); setAcv(i.acv); setGrossMarginPct(i.grossMargin * 100); setContractYears(i.contractYears);
+  };
+  useEffect(() => {
+    try {
+      let base = B2B_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseB2bInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseB2bInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [marketingSpend, totalLeads, sqlRate, winRate, acv, grossMarginPct, contractYears]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${b2bInputsToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
 
-    // Funnel Data (Chart)
+  // Calculations (delegated to lib/finance/b2b-roi.ts)
+  const calculations = useMemo(() => {
+    const engine = runB2bRoi(engineInputs);
+    const safeLeads = totalLeads; // engine handles 0 honestly (null CPL/CAC → 0 display + warning)
+    const cpl = engine.costPerLead ?? 0;
+    const sqls = engine.sqls ?? 0;
+    const closedWon = engine.closedWon ?? 0;
+    const blendedCac = engine.blendedCac ?? 0;
+    const revenue = engine.bookedRevenueFirstYear ?? 0;
+    const roi = engine.roiPct ?? 0;
+
     const chartData = [
       { stage: 'Raw Leads', count: Math.round(safeLeads), fill: '#94a3b8' },
       { stage: 'Qualified (SQLs)', count: Math.round(sqls), fill: '#0ea5e9' },
       { stage: 'Closed Won', count: Math.round(closedWon), fill: '#0d9488' }
     ];
 
-    // Excel Matrix Arrays
     const rowStages = ['Stage 1: Raw Traffic', 'Stage 2: Sales Qualified', 'Stage 3: Closed Won'];
-    
-    const rowVolume = [
-      Math.round(safeLeads),
-      Math.round(sqls),
-      Math.round(closedWon)
-    ];
-    
-    const rowConversion = [
-      '100.0%',
-      `${sqlRate.toFixed(1)}%`,
-      `${winRate.toFixed(1)}%`
-    ];
-
-    const rowCpa = [
-      Math.round(marketingSpend / safeLeads),
-      Math.round(marketingSpend / (sqls || 1)),
-      Math.round(blendedCac)
-    ];
-
-    const rowPipelineGross = [
-      Math.round(safeLeads * acv), // Theoretical max if all won
-      Math.round(sqls * acv), // Active pipeline before win rate discount
-      Math.round(revenue) // Actual booked
-    ];
+    const rowVolume = [Math.round(safeLeads), Math.round(sqls), Math.round(closedWon)];
+    const rowConversion = ['100.0%', `${sqlRate.toFixed(1)}%`, `${winRate.toFixed(1)}%`];
+    const rowCpa = [Math.round(cpl), Math.round(engine.costPerSql ?? 0), Math.round(blendedCac)];
+    const rowPipelineGross = [Math.round(safeLeads * acv), Math.round(sqls * acv), Math.round(revenue)];
 
     // Dynamic AI Analyst Diagnosis
     let insightText = '';
@@ -131,9 +140,10 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
       rowVolume,
       rowConversion,
       rowCpa,
-      rowPipelineGross
+      rowPipelineGross,
+      engine
     };
-  }, [marketingSpend, totalLeads, sqlRate, winRate, acv]);
+  }, [marketingSpend, totalLeads, sqlRate, winRate, acv, grossMarginPct, contractYears]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -194,6 +204,18 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(B2B_DEFAULTS)} className="btn-secondary text-sm">Reset</button>
+          <span className="text-xs text-gray-500">Autosaves locally · CAC payback: {calculations.engine.cacPaybackMonths !== null ? `${calculations.engine.cacPaybackMonths.toFixed(1)} months` : 'n.m.'} · LTV:CAC {calculations.engine.ltvCacRatio !== null ? `${calculations.engine.ltvCacRatio.toFixed(2)}×` : 'n.m.'}</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
+
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
           {/* Inputs Sidebar */}
@@ -236,6 +258,19 @@ export default function B2BMarketingCalc({ slug, isPremiumUser }: { slug: string
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={acv} onChange={e => setAcv(Number(e.target.value))} />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Gross Margin on ACV % (100 = legacy gross ROI)</label>
+                <div className="relative">
+                  <input type="number" className="input w-full pr-8" step="1" value={grossMarginPct} onChange={e => setGrossMarginPct(Number(e.target.value))} />
+                  <span className="absolute right-3 top-2.5 text-gray-400">%</span>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Expected Contract Life (years)</label>
+                <input type="number" className="input w-full" step="0.5" value={contractYears} onChange={e => setContractYears(Number(e.target.value))} />
               </div>
             </div>
           </div>

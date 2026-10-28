@@ -1,726 +1,628 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+// components/calculators/DcfCalc.tsx — DCF Valuation Model UI.
+// All maths lives in lib/finance/dcf.ts (pure, unit-tested); this component
+// owns input state, persistence (browser-local), exports and rendering.
+// Entitlement: the core single-scenario DCF is free; scenario comparison,
+// sensitivity, the exit-multiple cross-check and file exports are Pro,
+// decided server-side and passed in as `isPremiumUser`.
+
+import { useEffect, useMemo, useState } from 'react';
+import Link from 'next/link';
 import {
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  Cell
+    BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Cell, ReferenceLine,
 } from 'recharts';
+import {
+    DEFAULT_SCENARIO_DELTAS,
+    DCF_DEFAULTS,
+    dcfInputsToQuery,
+    parseDcfInputs,
+    runDcf,
+    runScenarios,
+    sensitivityGrid,
+    type DcfInputs,
+    type ScenarioDeltas,
+} from '@/lib/finance/dcf';
+import { buildDcfCsv } from '@/lib/finance/dcf-export';
 
-export default function DcfCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
-  // Advanced M&A Inputs (Defaults)
-  const [revenue, setRevenue] = useState<number | string>(10000000); // 10M
-  const [revGrowth, setRevGrowth] = useState<number | string>(15); // 15%
-  const [ebitdaMargin, setEbitdaMargin] = useState<number | string>(20); // 20%
-  const [dnaRate, setDnaRate] = useState<number | string>(5); // D&A as % of revenue, default 5%
-  const [taxRate, setTaxRate] = useState<number | string>(21); // 21%
-  const [capexNwcRate, setCapexNwcRate] = useState<number | string>(5); // 5%
-  const [ltGrowth, setLtGrowth] = useState<number | string>(2.5); // 2.5%
-  const [wacc, setWacc] = useState<number | string>(10); // 10%
-  const [cashEq, setCashEq] = useState<number | string>(2000000); // 2M
-  const [totalDebt, setTotalDebt] = useState<number | string>(1500000); // 1.5M
-  const [shares, setShares] = useState<number | string>(1000000); // 1M
+const AUTOSAVE_KEY = 'ka_dcf_autosave_v1';
+const SAVED_KEY = 'ka_dcf_saved_v1';
+const CURRENCIES = ['INR', 'USD', 'EUR', 'GBP'] as const;
 
-  const [isLocked, setIsLocked] = useState(false);
-  const [showEmailGate, setShowEmailGate] = useState(false);
-  const [email, setEmail] = useState('');
-  const [loading, setLoading] = useState(false);
+interface SavedAnalysis {
+    id: string;
+    name: string;
+    savedAt: string;
+    currency: string;
+    inputs: DcfInputs;
+}
 
-  // Paywall / Gating Logic
-  useEffect(() => {
-    if (isPremiumUser) {
-      setIsLocked(false);
-      return;
-    }
+// UI state: money/counts as typed; rates edited in percent units.
+interface UiState {
+    revenue0: string; revenueGrowthPct: string; ebitdaMarginPct: string; daPct: string;
+    taxRatePct: string; capexPct: string; nwcPct: string; terminalGrowthPct: string;
+    waccPct: string; cash: string; debt: string; shares: string; exitMultiple: string;
+    forecastYears: number; midYearDiscounting: boolean; growthFade: boolean;
+    taxBenefitOnLosses: boolean; currency: string;
+}
 
-    const key = `used_tool_${slug}`;
-    const firstUsed = localStorage.getItem(key);
-    
-    if (!firstUsed) {
-      localStorage.setItem(key, Date.now().toString());
-    } else {
-      const msSinceFirstUse = Date.now() - parseInt(firstUsed);
-      if (msSinceFirstUse > 30 * 60 * 1000) {
-        setIsLocked(true);
-      }
-    }
-  }, [slug, isPremiumUser]);
+const toUi = (i: DcfInputs, currency = 'INR'): UiState => ({
+    revenue0: String(i.revenue0), revenueGrowthPct: String(i.revenueGrowth * 100),
+    ebitdaMarginPct: String(i.ebitdaMargin * 100), daPct: String(i.daPctRevenue * 100),
+    taxRatePct: String(i.taxRate * 100), capexPct: String(i.capexPctRevenue * 100),
+    nwcPct: String(i.nwcPctRevenue * 100), terminalGrowthPct: String(i.terminalGrowth * 100),
+    waccPct: String(i.wacc * 100), cash: String(i.cash), debt: String(i.debt),
+    shares: String(i.shares), exitMultiple: String(i.exitMultiple),
+    forecastYears: i.forecastYears, midYearDiscounting: i.midYearDiscounting,
+    growthFade: i.growthFade, taxBenefitOnLosses: i.taxBenefitOnLosses, currency,
+});
 
-  useEffect(() => {
-    if (isPremiumUser || localStorage.getItem(`unlocked_${slug}`)) {
-      setIsLocked(false);
-    }
-  }, [slug, isPremiumUser]);
+const fromUi = (u: UiState): DcfInputs => ({
+    revenue0: Number(u.revenue0), revenueGrowth: Number(u.revenueGrowthPct) / 100,
+    ebitdaMargin: Number(u.ebitdaMarginPct) / 100, daPctRevenue: Number(u.daPct) / 100,
+    taxRate: Number(u.taxRatePct) / 100, capexPctRevenue: Number(u.capexPct) / 100,
+    nwcPctRevenue: Number(u.nwcPct) / 100, terminalGrowth: Number(u.terminalGrowthPct) / 100,
+    wacc: Number(u.waccPct) / 100, cash: Number(u.cash), debt: Number(u.debt),
+    shares: Number(u.shares), exitMultiple: Number(u.exitMultiple),
+    forecastYears: u.forecastYears, midYearDiscounting: u.midYearDiscounting,
+    growthFade: u.growthFade, taxBenefitOnLosses: u.taxBenefitOnLosses,
+});
 
-  // Prevent NaN crashes on inputs
-  const num = (val: number | string) => Number(val) || 0;
+export default function DcfCalc({ isPremiumUser }: { slug?: string; isPremiumUser?: boolean }) {
+    const premium = Boolean(isPremiumUser);
+    const [ui, setUi] = useState<UiState>(() => toUi(DCF_DEFAULTS));
+    const [hydrated, setHydrated] = useState(false);
+    const [saved, setSaved] = useState<SavedAnalysis[]>([]);
+    const [saveName, setSaveName] = useState('');
+    const [notice, setNotice] = useState<string | null>(null);
+    const [deltas, setDeltas] = useState<Record<'bear' | 'bull', ScenarioDeltas>>(DEFAULT_SCENARIO_DELTAS);
 
-  // Fully-Expanded Top-Down Calculations Engine
-  const calculations = useMemo(() => {
-    const _rev = num(revenue);
-    const _revGr = num(revGrowth);
-    const _ebitdaM = num(ebitdaMargin);
-    const _dnaR = num(dnaRate);    // D&A % of revenue
-    const _taxR = num(taxRate);
-    const _capexR = num(capexNwcRate);
-    const _ltGr = num(ltGrowth);
-    const _wacc = num(wacc);
-    const _cash = num(cashEq);
-    const _debt = num(totalDebt);
-    const _shares = num(shares);
+    const set = (patch: Partial<UiState>) => setUi((cur) => ({ ...cur, ...patch }));
 
-    const modelError = _wacc <= _ltGr;
-    
-    // Yr 0 (Current) Baselines
-    // EBIT = EBITDA − D&A
-    const yr0Ebitda = _rev * (_ebitdaM / 100);
-    const yr0Dna    = _rev * (_dnaR / 100);
-    const yr0Ebit   = yr0Ebitda - yr0Dna;
-    // NOPAT = EBIT × (1 − t)  — the canonical free cash flow starting point
-    const yr0Nopat  = yr0Ebit * (1 - _taxR / 100);
-    const yr0Capex  = _rev * (_capexR / 100);
-    // UFCF = NOPAT + D&A − Capex  (D&A is non-cash, add back; NWC change ≈ 0 at base)
-    const yr0Fcf    = yr0Nopat + yr0Dna - yr0Capex;
+    // Restore precedence: defaults ← browser autosave ← shared URL params.
+    // Merging (rather than URL-replaces-all) means a handoff link such as
+    // ?wacc=0.133 from the WACC calculator changes only the discount rate
+    // and leaves the user's in-progress DCF inputs intact.
+    useEffect(() => {
+        try {
+            let base = DCF_DEFAULTS;
+            let currency = 'INR';
+            const raw = localStorage.getItem(AUTOSAVE_KEY);
+            if (raw) {
+                const parsed = JSON.parse(raw) as { inputs?: Record<string, unknown>; currency?: string };
+                base = parseDcfInputs(parsed.inputs ?? null);
+                currency = parsed.currency ?? currency;
+            }
+            const params = Object.fromEntries(new URLSearchParams(window.location.search));
+            const hasShared = Object.keys(params).some((k) => k in DCF_DEFAULTS);
+            if (hasShared) {
+                base = parseDcfInputs(params, base);
+                if (typeof params.currency === 'string') currency = params.currency;
+                setNotice(
+                    typeof params.wacc === 'string' && Object.keys(params).filter((k) => k in DCF_DEFAULTS).length === 1
+                        ? `Discount rate set to ${(Number(params.wacc) * 100).toFixed(2)}% from the WACC calculator — your other inputs were kept.`
+                        : 'Loaded assumptions from the shared link.',
+                );
+            }
+            setUi(toUi(base, currency));
+            const rawSaved = localStorage.getItem(SAVED_KEY);
+            if (rawSaved) setSaved(JSON.parse(rawSaved) as SavedAnalysis[]);
+        } catch { /* corrupted local state → keep defaults */ }
+        setHydrated(true);
+    }, []);
 
-    // Excel Matrix Arrays (Initialized w/ Yr 0)
-    const rowRev: (number | string)[] = [_rev];
-    const rowEbitda: (number | string)[] = [yr0Ebitda];
-    const rowTax: (number | string)[] = [-(yr0Ebit * _taxR / 100)];
-    const rowNopat: (number | string)[] = [yr0Nopat];
-    const rowCapex: (number | string)[] = [-yr0Capex];
-    const rowFcf: (number | string)[] = [yr0Fcf];
-    const rowDf: (number | string)[] = [1.000];
-    const rowPv: (number | string)[] = [yr0Fcf];
-    
-    let sumPvFcf = 0;
-    let currentPeriodRev = _rev;
-    const chartData = [];
+    const inputs = useMemo(() => fromUi(ui), [ui]);
 
-    // Base loop for 5-Year explicit forecast period
-    let lastFcf = yr0Fcf;
+    // Autosave every edit (post-hydration) so a reload never loses work.
+    useEffect(() => {
+        if (!hydrated) return;
+        try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ inputs, currency: ui.currency })); } catch { /* quota */ }
+    }, [hydrated, inputs, ui.currency]);
 
-    for (let year = 1; year <= 5; year++) {
-      currentPeriodRev = currentPeriodRev * (1 + (_revGr / 100)); // Grow Topline
-      const cEbitda = currentPeriodRev * (_ebitdaM / 100);
-      const cDna    = currentPeriodRev * (_dnaR / 100);
-      const cEbit   = cEbitda - cDna;
-      // NOPAT = EBIT × (1 − t)  [tax on operating earnings only]
-      const cNopat  = cEbit * (1 - _taxR / 100);
-      const cCapex  = currentPeriodRev * (_capexR / 100);
-      // UFCF = NOPAT + D&A − Capex
-      const cFcf    = cNopat + cDna - cCapex;
-      
-      const df = Math.pow(1 + (_wacc / 100), year); // Discount Factor
-      const pvFcf = cFcf / df; // PV of FCF
-      
-      sumPvFcf += pvFcf;
-      lastFcf = cFcf;
+    const result = useMemo(() => runDcf(inputs), [inputs]);
+    const scenarios = useMemo(() => (premium ? runScenarios(inputs, deltas) : null), [premium, inputs, deltas]);
+    const grid = useMemo(() => (premium && result.errors.length === 0 ? sensitivityGrid(inputs) : null), [premium, inputs, result.errors.length]);
 
-      rowRev.push(Math.round(currentPeriodRev));
-      rowEbitda.push(Math.round(cEbitda));
-      rowTax.push(Math.round(-cEbit * _taxR / 100));
-      rowNopat.push(Math.round(cNopat));
-      rowCapex.push(Math.round(-cCapex));
-      rowFcf.push(Math.round(cFcf));
-      rowDf.push((1/df).toFixed(3));
-      rowPv.push(Math.round(pvFcf));
+    const locale = ui.currency === 'INR' ? 'en-IN' : 'en-US';
+    const money = (v: number | null | undefined, compact = false) =>
+        v === null || v === undefined || !Number.isFinite(v) ? '—'
+            : new Intl.NumberFormat(locale, {
+                style: 'currency', currency: ui.currency,
+                notation: compact ? 'compact' : 'standard', maximumFractionDigits: compact ? 2 : 0,
+            }).format(v);
+    const num = (v: number) => new Intl.NumberFormat(locale, { maximumFractionDigits: 0 }).format(Math.round(v));
+    const firmPrice = (v: number | null) => v === null || !Number.isFinite(v) ? '—'
+        : new Intl.NumberFormat(locale, { style: 'currency', currency: ui.currency, minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(v);
 
-      chartData.push({
-        stage: `Year ${year}`,
-        value: !modelError && pvFcf > 0 ? Math.round(pvFcf) : 0,
-        fill: '#0ea5e9' // Light blue for near-term cash
-      });
-    }
+    const chartData = useMemo(() => {
+        if (result.errors.length) return [];
+        const rows = result.years.map((y) => ({
+            stage: `Year ${y.year}`, value: Math.round(y.presentValue),
+            fill: y.presentValue < 0 ? '#dc2626' : '#0ea5e9',
+        }));
+        rows.push({ stage: 'Terminal Value', value: Math.round(result.pvTerminalValue ?? 0), fill: (result.pvTerminalValue ?? 0) < 0 ? '#dc2626' : '#0d9488' });
+        return rows;
+    }, [result]);
 
-    // Terminal Value (Gordon Growth Method)
-    const terminalYearFcf = lastFcf * (1 + (_ltGr / 100));
-    let terminalValue = 0;
-    let pvTerminalValue = 0;
-
-    if (!modelError) {
-      terminalValue = terminalYearFcf / ((_wacc / 100) - (_ltGr / 100));
-      const dfTerminal = Math.pow(1 + (_wacc / 100), 5);
-      pvTerminalValue = terminalValue / dfTerminal;
-      
-      rowRev.push('---');
-      rowEbitda.push('---');
-      rowTax.push('---');
-      rowNopat.push('---');
-      rowCapex.push('---');
-      rowFcf.push(Math.round(terminalValue));
-      rowDf.push((1/dfTerminal).toFixed(3));
-      rowPv.push(Math.round(pvTerminalValue));
-
-      chartData.push({
-        stage: 'Terminal Value',
-        value: pvTerminalValue > 0 ? Math.round(pvTerminalValue) : 0,
-        fill: '#0d9488' // Dark teal for terminal lump sum
-      });
-    } else {
-      ['---', '---', '---', '---', '---', 'Error', 'Error', 'Error'].forEach((val, i) => {
-        const arrs = [rowRev, rowEbitda, rowTax, rowNopat, rowCapex, rowFcf, rowDf, rowPv];
-        arrs[i].push(val);
-      });
-    }
-
-    // Equity Bridge Build
-    const enterpriseValue = sumPvFcf + pvTerminalValue;
-    const equityValue = enterpriseValue + _cash - _debt;
-    const sharePrice = _shares > 0 ? equityValue / _shares : 0;
-    const pvTvPercentage = enterpriseValue > 0 ? (pvTerminalValue / enterpriseValue) * 100 : 0;
-
-    // Dynamic Analyst Diagnosis
-    let insightText = '';
-    if (modelError) {
-      insightText = `Mathematical Integrity Error: The Gordon Growth model dictates that a company cannot grow faster than the overall economy forever. Your Terminal Growth Rate (${_ltGr}%) must be strictly lower than your Discount Rate (${_wacc}%), otherwise the mathematical sum of the terminal value approaches Infinity causing a model crash. Fix 'WACC' or 'Terminal %'.`;
-    } else if (pvTvPercentage > 85) {
-      insightText = `Highly Speculative Valuation: This DCF values the business at $${(equityValue/1000000).toFixed(1)}M. However, an alarming ${Math.round(pvTvPercentage)}% of the total Enterprise value comes solely from the "Terminal Value" lump sum (the dark teal bar). Investors are paying almost exclusively for cash flows occurring well past Year 5. If your near-term growth assumptions fail, the terminal value will collapse entirely. Investors historically assign a higher WACC to mitigate this far-future risk.`;
-    } else if (pvTvPercentage < 50 && _revGr < 5) {
-      insightText = `Mature Cash Cow: This valuation profile is heavily weighted toward near-term predictable cash generation. Because topline top-line growth is modeled at just ${_revGr}%, a massive portion of the fundamental value relies on harvesting current EBITDA. This is a very safe, low-risk DCF profile typical of utility companies or mature industrials. The calculated theoretical share price of $${sharePrice.toFixed(2)} represents a solid value-investing baseline.`;
-    } else {
-      insightText = `Balanced Growth Profile: Your math yields an M&A-grade structured model. The Equity Value of $${(equityValue/1000000).toFixed(1)}M is buoyed by aggressive ${_revGr}% revenue execution in the next 5 years, while maintaining a mathematically safe ${_ltGr}% perpetual terminal cap. The Terminal Present Value accounts for ${Math.round(pvTvPercentage)}% of the total valuation, perfectly hitting the standard Wall Street benchmarking band for a growing technology or mid-market firm.`;
-    }
-
-    return { 
-      modelError,
-      enterpriseValue,
-      equityValue,
-      sharePrice,
-      sumPvFcf,
-      pvTerminalValue,
-      chartData,
-      rowRev,
-      rowEbitda,
-      rowTax,
-      rowNopat,
-      rowCapex,
-      rowFcf,
-      rowDf,
-      rowPv,
-      insightText
+    // ── Actions ──────────────────────────────────────────────────────────────
+    const download = (name: string, content: string, type: string) => {
+        const blob = new Blob([content], { type });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = name; a.click();
+        URL.revokeObjectURL(url);
     };
-  }, [revenue, revGrowth, ebitdaMargin, dnaRate, taxRate, capexNwcRate, ltGrowth, wacc, cashEq, totalDebt, shares]);
+    const exportCsv = () => download('dcf-valuation.csv',
+        buildDcfCsv(inputs, result, scenarios, grid, { currency: ui.currency, exportedAt: new Date().toISOString() }),
+        'text/csv;charset=utf-8');
+    const exportJson = () => download('dcf-assumptions.json',
+        JSON.stringify({ tool: 'dcf-valuation-model', version: 1, currency: ui.currency, inputs }, null, 2),
+        'application/json');
+    const importJson = (file: File) => {
+        file.text().then((text) => {
+            try {
+                const parsed = JSON.parse(text) as { inputs?: Record<string, unknown>; currency?: string };
+                if (!parsed.inputs) throw new Error('missing inputs');
+                setUi(toUi(parseDcfInputs(parsed.inputs), parsed.currency ?? 'INR'));
+                setNotice('Assumptions imported from JSON.');
+            } catch { setNotice('Could not import that file — expected a DCF assumptions JSON.'); }
+        });
+    };
+    const shareLink = async () => {
+        const url = `${window.location.origin}/tools/dcf-valuation-model?${dcfInputsToQuery(inputs)}&currency=${ui.currency}`;
+        try { await navigator.clipboard.writeText(url); setNotice('Shareable link copied — it encodes every assumption.'); }
+        catch { setNotice(url); }
+    };
+    const saveAnalysis = () => {
+        const name = saveName.trim() || `Valuation ${saved.length + 1}`;
+        const entry: SavedAnalysis = { id: `${Date.now()}`, name, savedAt: new Date().toISOString(), currency: ui.currency, inputs };
+        const next = [entry, ...saved].slice(0, 25);
+        setSaved(next);
+        try { localStorage.setItem(SAVED_KEY, JSON.stringify(next)); } catch { /* quota */ }
+        setSaveName('');
+        setNotice(`Saved “${name}” in this browser.`);
+    };
+    const deleteSaved = (id: string) => {
+        const next = saved.filter((s) => s.id !== id);
+        setSaved(next);
+        try { localStorage.setItem(SAVED_KEY, JSON.stringify(next)); } catch { /* quota */ }
+    };
 
-  const handleSubscribe = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    try {
-      const response = await fetch('/api/subscribe', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, tag: `unlocked_${slug}` }),
-      });
-      if (response.ok) {
-        localStorage.setItem(`unlocked_${slug}`, 'true');
-        setIsLocked(false);
-        setShowEmailGate(false);
-      }
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (isPremiumUser || localStorage.getItem(`unlocked_${slug}`)) {
-      setIsLocked(false);
-    }
-  }, [slug, isPremiumUser]);
-
-  // Excel Cell Helper
-  const ExcelHeader = ({ label }: { label: string }) => (
-    <th className="border border-gray-300 bg-gray-100 px-3 py-1 text-center font-bold text-gray-600 font-sans tracking-tight shadow-sm text-[11px] uppercase">
-      {label}
-    </th>
-  );
-  const ExcelRowIndex = ({ i }: { i: string }) => (
-    <td className="border border-gray-300 bg-gray-100 text-center font-bold text-gray-400 font-sans text-xs w-6 shadow-sm border-r-2 border-r-gray-300">
-      {i}
-    </td>
-  );
-
-  return (
-    <div className="min-h-screen py-10 relative">
-      <div className="content-page space-y-8">
-        
-        {/* Header */}
-        <div className="mb-6">
-          <p className="text-teal-600 font-medium mb-2 uppercase tracking-wider text-sm">Kunwar Analytics Advanced M&A Model</p>
-          <h1 className="text-3xl font-bold text-brand-navy dark:text-white">Fully Expanded Top-Down DCF</h1>
-          <p className="text-brand-slate dark:text-slate-300 text-sm max-w-2xl mt-2">
-            Calculate intrinsic business value using Wall Street's exact "Unlevered Free Cash Flow" methodology, mapping out fully explicit operating margins before establishing terminal valuation.
-          </p>
+    // ── Small building blocks ────────────────────────────────────────────────
+    const Field = ({ label, value, onChange, unit, hint, step = '0.1' }: {
+        label: string; value: string; onChange: (v: string) => void; unit?: string; hint?: string; step?: string;
+    }) => (
+        <div>
+            <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">{label}</label>
+            <div className="relative">
+                <input type="number" step={step} value={value} onChange={(e) => onChange(e.target.value)}
+                    className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white"
+                    aria-label={label} />
+                {unit && <span className="absolute right-3 top-2.5 text-gray-400">{unit}</span>}
+            </div>
+            {hint && <p className="text-[10px] text-gray-400 mt-0.5">{hint}</p>}
+            {value.trim() !== '' && !Number.isFinite(Number(value)) && (
+                <p className="text-[10px] text-red-500 mt-0.5">Enter a number.</p>
+            )}
         </div>
+    );
 
-        {/* Dynamic App Layout: Sidebar + Main Content */}
-        <div className="grid lg:grid-cols-4 gap-8 relative">
-          
-          {/* Inputs Sidebar */}
-          <div className="lg:col-span-1 space-y-6 bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 h-fit sticky top-24 z-20">
-            <h3 className="font-bold text-brand-navy dark:text-white border-b pb-3 uppercase tracking-wider text-sm">Operating Assumptions</h3>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Topline Revenue (Yr 0)</label>
-                <div className="relative">
-                  <span className="absolute left-3 top-2.5 text-gray-400 font-bold">$</span>
-                  <input type="number" className="input w-full pl-8 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={revenue} onChange={e => setRevenue(e.target.value)} />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
+    const LockedPanel = ({ title, desc }: { title: string; desc: string }) => (
+        <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-amber-500/30 w-full">
+            <div className="flex flex-wrap items-center justify-between gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Rev Growth</label>
-                  <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={revGrowth} onChange={e => setRevGrowth(e.target.value)} />
-                    <span className="absolute right-3 top-2.5 text-gray-400">%</span>
-                  </div>
+                    <h3 className="font-bold text-brand-navy dark:text-white uppercase tracking-wider text-sm">{title} <span className="ml-1 text-[10px] bg-amber-500/10 text-amber-600 border border-amber-500/25 rounded px-1.5 py-0.5 normal-case tracking-normal">Pro</span></h3>
+                    <p className="text-[13px] text-gray-500 mt-1 max-w-xl">{desc}</p>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">EBITDA Mgn</label>
-                  <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={ebitdaMargin} onChange={e => setEbitdaMargin(e.target.value)} />
-                    <span className="absolute right-3 top-2.5 text-gray-400">%</span>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider" title="D&A as % Revenue — EBIT = EBITDA − D&A">D&amp;A % Rev</label>
-                <div className="relative">
-                  <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={dnaRate} onChange={e => setDnaRate(e.target.value)} />
-                  <span className="absolute right-3 top-2.5 text-gray-400">%</span>
-                </div>
-                <p className="text-[10px] text-gray-400 mt-0.5">NOPAT = EBIT×(1−t), FCF = NOPAT+D&amp;A−Capex</p>
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider" title="Effective Corporate Tax Rate">Tax Rate</label>
-                  <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={taxRate} onChange={e => setTaxRate(e.target.value)} />
-                    <span className="absolute right-3 top-2.5 text-gray-400">%</span>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider" title="Capital Expenditures & Net Working Capital (% of Rev)">Capex+NWC</label>
-                  <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" step="0.1" value={capexNwcRate} onChange={e => setCapexNwcRate(e.target.value)} />
-                    <span className="absolute right-3 top-2.5 text-gray-400">%</span>
-                  </div>
-                </div>
-              </div>
-
-              <h3 className="font-bold text-brand-navy dark:text-white border-b pb-2 pt-4 uppercase tracking-wider text-sm">Valuation Parameters</h3>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Terminal Gr</label>
-                  <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-info-muted/50" step="0.1" value={ltGrowth} onChange={e => setLtGrowth(e.target.value)} />
-                    <span className="absolute right-3 top-2.5 text-gray-400">%</span>
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">WACC (Disc)</label>
-                  <div className="relative">
-                    <input type="number" className="input w-full pr-7 bg-info-muted/50" step="0.1" value={wacc} onChange={e => setWacc(e.target.value)} />
-                    <span className="absolute right-3 top-2.5 text-gray-400">%</span>
-                  </div>
-                </div>
-              </div>
-
-              <h3 className="font-bold text-brand-navy dark:text-white border-b pb-2 pt-4 uppercase tracking-wider text-sm">Balance Sheet Bridge</h3>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider" title="Cash & Equivalents">Total Cash</label>
-                  <div className="relative">
-                    <span className="absolute left-2 top-2.5 text-gray-400 text-xs">$</span>
-                    <input type="number" className="input w-full pl-5 text-sm" value={cashEq} onChange={e => setCashEq(e.target.value)} />
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider" title="Total Interest-Bearing Debt">Total Debt</label>
-                  <div className="relative">
-                    <span className="absolute left-2 top-2.5 text-gray-400 text-xs">$</span>
-                    <input type="number" className="input w-full pl-5 text-sm" value={totalDebt} onChange={e => setTotalDebt(e.target.value)} />
-                  </div>
-                </div>
-              </div>
-
-              <div className="pt-2">
-                <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Shares Outstanding (#)</label>
-                <input type="number" className="input w-full text-center tracking-widest bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" value={shares} onChange={e => setShares(e.target.value)} />
-              </div>
-
+                <Link href="/pricing" className="inline-flex items-center px-4 py-2 rounded-xl bg-primary text-primary-foreground text-sm font-semibold hover:bg-primary-hover transition-colors">Unlock with Pro →</Link>
             </div>
-          </div>
-
-          {/* Results Main Pane */}
-          <div className={`lg:col-span-3 space-y-6 flex flex-col ${isLocked ? 'blur-md pointer-events-none select-none opacity-40' : ''} transition-all duration-700 w-full`}>
-            
-            {/* KPI Cards */}
-            <div className="grid md:grid-cols-3 gap-6">
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-16 h-16 bg-info-muted rounded-bl-full -mr-4 -mt-4 z-0"></div>
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1 relative z-10">Target Equity Value</p>
-                <h4 className={`text-4xl tracking-tighter font-bold relative z-10 ${calculations.modelError ? 'text-red-500' : 'text-brand-navy dark:text-white'}`}>
-                  {calculations.modelError ? 'Error (Check WACC)' : `$${(calculations.equityValue / 1000000).toFixed(2)}M`}
-                </h4>
-                <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2 relative z-10">Market Cap (EV + Cash - Debt)</p>
-              </div>
-
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-success/25 ring-2 ring-green-500/10 relative overflow-hidden">
-                <div className="absolute top-0 left-0 w-1 h-full bg-success"></div>
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Implied Share Price</p>
-                <h4 className={`text-4xl tracking-tighter font-bold ${calculations.modelError ? 'text-red-500' : 'text-green-600'}`}>
-                  {calculations.modelError ? 'N/A' : `$${calculations.sharePrice.toFixed(2)}`}
-                </h4>
-                <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2">Target Common Stock Price</p>
-              </div>
-
-              <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100">
-                <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Total Enterprise Value</p>
-                <h4 className="text-3xl tracking-tighter font-bold text-gray-700">
-                  {calculations.modelError ? 'N/A' : `$${(calculations.enterpriseValue / 1000000).toFixed(2)}M`}
-                </h4>
-                <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2 mt-3">Sum of All Present Values (PV)</p>
-              </div>
-            </div>
-
-            {/* The Original 6-Bar Composed Chart showing PV Composition */}
-            <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 relative z-10 w-full">
-              <h3 className="font-bold text-brand-navy dark:text-white mb-1 leading-tight uppercase tracking-wider text-sm flex items-center justify-between">
-                <span>Component Breakdown of Present Value (PV)</span>
-                <span className="text-[10px] bg-info-muted text-info px-2 py-0.5 rounded border border-info/25">Discounted Matrix</span>
-              </h3>
-              <p className="text-[11px] text-gray-500 mb-4 tracking-wide">
-                Visualizing how much of the intrinsic Enterprise Value arises from near-term execution (Years 1-5) versus far-future speculative Gordon Growth (Terminal Value).
-              </p>
-              <div className="h-[280px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={calculations.chartData} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" horizontal={true} vertical={false} opacity={0.3} />
-                    <XAxis dataKey="stage" axisLine={false} tickLine={false} tick={{fontSize: 11, fill: 'hsl(var(--content-muted))'}} />
-                    <YAxis tickFormatter={(val) => `$${(val/1000000).toFixed(1)}M`} axisLine={false} tickLine={false} tick={{fontSize: 11}} width={60} />
-                    <Tooltip 
-                      formatter={(value: any) => [`$${Number(value).toLocaleString()}`, 'Present Value ($)']}
-                      cursor={{fill: 'hsl(var(--surface-muted))'}}
-                      contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }}
-                    />
-                    <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={60}>
-                      {
-                        calculations.chartData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={entry.fill} />
-                        ))
-                      }
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </div>
-
-            {/* THE MASSIVE FULL M&A EXCEL SHEET DATA BLOCK */}
-            <div className={`bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden relative w-full mb-8 font-sans`}>
-              
-              <div className="bg-success text-primary-foreground px-3 py-1 text-[11px] font-medium flex items-center gap-2 border-b border-success">
-                <svg className="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M2 3h20v4H2zm0 6h6v12H2zm8 0h12v3H10zm0 4.5h12v3H10zm0 4.5h12v3H10z"/>
-                </svg>
-                <span>DCF_Full_Operating_Model_v7.xlsx</span>
-              </div>
-              
-              <div className="bg-white dark:bg-slate-900 border-b border-gray-300 px-3 py-1.5 text-[11px] text-gray-600 font-mono shadow-sm flex items-center gap-2">
-                <span className="font-bold italic text-gray-400 select-none cursor-default px-1 hover:bg-gray-100 rounded">fx</span> 
-                <div className="bg-white dark:bg-slate-900 border border-info/35 w-full px-2 py-0.5 text-black h-5 flex items-center shadow-inner">
-                  =SUM(PV_Explicit) + PV_Terminal
-                </div>
-              </div>
-
-              <div className="horizontal-scroll-region w-full" role="region" aria-label="Discounted cash flow model table" tabIndex={0} data-lenis-prevent>
-                <table className="w-full text-[11px] whitespace-nowrap border-collapse min-w-[800px] select-text">
-                  <thead>
-                    <tr>
-                      <th className="bg-gray-100 border-b-2 border-r border-gray-300 w-8 z-10"></th>
-                      <ExcelHeader label="Financial Line Item" />
-                      <ExcelHeader label="Base (Yr 0)" />
-                      <ExcelHeader label="Year 1" />
-                      <ExcelHeader label="Year 2" />
-                      <ExcelHeader label="Year 3" />
-                      <ExcelHeader label="Year 4" />
-                      <ExcelHeader label="Year 5" />
-                      <ExcelHeader label="Terminal" />
-                    </tr>
-                  </thead>
-                  <tbody className="text-gray-800">
-                    
-                    {/* Operating Metrics */}
-                    <tr className="hover:bg-info-muted/40 group">
-                      <ExcelRowIndex i="1" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-white dark:bg-slate-900 text-black pl-3 group-hover:bg-info-muted/0">Topline Revenue</td>
-                      {calculations.rowRev.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-warning-muted font-bold' : ''}`}>
-                          {typeof val === 'number' ? val.toLocaleString() : val}
-                        </td>
-                      ))}
-                    </tr>
-                    
-                    <tr className="hover:bg-info-muted/40 group">
-                      <ExcelRowIndex i="2" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-gray-700 group-hover:bg-info-muted/0">EBITDA</td>
-                      {calculations.rowEbitda.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-gray-600 ${idx===0 ? 'text-blue-700 bg-warning-muted' : ''}`}>
-                          {typeof val === 'number' ? val.toLocaleString() : val}
-                        </td>
-                      ))}
-                    </tr>
-
-                    <tr className="hover:bg-info-muted/40 group text-red-600">
-                      <ExcelRowIndex i="3" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 group-hover:bg-info-muted/0">Less: Operating Cash Taxes</td>
-                      {calculations.rowTax.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-warning-muted' : ''}`}>
-                          {typeof val === 'number' ? `(${Math.abs(val).toLocaleString()})` : val}
-                        </td>
-                      ))}
-                    </tr>
-
-                    <tr className="hover:bg-info-muted/40 group bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
-                      <ExcelRowIndex i="4" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white pl-3 font-semibold group-hover:bg-info-muted/0">NOPAT = EBIT × (1−t)</td>
-                      {calculations.rowNopat.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-semibold text-black ${idx===0 ? 'text-blue-700 bg-warning-muted' : 'border-t border-t-gray-400'}`}>
-                          {typeof val === 'number' ? val.toLocaleString() : val}
-                        </td>
-                      ))}
-                    </tr>
-
-                    <tr className="hover:bg-info-muted/40 group text-red-600">
-                      <ExcelRowIndex i="5" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 group-hover:bg-info-muted/0">Less: Reinvestment (Capex/NWC)</td>
-                      {calculations.rowCapex.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono ${idx===0 ? 'text-blue-700 bg-warning-muted' : ''}`}>
-                          {typeof val === 'number' ? `(${Math.abs(val).toLocaleString()})` : val}
-                        </td>
-                      ))}
-                    </tr>
-
-                    {/* UFCF */}
-                    <tr className="bg-info-muted/30 group">
-                      <ExcelRowIndex i="6" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-info-muted/40 text-brand-navy dark:text-white pl-3 uppercase tracking-wider text-[10px]">UFCF = NOPAT + D&amp;A − Capex</td>
-                      {calculations.rowFcf.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-brand-navy dark:text-white bg-info-muted/40 ${idx===0 ? 'text-blue-700 bg-warning-muted' : 'border-t-2 border-t-gray-400'}`}>
-                          {typeof val === 'number' ? val.toLocaleString() : val}
-                        </td>
-                      ))}
-                    </tr>
-
-                    {/* Discounting */}
-                    <tr>
-                      <ExcelRowIndex i="7" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 italic text-gray-500 text-[10px]">WACC Discount Factor</td>
-                      {calculations.rowDf.map((val, idx) => (
-                        <td key={idx} className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono italic text-gray-400">
-                          {val}
-                        </td>
-                      ))}
-                    </tr>
-
-                    <tr className="bg-warning-muted/35 group">
-                      <ExcelRowIndex i="8" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 font-bold bg-warning-muted/55 text-black pl-3 shadow-inner">Present Value (PV)</td>
-                      {calculations.rowPv.map((val, idx) => (
-                        <td key={idx} className={`border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-black border-t border-t-gray-300 ${idx===7 ? 'bg-brand-muted text-brand border-2 border-teal-500 shadow-md transform scale-105 z-10 relative' : ''} ${idx===0 ? 'bg-warning-muted' : ''}`}>
-                          {typeof val === 'number' ? val.toLocaleString() : val}
-                        </td>
-                      ))}
-                    </tr>
-
-                    {/* Spacer Line */}
-                    <tr>
-                      <ExcelRowIndex i="9" />
-                      <td colSpan={8} className="border border-gray-200 dark:border-slate-700 bg-surface-muted/50 py-1"></td>
-                    </tr>
-
-                    {/* Valuation Bridge */}
-                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
-                      <ExcelRowIndex i="10" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 font-semibold pl-3 tracking-tight">Sum of P.V. Explicit (Years 1-5)</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-black">{calculations.modelError ? 'Error' : Math.round(calculations.sumPvFcf).toLocaleString()}</td>
-                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
-                    </tr>
-                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
-                      <ExcelRowIndex i="11" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 font-semibold pl-3 tracking-tight">Present Value of Terminal (Yr 6+)</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-black border-b border-b-gray-400">{calculations.modelError ? 'Error' : Math.round(calculations.pvTerminalValue).toLocaleString()}</td>
-                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
-                    </tr>
-                    
-                    <tr className="bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
-                      <ExcelRowIndex i="12" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 font-extrabold uppercase pl-3 text-[10px] tracking-widest text-brand-navy dark:text-white">Enterprise Value</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono font-bold text-[12px] text-brand-navy dark:text-white">
-                        {calculations.modelError ? 'Error' : Math.round(calculations.enterpriseValue).toLocaleString()}
-                      </td>
-                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
-                    </tr>
-
-                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
-                      <ExcelRowIndex i="13" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-green-700">Plus: Cash & Equivalents</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 bg-warning-muted">{Math.round(num(cashEq)).toLocaleString()}</td>
-                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
-                    </tr>
-
-                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50">
-                      <ExcelRowIndex i="14" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 text-red-600">Less: Total Outstanding Debt</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-warning-muted">({Math.round(num(totalDebt)).toLocaleString()})</td>
-                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
-                    </tr>
-
-                    <tr className="bg-[#e2f1e8]">
-                      <ExcelRowIndex i="15" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-success">Implied Equity Value</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-bold text-[14px] text-success">
-                        <span className="border-b-2 border-double border-success pb-0.5">
-                          {calculations.modelError ? 'Error' : Math.round(calculations.equityValue).toLocaleString()}
-                        </span>
-                      </td>
-                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent"></td>
-                    </tr>
-
-                    <tr className="hover:bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white/50 border-t-2 border-t-border-strong">
-                      <ExcelRowIndex i="16" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 bg-white dark:bg-slate-900 pl-3 italic text-gray-500">Divided By: Fully Diluted Shares</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 border-b border-b-gray-400 bg-warning-muted">{Math.round(num(shares)).toLocaleString()}</td>
-                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent border-t border-t-gray-200"></td>
-                    </tr>
-
-                    <tr className="bg-surface-muted">
-                      <ExcelRowIndex i="17" />
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 font-extrabold uppercase pl-3 text-[11px] tracking-widest text-info shadow-inner">Target Share Price</td>
-                      <td className="border border-gray-200 dark:border-slate-700 px-2 py-2 text-right font-mono font-extrabold text-[15px] text-info shadow-inner">
-                        <span className="border-b-4 border-double border-blue-900 pb-0.5 px-2 bg-white dark:bg-slate-900 rounded-sm shadow border">
-                          {calculations.modelError ? 'Error' : `$${calculations.sharePrice.toFixed(2)}`}
-                        </span>
-                      </td>
-                      <td colSpan={6} className="bg-white dark:bg-slate-900 border border-transparent shadow-inner"></td>
-                    </tr>
-
-                    <tr>
-                      <ExcelRowIndex i="18" />
-                      <td colSpan={8} className="border border-gray-300 bg-surface-muted/80 py-0.5 text-[9px] italic text-gray-400 pl-4 border-t shadow-inner uppercase tracking-wider">Ready</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* AI Dynamic Summary Box */}
-            <div className="bg-brand-navy p-6 rounded-xl shadow-lg relative overflow-hidden w-full flex flex-col justify-center">
-              <div className="absolute top-0 right-0 p-4 opacity-5">
-                <svg className="w-32 h-32 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2L2 22h20L12 2zm0 4.5l6.5 13h-13L12 6.5z"/></svg>
-              </div>
-              <h3 className="font-bold text-white mb-2 text-sm flex items-center gap-2 uppercase tracking-widest border-b border-white/10 pb-3">
-                <span className="w-2.5 h-2.5 rounded-full bg-blue-400 animate-pulse"></span>
-                AI M&A Diligence Engine
-              </h3>
-              <p className="text-blue-50 text-sm leading-relaxed relative z-10 pt-2 font-light">
-                {calculations.insightText}
-              </p>
-            </div>
-            
-          </div>
-          
-          {/* Paywall Overlay */}
-          {isLocked && (
-<div className="paywall-overlay absolute inset-0 z-[100] flex flex-col items-center justify-center pt-20 bg-gray-900/10 backdrop-blur-sm -m-6 rounded-3xl">
-              <div className="paywall-panel ui-scroll-region w-full bg-surface p-6 sm:p-10 rounded-2xl shadow-2xl max-w-lg text-center border border-border-subtle relative z-50" data-lenis-prevent>
-                <div className="w-16 h-16 bg-warning-muted text-warning rounded-full flex items-center justify-center mb-6">
-                  <svg className="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
-                </div>
-                <h3 className="text-2xl font-bold text-brand-navy dark:text-white mb-3">Model Locked</h3>
-                <p className="text-brand-slate dark:text-slate-300 mb-8">
-                  You've used your 1 free evaluation run of the complex M&A DCF Model. Subscribe/Buy now to unlock permanent access to this professional tool and all 10 financial calculators.
-                </p>
-                
-                {!showEmailGate ? (
-                  <button onClick={() => setShowEmailGate(true)} className="btn btn-primary w-full text-lg py-4 shadow-xl">
-                    Unlock Premium Access
-                  </button>
-                ) : (
-                  <form onSubmit={handleSubscribe} className="w-full space-y-4">
-                    <input 
-                      type="email" 
-                      placeholder="Enter your work email..." 
-                      className="input w-full"
-                      value={email}
-                      onChange={e => setEmail(e.target.value)}
-                      required
-                    />
-                    <button type="submit" disabled={loading} className="btn btn-primary w-full shadow-xl shadow-brand-teal/30">
-                      {loading ? 'Verifying...' : 'Pay & Subscribe Access'}
-                    </button>
-                    <button type="button" onClick={() => setShowEmailGate(false)} className="text-sm text-gray-500 mt-2 hover:text-content-primary">
-                      Cancel
-                    </button>
-                  </form>
-                )}
-              </div>
-            </div>
-          )}
-
         </div>
+    );
 
-        {/* Educational Glossary Section */}
-        <div className="mt-16 bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
-          <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">M&A Valuation Glossary</h2>
-          <p className="text-brand-slate dark:text-slate-300 mb-8">Understanding the complex mechanics of Discounted Cash Flow math.</p>
-          
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">💰</span> Free Cash Flow (FCF)</h4>
-              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The actual cash a company generates after subtracting the money required to maintain its asset base. This is the pure cash that can be paid out to investors or used for acquisitions.</p>
-            </div>
+    const hasErrors = result.errors.length > 0;
+    const b = result.baseYear;
+    const stmtRow = (label: string, base: string, pick: (y: (typeof result.years)[number]) => string, strong = false) => (
+        <tr className={strong ? 'bg-info-muted/30 font-bold' : 'hover:bg-info-muted/20'}>
+            <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 pl-3 bg-white dark:bg-slate-900">{label}</td>
+            <td className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono text-blue-700 bg-warning-muted/60">{base}</td>
+            {result.years.map((y) => (
+                <td key={y.year} className="border border-gray-200 dark:border-slate-700 px-2 py-1 text-right font-mono">{pick(y)}</td>
+            ))}
+        </tr>
+    );
+    const neg = (v: number) => (v < 0 ? `(${num(Math.abs(v))})` : num(v));
 
-            <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">📉</span> Discount Rate (WACC)</h4>
-              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> Expected return for investors. Because $100 today is worth more than $100 in five years (due to inflation and risk), we use this percentage to "discount" future cash back to its Present Value.</p>
-            </div>
+    return (
+        <div className="min-h-screen py-10 relative">
+            <div className="content-page space-y-8">
+                <div className="mb-2">
+                    <p className="text-teal-600 font-medium mb-2 uppercase tracking-wider text-sm">Kunwar Analytics Valuation Model</p>
+                    <h2 className="text-3xl font-bold text-brand-navy dark:text-white">DCF Valuation — Unlevered Free Cash Flow</h2>
+                    <p className="text-brand-slate dark:text-slate-300 text-sm max-w-2xl mt-2">
+                        Intrinsic value from explicit operating drivers: revenue → EBITDA → EBIT → NOPAT → free cash flow,
+                        discounted at WACC with a Gordon-growth terminal value. Every figure below is computed by a
+                        unit-tested calculation engine — defaults are illustrative; replace them with company actuals.
+                    </p>
+                </div>
 
-            <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🏁</span> Terminal Value</h4>
-              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> It is impossible to manually forecast every single year until the end of time. The Terminal Value is a massive mathematical assumption representing the entire value of the business from Year 6 into infinity.</p>
-            </div>
+                {/* Toolbar */}
+                <div className="flex flex-wrap items-center gap-2 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-2xl px-4 py-3">
+                    <label className="text-xs font-bold uppercase tracking-wider text-gray-500">Currency</label>
+                    <select value={ui.currency} onChange={(e) => set({ currency: e.target.value })} className="input w-auto py-1.5" aria-label="Currency (labelling only, no FX conversion)">
+                        {CURRENCIES.map((c) => <option key={c} value={c}>{c}</option>)}
+                    </select>
+                    <span className="hidden md:inline text-[11px] text-gray-400">labelling only — inputs are in this currency</span>
+                    <span className="flex-1" />
+                    <button type="button" onClick={shareLink} className="px-3 py-2 rounded-xl border border-border bg-surface text-xs font-semibold hover:bg-accent transition-colors">🔗 Copy share link</button>
+                    <label className="px-3 py-2 rounded-xl border border-border bg-surface text-xs font-semibold hover:bg-accent transition-colors cursor-pointer">
+                        Import JSON<input type="file" accept=".json,application/json" className="hidden" onChange={(e) => { const f = e.target.files?.[0]; if (f) importJson(f); e.target.value = ''; }} />
+                    </label>
+                    {premium ? (
+                        <>
+                            <button type="button" onClick={exportCsv} className="px-3 py-2 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-hover transition-colors">⬇ CSV workbook</button>
+                            <button type="button" onClick={exportJson} className="px-3 py-2 rounded-xl border border-border bg-surface text-xs font-semibold hover:bg-accent transition-colors">⬇ Assumptions JSON</button>
+                        </>
+                    ) : (
+                        <Link href="/pricing" className="px-3 py-2 rounded-xl border border-amber-500/40 text-amber-600 text-xs font-semibold hover:bg-amber-500/10 transition-colors">⬇ Exports are a Pro feature →</Link>
+                    )}
+                </div>
+                {notice && <p role="status" className="text-xs text-teal-700 dark:text-teal-400 bg-teal-500/10 border border-teal-500/20 rounded-xl px-3 py-2 break-all">{notice}</p>}
 
-            <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">⚖️</span> Margin of Safety</h4>
-              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The buffer against your own optimism. If a stock is theoretically worth $100, legendary investors like Warren Buffett will only buy it for $70, demanding a 30% margin of safety in case their growth assumptions were wrong.</p>
-            </div>
+                <div className="grid lg:grid-cols-4 gap-8 relative">
+                    {/* Inputs */}
+                    <div className="lg:col-span-1 space-y-6 bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-slate-700 h-fit sticky top-24 z-20">
+                        <h3 className="font-bold text-brand-navy dark:text-white border-b pb-3 uppercase tracking-wider text-sm">Operating Assumptions</h3>
+                        <div className="space-y-4">
+                            <Field label="Revenue (Yr 0, actuals)" value={ui.revenue0} onChange={(v) => set({ revenue0: v })} step="100000" />
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field label="Rev Growth" value={ui.revenueGrowthPct} onChange={(v) => set({ revenueGrowthPct: v })} unit="%" />
+                                <Field label="EBITDA Mgn" value={ui.ebitdaMarginPct} onChange={(v) => set({ ebitdaMarginPct: v })} unit="%" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field label="D&A % Rev" value={ui.daPct} onChange={(v) => set({ daPct: v })} unit="%" />
+                                <Field label="Tax Rate" value={ui.taxRatePct} onChange={(v) => set({ taxRatePct: v })} unit="%" />
+                            </div>
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field label="Capex % Rev" value={ui.capexPct} onChange={(v) => set({ capexPct: v })} unit="%" />
+                                <Field label="NWC % Rev" value={ui.nwcPct} onChange={(v) => set({ nwcPct: v })} unit="%" hint="Level; ΔNWC derived from revenue change" />
+                            </div>
+                        </div>
 
-            <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">⚡</span> Net Working Capital (NWC)</h4>
-              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> The difference between your Current Assets and Current Liabilities. In a DCF, we subtract the "Change in NWC" because growing businesses often have cash tied up in inventory or unpaid customer invoices (receivables).</p>
-            </div>
+                        <h3 className="font-bold text-brand-navy dark:text-white border-b pb-2 pt-2 uppercase tracking-wider text-sm">Valuation Parameters</h3>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field label="WACC" value={ui.waccPct} onChange={(v) => set({ waccPct: v })} unit="%" />
+                                <Field label="Terminal Gr" value={ui.terminalGrowthPct} onChange={(v) => set({ terminalGrowthPct: v })} unit="%" />
+                            </div>
+                            <p className="text-[11px] text-gray-400 -mt-2">Not sure of WACC? Build it up in the <Link href="/tools/wacc-calculator" className="text-teal-600 font-semibold hover:underline">WACC Calculator →</Link></p>
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Forecast Years</label>
+                                    <select value={ui.forecastYears} onChange={(e) => set({ forecastYears: Number(e.target.value) })} className="input w-full bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" aria-label="Forecast years">
+                                        {[3, 4, 5, 6, 7, 8, 9, 10].map((n) => <option key={n} value={n}>{n} years</option>)}
+                                    </select>
+                                </div>
+                                <Field label="Exit EV/EBITDA" value={ui.exitMultiple} onChange={(v) => set({ exitMultiple: v })} unit="×" hint="Cross-check only" />
+                            </div>
+                            <div className="space-y-2 text-sm">
+                                {([
+                                    ['midYearDiscounting', 'Mid-year discounting'],
+                                    ['growthFade', 'Fade growth to terminal'],
+                                    ['taxBenefitOnLosses', 'Tax benefit on losses'],
+                                ] as const).map(([key, label]) => (
+                                    <label key={key} className="flex items-center gap-2 text-gray-600 dark:text-slate-300 cursor-pointer">
+                                        <input type="checkbox" checked={ui[key]} onChange={(e) => set({ [key]: e.target.checked } as Partial<UiState>)} className="h-4 w-4 accent-teal-600" />
+                                        {label}
+                                    </label>
+                                ))}
+                            </div>
+                        </div>
 
-            <div className="space-y-2">
-              <h4 className="font-bold text-brand-navy dark:text-white text-lg flex items-center gap-2"><span className="text-2xl">🏦</span> Enterprise Value vs Equity Value</h4>
-              <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed"><strong>What it is:</strong> Enterprise Value is the value of the entire business operations. Equity Value is what is left for shareholders after you pay off all the debt. Think of it like a house: House Value (Enterprise) - Mortgage (Debt) = Your Equity.</p>
+                        <h3 className="font-bold text-brand-navy dark:text-white border-b pb-2 pt-2 uppercase tracking-wider text-sm">Balance Sheet Bridge</h3>
+                        <div className="space-y-4">
+                            <div className="grid grid-cols-2 gap-2">
+                                <Field label="Total Cash" value={ui.cash} onChange={(v) => set({ cash: v })} step="100000" />
+                                <Field label="Total Debt" value={ui.debt} onChange={(v) => set({ debt: v })} step="100000" />
+                            </div>
+                            <Field label="Shares Outstanding (#)" value={ui.shares} onChange={(v) => set({ shares: v })} step="10000" />
+                        </div>
+
+                        <h3 className="font-bold text-brand-navy dark:text-white border-b pb-2 pt-2 uppercase tracking-wider text-sm">Saved Analyses</h3>
+                        <div className="space-y-3">
+                            <div className="flex gap-2">
+                                <input value={saveName} onChange={(e) => setSaveName(e.target.value)} placeholder="Name this valuation…" className="input flex-1 min-w-0" aria-label="Name for saved analysis" />
+                                <button type="button" onClick={saveAnalysis} className="px-3 rounded-xl bg-primary text-primary-foreground text-xs font-semibold hover:bg-primary-hover transition-colors shrink-0">Save</button>
+                            </div>
+                            {saved.length === 0 ? (
+                                <p className="text-[11px] text-gray-400">Nothing saved yet. Saves live in this browser (not your account); your current inputs autosave automatically.</p>
+                            ) : (
+                                <ul className="space-y-1.5">
+                                    {saved.map((s) => (
+                                        <li key={s.id} className="flex items-center gap-2 text-xs border border-gray-200 dark:border-slate-700 rounded-lg px-2 py-1.5">
+                                            <button type="button" className="flex-1 min-w-0 text-left font-medium truncate hover:text-teal-600" onClick={() => { setUi(toUi(s.inputs, s.currency)); setNotice(`Loaded “${s.name}”.`); }} title={`Saved ${new Date(s.savedAt).toLocaleString()}`}>{s.name}</button>
+                                            <button type="button" onClick={() => deleteSaved(s.id)} className="text-gray-400 hover:text-red-500 shrink-0" aria-label={`Delete ${s.name}`}>✕</button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Results */}
+                    <div className="lg:col-span-3 space-y-6 w-full min-w-0">
+                        {hasErrors ? (
+                            <div role="alert" className="bg-red-500/5 border border-red-500/30 rounded-2xl p-6">
+                                <h2 className="font-bold text-red-600 text-sm uppercase tracking-wider">Model cannot be valued with these inputs</h2>
+                                <ul className="mt-2 space-y-1 text-sm text-red-700 dark:text-red-400 list-disc pl-5">
+                                    {result.errors.map((e) => <li key={e}>{e}</li>)}
+                                </ul>
+                                <p className="text-xs text-gray-500 mt-3">Fix the inputs on the left — outputs return as soon as the model is valid. Nothing is estimated or filled in for you.</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="grid md:grid-cols-4 gap-4">
+                                    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-success/25 ring-2 ring-green-500/10 relative overflow-hidden">
+                                        <div className="absolute top-0 left-0 w-1 h-full bg-success" />
+                                        <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Implied Share Price</p>
+                                        <h4 className="text-3xl tracking-tighter font-bold text-green-600">{firmPrice(result.impliedSharePrice)}</h4>
+                                        <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2">Equity value ÷ diluted shares</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100">
+                                        <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Equity Value</p>
+                                        <h4 className="text-3xl tracking-tighter font-bold text-brand-navy dark:text-white">{money(result.equityValue, true)}</h4>
+                                        <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2">EV + Cash − Debt</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100">
+                                        <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Enterprise Value</p>
+                                        <h4 className="text-3xl tracking-tighter font-bold text-gray-700 dark:text-slate-200">{money(result.enterpriseValue, true)}</h4>
+                                        <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2">Σ PV of UFCF + PV of terminal value</p>
+                                    </div>
+                                    <div className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-gray-100">
+                                        <p className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-1">Terminal Share of EV</p>
+                                        <h4 className="text-3xl tracking-tighter font-bold text-gray-700 dark:text-slate-200">{result.terminalValueSharePct !== null ? `${result.terminalValueSharePct.toFixed(1)}%` : '—'}</h4>
+                                        <p className="text-[11px] uppercase tracking-wider text-brand-slate dark:text-slate-300 mt-2">Higher = more assumption-driven</p>
+                                    </div>
+                                </div>
+
+                                {/* PV composition chart — negative years shown honestly */}
+                                <div className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 w-full">
+                                    <h3 className="font-bold text-brand-navy dark:text-white mb-1 uppercase tracking-wider text-sm">Where the value comes from (present value)</h3>
+                                    <p className="text-[11px] text-gray-500 mb-4">Near-term forecast cash flows (blue) vs the terminal value (teal). Negative-PV years are shown in red — never hidden.</p>
+                                    <div className="h-[280px] w-full">
+                                        <ResponsiveContainer width="100%" height="100%">
+                                            <BarChart data={chartData} margin={{ top: 10, right: 0, left: 10, bottom: 0 }}>
+                                                <CartesianGrid strokeDasharray="3 3" horizontal vertical={false} opacity={0.3} />
+                                                <XAxis dataKey="stage" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: 'hsl(var(--content-muted))' }} />
+                                                <YAxis tickFormatter={(val: number) => money(val, true)} axisLine={false} tickLine={false} tick={{ fontSize: 11 }} width={70} />
+                                                <Tooltip formatter={(value: unknown) => [money(Number(value)), 'Present value']} cursor={{ fill: 'hsl(var(--surface-muted))' }} contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)', fontSize: '12px' }} />
+                                                <ReferenceLine y={0} stroke="#94a3b8" />
+                                                <Bar dataKey="value" radius={[4, 4, 0, 0]} maxBarSize={60}>
+                                                    {chartData.map((entry, index) => <Cell key={index} fill={entry.fill} />)}
+                                                </Bar>
+                                            </BarChart>
+                                        </ResponsiveContainer>
+                                    </div>
+                                </div>
+
+                                {/* Reconciling statement */}
+                                <div className="bg-white dark:bg-slate-900 border border-gray-300 shadow-lg rounded-sm overflow-hidden w-full font-sans">
+                                    <div className="bg-surface-muted px-3 py-2 text-[11px] font-semibold flex flex-wrap items-center justify-between gap-2 border-b border-gray-300">
+                                        <span className="uppercase tracking-wider">DCF operating model — every row foots to the bridge</span>
+                                        <span className="font-mono text-[10px] text-gray-500">amounts in {ui.currency} actuals · =SUM(PV explicit) + PV(terminal)</span>
+                                    </div>
+                                    <div className="horizontal-scroll-region w-full overflow-x-auto" role="region" aria-label="Discounted cash flow model table" tabIndex={0} data-lenis-prevent>
+                                        <table className="w-full text-[11px] whitespace-nowrap border-collapse min-w-[760px] select-text">
+                                            <thead>
+                                                <tr className="bg-gray-100 text-gray-600">
+                                                    <th className="border border-gray-300 px-3 py-1 text-left font-bold uppercase text-[11px]">Financial line item</th>
+                                                    <th className="border border-gray-300 px-3 py-1 text-center font-bold uppercase text-[11px]">Yr 0 · actuals*</th>
+                                                    {result.years.map((y) => <th key={y.year} className="border border-gray-300 px-3 py-1 text-center font-bold uppercase text-[11px]">Year {y.year}</th>)}
+                                                </tr>
+                                            </thead>
+                                            <tbody className="text-gray-800">
+                                                {b && stmtRow('Revenue', num(b.revenue), (y) => num(y.revenue))}
+                                                {b && stmtRow('EBITDA', num(b.ebitda), (y) => num(y.ebitda))}
+                                                {b && stmtRow('Less: D&A', `(${num(b.da)})`, (y) => `(${num(y.da)})`)}
+                                                {b && stmtRow('EBIT', neg(b.ebit), (y) => neg(y.ebit))}
+                                                {b && stmtRow('Less: Cash taxes', `(${num(Math.abs(b.tax))})`, (y) => (y.tax < 0 ? num(Math.abs(y.tax)) : `(${num(y.tax)})`))}
+                                                {b && stmtRow('NOPAT', neg(b.nopat), (y) => neg(y.nopat))}
+                                                {b && stmtRow('Add: D&A', num(b.da), (y) => num(y.da))}
+                                                {b && stmtRow('Less: Capex', `(${num(b.capex)})`, (y) => `(${num(y.capex)})`)}
+                                                {stmtRow('Less: Δ Net working capital', 'n/a', (y) => (y.deltaNwc < 0 ? num(Math.abs(y.deltaNwc)) : `(${num(y.deltaNwc)})`))}
+                                                {b && stmtRow('Unlevered FCF', neg(b.ufcf), (y) => neg(y.ufcf), true)}
+                                                {stmtRow('Discount factor', '—', (y) => y.discountFactor.toFixed(4))}
+                                                {stmtRow('Present value', 'excluded', (y) => neg(y.presentValue), true)}
+                                                <tr><td colSpan={2 + result.years.length} className="border border-gray-200 dark:border-slate-700 bg-surface-muted/50 py-1 text-[9px] italic text-gray-400 pl-3">* Yr 0 is context (latest actuals) and is excluded from present value. Cells are rounded for display; calculations use full precision.</td></tr>
+                                                <tr><td className="border px-2 py-1 pl-3 font-semibold">Sum of PV — explicit period</td><td className="border px-2 py-1 text-right font-mono">{num(result.sumPvExplicit ?? 0)}</td><td colSpan={result.years.length} /></tr>
+                                                <tr><td className="border px-2 py-1 pl-3 font-semibold">PV of terminal value (Gordon: TV {num(result.terminalValue ?? 0)})</td><td className="border px-2 py-1 text-right font-mono">{num(result.pvTerminalValue ?? 0)}</td><td colSpan={result.years.length} /></tr>
+                                                <tr className="bg-gray-50 dark:bg-slate-800/50"><td className="border px-2 py-1 pl-3 font-extrabold uppercase text-[10px] tracking-widest">Enterprise value</td><td className="border px-2 py-1 text-right font-mono font-bold">{num(result.enterpriseValue ?? 0)}</td><td colSpan={result.years.length} /></tr>
+                                                <tr><td className="border px-2 py-1 pl-3 text-green-700">Plus: Cash &amp; equivalents</td><td className="border px-2 py-1 text-right font-mono">{num(inputs.cash)}</td><td colSpan={result.years.length} /></tr>
+                                                <tr><td className="border px-2 py-1 pl-3 text-red-600">Less: Total debt</td><td className="border px-2 py-1 text-right font-mono">({num(inputs.debt)})</td><td colSpan={result.years.length} /></tr>
+                                                <tr className="bg-[#e2f1e8]"><td className="border px-2 py-2 pl-3 font-extrabold uppercase text-[11px] tracking-widest text-success">Implied equity value</td><td className="border px-2 py-2 text-right font-mono font-bold text-success">{neg(result.equityValue ?? 0)}</td><td colSpan={result.years.length} /></tr>
+                                                <tr><td className="border px-2 py-1 pl-3 italic text-gray-500">÷ Fully diluted shares</td><td className="border px-2 py-1 text-right font-mono">{num(inputs.shares)}</td><td colSpan={result.years.length} /></tr>
+                                                <tr className="bg-surface-muted"><td className="border px-2 py-2 pl-3 font-extrabold uppercase text-[11px] tracking-widest text-info">Implied share price</td><td className="border px-2 py-2 text-right font-mono font-extrabold text-info">{firmPrice(result.impliedSharePrice)}</td><td colSpan={result.years.length} /></tr>
+                                                {result.impliedMultiples && (
+                                                    <tr><td className="border px-2 py-1 pl-3 italic text-gray-500">Implied EV / Revenue₀ · EV / EBITDA₀</td><td className="border px-2 py-1 text-right font-mono">{result.impliedMultiples.evToRevenue0.toFixed(1)}× · {result.impliedMultiples.evToEbitda0.toFixed(1)}×</td><td colSpan={result.years.length} /></tr>
+                                                )}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                                {/* Diagnostics — rule-based, labelled as such */}
+                                <div className="bg-brand-navy p-6 rounded-xl shadow-lg w-full">
+                                    <h3 className="font-bold text-white mb-2 text-sm uppercase tracking-widest border-b border-white/10 pb-3">Model diagnostics <span className="normal-case tracking-normal font-normal text-blue-200/70 text-xs">(rule-based checks on your inputs — not investment advice)</span></h3>
+                                    {result.warnings.length === 0 ? (
+                                        <p className="text-blue-50 text-sm leading-relaxed pt-2 font-light">
+                                            No red flags detected: terminal value is {result.terminalValueSharePct?.toFixed(0)}% of EV
+                                            (typical DCFs run 50–85%), free cash flow is positive in every forecast year, and the
+                                            equity bridge is solvent. The result is still only as good as the growth, margin and
+                                            WACC assumptions — stress them in the scenario and sensitivity views before relying on {firmPrice(result.impliedSharePrice)}.
+                                        </p>
+                                    ) : (
+                                        <ul className="text-blue-50 text-sm leading-relaxed pt-2 font-light list-disc pl-5 space-y-1">
+                                            {result.warnings.map((w) => <li key={w}>{w}</li>)}
+                                        </ul>
+                                    )}
+                                </div>
+
+                                {/* Scenarios (Pro) */}
+                                {premium && scenarios ? (
+                                    <section aria-labelledby="dcf-scenarios" className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 w-full space-y-4">
+                                        <h3 id="dcf-scenarios" className="font-bold text-brand-navy dark:text-white uppercase tracking-wider text-sm">Scenario comparison — Bear / Base / Bull</h3>
+                                        <div className="grid sm:grid-cols-2 gap-4 text-xs">
+                                            {(['bear', 'bull'] as const).map((side) => (
+                                                <fieldset key={side} className="border border-gray-200 dark:border-slate-700 rounded-xl p-3">
+                                                    <legend className="px-1 font-bold uppercase tracking-wider text-[10px] text-gray-500">{side} deltas (pp vs base)</legend>
+                                                    <div className="grid grid-cols-3 gap-2">
+                                                        {([['growthDelta', 'Growth Δ'], ['marginDelta', 'Margin Δ'], ['waccDelta', 'WACC Δ']] as const).map(([k, lab]) => (
+                                                            <div key={k}>
+                                                                <label className="block text-[10px] font-bold text-gray-500 mb-1">{lab}</label>
+                                                                <input type="number" step="0.5" value={String(deltas[side][k] * 100)} aria-label={`${side} ${lab}`}
+                                                                    onChange={(e) => setDeltas((d) => ({ ...d, [side]: { ...d[side], [k]: Number(e.target.value) / 100 } }))}
+                                                                    className="input w-full bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white" />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </fieldset>
+                                            ))}
+                                        </div>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-sm min-w-[560px]">
+                                                <thead><tr className="text-left text-xs uppercase tracking-wider text-gray-500 border-b"><th className="py-2 pr-2">Scenario</th><th className="py-2 pr-2">Growth</th><th className="py-2 pr-2">Margin</th><th className="py-2 pr-2">WACC</th><th className="py-2 pr-2">Enterprise value</th><th className="py-2">Share price</th></tr></thead>
+                                                <tbody>
+                                                    {scenarios.map((s) => (
+                                                        <tr key={s.name} className="border-b last:border-0">
+                                                            <td className="py-2 pr-2 font-bold">{s.name}</td>
+                                                            <td className="py-2 pr-2 font-mono">{(s.inputs.revenueGrowth * 100).toFixed(1)}%</td>
+                                                            <td className="py-2 pr-2 font-mono">{(s.inputs.ebitdaMargin * 100).toFixed(1)}%</td>
+                                                            <td className="py-2 pr-2 font-mono">{(s.inputs.wacc * 100).toFixed(1)}%</td>
+                                                            <td className="py-2 pr-2 font-mono">{money(s.result.enterpriseValue, true)}</td>
+                                                            <td className="py-2 font-mono font-bold">{s.result.errors.length ? <span className="text-red-500 text-xs font-sans">{s.result.errors[0]}</span> : firmPrice(s.result.impliedSharePrice)}</td>
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div className="space-y-1.5" aria-label="Valuation range by scenario">
+                                            {(() => {
+                                                const prices = scenarios.map((s) => s.result.impliedSharePrice ?? 0);
+                                                const max = Math.max(...prices, 0);
+                                                return scenarios.map((s, i) => (
+                                                    <div key={s.name} className="flex items-center gap-2 text-xs">
+                                                        <span className="w-10 font-bold">{s.name}</span>
+                                                        <div className="flex-1 h-4 rounded bg-surface-muted overflow-hidden"><div className={`h-full ${s.name === 'Base' ? 'bg-teal-600' : 'bg-sky-500'}`} style={{ width: max > 0 ? `${Math.max(0, (prices[i] / max) * 100)}%` : '0%' }} /></div>
+                                                        <span className="w-24 text-right font-mono">{s.result.errors.length ? 'invalid' : firmPrice(s.result.impliedSharePrice)}</span>
+                                                    </div>
+                                                ));
+                                            })()}
+                                        </div>
+                                    </section>
+                                ) : (
+                                    <LockedPanel title="Scenario comparison" desc="Value the business three ways — Bear / Base / Bull with editable growth, margin and WACC deltas — and read the result as a defensible range instead of a single fragile number." />
+                                )}
+
+                                {/* Sensitivity (Pro) */}
+                                {premium && grid ? (
+                                    <section aria-labelledby="dcf-sensitivity" className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 w-full">
+                                        <h3 id="dcf-sensitivity" className="font-bold text-brand-navy dark:text-white uppercase tracking-wider text-sm mb-1">Sensitivity — implied share price</h3>
+                                        <p className="text-[11px] text-gray-500 mb-4">Rows: WACC. Columns: terminal growth. Centre cell = your base case. “n/a” = invalid combination (growth ≥ WACC), never extrapolated.</p>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-sm min-w-[520px] text-center">
+                                                <thead><tr className="border-b text-xs uppercase tracking-wider text-gray-500"><th className="py-2">WACC \ g</th>{grid.growthValues.map((g, j) => <th key={j} className="py-2 font-mono">{(g * 100).toFixed(2)}%</th>)}</tr></thead>
+                                                <tbody>
+                                                    {grid.waccValues.map((w, i) => (
+                                                        <tr key={i} className="border-b last:border-0">
+                                                            <th className="py-2 font-mono text-xs uppercase tracking-wider text-gray-500">{(w * 100).toFixed(2)}%</th>
+                                                            {grid.sharePrice[i].map((v, j) => (
+                                                                <td key={j} className={`py-2 font-mono ${i === 2 && j === 2 ? 'bg-brand-muted text-brand font-extrabold rounded' : ''}`}>{v === null ? 'n/a' : firmPrice(v)}</td>
+                                                            ))}
+                                                        </tr>
+                                                    ))}
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </section>
+                                ) : (
+                                    <LockedPanel title="Sensitivity grid" desc="A 5×5 map of share price across WACC (±2pp) and terminal growth (±1pp) — the fastest way to see which assumption your valuation actually hangs on." />
+                                )}
+
+                                {/* Exit-multiple cross-check (Pro) */}
+                                {premium && result.exitMultipleCheck ? (
+                                    <section aria-labelledby="dcf-exit" className="bg-white dark:bg-slate-900 p-6 rounded-xl shadow-sm border border-gray-100 w-full">
+                                        <h3 id="dcf-exit" className="font-bold text-brand-navy dark:text-white uppercase tracking-wider text-sm mb-1">Terminal value cross-check — exit multiple</h3>
+                                        <p className="text-[11px] text-gray-500 mb-4">Two independent terminal-value methods should roughly agree. If they don’t, one of the assumptions is doing too much work.</p>
+                                        <div className="overflow-x-auto">
+                                            <table className="w-full text-sm min-w-[520px]">
+                                                <thead><tr className="text-left text-xs uppercase tracking-wider text-gray-500 border-b"><th className="py-2 pr-2">Method</th><th className="py-2 pr-2">Terminal value</th><th className="py-2 pr-2">Enterprise value</th><th className="py-2">Share price</th></tr></thead>
+                                                <tbody>
+                                                    <tr className="border-b"><td className="py-2 pr-2 font-bold">Gordon growth (g = {(inputs.terminalGrowth * 100).toFixed(2)}%)</td><td className="py-2 pr-2 font-mono">{money(result.terminalValue, true)}</td><td className="py-2 pr-2 font-mono">{money(result.enterpriseValue, true)}</td><td className="py-2 font-mono font-bold">{firmPrice(result.impliedSharePrice)}</td></tr>
+                                                    <tr><td className="py-2 pr-2 font-bold">Exit multiple ({inputs.exitMultiple}× EBITDA{result.years.length})</td><td className="py-2 pr-2 font-mono">{money(result.exitMultipleCheck.terminalValueExit, true)}</td><td className="py-2 pr-2 font-mono">{money(result.exitMultipleCheck.enterpriseValueExit, true)}</td><td className="py-2 font-mono font-bold">{firmPrice(result.exitMultipleCheck.impliedSharePriceExit)}</td></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <p className="text-[13px] text-gray-500 mt-3">
+                                            The {inputs.exitMultiple}× exit multiple implies a perpetuity growth rate of <strong>{(result.exitMultipleCheck.impliedTerminalGrowth * 100).toFixed(2)}%</strong>;
+                                            your Gordon terminal value implies an exit multiple of <strong>{result.exitMultipleCheck.impliedExitMultiple.toFixed(1)}×</strong> final-year EBITDA.
+                                            Judge both against traded comparables before trusting either.
+                                        </p>
+                                    </section>
+                                ) : (
+                                    <LockedPanel title="Exit-multiple cross-check" desc="Reconciles the Gordon terminal value against an EV/EBITDA exit multiple — including the perpetuity growth your multiple secretly assumes. The standard institutional sanity check." />
+                                )}
+                            </>
+                        )}
+                    </div>
+                </div>
+
+                {/* Assumptions, formulas & limitations */}
+                <details className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-gray-100 group">
+                    <summary className="cursor-pointer font-bold text-brand-navy dark:text-white text-sm uppercase tracking-wider">Assumptions, formulas &amp; limitations</summary>
+                    <div className="mt-4 grid md:grid-cols-2 gap-6 text-sm text-brand-slate dark:text-slate-300 leading-relaxed">
+                        <div>
+                            <h4 className="font-bold text-brand-navy dark:text-white mb-2">Formulas (exactly as computed)</h4>
+                            <ul className="list-disc pl-5 space-y-1 font-mono text-[13px]">
+                                <li>EBIT = EBITDA − D&amp;A; NOPAT = EBIT − tax</li>
+                                <li>UFCF = NOPAT + D&amp;A − Capex − ΔNWC</li>
+                                <li>ΔNWC = (Rev<sub>t</sub> − Rev<sub>t−1</sub>) × NWC%</li>
+                                <li>PV = UFCF / (1+WACC)<sup>t − adj</sup>, adj = 0.5 if mid-year</li>
+                                <li>TV = UFCF<sub>N</sub>(1+g) / (WACC − g)</li>
+                                <li>EV = ΣPV + PV(TV); Price = (EV + Cash − Debt) / Shares</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 className="font-bold text-brand-navy dark:text-white mb-2">Data provenance &amp; limitations</h4>
+                            <ul className="list-disc pl-5 space-y-1">
+                                <li><strong>All inputs are yours.</strong> Defaults are illustrative (not live market data); currency selection only relabels — no FX conversion is applied.</li>
+                                <li>Flat margin/D&amp;A/capex ratios; growth is flat unless fading is enabled. No per-year driver modelling, seasonality, or stub periods.</li>
+                                <li>Tax is a flat cash rate on EBIT; loss years get no tax credit and no carry-forward unless you opt in. Interest/tax shields sit inside WACC (FCFF convention).</li>
+                                <li>No minority interests, leases, pensions, SBC dilution or other bridge adjustments — add them via Cash/Debt if relevant.</li>
+                                <li>Saved analyses and autosave live in this browser only; use the share link or JSON export to move work between devices.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </details>
+
+                {/* Glossary (retained from the original tool) */}
+                <div className="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border border-gray-100">
+                    <h2 className="text-2xl font-bold text-brand-navy dark:text-white mb-6">Valuation Glossary</h2>
+                    <div className="grid md:grid-cols-2 gap-8">
+                        {[
+                            ['💰 Free Cash Flow (UFCF)', 'The cash a company generates after maintaining its asset base and funding working capital — the amount available to all capital providers. This model discounts UFCF at WACC (the FCFF approach).'],
+                            ['📉 Discount Rate (WACC)', 'Investors’ required return, blended across debt and equity. Future cash is worth less than present cash, so each year is divided by (1+WACC)^t. Build it up with the WACC Calculator rather than guessing.'],
+                            ['🏁 Terminal Value', 'Forecasting year-by-year forever is impossible, so everything after the explicit period is capitalised into one figure — here via Gordon growth, cross-checked against an exit multiple.'],
+                            ['⚡ Working Capital (ΔNWC)', 'Growth consumes cash tied up in receivables and inventory. This model sizes NWC as a % of revenue and charges only the year-on-year change — so a zero-growth year correctly consumes no extra working capital.'],
+                            ['⚖️ Enterprise vs Equity Value', 'Enterprise value = worth of the operations. Equity value = what remains for shareholders after debt: EV + Cash − Debt, divided by diluted shares for a per-share figure.'],
+                            ['🧭 Margin of Safety', 'A DCF output is an estimate with wide error bars, not a price tag. Use the Bear scenario and the sensitivity grid as your range, and demand a discount to even the Bear case before acting.'],
+                        ].map(([title, body]) => (
+                            <div key={title} className="space-y-2">
+                                <h4 className="font-bold text-brand-navy dark:text-white text-lg">{title}</h4>
+                                <p className="text-sm text-brand-slate dark:text-slate-300 leading-relaxed">{body}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
-          </div>
         </div>
-
-      </div>
-    </div>
-  );
+    );
 }

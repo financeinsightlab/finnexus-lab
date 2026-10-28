@@ -74,7 +74,9 @@ export default async function CalculatorPage({ params }: PageProps) {
   if (slug === 'saas-ltv-cac-model') Component = <SaaSCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
   else if (slug === 'ai-agent-roi-calculator') Component = <AiRoiCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
   else if (slug === 'b2b-enterprise-marketing-roi') Component = <B2BMarketingCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
-  else if (slug === 'dcf-valuation-model') Component = <DcfCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
+  // DCF is freemium: the core model renders for everyone; Pro scenarios /
+  // sensitivity / cross-check / exports gate on the server-decided plan flag.
+  else if (slug === 'dcf-valuation-model') Component = <DcfCalc slug={slug} isPremiumUser={hasPlanPremiumAccess} />;
   else if (slug === 'crypto-tokenomics-model') Component = <CryptoTokenomicsCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
   else if (slug === 'cca-valuation') Component = <CcaValuationCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;
   else if (slug === '3-statement-model') Component = <ThreeStatementCalc slug={slug} isPremiumUser={isCalculatorAvailable} />;

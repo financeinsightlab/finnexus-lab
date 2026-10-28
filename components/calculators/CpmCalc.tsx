@@ -1,7 +1,8 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
+import { runCpm, probabilityOnOrBefore } from '@/lib/finance/cpm';
 
 /* PGDM Lab — Critical Path Simulator (CPM + PERT, deterministic + probabilistic)
    Matches lecture: PGDM 301 Unit 5 · PERT & CPM
@@ -38,65 +39,41 @@ export default function CpmCalc() {
   const [acts, setActs] = useState<Act[]>(DEFAULT_ACTS);
   const [usePert, setUsePert] = useState(false);
 
-  const result = useMemo(() => {
-    // Choose durations: CPM = deterministic, PERT = te = (o+4m+p)/6
-    const effectiveActs = acts.map(a => {
-      if (usePert && a.optimistic !== undefined && a.mostLikely !== undefined && a.pessimistic !== undefined) {
-        const te = (a.optimistic + 4 * a.mostLikely + a.pessimistic) / 6;
-        return { ...a, dur: te };
+  // Engine (lib/finance/cpm.ts): true topological scheduling — node numbers
+  // no longer need to be in precedence order; cycles are reported as errors.
+  const engine = useMemo(
+    () => runCpm(acts.map((a) => ({ id: a.id, from: a.from, to: a.to, duration: a.dur, optimistic: a.optimistic, mostLikely: a.mostLikely, pessimistic: a.pessimistic })), usePert),
+    [acts, usePert]
+  );
+  const result = {
+    rows: engine.rows.map((r, i) => ({
+      ...acts[i], id: r.id, dur: r.effectiveDuration, origDur: acts[i]?.dur ?? r.duration,
+      es: r.earliestStart, ef: r.earliestFinish, ls: r.latestStart, lf: r.latestFinish,
+      tf: r.totalFloat, sigma2: r.pertVariance,
+    })),
+    projectEnd: engine.projectDuration ?? 0,
+    critical: engine.criticalPath,
+    cpSigma: engine.criticalPathSigma,
+    usePert,
+  };
+
+  const [targetDate, setTargetDate] = useState(20);
+  const onTimeProbability = probabilityOnOrBefore(targetDate, engine.projectDuration ?? 0, engine.criticalPathSigma);
+
+  // Autosave the network + mode.
+  const AUTOSAVE_KEY = 'ka_cpm_autosave_v1';
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) {
+        const data = JSON.parse(saved) as { acts?: Act[]; usePert?: boolean };
+        if (Array.isArray(data.acts) && data.acts.length) setActs(data.acts);
+        if (typeof data.usePert === 'boolean') setUsePert(data.usePert);
       }
-      return a;
-    });
-
-    const nodes = Array.from(new Set(effectiveActs.flatMap((a) => [a.from, a.to]))).sort((a, b) => a - b);
-    const es = new Map<number, number>();
-    for (const n of nodes) es.set(n, 0);
-
-    // Forward pass
-    for (const n of nodes) {
-      for (const a of effectiveActs) {
-        if (a.to === n) es.set(n, Math.max(es.get(n) ?? 0, (es.get(a.from) ?? 0) + a.dur));
-      }
-    }
-    const projectEnd = Math.max(...nodes.map((n) => es.get(n) ?? 0));
-
-    const lf = new Map<number, number>();
-    for (const n of nodes) lf.set(n, projectEnd);
-
-    // Backward pass
-    for (const n of [...nodes].reverse()) {
-      for (const a of effectiveActs) {
-        if (a.from === n) lf.set(n, Math.min(lf.get(n) ?? projectEnd, (lf.get(a.to) ?? projectEnd) - a.dur));
-      }
-    }
-
-    const rows = effectiveActs.map((a, i) => {
-      const orig = acts[i];
-      const esA = es.get(a.from) ?? 0;
-      const ef = esA + a.dur;
-      const lfA = lf.get(a.to) ?? projectEnd;
-      const ls = lfA - a.dur;
-      const tf = ls - esA;
-
-      // PERT variance for critical path analysis
-      let sigma2 = 0;
-      if (usePert && orig.optimistic !== undefined && orig.pessimistic !== undefined) {
-        sigma2 = Math.pow((orig.pessimistic - orig.optimistic) / 6, 2);
-      }
-
-      return { ...a, id: orig.id, dur: a.dur, origDur: orig.dur, es: esA, ef, ls, lf: lfA, tf, sigma2 };
-    });
-
-    const critical = rows.filter((r) => Math.abs(r.tf) < 0.001 && r.dur > 0).map((r) => r.id);
-
-    // PERT: sum of variances on the critical path
-    let cpVariance = 0;
-    if (usePert) {
-      rows.filter(r => critical.includes(r.id)).forEach(r => { cpVariance += r.sigma2; });
-    }
-    const cpSigma = Math.sqrt(cpVariance);
-
-    return { rows, projectEnd, critical, cpSigma, usePert };
+    } catch { /* keep default network */ }
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify({ acts, usePert })); } catch { /* private mode */ }
   }, [acts, usePert]);
 
   const setDur = (i: number, v: number) =>
@@ -137,6 +114,22 @@ export default function CpmCalc() {
         >
           PERT — 3-Point Estimate
         </button>
+      </div>
+
+      {engine.errors.length > 0 && (
+        <div role="alert" className="rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+      )}
+      {engine.warnings.length > 0 && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+      )}
+
+      {/* PERT deadline probability (new) */}
+      <div className="rounded-2xl border border-brand/25 bg-brand-muted p-5 flex flex-wrap items-center justify-center gap-4">
+        <label className="text-xs font-bold uppercase tracking-widest text-brand">P(finish ≤ target)</label>
+        <input type="number" step={0.5} value={targetDate} onChange={(e) => setTargetDate(parseFloat(e.target.value))} className="w-20 bg-surface border border-border rounded-lg px-2 py-1.5 text-content-primary text-sm font-mono text-center focus:outline-none focus:border-brand" />
+        <span className="text-xs text-content-muted">days →</span>
+        <span className="text-2xl font-mono font-extrabold text-content-primary">{onTimeProbability !== null ? `${(onTimeProbability * 100).toFixed(1)}%` : 'n.m.'}</span>
+        <span className="text-[11px] text-content-muted max-w-md">Normal approximation on the critical path (classic PERT). In CPM mode σ = 0, so this is 0/100%. Network + edits autosave locally.</span>
       </div>
 
       {/* Network visual */}

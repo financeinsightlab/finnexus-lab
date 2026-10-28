@@ -12,6 +12,7 @@ import {
   Area,
   AreaChart,
 } from 'recharts';
+import { runAiRoi, parseAiRoiInputs, aiRoiToQuery, AI_ROI_DEFAULTS, type AiRoiInputs } from '@/lib/finance/ai-roi';
 
 export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Inputs
@@ -20,6 +21,9 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
   const [automationPercent, setAutomationPercent] = useState(40);
   const [aiMonthlyCost, setAiMonthlyCost] = useState(2000);
   const [capex, setCapex] = useState(15000);
+  const [rampMonths, setRampMonths] = useState(0); // legacy: full savings from month 1
+  const [realisationPct, setRealisationPct] = useState(100);
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const [isLocked, setIsLocked] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
@@ -41,7 +45,7 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
     } else {
       const msSinceFirstUse = Date.now() - parseInt(firstUsed);
       if (msSinceFirstUse > 30 * 60 * 1000) { // 30 minutes free session
-        setIsLocked(true);
+        setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
       }
     }
   }, [slug, isPremiumUser]);
@@ -52,66 +56,54 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
     }
   }, [slug, isPremiumUser]);
 
-  // Calculations
+  // Persistence via the tested engine codec.
+  const AUTOSAVE_KEY = 'ka_ai_roi_autosave_v1';
+  const engineInputs: AiRoiInputs = {
+    humanSalaryAnnual: humanSalary, teamSize, automationPct: automationPercent / 100,
+    aiMonthlyCost, capex, horizonMonths: 36, rampMonths, savingsRealisationPct: realisationPct / 100,
+  };
+  const applyInputs = (i: AiRoiInputs) => {
+    setHumanSalary(i.humanSalaryAnnual); setTeamSize(i.teamSize); setAutomationPercent(i.automationPct * 100);
+    setAiMonthlyCost(i.aiMonthlyCost); setCapex(i.capex); setRampMonths(i.rampMonths);
+    setRealisationPct(i.savingsRealisationPct * 100);
+  };
+  useEffect(() => {
+    try {
+      let base = AI_ROI_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseAiRoiInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseAiRoiInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [humanSalary, teamSize, automationPercent, aiMonthlyCost, capex, rampMonths, realisationPct]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${aiRoiToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  // Calculations (delegated to lib/finance/ai-roi.ts)
   const calculations = useMemo(() => {
-    const totalHumanCostPerYear = humanSalary * teamSize;
-    const humanCostPerMonth = totalHumanCostPerYear / 12;
-    
-    const automationSavingsPerMonth = humanCostPerMonth * (automationPercent / 100);
-    const netMonthlySavings = automationSavingsPerMonth - aiMonthlyCost;
-    const netAnnualSavings = netMonthlySavings * 12;
-    
-    // Gross ROI on Capex = (Net Annual Savings / Capex) * 100
-    const roi = capex > 0 ? (netAnnualSavings / capex) * 100 : Infinity;
+    const engine = runAiRoi(engineInputs);
+    const humanCostPerMonth = engine.humanCostMonthly ?? 0;
+    const netMonthlySavings = engine.netMonthlySavingsSteady ?? 0;
+    const netAnnualSavings = engine.netSavingsYear1 ?? 0; // ramp-aware year-1 (honest)
+    const roi = engine.roiYear1Pct ?? Infinity;
     const paybackMonths = netMonthlySavings > 0 ? capex / netMonthlySavings : Infinity;
 
-    // Generate Chart and Excel Data (36 months cumulative cost comparison)
-    const chartData = [];
-    const rowMonths = [];
-    const rowHumanStatusQuo = [];
-    const rowAugmentedHumanPayroll = [];
-    const rowAiSoftwareCost = [];
-    const rowMonthlyCapexAmortization = [];
-    const rowNetMonthlyDelta = [];
-    const rowCumulativeNetPosition = [];
-    
-    let cumHumanCost = 0;
-    let cumAiCost = capex; // Start with Day 0 implementation cost
-    let cumulativeSavings = -capex;
-
-    for (let month = 0; month <= 36; month++) {
-      rowMonths.push(`Mo ${month}`);
-      
-      if (month === 0) {
-        chartData.push({ month: `Month 0`, humanCost: 0, aiCost: capex });
-        rowHumanStatusQuo.push(0);
-        rowAugmentedHumanPayroll.push(0);
-        rowAiSoftwareCost.push(0);
-        rowMonthlyCapexAmortization.push(`(${Math.round(capex).toLocaleString()})`);
-        rowNetMonthlyDelta.push(Math.round(-capex));
-        rowCumulativeNetPosition.push(Math.round(-capex));
-      } else {
-        const augmentedHumanCost = humanCostPerMonth * (1 - (automationPercent / 100));
-        cumHumanCost += humanCostPerMonth;
-        cumAiCost += augmentedHumanCost + aiMonthlyCost;
-        
-        const monthlySavings = humanCostPerMonth - (augmentedHumanCost + aiMonthlyCost);
-        cumulativeSavings += monthlySavings;
-        
-        chartData.push({
-          month: `Month ${month}`,
-          humanCost: Math.round(cumHumanCost),
-          aiCost: Math.round(cumAiCost),
-        });
-        
-        rowHumanStatusQuo.push(Math.round(humanCostPerMonth));
-        rowAugmentedHumanPayroll.push(Math.round(augmentedHumanCost));
-        rowAiSoftwareCost.push(Math.round(aiMonthlyCost));
-        rowMonthlyCapexAmortization.push(0);
-        rowNetMonthlyDelta.push(Math.round(monthlySavings));
-        rowCumulativeNetPosition.push(Math.round(cumulativeSavings));
-      }
-    }
+    const chartData = engine.series.map((r) => ({ month: `Month ${r.month}`, humanCost: Math.round(r.cumulativeHumanCost), aiCost: Math.round(r.cumulativeAiScenarioCost) }));
+    const rowMonths = engine.series.map((r) => `Mo ${r.month}`);
+    const rowHumanStatusQuo = engine.series.map((r) => (r.month === 0 ? 0 : Math.round(humanCostPerMonth)));
+    const rowAugmentedHumanPayroll = engine.series.map((r) => (r.month === 0 ? 0 : Math.round(humanCostPerMonth - (r.monthlyNet + aiMonthlyCost))));
+    const rowAiSoftwareCost = engine.series.map((r) => (r.month === 0 ? 0 : Math.round(aiMonthlyCost)));
+    const rowMonthlyCapexAmortization = engine.series.map((r) => (r.month === 0 ? `(${Math.round(capex).toLocaleString()})` : 0));
+    const rowNetMonthlyDelta = engine.series.map((r) => Math.round(r.monthlyNet));
+    const rowCumulativeNetPosition = engine.series.map((r) => Math.round(r.cumulativeNet));
 
     // Dynamic Analyst Summary
     let insightText = '';
@@ -138,9 +130,10 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
       rowAiSoftwareCost,
       rowMonthlyCapexAmortization,
       rowNetMonthlyDelta,
-      rowCumulativeNetPosition
+      rowCumulativeNetPosition,
+      engine
     };
-  }, [humanSalary, teamSize, automationPercent, aiMonthlyCost, capex]);
+  }, [humanSalary, teamSize, automationPercent, aiMonthlyCost, capex, rampMonths, realisationPct]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -201,6 +194,18 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
           </div>
         </div>
 
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(AI_ROI_DEFAULTS)} className="btn-secondary text-sm">Reset</button>
+          <span className="text-xs text-gray-500">Autosaves locally · ramp-aware payback: {calculations.engine.paybackMonth !== null ? `month ${calculations.engine.paybackMonth}` : 'never within 36mo'}</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
+
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
           {/* Inputs Sidebar */}
@@ -242,6 +247,19 @@ export default function AiRoiCalc({ slug, isPremiumUser }: { slug: string; isPre
                 <div className="relative">
                   <span className="absolute left-3 top-2.5 text-gray-400">$</span>
                   <input type="number" className="input w-full pl-8" value={capex} onChange={e => setCapex(Number(e.target.value))} />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Adoption Ramp (months to full savings, 0 = instant)</label>
+                <input type="number" className="input w-full" step="1" value={rampMonths} onChange={e => setRampMonths(Number(e.target.value))} />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-brand-slate dark:text-slate-300 mb-1">Savings Realisation % (time saved → cash saved)</label>
+                <div className="relative">
+                  <input type="number" className="input w-full pr-8" step="1" value={realisationPct} onChange={e => setRealisationPct(Number(e.target.value))} />
+                  <span className="absolute right-3 top-2.5 text-gray-400">%</span>
                 </div>
               </div>
             </div>

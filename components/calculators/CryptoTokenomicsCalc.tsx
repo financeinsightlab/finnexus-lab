@@ -11,6 +11,7 @@ import {
   ResponsiveContainer,
   Legend
 } from 'recharts';
+import { runTokenomics, parseTokenomicsInputs, tokenomicsToQuery, TOKENOMICS_DEFAULTS, type TokenomicsInputs } from '@/lib/finance/tokenomics';
 
 export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: string; isPremiumUser?: boolean }) {
   // Inputs
@@ -25,6 +26,9 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
   const [teamLinear, setTeamLinear] = useState(24);
   const [investorCliff, setInvestorCliff] = useState(6);
   const [investorLinear, setInvestorLinear] = useState(18);
+  const [tgePercent, setTgePercent] = useState(10); // was hard-coded 10 in the legacy maths
+  const [communityVesting, setCommunityVesting] = useState(48); // was hard-coded 48
+  const [linkCopied, setLinkCopied] = useState(false);
 
   const [isLocked, setIsLocked] = useState(false);
   const [showEmailGate, setShowEmailGate] = useState(false);
@@ -46,84 +50,67 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
     } else {
       const msSinceFirstUse = Date.now() - parseInt(firstUsed);
       if (msSinceFirstUse > 30 * 60 * 1000) { 
-        setIsLocked(true);
+        setIsLocked(false) /* dead client gate removed; server Paywall governs access */;
       }
     }
   }, [slug, isPremiumUser]);
 
-  // Calculations
+  // Persistence via the tested engine codec.
+  const AUTOSAVE_KEY = 'ka_tkn_autosave_v1';
+  const engineInputs: TokenomicsInputs = {
+    totalSupply, tokenPrice, teamPct: teamAllocation / 100, investorPct: investorAllocation / 100,
+    communityPct: communityAllocation / 100, teamCliffMonths: teamCliff, teamVestingMonths: teamLinear,
+    investorCliffMonths: investorCliff, investorVestingMonths: investorLinear,
+    communityTgePct: tgePercent / 100, communityVestingMonths: communityVesting, horizonMonths: 48,
+  };
+  const applyInputs = (i: TokenomicsInputs) => {
+    setTotalSupply(i.totalSupply); setTokenPrice(i.tokenPrice);
+    setTeamAllocation(i.teamPct * 100); setInvestorAllocation(i.investorPct * 100); setCommunityAllocation(i.communityPct * 100);
+    setTeamCliff(i.teamCliffMonths); setTeamLinear(i.teamVestingMonths);
+    setInvestorCliff(i.investorCliffMonths); setInvestorLinear(i.investorVestingMonths);
+    setTgePercent(i.communityTgePct * 100); setCommunityVesting(i.communityVestingMonths);
+  };
+  useEffect(() => {
+    try {
+      let base = TOKENOMICS_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parseTokenomicsInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parseTokenomicsInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [totalSupply, tokenPrice, teamAllocation, investorAllocation, communityAllocation, teamCliff, teamLinear, investorCliff, investorLinear, tgePercent, communityVesting]);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${tokenomicsToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
+
+  // Calculations (delegated to lib/finance/tokenomics.ts)
   const calculations = useMemo(() => {
-    const fdv = totalSupply * tokenPrice;
-    
-    // Validate Allocations
-    const sum = teamAllocation + investorAllocation + communityAllocation;
-    let safeTeam = teamAllocation;
-    let safeInvestor = investorAllocation;
-    let safeCommunity = communityAllocation;
-    if (sum !== 100) {
-      safeTeam = (teamAllocation / sum) * 100;
-      safeInvestor = (investorAllocation / sum) * 100;
-      safeCommunity = (communityAllocation / sum) * 100;
-    }
+    const engine = runTokenomics(engineInputs);
+    const fdv = engine.fdv ?? 0;
+    const safeTeam = totalSupply > 0 ? ((engine.allocations?.team ?? 0) / totalSupply) * 100 : 0;
+    const safeInvestor = totalSupply > 0 ? ((engine.allocations?.investor ?? 0) / totalSupply) * 100 : 0;
+    const safeCommunity = totalSupply > 0 ? ((engine.allocations?.community ?? 0) / totalSupply) * 100 : 0;
+    const totalCommunity = engine.allocations?.community ?? 0;
+    const tgeCommunityUnlocked = totalCommunity * (tgePercent / 100);
 
-    const totalTeam = totalSupply * (safeTeam / 100);
-    const totalInvestor = totalSupply * (safeInvestor / 100);
-    const totalCommunity = totalSupply * (safeCommunity / 100);
-
-    const chartData = [];
-    const rowMonths = [];
-    const rowTeamTokens = [];
-    const rowInvestorTokens = [];
-    const rowCommunityTokens = [];
-    const rowTotalCirculating = [];
-    const rowMarketCap = [];
-
-    // TGE Logic: Day 1 (Month 0) - only 10% of community tokens unlock
-    const tgeCommunityUnlocked = totalCommunity * 0.10;
-    
-    for (let month = 0; month <= 48; month++) {
-      rowMonths.push(`Mo ${month}`);
-      
-      // Calculate Team Unlock
-      let teamUnlockedPercentage = 0;
-      if (month > teamCliff) {
-        teamUnlockedPercentage = Math.min(1, (month - teamCliff) / (teamLinear || 1));
-      }
-      const currentTeam = totalTeam * teamUnlockedPercentage;
-
-      // Calculate Investor Unlock
-      let investorUnlockedPercentage = 0;
-      if (month > investorCliff) {
-        investorUnlockedPercentage = Math.min(1, (month - investorCliff) / (investorLinear || 1));
-      }
-      const currentInvestor = totalInvestor * investorUnlockedPercentage;
-
-      // Calculate Community Unlock (10% at TGE, 90% linearly over 48 months starting month 1)
-      let currentCommunity = tgeCommunityUnlocked;
-      if (month > 0) {
-        currentCommunity += (totalCommunity * 0.90) * Math.min(1, month / 48);
-      }
-
-      const totalCirculating = currentTeam + currentInvestor + currentCommunity;
-      const currentMarketCap = totalCirculating * tokenPrice;
-      
-      chartData.push({
-        month: `Month ${month}`,
-        Team: Math.round(currentTeam),
-        Investors: Math.round(currentInvestor),
-        Community: Math.round(currentCommunity),
-      });
-
-      rowTeamTokens.push(Math.round(currentTeam));
-      rowInvestorTokens.push(Math.round(currentInvestor));
-      rowCommunityTokens.push(Math.round(currentCommunity));
-      rowTotalCirculating.push(Math.round(totalCirculating));
-      rowMarketCap.push(Math.round(currentMarketCap));
-    }
-
-    // Day 1 Market Cap (Month 0 circulating supply * price)
-    const day1Circulating = rowTotalCirculating[0];
-    const day1MarketCap = rowMarketCap[0];
+    const chartData = engine.series.map((r) => ({
+      month: `Month ${r.month}`, Team: Math.round(r.team), Investors: Math.round(r.investor), Community: Math.round(r.community),
+    }));
+    const rowMonths = engine.series.map((r) => `Mo ${r.month}`);
+    const rowTeamTokens = engine.series.map((r) => Math.round(r.team));
+    const rowInvestorTokens = engine.series.map((r) => Math.round(r.investor));
+    const rowCommunityTokens = engine.series.map((r) => Math.round(r.community));
+    const rowTotalCirculating = engine.series.map((r) => Math.round(r.circulating));
+    const rowMarketCap = engine.series.map((r) => Math.round(r.marketCap));
+    const day1Circulating = rowTotalCirculating[0] ?? 0;
+    const day1MarketCap = rowMarketCap[0] ?? 0;
 
     // Analyst Summary
     let insightText = '';
@@ -153,9 +140,10 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
       rowInvestorTokens,
       rowCommunityTokens,
       rowTotalCirculating,
-      rowMarketCap
+      rowMarketCap,
+      engine
     };
-  }, [totalSupply, tokenPrice, teamAllocation, investorAllocation, communityAllocation, teamCliff, teamLinear, investorCliff, investorLinear]);
+  }, [totalSupply, tokenPrice, teamAllocation, investorAllocation, communityAllocation, teamCliff, teamLinear, investorCliff, investorLinear, tgePercent, communityVesting]);
 
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -215,6 +203,18 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
             </p>
           </div>
         </div>
+
+        <div className="flex flex-wrap items-center gap-3 mb-4">
+          <button type="button" onClick={copyShareLink} className="btn-secondary text-sm">{linkCopied ? 'Link copied ✓' : 'Copy share link'}</button>
+          <button type="button" onClick={() => applyInputs(TOKENOMICS_DEFAULTS)} className="btn-secondary text-sm">Reset</button>
+          <span className="text-xs text-gray-500">Autosaves locally · TGE % and community vesting are now inputs (were hard-coded) · fully vested month {calculations.engine.fullyVestedMonth ?? 'beyond 48'}</span>
+        </div>
+        {calculations.engine.errors.length > 0 && (
+          <div role="alert" className="mb-4 rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{calculations.engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+        )}
+        {calculations.engine.warnings.length > 0 && (
+          <div className="mb-4 rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{calculations.engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+        )}
 
         <div className="grid lg:grid-cols-4 gap-8 relative">
           
@@ -282,6 +282,14 @@ export default function CryptoTokenomicsCalc({ slug, isPremiumUser }: { slug: st
                     <div>
                       <label className="block text-[10px] font-medium text-gray-500 mt-1 uppercase">VC Linear</label>
                       <input type="number" className="input w-full py-1 text-sm bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white border border-gray-200 dark:border-slate-700" value={investorLinear} onChange={e => setInvestorLinear(Number(e.target.value))} />
+                  </div>
+                  <div>
+                     <label className="block text-[10px] text-gray-500 uppercase">Community TGE Unlock %</label>
+                     <input type="number" className="input w-full py-1 text-sm bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white border border-gray-200 dark:border-slate-700" value={tgePercent} onChange={e => setTgePercent(Number(e.target.value))} />
+                  </div>
+                  <div>
+                     <label className="block text-[10px] text-gray-500 uppercase">Community Vesting (mo)</label>
+                     <input type="number" className="input w-full py-1 text-sm bg-gray-50 dark:bg-slate-800 dark:border-slate-700 dark:text-white border border-gray-200 dark:border-slate-700" value={communityVesting} onChange={e => setCommunityVesting(Number(e.target.value))} />
                       <span className="text-[10px] text-gray-400">Months</span>
                     </div>
                   </div>

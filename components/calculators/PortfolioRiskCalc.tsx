@@ -1,7 +1,8 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import { runPortfolio, portfolioStats as engineStats, parsePortfolioInputs, portfolioInputsToQuery, PORTFOLIO_DEFAULTS, type TwoAssetInputs } from '@/lib/finance/portfolio';
 
 /* PGDM Finance Lab — Portfolio Risk & Return Lab (two-asset Markowitz)
    Matches lecture: F04 · Risk & Return Foundations
@@ -15,21 +16,6 @@ const inp =
   'w-full bg-surface border border-border rounded-xl px-3.5 py-2.5 text-content-primary text-sm font-mono focus:outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 transition-colors';
 const lbl = 'text-[11px] font-bold uppercase tracking-widest text-content-muted mb-1.5 block';
 
-function portfolioStats(w1: number, e1: number, e2: number, s1: number, s2: number, rho: number) {
-  const w2 = 1 - w1;
-  const er = w1 * e1 + w2 * e2;
-  const varp = w1 * w1 * s1 * s1 + w2 * w2 * s2 * s2 + 2 * w1 * w2 * rho * s1 * s2;
-  return { er, sp: Math.sqrt(Math.max(varp, 0)), w2 };
-}
-
-/** Minimum-variance weight in Asset A */
-function mvpWeight(e1: number, e2: number, s1: number, s2: number, rho: number): number {
-  const num = s2 * s2 - rho * s1 * s2;
-  const den = s1 * s1 + s2 * s2 - 2 * rho * s1 * s2;
-  if (den === 0) return 0.5;
-  return Math.min(1, Math.max(0, num / den));
-}
-
 export default function PortfolioRiskCalc() {
   const [e1, setE1] = useState(14);
   const [s1, setS1] = useState(20);
@@ -41,18 +27,43 @@ export default function PortfolioRiskCalc() {
 
   const wf = w1 / 100;
 
-  const { er, sp, w2 } = useMemo(() => portfolioStats(wf, e1, e2, s1, s2, rho), [wf, e1, e2, s1, s2, rho]);
+  // Engine (lib/finance/portfolio.ts) — maths is scale-invariant, % units pass through.
+  const engineInputs: TwoAssetInputs = { expectedReturn1: e1, sigma1: s1, expectedReturn2: e2, sigma2: s2, correlation: rho, riskFreeRate: rf };
+  const engine = useMemo(() => runPortfolio(engineInputs), [e1, s1, e2, s2, rho, rf]);
+  const cur = useMemo(() => engineStats(wf, engineInputs), [wf, e1, s1, e2, s2, rho, rf]);
+  const er = cur.expectedReturn; const sp = cur.sigma; const w2 = 1 - wf;
   const naive = wf * s1 + w2 * s2;
   const saving = naive - sp;
-  const sharpe = sp > 0 ? (er - rf) / sp : 0;
+  const sharpe = cur.sharpe ?? 0;
+  const mvpW = engine.minimumVariance?.weight1 ?? 0.5;
+  const mvpEr = engine.minimumVariance?.expectedReturn ?? 0;
+  const mvpSp = engine.minimumVariance?.sigma ?? 0;
+  const sweep = engine.frontier.map((pt) => ({ er: pt.expectedReturn, sp: pt.sigma, w2: 1 - pt.weight1 }));
 
-  const mvpW = useMemo(() => mvpWeight(e1, e2, s1, s2, rho), [e1, e2, s1, s2, rho]);
-  const { er: mvpEr, sp: mvpSp } = useMemo(() => portfolioStats(mvpW, e1, e2, s1, s2, rho), [mvpW, e1, e2, s1, s2, rho]);
+  // Persistence (autosave + share links).
+  const AUTOSAVE_KEY = 'ka_portfolio_autosave_v1';
+  const applyInputs = (i: TwoAssetInputs) => { setE1(i.expectedReturn1); setS1(i.sigma1); setE2(i.expectedReturn2); setS2(i.sigma2); setRho(i.correlation); setRf(i.riskFreeRate); };
+  useEffect(() => {
+    try {
+      let base = PORTFOLIO_DEFAULTS;
+      const saved = localStorage.getItem(AUTOSAVE_KEY);
+      if (saved) base = parsePortfolioInputs(JSON.parse(saved));
+      const params = new URLSearchParams(window.location.search);
+      if ([...params.keys()].length > 0) base = parsePortfolioInputs(Object.fromEntries(params.entries()), base);
+      applyInputs(base);
+    } catch { /* keep defaults */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem(AUTOSAVE_KEY, JSON.stringify(engineInputs)); } catch { /* private mode */ }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [e1, s1, e2, s2, rho, rf]);
+  const [linkCopied, setLinkCopied] = useState(false);
+  const copyShareLink = async () => {
+    try { await navigator.clipboard.writeText(`${window.location.origin}${window.location.pathname}?${portfolioInputsToQuery(engineInputs)}`); } catch { /* blocked */ }
+    setLinkCopied(true); setTimeout(() => setLinkCopied(false), 2000);
+  };
 
-  const sweep = useMemo(
-    () => Array.from({ length: 21 }, (_, i) => i / 20).map((x) => portfolioStats(x, e1, e2, s1, s2, rho)),
-    [e1, e2, s1, s2, rho]
-  );
   const maxEr = Math.max(e1, e2);
   const maxSp = Math.max(...sweep.map((p) => p.sp));
 
@@ -187,6 +198,29 @@ export default function PortfolioRiskCalc() {
           {' '}Move the Weight slider to {Math.round(mvpW * 100)}% to verify.
         </p>
       </div>
+
+      <div className="flex flex-wrap items-center gap-3">
+        <button type="button" onClick={copyShareLink} className="text-xs font-bold px-4 py-2 rounded-xl border border-border bg-surface-raised hover:border-brand transition-colors text-content-primary">{linkCopied ? '✓ Link Copied' : '🔗 Copy Share Link'}</button>
+        <span className="text-xs text-content-muted">Inputs autosave locally</span>
+      </div>
+      {engine.errors.length > 0 && (
+        <div role="alert" className="rounded-xl border border-red-300 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-800 dark:text-red-200"><ul className="list-disc pl-5">{engine.errors.map((e) => <li key={e}>{e}</li>)}</ul></div>
+      )}
+      {engine.warnings.length > 0 && (
+        <div className="rounded-xl border border-amber-300 bg-amber-50 dark:bg-amber-950/30 p-4 text-sm text-amber-900 dark:text-amber-200"><ul className="list-disc pl-5">{engine.warnings.map((w) => <li key={w}>{w}</li>)}</ul></div>
+      )}
+      {engine.tangency && (
+        <div className="rounded-2xl border border-brand/30 bg-brand-muted p-4">
+          <p className="text-[10px] font-bold uppercase tracking-widest text-brand mb-2">Tangency Portfolio (Maximum Sharpe) — new</p>
+          <p className="text-sm text-content-secondary">
+            Weight in A: <strong className="font-mono text-brand">{(engine.tangency.weight1 * 100).toFixed(1)}%</strong>
+            {' '}· E[R] = <strong className="font-mono">{engine.tangency.expectedReturn.toFixed(2)}%</strong>
+            {' '}· σ = <strong className="font-mono">{engine.tangency.sigma.toFixed(2)}%</strong>
+            {' '}· Sharpe = <strong className="font-mono">{engine.tangency.sharpe !== null ? engine.tangency.sharpe.toFixed(3) : 'n.m.'}</strong>.
+            This is the portfolio the Capital Market Line is tangent to — every mean-variance investor holds it plus cash.
+          </p>
+        </div>
+      )}
 
       {/* Efficient frontier scatter */}
       <div className="rounded-2xl border border-border bg-surface p-5">
