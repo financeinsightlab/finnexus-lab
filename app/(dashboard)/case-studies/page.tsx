@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma';
 import { Briefcase, Building2, TrendingUp, Target, ArrowRight } from 'lucide-react';
 import type { CaseStudy } from '@/types';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import ResearchSubNav from '@/components/hub-navigation/ResearchSubNav';
 
 export const metadata: Metadata = {
   title: 'Case Studies | Kunwar Analytics',
@@ -55,9 +56,7 @@ export default async function CaseStudiesPage() {
   const engagements = new Set(allStudies.map((s) => s.engagementType));
 
   return (
-
     <div className="min-h-screen min-w-0 overflow-hidden bg-background text-foreground">
-
       <JsonLd
         data={{
           '@context': 'https://schema.org',
@@ -66,6 +65,17 @@ export default async function CaseStudiesPage() {
           url: `${BASE}/case-studies`,
           description: metadata.description,
         }}
+      />
+
+      <ResearchSubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Research', href: '/research' },
+          { label: 'Case Studies', href: '/case-studies' },
+        ]}
+        title="Corporate & Strategy Case Studies"
+        subtitle="Empirical business problems, analytical methodologies, and quantified operational impact."
+        badge="CASE STUDIES"
       />
 
       {/* ═══════════ HERO ═══════════ */}

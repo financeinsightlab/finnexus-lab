@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { auth } from '@/auth';
 import { resolvePlan } from '@/lib/entitlements';
 import PricingClient from '@/components/pricing/PricingClient';
+import CompanySubNav from '@/components/hub-navigation/CompanySubNav';
 
 export const metadata: Metadata = {
   title: 'Pricing & Plans | Kunwar Analytics',
@@ -21,5 +22,19 @@ export default async function PricingPage() {
   const session = await auth().catch(() => null);
   const currentPlan = resolvePlan(session?.user as Parameters<typeof resolvePlan>[0]);
 
-  return <PricingClient currentPlan={currentPlan} signedIn={Boolean(session?.user)} />;
+  return (
+    <>
+      <CompanySubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Company', href: '/about' },
+          { label: 'Pricing Plans', href: '/pricing' },
+        ]}
+        title="Institutional Plans & Pricing"
+        subtitle="Transparent subscription tiers for individuals, analysts, and enterprise finance teams."
+        badge="SUBSCRIPTION TIERS"
+      />
+      <PricingClient currentPlan={currentPlan} signedIn={Boolean(session?.user)} />
+    </>
+  );
 }

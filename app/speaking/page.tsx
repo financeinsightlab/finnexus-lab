@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import CopyButton from '@/components/ui/CopyButton';
 import HeroBackground from '@/components/ui/HeroBackground';
+import CompanySubNav from '@/components/hub-navigation/CompanySubNav';
 
 export const metadata: Metadata = {
   title: 'Speaking & Media',
@@ -87,6 +88,16 @@ function getBadgeColor(type: string) {
 export default function SpeakingPage() {
   return (
     <div className="min-h-screen bg-background">
+      <CompanySubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Company', href: '/about' },
+          { label: 'Speaking & Media', href: '/speaking' },
+        ]}
+        title="Speaking, Keynotes & Media Engagements"
+        subtitle="Keynotes, guest lectures, panel discussions, and expert media commentary on Indian markets and financial modelling."
+        badge="SPEAKING & MEDIA"
+      />
       {/* Header */}
       <header className="bg-brand-navy py-20 relative overflow-hidden">
         <HeroBackground />

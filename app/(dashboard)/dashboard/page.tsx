@@ -27,6 +27,7 @@ import { readLastVisit } from '@/lib/visit-store';
 import VisitMarker from '@/components/dashboard/VisitMarker';
 import FocusSwitcher, { FOCUS_COOKIE, type DashboardFocus } from '@/components/dashboard/FocusSwitcher';
 import Breadcrumbs from '@/components/ui/Breadcrumbs';
+import DashboardSubNav from '@/components/hub-navigation/DashboardSubNav';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import { TOOLS } from '@/lib/tools-registry';
 
@@ -354,6 +355,8 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+
+      <DashboardSubNav currentTab="overview" />
 
       <div className="wrap max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Breadcrumb + workspace focus override */}

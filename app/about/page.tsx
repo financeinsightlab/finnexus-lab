@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Link from 'next/link';
 import HeroBackground from '@/components/ui/HeroBackground';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import CompanySubNav from '@/components/hub-navigation/CompanySubNav';
 
 interface Skill {
   cat: string;
@@ -98,6 +99,15 @@ export const metadata: Metadata = {
 export default function AboutPage() {
   return (
     <div className="min-h-screen">
+      <CompanySubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Company', href: '/about' },
+        ]}
+        title="About Kunwar Analytics"
+        subtitle="Institutional-grade financial intelligence, valuation research, and quantitative analytics."
+        badge="ABOUT THE PRACTICE"
+      />
       {/* Header */}
       <header className="relative overflow-hidden bg-brand-navy py-20">
         <HeroBackground />

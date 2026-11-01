@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import MarketNav from '@/components/markets/MarketNav';
 import { getPublicPredictionBoard } from '@/lib/predictions';
 import PredictionsClient from './PredictionsClient';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
@@ -27,6 +28,7 @@ function PredictionBoardError({ error, message }: PredictionBoardErrorProps) {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-[#0B0D13]">
+      <MarketNav />
       <PromotionSlot slot="CONTENT_TOP" path="/predictions" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12">

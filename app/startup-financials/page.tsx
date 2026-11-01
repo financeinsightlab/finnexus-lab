@@ -7,6 +7,7 @@ import {
   type StartupInputs,
 } from '@/lib/startup-financials-engine';
 import StartupFinancialsClient from './StartupFinancialsClient';
+import ToolsSubNav from '@/components/hub-navigation/ToolsSubNav';
 
 export const metadata: Metadata = {
   title: 'Startup Financial Intelligence Suite | VC Financial Models | Kunwar Analytics',
@@ -50,10 +51,22 @@ export default async function StartupFinancialsPage() {
   const initialModel = calculateStartupModel(defaultInputs);
 
   return (
-    <StartupFinancialsClient
-      initialModel={initialModel}
-      userPlan={plan}
-      isPaid={isPaid}
-    />
+    <>
+      <ToolsSubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Tools', href: '/tools' },
+          { label: 'Startup Financials', href: '/startup-financials' },
+        ]}
+        title="Startup Financial Intelligence & Runway Suite"
+        subtitle="VC-ready 3-statement models, burn multiple analytics, runway projections, and pitch readiness."
+        badge="VENTURE ANALYTICS"
+      />
+      <StartupFinancialsClient
+        initialModel={initialModel}
+        userPlan={plan}
+        isPaid={isPaid}
+      />
+    </>
   );
 }

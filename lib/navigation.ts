@@ -14,6 +14,13 @@ export interface NavItem {
     icon?: string;
     /** Rendered as an external link when true. */
     external?: boolean;
+    /** Optional badge text (e.g., 'NEW', 'LIVE', 'AI'). */
+    badge?: string;
+}
+
+export interface NavGroup {
+    name: string;
+    items: NavItem[];
 }
 
 export interface NavCluster {
@@ -29,6 +36,8 @@ export interface NavCluster {
     description: string;
     /** Child pages inside the cluster. */
     items: NavItem[];
+    /** Structured columns for institutional mega-menus. */
+    groups?: NavGroup[];
 }
 
 export const NAV_CLUSTERS: NavCluster[] = [
@@ -45,6 +54,23 @@ export const NAV_CLUSTERS: NavCluster[] = [
             { label: 'Case Studies', href: '/case-studies', icon: '📁', description: 'Client engagements and outcomes' },
             { label: 'Projects', href: '/projects', icon: '🧪', description: 'Portfolio of analytics & modelling work' },
         ],
+        groups: [
+            {
+                name: 'Publications',
+                items: [
+                    { label: 'Research Reports', href: '/research', icon: '📚', description: 'In-depth sector and company research' },
+                    { label: 'Insights', href: '/insights', icon: '💡', description: 'Short, sharp strategy notes' },
+                ],
+            },
+            {
+                name: 'Applied Analysis',
+                items: [
+                    { label: 'Data Lab', href: '/data-lab', icon: '🔬', description: 'Reproducible analysis projects' },
+                    { label: 'Case Studies', href: '/case-studies', icon: '📁', description: 'Client engagements and outcomes' },
+                    { label: 'Projects', href: '/projects', icon: '🧪', description: 'Portfolio of analytics & modelling work' },
+                ],
+            },
+        ],
     },
     {
         id: 'tools',
@@ -60,6 +86,25 @@ export const NAV_CLUSTERS: NavCluster[] = [
             { label: '3-Statement Model', href: '/tools/3-statement-model', icon: '🚀', description: 'Integrated P&L, BS & Cash Flow' },
             { label: 'WACC Calculator', href: '/tools/wacc-calculator', icon: '⚖️', description: 'CAPM build-up with D/E sensitivity' },
             { label: 'SaaS LTV/CAC Lab', href: '/tools/saas-ltv-cac-model', icon: '💻', description: 'Unit economics & cohort analysis' },
+        ],
+        groups: [
+            {
+                name: 'Core Valuation',
+                items: [
+                    { label: 'DCF Valuation Model', href: '/tools/dcf-valuation-model', icon: '📊', description: 'Full DCF with scenarios & sensitivity' },
+                    { label: 'WACC Calculator', href: '/tools/wacc-calculator', icon: '⚖️', description: 'CAPM build-up with D/E sensitivity' },
+                    { label: '3-Statement Model', href: '/tools/3-statement-model', icon: '🚀', description: 'Integrated P&L, BS & Cash Flow' },
+                ],
+            },
+            {
+                name: 'Platforms & Economics',
+                items: [
+                    { label: 'Company Intelligence', href: '/company', icon: '⚡', description: 'NSE/BSE AI analysis & health scores' },
+                    { label: 'Startup Financials', href: '/startup-financials', icon: '🚀', description: 'VC 3-statement runway engine' },
+                    { label: 'SaaS LTV/CAC Lab', href: '/tools/saas-ltv-cac-model', icon: '💻', description: 'Unit economics & cohorts' },
+                    { label: 'All Calculators', href: '/tools', icon: '🧮', description: '16 interactive financial models' },
+                ],
+            },
         ],
     },
     {
@@ -86,6 +131,37 @@ export const NAV_CLUSTERS: NavCluster[] = [
             { label: 'Prediction Ledger', href: '/predictions/ledger', icon: '📒', description: 'Scored public track record (hits & misses)' },
             { label: 'Data Freshness', href: '/data-freshness', icon: '⏱️', description: 'Update SLAs for every dataset' },
         ],
+        groups: [
+            {
+                name: 'Equities & Screener',
+                items: [
+                    { label: 'Market Terminal', href: '/markets', icon: '🖥️', description: 'Global multi-asset overview' },
+                    { label: 'Indian Equities', href: '/markets/india', icon: '🇮🇳', description: 'Nifty, Sensex & sectoral benchmarks' },
+                    { label: 'Stock Screener', href: '/markets/stocks', icon: '🔍', description: 'Fundamental ratios & filters' },
+                    { label: 'Sector Heatmap', href: '/markets/sector-heatmap', icon: '🗺️', description: 'Market-cap weighted visual map' },
+                ],
+            },
+            {
+                name: 'Macro & Multi-Asset',
+                items: [
+                    { label: 'Forex & Currencies', href: '/markets/forex', icon: '💱', description: 'Cross-rates & USD/INR' },
+                    { label: 'Commodities', href: '/markets/commodities', icon: '🪙', description: 'Gold, Crude Oil & Natural Gas' },
+                    { label: 'Bonds & Yields', href: '/markets/bonds', icon: '🏛️', description: 'Sovereign 10Y curves' },
+                    { label: 'Macro Economy', href: '/markets/economy', icon: '📊', description: 'GDP, CPI & policy rates' },
+                    { label: 'Economic Calendar', href: '/markets/calendar', icon: '📅', description: 'Global macro announcements' },
+                ],
+            },
+            {
+                name: 'Derivatives & Intelligence',
+                items: [
+                    { label: 'Derivatives (F&O)', href: '/markets/derivatives', icon: '⚡', description: 'Options chain, PCR, Max Pain & FII/DII' },
+                    { label: 'Market News Wire', href: '/markets/news', icon: '📰', description: 'Institutional news stream' },
+                    { label: 'Sector Trackers', href: '/tracker', icon: '📈', description: 'Quarterly sector KPIs' },
+                    { label: 'Prediction Ledger', href: '/predictions/ledger', icon: '📒', description: 'Scored public track record' },
+                    { label: 'Data Freshness', href: '/data-freshness', icon: '⏱️', description: 'Provider SLAs & operations' },
+                ],
+            },
+        ],
     },
     {
         id: 'learn',
@@ -101,6 +177,25 @@ export const NAV_CLUSTERS: NavCluster[] = [
             { label: 'Placement Day War Room', href: '/placement-day-war-room', icon: '🎯', description: "India's #1 AI finance interview simulator & war room" },
             { label: 'Certificates', href: '/certificates', icon: '🏅', description: 'Course completion credentials' },
             { label: 'Podcast', href: '/podcast', icon: '🎙️', description: 'The Kunwar Analytics Podcast' },
+        ],
+        groups: [
+            {
+                name: 'Curriculum & Programs',
+                items: [
+                    { label: 'Study Material', href: '/study', icon: '📖', description: 'Core finance course modules' },
+                    { label: 'PGDM Program', href: '/pgdm', icon: '🏛️', description: '14 subjects, 73 lectures & quizzes' },
+                    { label: 'Finance Terms', href: '/finance-terms', icon: '📚', description: 'Glossary of financial definitions' },
+                ],
+            },
+            {
+                name: 'Career & Placement',
+                items: [
+                    { label: 'Placement Day War Room', href: '/placement-day-war-room', icon: '🎯', description: 'AI interview simulator & 10 workstations' },
+                    { label: 'Placement Prep', href: '/study/placement-prep', icon: '🧳', description: '60-day structured preparation roadmap' },
+                    { label: 'Certificates', href: '/certificates', icon: '🏅', description: 'Verifiable course credentials' },
+                    { label: 'Podcast', href: '/podcast', icon: '🎙️', description: 'Audio deep-dives & transcripts' },
+                ],
+            },
         ],
     },
     {
@@ -118,6 +213,25 @@ export const NAV_CLUSTERS: NavCluster[] = [
             { label: 'Résumé', href: '/resume', icon: '📄', description: 'Professional experience and skills' },
             { label: 'Contact', href: '/contact', icon: '✉️', description: 'Start a conversation' },
         ],
+        groups: [
+            {
+                name: 'About & Practice',
+                items: [
+                    { label: 'About', href: '/about', icon: 'ℹ️', description: 'Mission, vision and analytical approach' },
+                    { label: 'Speaking', href: '/speaking', icon: '🎤', description: 'Keynotes, lectures & workshops' },
+                    { label: 'Résumé', href: '/resume', icon: '📄', description: 'Professional background & credentials' },
+                ],
+            },
+            {
+                name: 'Services & Engagement',
+                items: [
+                    { label: 'Services', href: '/services', icon: '🛠️', description: 'Research, modelling and advisory' },
+                    { label: 'Enterprise', href: '/enterprise', icon: '🏦', description: 'Custom institutional solutions' },
+                    { label: 'Pricing', href: '/pricing', icon: '💳', description: 'Subscription tiers & entitlements' },
+                    { label: 'Contact', href: '/contact', icon: '✉️', description: 'Direct business enquiries & support' },
+                ],
+            },
+        ],
     },
 ];
 
@@ -133,9 +247,11 @@ export const NAV_CTA: NavItem = { label: 'Work With Me', href: '/contact', icon:
 export const QUICK_ACTIONS: NavItem[] = [
     { label: 'Dashboard', href: '/dashboard', icon: '🏠', description: 'Saved articles, progress and your plan' },
     { label: 'Market Terminal', href: '/markets', icon: '🖥️', description: 'Institutional global multi-asset terminal' },
+    { label: 'Placement Day War Room', href: '/placement-day-war-room', icon: '🎯', description: 'AI interview simulator & technical lab' },
     { label: 'Equity Screener', href: '/markets/stocks', icon: '🔍', description: 'Valuation & financial ratio screener' },
     { label: 'Sector Trackers', href: '/tracker', icon: '📈', description: 'Quarterly KPIs across sectors' },
     { label: 'Tools & calculators', href: '/tools', icon: '🧮', description: 'Valuation models and finance calculators' },
+    { label: 'PGDM Program', href: '/pgdm', icon: '🏛️', description: '14 subjects, 73 lectures and cheatsheets' },
     { label: 'Ask Kunwar', href: '/ask', icon: '💬', description: 'Grounded Q&A over research and study content' },
     { label: 'Research library', href: '/research', icon: '📊', description: 'All research reports' },
     { label: 'Prediction Ledger', href: '/predictions/ledger', icon: '📒', description: 'Scored public track record' },

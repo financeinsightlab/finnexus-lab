@@ -34,7 +34,8 @@ export type SearchKind =
     | 'pgdm-lecture'
     | 'tool'
     | 'study'
-    | 'finance-term';
+    | 'finance-term'
+    | 'market';
 
 export interface SearchItem {
     kind: SearchKind;
@@ -65,9 +66,10 @@ const KIND_LABELS: Record<SearchKind, string> = {
     podcast: 'Podcast',
     'pgdm-subject': 'PGDM Subjects',
     'pgdm-lecture': 'PGDM Lectures',
-    tool: 'Tools',
+    tool: 'Tools & Models',
     study: 'Study Material',
     'finance-term': 'Finance Terms',
+    market: 'Markets & Intelligence',
 };
 
 /**
@@ -217,6 +219,34 @@ function collectStatic(tokens: string[]): SearchItem[] {
         );
     }
 
+    const STATIC_MARKET_DESTINATIONS: Array<{ title: string; description: string; url: string; tags: string[] }> = [
+        { title: 'Global Financial Market Terminal', description: 'Institutional multi-asset terminal covering indices, currencies, commodities, and yields', url: '/markets', tags: ['terminal', 'markets', 'indices', 'overview', 'global'] },
+        { title: 'Indian Equities & Benchmarks', description: 'NIFTY 50, SENSEX, sectoral indices, market breadth, and top gainers/losers', url: '/markets/india', tags: ['india', 'nifty', 'sensex', 'nse', 'bse', 'equities'] },
+        { title: 'Institutional Stock Screener', description: 'Screen equities across valuation, PE ratio, ROE, leverage, and margins', url: '/markets/stocks', tags: ['screener', 'stocks', 'filter', 'pe', 'valuation', 'ratios'] },
+        { title: 'Visual Sector Heatmap', description: 'Market-cap weighted visual performance heatmap across Indian market sectors', url: '/markets/sector-heatmap', tags: ['heatmap', 'sectors', 'market-cap', 'performance', 'visual'] },
+        { title: 'Forex & Currency Matrix', description: 'Global FX rates, USD/INR, EUR/INR, and cross-currency matrix', url: '/markets/forex', tags: ['forex', 'currency', 'usd-inr', 'exchange', 'fx'] },
+        { title: 'Commodities & Energy Board', description: 'Gold, silver, Brent crude oil, natural gas, and precious metals prices', url: '/markets/commodities', tags: ['commodities', 'gold', 'silver', 'crude', 'oil', 'natural gas'] },
+        { title: 'Sovereign Bonds & Yield Curves', description: 'Indian 10-Year G-Sec, US Treasury yields, and sovereign spread curve', url: '/markets/bonds', tags: ['bonds', 'yields', 'g-sec', 'treasury', 'fixed income'] },
+        { title: 'Derivatives & Options Chain (F&O)', description: 'NIFTY options chain, Put-Call Ratio (PCR), Max Pain, and FII/DII flows', url: '/markets/derivatives', tags: ['derivatives', 'options', 'pcr', 'max pain', 'fii', 'dii', 'fno'] },
+        { title: 'Public Prediction Ledger', description: 'Scored public prediction calls, hits/misses track record and Brier score', url: '/predictions/ledger', tags: ['predictions', 'ledger', 'track record', 'calls', 'brier'] },
+        { title: 'Placement Day War Room 2.0', description: "India's #1 AI finance interview simulator, 6-round placement day and 10 lab workstations", url: '/placement-day-war-room', tags: ['placement', 'interview', 'war room', 'simulator', 'finance lab', 'dcf', 'wacc'] },
+    ];
+
+    for (const m of STATIC_MARKET_DESTINATIONS) {
+        push(
+            makeItem(
+                {
+                    kind: 'market',
+                    title: m.title,
+                    description: m.description,
+                    url: m.url,
+                    tags: m.tags,
+                },
+                tokens,
+            ),
+        );
+    }
+
     return items;
 }
 
@@ -307,6 +337,8 @@ export async function searchContent(
 
     // Stable, human-friendly ordering across groups.
     const order: SearchKind[] = [
+        'market',
+        'tool',
         'research',
         'insight',
         'case-study',
@@ -315,7 +347,6 @@ export async function searchContent(
         'pgdm-lecture',
         'study',
         'finance-term',
-        'tool',
         'podcast',
     ];
     groups.sort((a, b) => order.indexOf(a.kind) - order.indexOf(b.kind));

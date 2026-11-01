@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import MarketNav from '@/components/markets/MarketNav';
 import { getAllResearch } from '@/lib/content';
 import { parseFreshStats, type ParsedFreshStat } from '@/lib/freshness';
 import { getFreshnessSummary } from '@/lib/financial-data';
@@ -223,6 +224,7 @@ export default async function DataFreshnessDashboard() {
 
   return (
     <div className="min-h-screen bg-[#0B0D13] text-content-primary">
+      <MarketNav />
       {/* Header */}
       <section className="relative overflow-hidden bg-surface-raised border-b border-white/5 py-16">
         <div className="relative z-10 max-w-[1400px] mx-auto px-6">

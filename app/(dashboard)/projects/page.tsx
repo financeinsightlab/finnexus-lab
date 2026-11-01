@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { PROJECTS, PROJECT_CATEGORIES } from '@/lib/projects';
 import ProjectsClient from './ProjectsClient';
+import ResearchSubNav from '@/components/hub-navigation/ResearchSubNav';
 
 export const metadata: Metadata = {
     title: 'Projects | Kunwar Analytics',
@@ -17,5 +18,19 @@ export const metadata: Metadata = {
 };
 
 export default function ProjectsPage() {
-    return <ProjectsClient projects={PROJECTS} categories={PROJECT_CATEGORIES} />;
+    return (
+        <>
+            <ResearchSubNav
+                breadcrumbs={[
+                    { label: 'Home', href: '/' },
+                    { label: 'Research', href: '/research' },
+                    { label: 'Projects', href: '/projects' },
+                ]}
+                title="Analytics & Modelling Portfolio Projects"
+                subtitle="Quantified projects across valuation, econometric modeling, market research, and automation engines."
+                badge="PORTFOLIO"
+            />
+            <ProjectsClient projects={PROJECTS} categories={PROJECT_CATEGORIES} />
+        </>
+    );
 }

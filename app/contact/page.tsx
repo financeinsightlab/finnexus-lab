@@ -5,6 +5,7 @@ import HeroBackground from '@/components/ui/HeroBackground';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import ContactForm from './ContactForm';
 import ContentFaq from '@/components/content/ContentFaq';
+import CompanySubNav from '@/components/hub-navigation/CompanySubNav';
 
 export const metadata: Metadata = {
   title: 'Contact | Kunwar Analytics',
@@ -53,6 +54,16 @@ const ROUTING = [
 export default function ContactPage() {
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-background">
+      <CompanySubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Company', href: '/about' },
+          { label: 'Contact', href: '/contact' },
+        ]}
+        title="Direct Contact & Business Enquiries"
+        subtitle="Initiate bespoke financial research, modeling engagements, or enterprise team solutions."
+        badge="GET IN TOUCH"
+      />
       {/* Header */}
       <header className="relative overflow-hidden bg-brand-navy py-16">
         <HeroBackground />

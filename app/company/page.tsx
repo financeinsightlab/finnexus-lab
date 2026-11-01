@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import CompanySearchClient from './CompanySearchClient';
+import ToolsSubNav from '@/components/hub-navigation/ToolsSubNav';
 
 export const metadata: Metadata = {
   title: 'India Company Intelligence Hub | Kunwar Analytics',
@@ -14,5 +15,19 @@ export const metadata: Metadata = {
 };
 
 export default function CompanySearchPage() {
-  return <CompanySearchClient />;
+  return (
+    <>
+      <ToolsSubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Tools', href: '/tools' },
+          { label: 'Company Intelligence', href: '/company' },
+        ]}
+        title="India Company Intelligence Platform"
+        subtitle="Search any NSE/BSE listed firm for institutional health scores, DCF sensitivity, and AI thesis generation."
+        badge="COMPANY INTELLIGENCE"
+      />
+      <CompanySearchClient />
+    </>
+  );
 }

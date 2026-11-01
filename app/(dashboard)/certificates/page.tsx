@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { CERTIFICATES, CERTIFICATE_CATEGORIES } from '@/lib/certificates';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import CertificatesClient from './CertificatesClient';
+import LearnSubNav from '@/components/hub-navigation/LearnSubNav';
 
 export const metadata: Metadata = {
     title: 'Certificate Pathways | Kunwar Analytics',
@@ -20,6 +21,16 @@ export const metadata: Metadata = {
 export default function CertificatesPage() {
     return (
         <>
+            <LearnSubNav
+                breadcrumbs={[
+                    { label: 'Home', href: '/' },
+                    { label: 'Learn', href: '/study' },
+                    { label: 'Certificates', href: '/certificates' },
+                ]}
+                title="Credential Pathways & Certificates Registry"
+                subtitle="Verifiable course completion credentials, pathway requirements, and assessment tracking."
+                badge="CREDENTIALS"
+            />
             <PromotionSlot slot="CONTENT_TOP" path="/certificates" />
             <CertificatesClient certificates={CERTIFICATES} categories={CERTIFICATE_CATEGORIES} />
             <PromotionSlot slot="CONTENT_BOTTOM" path="/certificates" />

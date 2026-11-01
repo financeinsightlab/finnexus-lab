@@ -24,6 +24,10 @@ const SECTIONS: NavSection[] = [
   { href: '/markets/economy', label: 'Macro Economy' },
   { href: '/markets/calendar', label: 'Calendar' },
   { href: '/markets/news', label: 'News Wire' },
+  { href: '/tracker', label: 'Sector Trackers' },
+  { href: '/radar', label: 'Contrarian Radar' },
+  { href: '/predictions/ledger', label: 'Prediction Ledger', badge: 'Scored' },
+  { href: '/data-freshness', label: 'Data Freshness', badge: 'SLA' },
 ];
 
 export default function MarketNav() {
@@ -34,7 +38,7 @@ export default function MarketNav() {
       aria-label="Financial Terminal Navigation" 
       className="w-full bg-[#0d131f] border-b border-neutral-800 sticky top-16 z-20 shadow-md backdrop-blur-md"
     >
-      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 flex items-center overflow-x-auto scrollbar-none py-1">
+      <div className="max-w-[1600px] mx-auto px-3 sm:px-4 flex items-center overflow-x-auto scrollbar-none py-1.5">
         <div className="flex items-center space-x-1 sm:space-x-1.5 shrink-0">
           <div className="text-[11px] font-bold tracking-wider text-cyan-400 bg-cyan-950/40 border border-cyan-800/60 px-2 py-1 rounded mr-1 flex items-center gap-1 font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-cyan-400"></span>
@@ -69,4 +73,3 @@ export default function MarketNav() {
     </nav>
   );
 }
-

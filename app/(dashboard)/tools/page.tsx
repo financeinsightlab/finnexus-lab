@@ -1,5 +1,6 @@
 import ToolsHubClient from '@/components/tools/ToolsHubClient';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import ToolsSubNav from '@/components/hub-navigation/ToolsSubNav';
 
 export type { Tool } from '@/lib/tools-registry';
 
@@ -10,16 +11,20 @@ export type { Tool } from '@/lib/tools-registry';
  */
 export default function ToolsPage() {
   return (
-
-    <ToolsHubClient
-      topSlot={<PromotionSlot slot="TOOL_SECTION" path="/tools" />}
-      bottomSlot={
-        <>
-          <PromotionSlot slot="CONTENT_BOTTOM" path="/tools" />
-          <PromotionSlot slot="FOOTER" path="/tools" />
-        </>
-      }
-    />
-
+    <>
+      <ToolsSubNav
+        title="Financial Modelling & Analytics Hub"
+        subtitle="16+ interactive valuation models, DCF engines, 3-statement projections, and venture unit economics."
+      />
+      <ToolsHubClient
+        topSlot={<PromotionSlot slot="TOOL_SECTION" path="/tools" />}
+        bottomSlot={
+          <>
+            <PromotionSlot slot="CONTENT_BOTTOM" path="/tools" />
+            <PromotionSlot slot="FOOTER" path="/tools" />
+          </>
+        }
+      />
+    </>
   );
 }

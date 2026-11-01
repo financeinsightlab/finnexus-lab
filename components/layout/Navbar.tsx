@@ -216,49 +216,114 @@ export default function Navbar() {
 
                 {openCluster === cluster.id && (
                   <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-3">
-                    <div id={`nav-cluster-menu-${cluster.id}`} className="ui-scroll-region anim-fade w-[580px] max-w-[92vw] max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-2xl border border-border bg-surface-overlay backdrop-blur-xl p-4 shadow-2xl shadow-black/60" data-lenis-prevent>
-                      <div className="flex items-start gap-3 px-2 pb-3">
+                    <div
+                      id={`nav-cluster-menu-${cluster.id}`}
+                      className={`ui-scroll-region anim-fade ${
+                        cluster.groups && cluster.groups.length >= 3
+                          ? 'w-[780px]'
+                          : cluster.groups && cluster.groups.length === 2
+                          ? 'w-[640px]'
+                          : 'w-[580px]'
+                      } max-w-[94vw] max-h-[calc(100dvh-5rem)] overflow-y-auto rounded-2xl border border-border bg-surface-overlay backdrop-blur-xl p-5 shadow-2xl shadow-black/60`}
+                      data-lenis-prevent
+                    >
+                      <div className="flex items-start gap-3 px-2 pb-3 mb-3 border-b border-border-subtle">
                         <span className="text-2xl leading-none">{cluster.icon}</span>
                         <div>
                           <p className="text-sm font-semibold text-content-primary">{cluster.label}</p>
                           <p className="text-xs text-content-muted">{cluster.description}</p>
                         </div>
                       </div>
-                      <div className="grid grid-cols-2 gap-1">
-                        {cluster.items.map((item) => (
-                          <Link
-                            key={`${cluster.id}-${item.href}`}
-                            href={item.href}
-                            aria-current={pathname === item.href ? 'page' : undefined}
-                            onClick={() => setOpenCluster(null)}
-                            className={`flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors group/item ${isActive(item.href)
-                              ? 'bg-brand-muted'
-                              : 'hover:bg-accent'
+
+                      {cluster.groups ? (
+                        <div
+                          className={`grid grid-cols-1 ${
+                            cluster.groups.length >= 3 ? 'md:grid-cols-3' : 'md:grid-cols-2'
+                          } gap-4`}
+                        >
+                          {cluster.groups.map((group, gIdx) => (
+                            <div key={gIdx} className="space-y-1">
+                              <h4 className="text-[10px] font-bold uppercase tracking-wider text-content-muted px-2.5 py-1">
+                                {group.name}
+                              </h4>
+                              {group.items.map((item) => (
+                                <Link
+                                  key={`${cluster.id}-${item.href}`}
+                                  href={item.href}
+                                  aria-current={pathname === item.href ? 'page' : undefined}
+                                  onClick={() => setOpenCluster(null)}
+                                  className={`flex items-start gap-2.5 rounded-xl px-2.5 py-2 transition-colors group/item ${
+                                    isActive(item.href) ? 'bg-brand-muted text-brand' : 'hover:bg-accent'
+                                  }`}
+                                >
+                                  <span className="mt-0.5 text-sm leading-none shrink-0">{item.icon}</span>
+                                  <span className="min-w-0">
+                                    <span
+                                      className={`block text-xs font-semibold ${
+                                        isActive(item.href)
+                                          ? 'text-brand'
+                                          : 'text-content-secondary group-hover/item:text-content-primary'
+                                      }`}
+                                    >
+                                      {item.label}
+                                    </span>
+                                    {item.description && (
+                                      <span className="mt-0.5 block text-[11px] text-content-muted group-hover/item:text-content-secondary line-clamp-1">
+                                        {item.description}
+                                      </span>
+                                    )}
+                                  </span>
+                                </Link>
+                              ))}
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <div className="grid grid-cols-2 gap-1">
+                          {cluster.items.map((item) => (
+                            <Link
+                              key={`${cluster.id}-${item.href}`}
+                              href={item.href}
+                              aria-current={pathname === item.href ? 'page' : undefined}
+                              onClick={() => setOpenCluster(null)}
+                              className={`flex items-start gap-3 rounded-xl px-3 py-2.5 transition-colors group/item ${
+                                isActive(item.href) ? 'bg-brand-muted' : 'hover:bg-accent'
                               }`}
-                          >
-                            <span className="mt-0.5 text-base leading-none">{item.icon}</span>
-                            <span className="min-w-0">
-                              <span className={`block text-sm font-medium ${isActive(item.href) ? 'text-brand' : 'text-content-secondary group-hover/item:text-content-primary'}`}>
-                                {item.label}
-                              </span>
-                              {item.description && (
-                                <span className="mt-0.5 block text-xs text-content-muted group-hover/item:text-content-secondary">
-                                  {item.description}
+                            >
+                              <span className="mt-0.5 text-base leading-none">{item.icon}</span>
+                              <span className="min-w-0">
+                                <span
+                                  className={`block text-sm font-medium ${
+                                    isActive(item.href)
+                                      ? 'text-brand'
+                                      : 'text-content-secondary group-hover/item:text-content-primary'
+                                  }`}
+                                >
+                                  {item.label}
                                 </span>
-                              )}
-                            </span>
-                          </Link>
-                        ))}
-                      </div>
-                      <div className="mt-3 border-t border-border-subtle px-3 pt-3">
+                                {item.description && (
+                                  <span className="mt-0.5 block text-xs text-content-muted group-hover/item:text-content-secondary">
+                                    {item.description}
+                                  </span>
+                                )}
+                              </span>
+                            </Link>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="mt-4 border-t border-border-subtle px-2 pt-3 flex items-center justify-between">
                         <Link
                           href={cluster.href}
                           onClick={() => setOpenCluster(null)}
-                          className="inline-flex items-center gap-1 text-xs font-semibold text-brand hover:text-brand-hover transition-colors"
+                          className="inline-flex items-center gap-1.5 text-xs font-semibold text-brand hover:text-brand-hover transition-colors"
                         >
-                          Open {cluster.label}
+                          Explore full {cluster.label} hub
                           <span className="transition-transform group-hover:translate-x-0.5">→</span>
                         </Link>
+                        <span className="text-[11px] text-content-muted">
+                          {cluster.items.length} destinations
+                        </span>
                       </div>
                     </div>
                   </div>

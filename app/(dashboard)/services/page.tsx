@@ -3,6 +3,7 @@ import Link from 'next/link';
 import CardImageBanner from '@/components/ui/CardImageBanner';
 import HeroBackground from '@/components/ui/HeroBackground';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import CompanySubNav from '@/components/hub-navigation/CompanySubNav';
 
 interface EnquiryTopic {
   icon: string;
@@ -64,6 +65,16 @@ export const metadata: Metadata = {
 export default function ServicesPage() {
   return (
     <div className="min-h-screen">
+      <CompanySubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Company', href: '/about' },
+          { label: 'Services', href: '/services' },
+        ]}
+        title="Advisory & Financial Modelling Services"
+        subtitle="Specialized corporate engagements across financial valuation, market entry, and quantitative data intelligence."
+        badge="SERVICES"
+      />
       <header className="relative overflow-hidden bg-brand-navy py-20">
         <HeroBackground />
         <div className="wrap relative z-10">

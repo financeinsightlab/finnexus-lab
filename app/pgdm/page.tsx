@@ -4,6 +4,7 @@ import { GraduationCap, BookOpen, Clock3, Layers, ArrowRight, FlaskConical, Circ
 import { SUBJECTS, getLiveLectureCount, getTotalLectureCount } from '@/lib/pgdm/curriculum';
 import { TRACK_META } from '@/lib/pgdm/types';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import LearnSubNav from '@/components/hub-navigation/LearnSubNav';
 
 export const metadata: Metadata = {
   title: { absolute: 'PGDM Curriculum — Finance Major & Business Analytics Minor' },
@@ -148,6 +149,16 @@ export default function PgdmPage() {
 
   return (
     <div className="min-h-screen bg-cinema-black text-gray-100">
+      <LearnSubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Learn', href: '/study' },
+          { label: 'PGDM Curriculum', href: '/pgdm' },
+        ]}
+        title="PGDM Academic Hub — Finance & Analytics"
+        subtitle="Complete Semester III curriculum: 14 academic subjects, 73 lectures, unit quizzes, and formula cheatsheets."
+        badge="ACADEMIC CURRICULUM"
+      />
       {/* ── HERO ── */}
       <header className="relative overflow-hidden bg-cinema-ink py-14 md:py-18 border-b border-white/5">
         <div className="absolute -top-32 -left-32 w-96 h-96 bg-teal-500/10 rounded-full blur-3xl" />

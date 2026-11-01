@@ -36,6 +36,7 @@ interface SearchResponse {
 }
 
 const KIND_ICON: Record<string, string> = {
+    market: '📈',
     research: '📊',
     insight: '💡',
     'data-lab': '🧪',

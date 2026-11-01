@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd';
 import StructuredCourseCatalog from '@/components/learning/StructuredCourseCatalog';
+import LearnSubNav from '@/components/hub-navigation/LearnSubNav';
 import { getSkillAcademyLearningCatalog } from '@/lib/learning-course-catalog';
 
 export const dynamic = 'force-dynamic';
@@ -22,6 +23,16 @@ export default function SkillAcademyPage() {
   return (
     <>
       <JsonLd data={breadcrumbs} />
+      <LearnSubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Learn', href: '/study' },
+          { label: 'Skill Academy' },
+        ]}
+        title="Skill Academy — Zero → Expert"
+        subtitle="54 modular career tracks across analytics, financial modelling, aptitude, and professional English."
+        badge="CERTIFIED SKILL TRACKS"
+      />
       <StructuredCourseCatalog
         courses={courses}
         eyebrow="Skill Academy · Zero → Expert"

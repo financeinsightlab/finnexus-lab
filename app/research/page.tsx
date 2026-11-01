@@ -6,6 +6,7 @@ import type { ResearchPost } from '@/types';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import ResearchSubNav from '@/components/hub-navigation/ResearchSubNav';
 
 export const metadata: Metadata = {
   title: { absolute: 'Research Library — Institutional Market Reports' },
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
     'Institutional-grade macroeconomic, sector intelligence, fintech, and deep tech research papers with quantitative modeling and strategic frameworks.',
   alternates: { canonical: '/research' },
   openGraph: {
-      images: ['/og/default.png'],
+    images: ['/og/default.png'],
     title: 'Research Library | Kunwar Analytics',
     description:
       'In-depth institutional research reports, financial modeling, and strategic market intelligence.',
@@ -57,6 +58,10 @@ export default async function ResearchPage() {
 
   return (
     <>
+      <ResearchSubNav
+        title="Institutional Financial Research"
+        subtitle="In-depth macroeconomic, sector intelligence, and fundamental equity research publications."
+      />
       <PromotionSlot slot="CONTENT_TOP" path="/research" />
       <ResearchClient posts={mergedPosts} />
       <PromotionSlot slot="CONTENT_BOTTOM" path="/research" />

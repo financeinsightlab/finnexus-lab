@@ -6,6 +6,7 @@ import type { InsightPost } from '@/types';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import ResearchSubNav from '@/components/hub-navigation/ResearchSubNav';
 
 export const metadata: Metadata = {
   title: { absolute: 'Strategic Insights — Market Briefs & Notes' },
@@ -13,7 +14,7 @@ export const metadata: Metadata = {
     'High-conviction market analysis, strategic commentary, and data-driven perspectives on high-growth Indian business sectors and macroeconomic inflections.',
   alternates: { canonical: '/insights' },
   openGraph: {
-      images: ['/og/default.png'],
+    images: ['/og/default.png'],
     title: 'Strategic Insights | Kunwar Analytics',
     description:
       'Executive analytical briefs and strategic market notes across Indian business sectors.',
@@ -57,6 +58,16 @@ export default async function InsightsPage() {
 
   return (
     <>
+      <ResearchSubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Research', href: '/research' },
+          { label: 'Strategy Insights', href: '/insights' },
+        ]}
+        title="Executive Strategy Insights"
+        subtitle="High-conviction commentary, tactical observations, and sector inflection notes."
+        badge="STRATEGY DESK"
+      />
       <PromotionSlot slot="CONTENT_TOP" path="/insights" />
       <InsightsClient posts={mergedPosts} />
       <PromotionSlot slot="CONTENT_BOTTOM" path="/insights" />

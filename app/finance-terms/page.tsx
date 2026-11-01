@@ -5,6 +5,7 @@ import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd';
 import FinanceTermSearchForm from '@/components/finance-terms/FinanceTermSearchForm';
 import FinanceTermsCarousel from '@/components/finance-terms/FinanceTermsCarousel';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import LearnSubNav from '@/components/hub-navigation/LearnSubNav';
 import {
   FINANCE_TERMS_BASE,
   FINANCE_TERM_PAGE_SIZE,
@@ -60,6 +61,16 @@ export default async function FinanceTermsPage({ searchParams }: { searchParams:
           { name: 'Finance Terms', url: FINANCE_TERMS_BASE },
         ]),
       ]} />
+      <LearnSubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Learn', href: '/study' },
+          { label: 'Finance Terms', href: '/finance-terms' },
+        ]}
+        title="Finance Terms in Simple Words"
+        subtitle="Plain-language finance definitions, interview-ready examples, and balance sheet formulas."
+        badge="GLOSSARY"
+      />
       <header className="border-b border-border bg-card">
         <div className="content-page py-12">
           <nav aria-label="Breadcrumb" className="mb-5 text-sm text-muted-foreground">

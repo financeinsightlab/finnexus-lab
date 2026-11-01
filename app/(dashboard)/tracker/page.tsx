@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import MarketNav from '@/components/markets/MarketNav';
 import { getHeatMapData, temperatureColor, getQuarterByKey } from '@/lib/trackerData';
 import { Sparkline } from '@/components/tracker/TrackerCharts';
 import SectorVideo from '@/components/tracker/SectorVideo';
@@ -41,6 +42,7 @@ export default async function TrackerIndexPage({ searchParams }: Props) {
 
   return (
     <div className="min-h-screen bg-white text-slate-900 dark:bg-background dark:text-slate-100">
+      <MarketNav />
       <JsonLd data={jsonLd} />
 
       {/* Hero */}

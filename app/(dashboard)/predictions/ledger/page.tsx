@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import MarketNav from '@/components/markets/MarketNav';
 import {
     buildCalibration,
     sectorBreakdown,
@@ -143,6 +144,7 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
 
     return (
         <div className="min-h-screen bg-surface-muted text-slate-200">
+            <MarketNav />
             <JsonLd data={jsonLd} />
 
             <header className="relative overflow-hidden border-b border-white/5 bg-surface-raised py-14">

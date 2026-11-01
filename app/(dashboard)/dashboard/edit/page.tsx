@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import BreadcrumbNav from '@/components/hub-navigation/BreadcrumbNav';
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -60,6 +61,16 @@ export default function EditProfilePage() {
 
   return (
     <div className="wrap py-10">
+      <div className="mx-auto max-w-md mb-4">
+        <BreadcrumbNav
+          items={[
+            { label: 'Home', href: '/' },
+            { label: 'Dashboard', href: '/dashboard' },
+            { label: 'Edit Profile' },
+          ]}
+        />
+      </div>
+
       <div className="mx-auto max-w-md rounded-2xl border border-border-subtle bg-surface p-6 shadow-sm sm:p-8">
         <div className="mb-6">
           <h1 className="text-3xl font-extrabold text-brand-navy">Edit Profile</h1>

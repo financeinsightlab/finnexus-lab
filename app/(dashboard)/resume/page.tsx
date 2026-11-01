@@ -2,6 +2,7 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import HeroBackground from '@/components/ui/HeroBackground';
 import ResumeActions from './ResumeActions';
+import CompanySubNav from '@/components/hub-navigation/CompanySubNav';
 
 export const metadata: Metadata = {
   title: 'Resume | Sumit Singh - Kunwar Analytics',
@@ -10,7 +11,19 @@ export const metadata: Metadata = {
 
 export default function ResumePage() {
   return (
-    <div className="min-h-screen bg-surface-muted pt-20 print:pt-0 font-sans">
+    <div className="min-h-screen bg-surface-muted pt-4 print:pt-0 font-sans">
+      <div className="print:hidden mb-4">
+        <CompanySubNav
+          breadcrumbs={[
+            { label: 'Home', href: '/' },
+            { label: 'Company', href: '/about' },
+            { label: 'Executive Résumé', href: '/resume' },
+          ]}
+          title="Executive Résumé & Credentials"
+          subtitle="Professional background, quantitative finance expertise, analytical competencies, and leadership."
+          badge="FOUNDER PROFILE"
+        />
+      </div>
       <style dangerouslySetInnerHTML={{ __html: `
         @media print {
           body { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; background: #fff !important; }

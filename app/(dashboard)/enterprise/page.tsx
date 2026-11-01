@@ -1,6 +1,7 @@
 // FILE: app/enterprise/page.tsx
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import CompanySubNav from '@/components/hub-navigation/CompanySubNav';
 
 export const metadata: Metadata = {
   title: 'Team & Enterprise Enquiries | Kunwar Analytics',
@@ -11,6 +12,16 @@ export const metadata: Metadata = {
 export default function EnterprisePage() {
   return (
     <main className="min-h-screen">
+      <CompanySubNav
+        breadcrumbs={[
+          { label: 'Home', href: '/' },
+          { label: 'Company', href: '/about' },
+          { label: 'Enterprise', href: '/enterprise' },
+        ]}
+        title="Institutional & Enterprise Solutions"
+        subtitle="Custom research engagements, bespoke financial models, and organization-level availability."
+        badge="ENTERPRISE"
+      />
       <section className="bg-brand-navy py-20">
         <div className="mx-auto max-w-5xl px-6 text-center">
           <p className="mb-4 text-sm font-semibold uppercase tracking-widest text-brand-teal">
@@ -48,12 +59,8 @@ export default function EnterprisePage() {
               response-time guarantees, and service-level agreements are not currently offered through
               this page. No availability, price, or delivery timeline is promised for these features.
             </p>
-            <p className="mt-4 text-sm leading-6 text-brand-slate dark:text-slate-300">
-              If you have an organization enquiry, use the contact form. Any scope and terms must be
-              confirmed separately in writing before payment or access is arranged.
-            </p>
-            <Link href="/contact?service=Enterprise%20%2F%20Team%20Plan" className="btn-primary mt-6 inline-flex">
-              Make an enquiry
+            <Link href="/contact" className="btn-secondary mt-6 inline-flex">
+              Submit an enquiry
             </Link>
           </article>
         </div>
