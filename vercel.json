@@ -7,10 +7,6 @@
     {
       "path": "/api/cron/live-ingest",
       "schedule": "0 2 * * *"
-    },
-    {
-      "path": "/api/cron/jobs",
-      "schedule": "*/10 * * * *"
     }
   ]
 }

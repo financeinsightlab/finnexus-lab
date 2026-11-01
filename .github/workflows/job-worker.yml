@@ -1,0 +1,75 @@
+name: Background Job Worker & Ingestion (External Scheduler)
+
+on:
+  schedule:
+    # Run every 10 minutes (bypasses Vercel Hobby 1-cron-per-day restriction)
+    - cron: '*/10 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: background-job-worker
+  cancel-in-progress: false
+
+jobs:
+  drain-queue:
+    name: Drain PostgreSQL Job Queue
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+
+    steps:
+      - name: Trigger Job Worker
+        env:
+          APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://kunwaranalytics.in' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          echo "Triggering background job worker at ${APP_URL}/api/cron/jobs..."
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
+            -X GET "${APP_URL}/api/cron/jobs" \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            --retry 3 \
+            --retry-delay 5 \
+            --max-time 30)
+
+          BODY=$(echo "$RESPONSE" | sed -e '$d')
+          STATUS=$(echo "$RESPONSE" | tail -n1 | cut -d':' -f2)
+
+          echo "Response: $BODY"
+          echo "HTTP Status: $STATUS"
+
+          if [ "$STATUS" -ge 400 ]; then
+            echo "Error: Job worker returned status $STATUS"
+            exit 1
+          fi
+
+  live-ingest:
+    name: Ingest Live Financial Data (Hourly)
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    # Only run live-ingest when triggered manually or around the top of the hour
+    if: github.event_name == 'workflow_dispatch' || github.event.schedule == '*/10 * * * *'
+
+    steps:
+      - name: Ingest FX & Macro Data
+        env:
+          APP_URL: ${{ secrets.NEXT_PUBLIC_APP_URL || 'https://kunwaranalytics.in' }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          echo "Triggering live ingest at ${APP_URL}/api/cron/live-ingest..."
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" \
+            -X GET "${APP_URL}/api/cron/live-ingest" \
+            -H "Authorization: Bearer ${CRON_SECRET}" \
+            --retry 2 \
+            --retry-delay 10 \
+            --max-time 45)
+
+          BODY=$(echo "$RESPONSE" | sed -e '$d')
+          STATUS=$(echo "$RESPONSE" | tail -n1 | cut -d':' -f2)
+
+          echo "Response: $BODY"
+          echo "HTTP Status: $STATUS"
+
+          if [ "$STATUS" -ge 400 ]; then
+            echo "Error: Ingest returned status $STATUS"
+            exit 1
+          fi
+

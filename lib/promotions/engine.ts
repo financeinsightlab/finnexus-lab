@@ -168,8 +168,13 @@ export async function fetchActivePromotions(): Promise<PromotionRecord[]> {
     return rows.map((row) => toRecordFromRow(row as unknown as RawPromotionRow));
   } catch (error) {
     logger.warn('promotions: relation query failed, falling back to legacy columns', { error: String(error) });
-    const rows = await prisma.promotion.findMany({ where: ACTIVE_WHERE, orderBy: ACTIVE_ORDER, take: ACTIVE_LIMIT });
-    return rows.map((row) => toRecordFromRow(row as unknown as RawPromotionRow));
+    try {
+      const rows = await prisma.promotion.findMany({ where: ACTIVE_WHERE, orderBy: ACTIVE_ORDER, take: ACTIVE_LIMIT });
+      return rows.map((row) => toRecordFromRow(row as unknown as RawPromotionRow));
+    } catch (fallbackError) {
+      logger.error("promotions: fallback query failed, returning empty set", { error: String(fallbackError) });
+      return [];
+    }
   }
 }
 

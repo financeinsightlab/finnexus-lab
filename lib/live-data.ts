@@ -52,29 +52,68 @@ export function buildProvenance(point: MetricPoint, now: Date = new Date()): Met
 // ─── Frankfurter (FX) ─────────────────────────────────────────────────────────
 
 export interface FrankfurterTimeseries {
+    amount?: number;
     base: string;
-    start_date: string;
-    end_date: string;
-    rates: Record<string, Record<string, number>>;
+    date?: string;
+    start_date?: string;
+    end_date?: string;
+    rates: Record<string, number | Record<string, number>>;
 }
 
-/** Latest available rate per currency from a Frankfurter time series. */
+/**
+ * Parses either flat `/latest` ({ base: 'USD', date: '...', rates: { INR: 84.2 } })
+ * or nested timeseries ({ rates: { '2026-10-30': { INR: 84.2 } } }).
+ */
 export function parseFrankfurterLatest(payload: FrankfurterTimeseries): MetricPoint[] {
-    const dates = Object.keys(payload.rates ?? {}).sort();
-    if (dates.length === 0) return [];
-    const latest = dates[dates.length - 1];
-    const perCurrency = payload.rates[latest] ?? {};
+    if (!payload || !payload.rates) return [];
 
-    return Object.entries(perCurrency).map(([currency, rate]) => ({
-        key: `fx:${payload.base.toLowerCase()}-${currency.toLowerCase()}`,
-        label: `${payload.base}/${currency}`,
-        value: rate,
-        unit: currency,
-        asOf: latest,
-        source: 'Frankfurter (European Central Bank)',
-        sourceUrl: 'https://frankfurter.dev',
-        license: 'ECB reference rates — free to reuse',
-    }));
+    const base = (payload.base || 'USD').toUpperCase();
+    const fallbackDate = payload.date || payload.end_date || new Date().toISOString().slice(0, 10);
+    const keys = Object.keys(payload.rates);
+    if (keys.length === 0) return [];
+
+    const firstVal = payload.rates[keys[0]];
+    const points: MetricPoint[] = [];
+
+    if (typeof firstVal === 'number') {
+        // Flat /latest structure
+        for (const [currency, rate] of Object.entries(payload.rates as Record<string, number>)) {
+            if (typeof rate !== 'number' || Number.isNaN(rate)) continue;
+            const curr = currency.toUpperCase();
+            points.push({
+                key: `fx:${base.toLowerCase()}-${curr.toLowerCase()}`,
+                label: `${base}/${curr}`,
+                value: rate,
+                unit: curr,
+                asOf: fallbackDate,
+                source: 'Frankfurter (European Central Bank)',
+                sourceUrl: 'https://frankfurter.dev',
+                license: 'ECB reference rates — free to reuse',
+            });
+        }
+    } else {
+        // Nested timeseries structure
+        const dates = keys.sort();
+        const latestDate = dates[dates.length - 1];
+        const perCurrency = (payload.rates[latestDate] ?? {}) as Record<string, number>;
+
+        for (const [currency, rate] of Object.entries(perCurrency)) {
+            if (typeof rate !== 'number' || Number.isNaN(rate)) continue;
+            const curr = currency.toUpperCase();
+            points.push({
+                key: `fx:${base.toLowerCase()}-${curr.toLowerCase()}`,
+                label: `${base}/${curr}`,
+                value: rate,
+                unit: curr,
+                asOf: latestDate,
+                source: 'Frankfurter (European Central Bank)',
+                sourceUrl: 'https://frankfurter.dev',
+                license: 'ECB reference rates — free to reuse',
+            });
+        }
+    }
+
+    return points;
 }
 
 // ─── World Bank ───────────────────────────────────────────────────────────────
@@ -101,7 +140,7 @@ export function parseWorldBankLatest(rows: readonly WorldBankRow[]): MetricPoint
         key: `wb:${row.countryiso3code.toLowerCase()}:${row.indicator.id}`,
         label: `${row.indicator.value} — ${row.country.value}`,
         value: row.value as number,
-        unit: '',
+        unit: row.indicator.id.includes('CD') ? 'USD' : '%',
         asOf: `${row.date}-01-01`,
         source: 'World Bank Open Data',
         sourceUrl: `https://data.worldbank.org/indicator/${row.indicator.id}`,

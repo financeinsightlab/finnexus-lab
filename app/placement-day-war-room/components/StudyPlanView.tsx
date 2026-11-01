@@ -7,12 +7,15 @@ interface Props {
   onSelectTopicForWarRoom?: (topicName: string) => void;
 }
 
+type DurationSprint = 7 | 15 | 30 | 60;
+
 export default function StudyPlanView({ onSelectTopicForWarRoom }: Props) {
+  const [selectedDuration, setSelectedDuration] = useState<DurationSprint>(60);
   const [selectedPhase, setSelectedPhase] = useState<'ALL' | 'Phase 1' | 'Phase 2' | 'Phase 3'>('ALL');
   const [selectedDayNumber, setSelectedDayNumber] = useState<number>(1);
   const [completedTaskIds, setCompletedTaskIds] = useState<Set<string>>(new Set());
 
-  // Load completed tasks from localStorage
+  // Load completed tasks from localStorage on mount
   useEffect(() => {
     try {
       const stored = localStorage.getItem('placement_study_plan_completed_tasks');
@@ -24,31 +27,45 @@ export default function StudyPlanView({ onSelectTopicForWarRoom }: Props) {
     }
   }, []);
 
-  const toggleTask = (taskId: string) => {
-    setCompletedTaskIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(taskId)) next.delete(taskId);
-      else next.add(taskId);
-      try {
-        localStorage.setItem('placement_study_plan_completed_tasks', JSON.stringify([...next]));
-      } catch {
-        // ignore
-      }
-      return next;
-    });
+  const toggleTask = async (taskId: string) => {
+    const next = new Set(completedTaskIds);
+    const isNowDone = !next.has(taskId);
+    if (isNowDone) next.add(taskId);
+    else next.delete(taskId);
+
+    setCompletedTaskIds(next);
+    try {
+      localStorage.setItem('placement_study_plan_completed_tasks', JSON.stringify([...next]));
+      // Try syncing with API in the background if logged in
+      fetch(`/api/placement-war-room/study-plan/${taskId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ completed: isNowDone }),
+      }).catch(() => {
+        // Fallback silently to localStorage
+      });
+    } catch {
+      // ignore
+    }
   };
 
-  const filteredDays = PLAN.filter((d) => {
+  // Slice PLAN according to selected duration
+  const durationPlan = PLAN.slice(0, selectedDuration);
+
+  const filteredDays = durationPlan.filter((d) => {
     if (selectedPhase === 'ALL') return true;
     return d.phase.startsWith(selectedPhase);
   });
 
-  const currentDayPlan: DayPlan = PLAN.find((d) => d.day === selectedDayNumber) || PLAN[0];
+  const currentDayPlan: DayPlan = durationPlan.find((d) => d.day === selectedDayNumber) || durationPlan[0] || PLAN[0];
 
-  // Calculate overall stats
-  const totalTasks = PLAN.reduce((acc, d) => acc + d.tasks.length, 0);
-  const completedCount = completedTaskIds.size;
-  const progressPercent = Math.round((completedCount / totalTasks) * 100);
+  // Calculate overall stats for the selected duration
+  const totalTasks = durationPlan.reduce((acc, d) => acc + d.tasks.length, 0);
+  const completedCount = durationPlan.reduce(
+    (acc, d) => acc + d.tasks.filter((t) => completedTaskIds.has(t.id)).length,
+    0
+  );
+  const progressPercent = totalTasks > 0 ? Math.round((completedCount / totalTasks) * 100) : 0;
 
   return (
     <div className="space-y-6 pt-2">
@@ -56,14 +73,23 @@ export default function StudyPlanView({ onSelectTopicForWarRoom }: Props) {
       <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
         <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
           <div>
-            <h2 className="text-xl font-bold text-white mb-1">60-Day Placement Preparation Roadmap</h2>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-xs font-mono font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded border border-amber-400/20">
+                ADAPTIVE ROADMAP
+              </span>
+              <span className="text-xs text-slate-400">Institutional Curriculum</span>
+            </div>
+            <h2 className="text-xl font-bold text-white mb-1">
+              Finance & Analytics Placement Curriculum
+            </h2>
             <p className="text-sm text-slate-400">
-              Structured daily curriculum engineered for PGDM / MBA Finance & Analytics students targeting 15+ LPA roles.
+              Targeting IIM / top-tier PGDM 15+ LPA roles in Investment Banking, Equity Research, and Corporate Finance.
             </p>
           </div>
+
           <div className="flex items-center gap-4 bg-slate-950 border border-slate-800 px-4 py-2.5 rounded-xl">
             <div>
-              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Total Progress</span>
+              <span className="text-[10px] text-slate-500 uppercase font-semibold block">Sprint Progress</span>
               <span className="text-lg font-black text-amber-400 font-mono">
                 {completedCount} <span className="text-xs text-slate-400 font-normal">/ {totalTasks} tasks ({progressPercent}%)</span>
               </span>
@@ -80,37 +106,68 @@ export default function StudyPlanView({ onSelectTopicForWarRoom }: Props) {
         </div>
       </div>
 
-      {/* Phase Filter Tabs */}
-      <div className="flex flex-wrap gap-2">
-        {[
-          { id: 'ALL', label: 'All 60 Days' },
-          { id: 'Phase 1', label: 'Phase 1: Foundation (Day 1–20)' },
-          { id: 'Phase 2', label: 'Phase 2: Depth + Analytics (Day 21–40)' },
-          { id: 'Phase 3', label: 'Phase 3: Mock + Polish (Day 41–60)' },
-        ].map((tab) => (
-          <button
-            key={tab.id}
-            onClick={() => setSelectedPhase(tab.id as any)}
-            className={`text-xs font-semibold px-3.5 py-2 rounded-xl transition ${
-              selectedPhase === tab.id
-                ? 'bg-amber-500 text-slate-950 font-bold'
-                : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
+      {/* Duration Selector Tabs */}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-slate-400 font-semibold mr-1">Sprint Horizon:</span>
+          {([
+            { days: 7, label: '7-Day Sprint' },
+            { days: 15, label: '15-Day Fast-Track' },
+            { days: 30, label: '30-Day Intensive' },
+            { days: 60, label: '60-Day Master Roadmap' },
+          ] as const).map((sprint) => (
+            <button
+              key={sprint.days}
+              onClick={() => {
+                setSelectedDuration(sprint.days);
+                if (selectedDayNumber > sprint.days) setSelectedDayNumber(1);
+              }}
+              className={`text-xs font-semibold px-3 py-1.5 rounded-xl transition ${
+                selectedDuration === sprint.days
+                  ? 'bg-amber-500 text-slate-950 font-bold'
+                  : 'bg-slate-900 border border-slate-800 text-slate-400 hover:text-white'
+              }`}
+            >
+              {sprint.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Phase Filter Tabs (visible when 60 or 30 days) */}
+        {selectedDuration >= 30 && (
+          <div className="flex flex-wrap gap-2">
+            {[
+              { id: 'ALL', label: 'All Phases' },
+              { id: 'Phase 1', label: 'Phase 1: Foundation' },
+              { id: 'Phase 2', label: 'Phase 2: Depth' },
+              { id: 'Phase 3', label: 'Phase 3: Mocks' },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setSelectedPhase(tab.id as any)}
+                className={`text-xs font-semibold px-3 py-1.5 rounded-xl transition ${
+                  selectedPhase === tab.id
+                    ? 'bg-slate-800 text-amber-400 border border-amber-500/30'
+                    : 'bg-slate-900/60 border border-slate-800 text-slate-400 hover:text-white'
+                }`}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {/* Left 4 cols: Days Selector */}
         <div className="lg:col-span-4 bg-slate-900 border border-slate-800 rounded-2xl p-4 space-y-2 max-h-[600px] overflow-y-auto">
-          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2">
-            Select Day ({filteredDays.length} Days)
+          <div className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2 px-2 flex justify-between items-center">
+            <span>Select Day ({filteredDays.length} Days)</span>
+            <span className="font-mono text-amber-400 text-[11px]">{selectedDuration}D Plan</span>
           </div>
           {filteredDays.map((dp) => {
             const isSelected = dp.day === selectedDayNumber;
-            const dayCompleted = dp.tasks.every((t) => completedTaskIds.has(t.id));
+            const dayCompleted = dp.tasks.length > 0 && dp.tasks.every((t) => completedTaskIds.has(t.id));
             const someCompleted = dp.tasks.some((t) => completedTaskIds.has(t.id));
 
             return (
@@ -149,7 +206,7 @@ export default function StudyPlanView({ onSelectTopicForWarRoom }: Props) {
             <div>
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-xs font-mono font-bold text-amber-400 bg-amber-400/10 px-2 py-0.5 rounded">
-                  DAY {currentDayPlan.day}
+                  DAY {currentDayPlan.day} OF {selectedDuration}
                 </span>
                 <span className="text-xs text-slate-400">{currentDayPlan.phase}</span>
               </div>

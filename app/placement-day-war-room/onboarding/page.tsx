@@ -1,5 +1,5 @@
 import { redirect } from 'next/navigation';
 
 export default function OnboardingRedirect() {
-  redirect('/placement-day-war-room');
+  redirect('/placement-day-war-room?tab=command-centre');
 }

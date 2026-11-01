@@ -359,102 +359,13 @@ export function getQuestionsForRole(
 
 // ─── AI Grader ────────────────────────────────────────────────────────────────
 
+import { evaluateFinanceAnswer } from '@/lib/placement-war-room/evaluation';
+
 export async function gradeAnswer(
   question: InterviewQuestion,
   answer: InterviewAnswer,
 ): Promise<GradedAnswer> {
-  const apiKey = process.env.HUGGINGFACE_API_KEY;
-
-  const prompt = buildGradingPrompt(question, answer.userAnswer);
-
-  if (!apiKey || answer.userAnswer.trim().length < 10) {
-    return buildFallbackGrade(question, answer);
-  }
-
-  try {
-    const res = await fetch('https://router.huggingface.co/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'mistralai/Mistral-7B-Instruct-v0.3',
-        messages: [
-          { role: 'system', content: 'You are a senior investment banking interviewer at a top Indian IB. Grade answers objectively. Output ONLY valid JSON.' },
-          { role: 'user', content: prompt },
-        ],
-        max_tokens: 600,
-        temperature: 0.2,
-        stream: false,
-      }),
-      signal: AbortSignal.timeout(20000),
-    });
-
-    if (!res.ok) return buildFallbackGrade(question, answer);
-
-    const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
-    const content = data.choices?.[0]?.message?.content?.trim() ?? '';
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return buildFallbackGrade(question, answer);
-
-    const parsed = JSON.parse(jsonMatch[0]) as Partial<GradedAnswer>;
-    const score = Math.min(10, Math.max(0, parsed.score ?? 5));
-    return {
-      questionId: question.id,
-      score,
-      grade: score >= 8 ? 'EXCELLENT' : score >= 6 ? 'GOOD' : score >= 4 ? 'AVERAGE' : 'POOR',
-      feedback: parsed.feedback ?? 'Review the key points and try again.',
-      betterAnswer: parsed.betterAnswer ?? question.keyPoints.join('. '),
-      missedPoints: parsed.missedPoints ?? [],
-      strengths: parsed.strengths ?? [],
-    };
-  } catch {
-    return buildFallbackGrade(question, answer);
-  }
-}
-
-function buildGradingPrompt(question: InterviewQuestion, answer: string): string {
-  return `Grade this finance interview answer. Return ONLY JSON.
-
-Question: "${question.question}"
-Difficulty: ${question.difficulty}
-Context: ${question.indianContext ?? 'Indian finance interview'}
-
-Key Points Expected:
-${question.keyPoints.map((p, i) => `${i + 1}. ${p}`).join('\n')}
-
-Common Mistakes to Watch:
-${question.commonMistakes.join(', ')}
-
-Candidate's Answer: "${answer}"
-
-Grade using this JSON:
-{
-  "score": 0-10,
-  "feedback": "2-3 sentence constructive feedback",
-  "betterAnswer": "Ideal answer in 3-4 sentences covering all key points",
-  "missedPoints": ["point1", "point2"],
-  "strengths": ["strength1", "strength2"]
-}`;
-}
-
-function buildFallbackGrade(question: InterviewQuestion, answer: InterviewAnswer): GradedAnswer {
-  // Simple keyword-based scoring
-  const answerLower = answer.userAnswer.toLowerCase();
-  let hits = 0;
-  for (const point of question.keyPoints) {
-    const keywords = point.toLowerCase().split(' ').filter(w => w.length > 4);
-    if (keywords.some(kw => answerLower.includes(kw))) hits++;
-  }
-  const score = Math.min(10, Math.round((hits / question.keyPoints.length) * 10));
-
-  return {
-    questionId: question.id,
-    score,
-    grade: score >= 8 ? 'EXCELLENT' : score >= 6 ? 'GOOD' : score >= 4 ? 'AVERAGE' : 'POOR',
-    feedback: score >= 7
-      ? 'Good coverage of the key points. Consider adding India-specific context to strengthen the answer.'
-      : 'Your answer missed some important concepts. Review the key points below and practice again.',
-    betterAnswer: question.keyPoints.slice(0, 4).join('. ') + '.',
-    missedPoints: question.keyPoints.slice(hits > 0 ? hits : 0, hits + 3),
-    strengths: score >= 5 ? ['Attempted the core concept', 'Some relevant points covered'] : [],
-  };
+  return evaluateFinanceAnswer(question, answer.userAnswer, {
+    timeSpentSeconds: answer.timeSpentSeconds,
+  });
 }

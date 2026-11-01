@@ -1,6 +1,7 @@
 import PromotionCard from '@/components/promotions/PromotionCard';
 import { SLOT_META, type PromotionSlot as PromotionSlotKey } from '@/lib/promotions/catalog';
 import { getPromotionsForSlot } from '@/lib/promotions/engine';
+import { logger } from '@/lib/logger';
 
 /**
  * Server-rendered promotion slot.
@@ -32,8 +33,14 @@ export default async function PromotionSlot({
   /** Wrapper classes applied to every card (collapses with the card's visibility). */
   className?: string;
 }) {
-  const promotions = await getPromotionsForSlot({ slot, pathname: path, tags, limit });
-  if (promotions.length === 0) return null;
+  let promotions;
+  try {
+    promotions = await getPromotionsForSlot({ slot, pathname: path, tags, limit });
+  } catch (error) {
+    logger.warn('PromotionSlot failed to load, collapsing slot', { slot, path, error: String(error) });
+    return null;
+  }
+  if (!promotions || promotions.length === 0) return null;
 
   const meta = SLOT_META[slot];
   const resolvedVariant = variant ?? (meta.variant === 'sidebar' ? 'sidebar' : 'inline');

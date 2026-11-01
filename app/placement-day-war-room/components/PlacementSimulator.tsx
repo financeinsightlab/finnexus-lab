@@ -120,15 +120,31 @@ export default function PlacementSimulator({ questions, selectedRole, selectedCo
       }
     } catch (err) {
       console.error(err);
-      // Fallback evaluation
+      // Deterministic rule-based evaluation fallback (zero length-bias)
+      const answerLower = userAnswer.toLowerCase();
+      const coveredKeyPoints = currentQuestion.keyPoints.filter((kp) => {
+        const words = kp.toLowerCase().split(/\s+/).filter((w) => w.length > 3);
+        return words.some((w) => answerLower.includes(w));
+      });
+      const missedKeyPoints = currentQuestion.keyPoints.filter((kp) => !coveredKeyPoints.includes(kp));
+      const coverageRatio = currentQuestion.keyPoints.length > 0
+        ? coveredKeyPoints.length / currentQuestion.keyPoints.length
+        : 0.5;
+
+      const baseScore = Math.round((4.0 + coverageRatio * 5.0) * 10) / 10;
+      const score = Math.min(9.5, Math.max(3.5, baseScore));
+      const grade = score >= 8 ? 'EXCELLENT' : score >= 6 ? 'GOOD' : 'AVERAGE';
+
       const fallback: GradedAnswer = {
         questionId: currentQuestion.id,
-        score: Math.min(9.5, Math.max(4.0, Math.round((userAnswer.length / 30) * 10) / 10)),
-        grade: 'GOOD',
-        feedback: 'Good structured response. Ensure you integrate key Indian regulatory benchmarks (10Y G-Sec yield, Ind AS disclosures).',
+        score,
+        grade,
+        feedback: `[Rule-Based Evaluation - Offline] Addressed ${coveredKeyPoints.length} of ${currentQuestion.keyPoints.length} core financial concepts. Ensure you anchor calculations to Indian benchmarks (Ind AS, 10Y G-Sec).`,
         betterAnswer: currentQuestion.keyPoints.join('. ') + '.',
-        missedPoints: currentQuestion.commonMistakes.slice(0, 2),
-        strengths: ['Addressed the main question', 'Clear financial terminology used'],
+        missedPoints: missedKeyPoints.length > 0 ? missedKeyPoints.slice(0, 2) : currentQuestion.commonMistakes.slice(0, 2),
+        strengths: coveredKeyPoints.length > 0
+          ? coveredKeyPoints.slice(0, 2).map((kp) => `Covered: ${kp}`)
+          : ['Demonstrated basic financial vocabulary'],
       };
       setGradedResult(fallback);
       if (activeRound) {

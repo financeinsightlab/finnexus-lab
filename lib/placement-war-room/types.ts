@@ -83,6 +83,8 @@ export interface WarRoomAnswerEvaluation {
   explanation: string;
   nextAction: string;
   followUpQuestion?: string;
+  evaluationType?: 'AI' | 'RULE_BASED';
+  grade?: 'EXCELLENT' | 'GOOD' | 'AVERAGE' | 'POOR';
 }
 
 export interface WarRoomCandidateProfile {

@@ -83,15 +83,21 @@ function csvField(value: string): string {
     return /[",\n\r]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value;
 }
 
+function safeIsoDate(value: Date | string | null | undefined): string {
+    if (!value) return '';
+    const d = value instanceof Date ? value : new Date(value);
+    return isNaN(d.getTime()) ? '' : d.toISOString().slice(0, 10);
+}
+
 /** Render the ledger as a download-ready CSV. */
 export function toCsv(predictions: readonly LedgerPrediction[]): string {
     const header = ['slug', 'sector', 'status', 'resolveDate', 'claim', 'resolutionNote'];
     const rows = predictions.map((prediction) => [
-        prediction.slug,
-        prediction.sector,
-        prediction.status,
-        new Date(prediction.resolveDate).toISOString().slice(0, 10),
-        prediction.claim,
+        prediction.slug ?? '',
+        prediction.sector ?? '',
+        prediction.status ?? '',
+        safeIsoDate(prediction.resolveDate),
+        prediction.claim ?? '',
         prediction.resolutionNote ?? '',
     ]);
     return [header, ...rows].map((row) => row.map((field) => csvField(String(field))).join(',')).join('\r\n');

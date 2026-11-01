@@ -6,6 +6,7 @@ import { usePathname, useSearchParams } from "next/navigation"
 import { useModalAccessibility } from "@/components/ui/useModalAccessibility"
 
 import {
+  Activity,
   BarChart3,
   Users,
   Settings,
@@ -94,7 +95,12 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "System",
     items: [
-      { label: "Settings", href: "/admin/settings", icon: Settings, adminOnly: true },
+      {
+      label: "System Health", href: "/admin/system-health", icon: Activity, adminOnly: true
+    },
+    {
+      label: "Settings", href: "/admin/settings", icon: Settings, adminOnly: true
+    },
     ],
   },
 ]

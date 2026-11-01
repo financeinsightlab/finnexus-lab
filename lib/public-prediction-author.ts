@@ -14,8 +14,8 @@ export interface PublicPredictionAuthor {
 }
 
 /** Keep private-profile identity and staff/analyst badges out of public prediction views. */
-export function toPublicPredictionAuthor(author: PredictionAuthorForPublicView): PublicPredictionAuthor {
-  if (author.profile?.isPublic !== true) {
+export function toPublicPredictionAuthor(author?: PredictionAuthorForPublicView | null): PublicPredictionAuthor {
+  if (!author || author.profile?.isPublic !== true) {
     return {
       id: 'private',
       name: 'Private analyst',

@@ -1,26 +1,91 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { getPublicPredictionLedger } from '@/lib/predictions';
 import {
     buildCalibration,
     sectorBreakdown,
     toJsonLdDataset,
     type LedgerPrediction,
 } from '@/lib/calibration';
+import { getPublicPredictionLedger } from '@/lib/predictions';
 import JsonLd from '@/components/seo/JsonLd';
 import LedgerFilters from './LedgerFilters';
 import { filterLedger, parseLedgerFilters } from './ledger-utils';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
+import { logger } from '@/lib/logger';
+import { captureError } from '@/lib/observability';
 
 export const metadata: Metadata = {
     title: 'Public Prediction Ledger | Kunwar Analytics',
     description:
-        'Every prediction Kunwar Analytics has published — timestamped, resolved in public, with weighted accuracy, confirmed hit rate, and streaks calculated from recorded outcomes.',
-    alternates: { canonical: 'https://kunwaranalytics.in/predictions/ledger' },
+        'A timestamped, verifiable public track record of financial forecasts made by Kunwar Analytics analysts. Weighted accuracy, hit rate, and win streaks published openly.',
+    alternates: { canonical: '/predictions/ledger' },
 };
 
 // The ledger is a living trust asset — always read the latest resolutions.
 export const revalidate = 300;
+
+interface PredictionLedgerErrorProps {
+  error: Error;
+  message?: string;
+}
+
+function PredictionLedgerError({ error, message }: PredictionLedgerErrorProps) {
+  captureError(error, {
+    source: 'predictions.ledger.page',
+    level: 'error',
+  });
+
+  return (
+    <div className="min-h-screen bg-surface-muted text-slate-200">
+      <JsonLd data={{ '@context': 'https://schema.org', '@type': 'Dataset', name: 'Kunwar Analytics Public Prediction Ledger' }} />
+
+      <header className="relative overflow-hidden border-b border-white/5 bg-surface-raised py-14">
+        <div className="relative z-10 mx-auto max-w-[1400px] px-6">
+          <nav className="mb-6 flex items-center gap-2 text-sm text-slate-400">
+            <Link href="/predictions" className="hover:text-brand-hover">
+              Predictions
+            </Link>
+            <span aria-hidden>/</span>
+            <span className="text-slate-200">Ledger</span>
+          </nav>
+          <div className="text-center mb-10">
+            <span className="text-[11px] font-bold uppercase tracking-widest text-teal-400 bg-teal-500/10 border border-teal-500/20 px-3 py-1 rounded-full">
+              Intelligence Tracking
+            </span>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-white mt-4 mb-3">
+              📋 Public Prediction Ledger
+            </h1>
+            <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+              Every prediction tracked. Every outcome published. Full accountability.
+            </p>
+          </div>
+        </div>
+      </header>
+
+      <div className="max-w-3xl mx-auto px-6 py-12 text-center">
+        <div className="rounded-2xl border border-white/10 bg-white/5 p-8 text-slate-400">
+          <h2 className="text-lg font-semibold text-slate-200 mb-2">
+            Ledger temporarily unavailable
+          </h2>
+          <p className="text-sm mb-4">{message ?? 'We could not load the prediction ledger right now.'}</p>
+          <p className="text-xs text-slate-500 mb-6">
+            If you are an administrator, please check the system logs for details.
+          </p>
+          <a
+            href="/predictions/ledger"
+            className="inline-flex items-center gap-1.5 rounded-xl bg-brand-navy px-4 py-2 text-xs font-semibold text-white shadow-sm hover:bg-brand-hover transition-all"
+          >
+            <span>Refresh</span>
+            <span>&rarr;</span>
+          </a>
+        </div>
+      </div>
+
+      <PromotionSlot slot="CONTENT_BOTTOM" path="/predictions/ledger" />
+      <PromotionSlot slot="FOOTER" path="/predictions/ledger" />
+    </div>
+  );
+}
 
 const STATUS_STYLES: Record<string, { label: string; className: string; dot: string }> = {
     CONFIRMED: { label: 'Confirmed', className: 'text-green-400 border-green-500/20 bg-green-500/10', dot: '🟢' },
@@ -29,9 +94,11 @@ const STATUS_STYLES: Record<string, { label: string; className: string; dot: str
     PENDING: { label: 'Pending', className: 'text-yellow-400 border-yellow-500/20 bg-yellow-500/10', dot: '⏳' },
 };
 
-function formatDate(value: Date | string | null): string {
+function formatDate(value: Date | string | null | undefined): string {
     if (!value) return '—';
-    return new Date(value).toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return '—';
+    return d.toLocaleDateString('en-IN', { year: 'numeric', month: 'short', day: 'numeric' });
 }
 
 interface PageProps {
@@ -42,12 +109,28 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
     const resolved = await searchParams;
     const filters = parseLedgerFilters(resolved);
 
-    const all = (await getPublicPredictionLedger()) as LedgerPrediction[];
+    let all: LedgerPrediction[] = [];
+    try {
+        all = (await getPublicPredictionLedger()) as LedgerPrediction[];
+    } catch (error) {
+        logger.error('Prediction ledger: failed to load predictions', {
+            error: error instanceof Error ? error.message : String(error),
+        });
+        return (
+            <PredictionLedgerError
+                error={error instanceof Error ? error : new Error(String(error))}
+                message="Unable to load the prediction ledger from the database. Please try again shortly."
+            />
+        );
+    }
+
     const stats = buildCalibration(all);
-    const sectors = [...new Set(all.map((prediction) => prediction.sector))].sort();
-    const rows = filterLedger(all, filters).sort(
-        (a, b) => new Date(b.resolveDate).getTime() - new Date(a.resolveDate).getTime(),
-    );
+    const sectors = [...new Set(all.map((prediction) => prediction.sector || 'General'))].filter(Boolean).sort();
+    const rows = filterLedger(all, filters).sort((a, b) => {
+        const da = a.resolveDate ? new Date(a.resolveDate).getTime() : 0;
+        const db = b.resolveDate ? new Date(b.resolveDate).getTime() : 0;
+        return (isNaN(db) ? 0 : db) - (isNaN(da) ? 0 : da);
+    });
     const breakdown = sectorBreakdown(all);
     const jsonLd = toJsonLdDataset(all, stats);
 
@@ -109,30 +192,36 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
                     <h2 className="mb-4 text-sm font-bold uppercase tracking-widest text-slate-400">
                         Calibration by sector
                     </h2>
-                    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-                        {breakdown.map((row) => (
-                            <div
-                                key={row.sector}
-                                className="rounded-xl border border-white/10 bg-white/5 p-4"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <span className="font-semibold text-white">{row.sector}</span>
-                                    <span className="text-xs text-slate-400">{row.total} calls</span>
+                    {breakdown.length === 0 ? (
+                        <div className="rounded-xl border border-white/10 bg-white/5 p-6 text-center text-slate-400 text-sm">
+                            No sector records found in the ledger yet.
+                        </div>
+                    ) : (
+                        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                            {breakdown.map((row) => (
+                                <div
+                                    key={row.sector}
+                                    className="rounded-xl border border-white/10 bg-white/5 p-4"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <span className="font-semibold text-white">{row.sector}</span>
+                                        <span className="text-xs text-slate-400">{row.total} calls</span>
+                                    </div>
+                                    <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
+                                        <div
+                                            className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-400"
+                                            style={{ width: `${row.weightedAccuracy ?? 0}%` }}
+                                        />
+                                    </div>
+                                    <div className="mt-2 text-xs text-slate-400">
+                                        {row.weightedAccuracy === null
+                                            ? 'Not yet resolved'
+                                            : `${row.weightedAccuracy}% weighted accuracy · ${row.resolved} resolved`}
+                                    </div>
                                 </div>
-                                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-white/10">
-                                    <div
-                                        className="h-full rounded-full bg-gradient-to-r from-teal-500 to-emerald-400"
-                                        style={{ width: `${row.weightedAccuracy ?? 0}%` }}
-                                    />
-                                </div>
-                                <div className="mt-2 text-xs text-slate-400">
-                                    {row.weightedAccuracy === null
-                                        ? 'Not yet resolved'
-                                        : `${row.weightedAccuracy}% weighted accuracy · ${row.resolved} resolved`}
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    )}
                 </section>
 
                 {/* Resolution history */}
@@ -148,7 +237,7 @@ export default async function PredictionLedgerPage({ searchParams }: PageProps) 
 
                     {rows.length === 0 ? (
                         <div className="rounded-2xl border border-white/10 bg-white/5 p-10 text-center text-slate-400">
-                            No predictions match the current filters.
+                            {all.length === 0 ? 'No predictions recorded in the ledger yet.' : 'No predictions match the current filters.'}
                         </div>
                     ) : (
                         <div className="horizontal-scroll-region rounded-2xl border border-white/10" role="region" aria-label="Prediction resolution history table" tabIndex={0} data-lenis-prevent>

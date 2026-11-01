@@ -1326,3 +1326,107 @@ model WarRoomPass {
   @@index([status])
   @@index([expiresAt])
 }
+
+// ─── FINANCIAL DATA PIPELINE (Pillar C1/C2) ──────────────────────────────────
+
+enum DataProviderStatus {
+  ACTIVE
+  DEGRADED
+  INACTIVE
+}
+
+enum MetricFrequency {
+  REAL_TIME
+  DELAYED
+  END_OF_DAY
+  DAILY_REFERENCE
+  WEEKLY
+  MONTHLY
+  QUARTERLY
+  ANNUAL
+}
+
+enum IngestionStatus {
+  PENDING
+  RUNNING
+  DONE
+  FAILED
+}
+
+model DataProvider {
+  id             String              @id @default(cuid())
+  name           String
+  slug           String              @unique
+  baseUrl        String?
+  apiKeyRequired Boolean            @default(false)
+  rateLimitPerMin Int?
+  status         DataProviderStatus @default(ACTIVE)
+  description    String?
+  license        String?
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+  metricDefinitions MetricDefinition[]
+  ingestionRuns  IngestionRun[]
+
+  @@index([slug])
+  @@index([status])
+}
+
+model MetricDefinition {
+  id                String   @id @default(cuid())
+  key               String   @unique
+  label             String
+  category          String // fx, macro, equity, commodity, bond, crypto
+  unit              String
+  sourceProviderId  String
+  sourceProvider    DataProvider @relation(fields: [sourceProviderId], references: [id], onDelete: Restrict)
+  sourceUrl         String?
+  license           String?
+  frequency         MetricFrequency @default(DAILY_REFERENCE)
+  delayMinutes      Int?
+  isActive          Boolean   @default(true)
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  observations      MetricObservation[]
+
+  @@index([key])
+  @@index([category])
+  @@index([sourceProviderId])
+  @@index([isActive])
+  @@index([category, isActive])
+}
+
+model MetricObservation {
+  id             String      @id @default(cuid())
+  metricId       String
+  metric         MetricDefinition @relation(fields: [metricId], references: [id], onDelete: Cascade)
+  value          Float
+  observedAt     DateTime // The actual observation/reference date
+  publishedAt    DateTime? // When the provider published it
+  retrievedAt    DateTime  @default(now()) // When we fetched it
+  rawPayload     Json? // Full provider response for audit/provenance
+  isEstimate     Boolean     @default(false)
+
+  @@index([metricId, observedAt])
+  @@index([observedAt])
+  @@index([metricId, retrievedAt])
+}
+
+model IngestionRun {
+  id             String        @id @default(cuid())
+  providerId     String
+  provider       DataProvider @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  status         IngestionStatus @default(PENDING)
+  startedAt      DateTime      @default(now())
+  finishedAt     DateTime?
+  durationMs     Int?
+  recordsFetched Int           @default(0)
+  recordsInserted Int          @default(0)
+  recordsUpdated Int           @default(0)
+  error          String?
+  errorDetails   Json?
+
+  @@index([providerId, status])
+  @@index([startedAt])
+  @@index([status])
+}

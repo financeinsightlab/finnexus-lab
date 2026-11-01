@@ -71,9 +71,11 @@ export interface SectorBreakdown {
     weightedAccuracy: number | null;
 }
 
-/** Coerce a stored date (Date | ISO string) into a Date. */
-function toDate(value: Date | string): Date {
-    return value instanceof Date ? value : new Date(value);
+/** Coerce a stored date (Date | ISO string | null | undefined) into a valid Date or null. */
+export function toDate(value: Date | string | null | undefined): Date | null {
+    if (!value) return null;
+    const d = value instanceof Date ? value : new Date(value);
+    return isNaN(d.getTime()) ? null : d;
 }
 
 /** Outcome in [0, 1] for a resolved prediction; null while PENDING. */
@@ -119,7 +121,8 @@ export function countByStatus(
                 break;
             default: {
                 pending += 1;
-                if (toDate(prediction.resolveDate).getTime() < asOf.getTime()) overdue += 1;
+                const d = toDate(prediction.resolveDate);
+                if (d && d.getTime() < asOf.getTime()) overdue += 1;
             }
         }
     }
@@ -143,9 +146,11 @@ export function streaks(
     const resolved = predictions
         .filter((prediction) => prediction.status !== 'PENDING')
         .slice()
-        .sort(
-            (a, b) => toDate(a.resolveDate).getTime() - toDate(b.resolveDate).getTime(),
-        );
+        .sort((a, b) => {
+            const da = toDate(a.resolveDate)?.getTime() ?? 0;
+            const db = toDate(b.resolveDate)?.getTime() ?? 0;
+            return da - db;
+        });
 
     let longest = 0;
     let current = 0;
@@ -158,20 +163,20 @@ export function streaks(
         }
     }
 
-    void asOf;
     return { longest, current };
 }
 
-/** Per-sector weighted accuracy, ordered by volume then accuracy. */
+/** Per-sector breakdown of calls, outcomes, and accuracy. */
 export function sectorBreakdown(
     predictions: readonly LedgerPrediction[],
     asOf: Date = new Date(),
 ): SectorBreakdown[] {
     const bySector = new Map<string, LedgerPrediction[]>();
     for (const prediction of predictions) {
-        const bucket = bySector.get(prediction.sector) ?? [];
+        const sectorKey = prediction.sector || 'General';
+        const bucket = bySector.get(sectorKey) ?? [];
         bucket.push(prediction);
-        bySector.set(prediction.sector, bucket);
+        bySector.set(sectorKey, bucket);
     }
 
     return [...bySector.entries()]
@@ -211,8 +216,8 @@ export function buildCalibration(
         : 0;
 
     const resolveTimes = predictions
-        .map((prediction) => toDate(prediction.resolveDate).getTime())
-        .filter((time) => Number.isFinite(time));
+        .map((prediction) => toDate(prediction.resolveDate)?.getTime())
+        .filter((time): time is number => typeof time === 'number' && Number.isFinite(time));
 
     const { longest, current } = streaks(predictions, asOf);
 
@@ -220,16 +225,18 @@ export function buildCalibration(
         ? round((counts.confirmed / counts.resolved) * 100, 1)
         : null;
 
+    const validAsOf = toDate(asOf) ?? new Date();
+
     return {
         ...counts,
         weightedAccuracy,
         hitRate,
         longestStreak: longest,
         currentStreak: current,
-        distinctSectors: new Set(predictions.map((prediction) => prediction.sector)).size,
+        distinctSectors: new Set(predictions.map((prediction) => prediction.sector || 'General')).size,
         earliestResolve: resolveTimes.length ? new Date(Math.min(...resolveTimes)) : null,
         latestResolve: resolveTimes.length ? new Date(Math.max(...resolveTimes)) : null,
-        asOf,
+        asOf: validAsOf,
     };
 }
 
@@ -242,6 +249,10 @@ export function toJsonLdDataset(
     stats: CalibrationStats,
     baseUrl = 'https://kunwaranalytics.in',
 ) {
+    const dateMod = stats.asOf instanceof Date && !isNaN(stats.asOf.getTime())
+        ? stats.asOf.toISOString()
+        : new Date().toISOString();
+
     return {
         '@context': 'https://schema.org',
         '@type': 'Dataset',
@@ -263,12 +274,8 @@ export function toJsonLdDataset(
             'hit rate',
             'financial predictions',
         ],
-        temporalCoverage: stats.earliestResolve
-            ? `${stats.earliestResolve.toISOString().slice(0, 10)}/${(
-                stats.latestResolve ?? stats.earliestResolve
-            )
-                .toISOString()
-                .slice(0, 10)}`
+        temporalCoverage: stats.earliestResolve && stats.latestResolve
+            ? `${stats.earliestResolve.toISOString().slice(0, 10)}/${stats.latestResolve.toISOString().slice(0, 10)}`
             : undefined,
         variableMeasured: [
             { '@type': 'PropertyValue', name: 'Total predictions', value: stats.total },
@@ -279,11 +286,11 @@ export function toJsonLdDataset(
                 : []),
             { '@type': 'PropertyValue', name: 'Longest win streak', value: stats.longestStreak },
         ],
-        dateModified: stats.asOf.toISOString(),
+        dateModified: dateMod,
         distribution: predictions.map((prediction) => ({
             '@type': 'DataDownload',
-            name: prediction.claim,
-            contentUrl: `${baseUrl}/predictions/ledger#${prediction.slug}`,
+            name: prediction.claim || 'Forecast',
+            contentUrl: `${baseUrl}/predictions/ledger#${prediction.slug || ''}`,
         })),
     };
 }

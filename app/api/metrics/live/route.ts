@@ -1,23 +1,16 @@
 import { NextResponse } from 'next/server';
 import { withCache } from '@/lib/cache';
-import {
-    buildProvenance,
-    fetchJson,
-    frankfurterUrl,
-    parseFrankfurterLatest,
-    parseWorldBankLatest,
-    worldBankUrl,
-    type FrankfurterTimeseries,
-    type MetricPoint,
-    type WorldBankRow,
-} from '@/lib/live-data';
+import { getLatestMetrics } from '@/lib/financial-data';
 import { logger } from '@/lib/logger';
 
 export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 /**
- * Live financial metrics with full provenance (Pillar C1).
+ * Live financial metrics with full provenance (Pillar C1/C2).
+ *
+ * Reads persisted observations from the database. Falls back to live provider
+ * fetch if the database is empty (cold start).
  *
  * All sources are FREE and key-less:
  *   • Frankfurter — ECB reference FX rates
@@ -31,28 +24,8 @@ export const dynamic = 'force-dynamic';
 const CACHE_KEY = 'live:metrics:v1';
 const CACHE_TTL_MS = 6 * 60 * 60 * 1000;
 
-const FX_BASE = 'USD';
-const FX_SYMBOLS = ['INR', 'EUR', 'GBP', 'JPY'] as const;
-
-const WORLD_BANK_SERIES: { country: string; indicator: string }[] = [
-    { country: 'IN', indicator: 'NY.GDP.MKTP.CD' }, // GDP (current US$)
-    { country: 'IN', indicator: 'FP.CPI.TOTL.ZG' }, // Inflation, consumer prices
-];
-
-async function loadMetrics(): Promise<MetricPoint[]> {
-    const points: MetricPoint[] = [];
-
-    const fx = await fetchJson<FrankfurterTimeseries>(frankfurterUrl(FX_BASE, FX_SYMBOLS));
-    if (fx) points.push(...parseFrankfurterLatest(fx));
-
-    for (const series of WORLD_BANK_SERIES) {
-        const rows = await fetchJson<WorldBankRow[]>(worldBankUrl(series.country, series.indicator));
-        // World Bank returns [metadata, rows].
-        const dataRows = Array.isArray(rows) && Array.isArray(rows[1]) ? (rows[1] as WorldBankRow[]) : [];
-        if (dataRows.length > 0) points.push(...parseWorldBankLatest(dataRows));
-    }
-
-    return points;
+async function loadMetrics() {
+    return getLatestMetrics();
 }
 
 export async function GET() {
@@ -64,14 +37,29 @@ export async function GET() {
                 updatedAt: new Date().toISOString(),
                 count: points.length,
                 metrics: points.map((point) => ({
-                    ...point,
-                    provenance: buildProvenance(point),
+                    key: point.key,
+                    label: point.label,
+                    value: point.value,
+                    unit: point.unit,
+                    asOf: point.observedAt,
+                    source: point.source,
+                    sourceUrl: point.sourceUrl,
+                    license: point.license,
+                    frequency: point.frequency,
+                    delayMinutes: point.delayMinutes,
+                    freshness: point.freshness,
+                    provenance: {
+                        source: point.source,
+                        sourceUrl: point.sourceUrl,
+                        license: point.license,
+                        asOf: point.observedAt,
+                        ageDays: point.freshness.ageDays,
+                    },
                 })),
             },
             {
                 status: 200,
                 headers: {
-                    // Cache at the edge too; metrics move on a daily cadence.
                     'Cache-Control': 'public, s-maxage=21600, stale-while-revalidate=86400',
                 },
             },

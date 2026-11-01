@@ -43,8 +43,8 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
   const [activeSector, setActiveSector] = useState('All')
   const [activeStatus, setActiveStatus] = useState('All')
 
-  const officialPredictions = useMemo(() => predictions.filter(p => ["ADMIN", "ANALYST"].includes(p.author.role)), [predictions])
-  const communityPredictions = useMemo(() => predictions.filter(p => !["ADMIN", "ANALYST"].includes(p.author.role)), [predictions])
+  const officialPredictions = useMemo(() => predictions.filter(p => ["ADMIN", "ANALYST"].includes(p.author?.role || 'MEMBER')), [predictions])
+  const communityPredictions = useMemo(() => predictions.filter(p => !["ADMIN", "ANALYST"].includes(p.author?.role || 'MEMBER')), [predictions])
 
   const filteredOfficial = useMemo(() => {
     return officialPredictions.filter((p) => {
@@ -146,16 +146,16 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
               <div className="grid gap-5 md:grid-cols-2">
                 {filteredOfficial.map((p) => {
                   const cfg = STATUS_CONFIG[p.status as keyof typeof STATUS_CONFIG] ?? STATUS_CONFIG.PENDING
-                  const resolveMs = new Date(p.resolveDate).getTime()
-                  const daysLeft = Math.ceil((resolveMs - now) / 86_400_000)
-                  const isPast = daysLeft < 0
-                  const authorSlug = slugify(p.author.name ?? 'unknown')
+                  const resolveMs = p.resolveDate ? new Date(p.resolveDate).getTime() : NaN
+                  const daysLeft = !isNaN(resolveMs) ? Math.ceil((resolveMs - now) / 86_400_000) : null
+                  const isPast = daysLeft !== null && daysLeft < 0
+                  const authorSlug = slugify(p.author?.name || 'Community Member')
 
                   return (
                     <article key={p.id} className="bg-surface border border-border rounded-2xl p-6 flex flex-col gap-4 shadow-xl hover:border-brand/50 transition-colors">
                       <div className="flex justify-between items-start">
                         <div className="flex items-center gap-2">
-                          <VerificationBadge role={p.author.role} customBadge={p.author.customBadge} />
+                          <VerificationBadge role={p.author?.role || 'MEMBER'} customBadge={p.author.customBadge} />
                           <span className="text-[10px] uppercase font-bold text-content-muted tracking-wider bg-surface-muted px-2 py-0.5 rounded-md border border-border-subtle">{p.sector}</span>
                         </div>
                         <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${cfg.bg} ${cfg.text} ${cfg.border}`}>
@@ -173,12 +173,12 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
                             <span className="font-bold text-slate-400">Private analyst</span>
                           ) : (
                             <Link href={`/authors/${authorSlug}`} className="font-bold text-teal-400 hover:text-brand-hover">
-                              {p.author.name}
+                              {p.author?.name || 'Community Member'}
                             </Link>
                           )}
                         </div>
                         <span className={isPast ? 'text-red-400 font-mono font-bold' : 'text-slate-400 font-mono'}>
-                          {isPast ? `Resolved ${Math.abs(daysLeft)}d ago` : `${daysLeft}d left`}
+                          {daysLeft === null ? 'Date TBD' : isPast ? `Resolved ${Math.abs(daysLeft)}d ago` : `${daysLeft}d left`}
                         </span>
                       </div>
 
@@ -238,8 +238,8 @@ export default function PredictionsClient({ predictions, sectors, stats }: Predi
                 {communityPredictions.map((p) => (
                   <div key={p.id} className="bg-surface-raised border border-border-subtle rounded-xl p-4 shrink-0 relative group">
                     <div className="flex justify-between items-center mb-2">
-                      <span className="font-bold text-content-primary text-xs">{p.author.name}</span>
-                      <VerificationBadge role={p.author.role} customBadge={p.author.customBadge} />
+                      <span className="font-bold text-content-primary text-xs">{p.author?.name || 'Community Member'}</span>
+                      <VerificationBadge role={p.author?.role || 'MEMBER'} customBadge={p.author.customBadge} />
                     </div>
                     <p className="text-sm text-slate-300 italic mb-2">"{p.claim}"</p>
                     <div className="flex justify-between items-center text-[10px] text-slate-500 font-mono">
