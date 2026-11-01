@@ -5,6 +5,7 @@ import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import { type SubscriptionStatus, type UserRole } from "@prisma/client"
 import { logger } from "@/lib/logger"
+import { isPlatformAdminEmail } from "@/lib/admin-constants"
 import bcryptjs from "bcryptjs"
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
@@ -68,6 +69,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         token.subscriptionStatus = u.subscriptionStatus
         token.subscriptionPlan = u.subscriptionPlan
       }
+
+      // Automatically promote verified platform administrator emails to ADMIN
+      const email = (user?.email || token.email) as string | undefined
+      if (isPlatformAdminEmail(email)) {
+        token.role = 'ADMIN' as UserRole
+      }
+
       return token
     },
 
@@ -82,6 +90,8 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const t = token as unknown as TokenData
         session.user.id = t.id as string
+
+        const isSuperAdmin = isPlatformAdminEmail(session.user.email)
 
         // Refresh role and billing state from PostgreSQL on every session read.
         // The JWT is only a session identifier cache; it is never trusted for
@@ -100,12 +110,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             : null
 
           if (currentUser) {
-            session.user.role = currentUser.role
+            session.user.role = isSuperAdmin ? 'ADMIN' : currentUser.role
             session.user.subscriptionStatus = currentUser.subscriptionStatus
             session.user.subscriptionPlan = currentUser.subscriptionPlan
             session.user.subscriptionExpiresAt = currentUser.subscriptionExpiresAt
           } else {
-            session.user.role = 'MEMBER'
+            session.user.role = isSuperAdmin ? 'ADMIN' : 'MEMBER'
             session.user.subscriptionStatus = 'INACTIVE'
             session.user.subscriptionPlan = null
             session.user.subscriptionExpiresAt = new Date(0)
@@ -114,7 +124,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           logger.warn('Unable to refresh session privileges from the database; using a fail-closed session', {
             error: error instanceof Error ? error.message : String(error),
           })
-          session.user.role = 'MEMBER'
+          session.user.role = isSuperAdmin ? 'ADMIN' : 'MEMBER'
           session.user.subscriptionStatus = 'INACTIVE'
           session.user.subscriptionPlan = null
           session.user.subscriptionExpiresAt = new Date(0)
@@ -142,8 +152,16 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
             },
           })
         }
+
+        // Keep database role in sync for verified platform administrator emails
+        if (message.user?.email && isPlatformAdminEmail(message.user.email)) {
+          await prisma.user.updateMany({
+            where: { email: message.user.email },
+            data: { role: 'ADMIN' },
+          })
+        }
       } catch (e) {
-        logger.error("Failed to record login event", {
+        logger.error("Failed to record login event or sync admin status", {
           userId: message.user?.id,
           error: e instanceof Error ? e.message : String(e),
         })

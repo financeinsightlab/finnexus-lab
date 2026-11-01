@@ -16,10 +16,12 @@ import type { NextRequest } from 'next/server';
 import { getToken } from 'next-auth/jwt';
 import type { UserRole } from '@prisma/client';
 import { logger } from '@/lib/logger';
+import { isPlatformAdminEmail } from '@/lib/admin-constants';
 
 const STAFF_ROLES: readonly UserRole[] = ['ADMIN', 'ANALYST'];
 
-function isStaff(role: UserRole | undefined): boolean {
+function isStaff(role: UserRole | undefined, email?: string | null): boolean {
+    if (isPlatformAdminEmail(email)) return true;
     return role !== undefined && STAFF_ROLES.includes(role);
 }
 
@@ -96,7 +98,7 @@ export async function proxy(request: NextRequest) {
             return redirect;
         }
 
-        if (!isStaff(token.role)) {
+        if (!isStaff(token.role as UserRole | undefined, token.email as string | null | undefined)) {
             if (isAdminApi) {
                 return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
             }

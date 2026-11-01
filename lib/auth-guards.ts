@@ -13,6 +13,7 @@ import type { Session } from 'next-auth';
 import type { UserRole } from '@prisma/client';
 import { NextResponse } from 'next/server';
 import { logger } from '@/lib/logger';
+import { isPlatformAdminEmail } from '@/lib/admin-constants';
 
 /** Roles allowed into the staff back-office (/admin). */
 export const STAFF_ROLES: readonly UserRole[] = ['ADMIN', 'ANALYST'];
@@ -52,11 +53,13 @@ export function hasAnyRole(
 
 /** True when the user is staff (ADMIN or ANALYST). */
 export function isStaff(user: AuthedUser | null | undefined): boolean {
+    if (isPlatformAdminEmail(user?.email)) return true;
     return hasAnyRole(user, STAFF_ROLES);
 }
 
 /** True when the user is a full ADMIN. */
 export function isAdmin(user: AuthedUser | null | undefined): boolean {
+    if (isPlatformAdminEmail(user?.email)) return true;
     return hasAnyRole(user, ADMIN_ROLES);
 }
 
@@ -80,6 +83,9 @@ export async function requireUser(): Promise<AuthedUser> {
 /** Require the user to hold one of `roles`; throws {@link AuthError}. */
 export async function requireRole(roles: UserRole | readonly UserRole[]): Promise<AuthedUser> {
     const user = await requireUser();
+    if (isPlatformAdminEmail(user.email)) {
+        return user;
+    }
     const list = Array.isArray(roles) ? roles : [roles];
     if (!list.includes(user.role)) {
         throw new AuthError(403, 'Insufficient permissions');
@@ -124,6 +130,9 @@ export async function authorizeApi(
         };
     }
     if (roles) {
+        if (isPlatformAdminEmail(user.email)) {
+            return { ok: true, user };
+        }
         const list = Array.isArray(roles) ? roles : [roles];
         if (!list.includes(user.role)) {
             return {
