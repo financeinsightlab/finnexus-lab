@@ -354,24 +354,29 @@ export default function EditorClient() {
             <Sparkles className="w-5 h-5" />
           </button>
           
-          <div className="flex items-center bg-black/30 border border-white/10 rounded-xl p-1 gap-1">
+          <div className="flex items-center bg-black/40 border border-white/15 rounded-xl p-1 gap-1 shadow-inner">
+            <span className="hidden sm:inline px-2 text-[10px] font-extrabold uppercase tracking-widest text-slate-400">
+              CMS Engine:
+            </span>
             <button
+              type="button"
               onClick={() => setContentType('MARKDOWN')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'MARKDOWN' ? 'bg-white/10 text-white' : 'text-slate-500 hover:text-slate-300'}`}
-              title="Classic Markdown / Rich Text editor"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'MARKDOWN' ? 'bg-[#0D6E6E] text-white shadow font-extrabold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+              title="Engine 1: Classic Markdown / Rich Text editor"
               aria-label="Use Markdown editor"
             >
               <Type className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Markdown</span>
+              <span>Markdown</span>
             </button>
             <button
+              type="button"
               onClick={() => setContentType('BLOCKS')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'BLOCKS' ? 'bg-[#0D6E6E] text-white shadow' : 'text-slate-500 hover:text-slate-300'}`}
-              title="Visual Block Builder"
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${contentType === 'BLOCKS' ? 'bg-[#0D6E6E] text-white shadow font-extrabold' : 'text-slate-400 hover:text-white hover:bg-white/5'}`}
+              title="Engine 2: Visual Block Builder"
               aria-label="Use block editor"
             >
               <Blocks className="w-3.5 h-3.5" />
-              <span className="hidden md:inline">Block Editor</span>
+              <span>Block Editor</span>
             </button>
           </div>
           

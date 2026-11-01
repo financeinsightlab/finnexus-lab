@@ -55,24 +55,19 @@ const NAV_GROUPS: NavGroup[] = [
   {
     label: "Overview",
     items: [
-      { label: "Operations Centre", href: "/admin", icon: LayoutDashboard, adminOnly: true, exact: true },
+      { label: "Dashboard", href: "/admin", icon: LayoutDashboard, adminOnly: true, exact: true },
     ],
   },
   {
-    label: "Content",
+    label: "Content & Media",
     items: [
-      { label: "Content Library", href: "/admin/cms", icon: FileText },
+      { label: "Content CMS", href: "/admin/cms", icon: FileText },
       { label: "Media Library", href: "/admin/media", icon: ImageIcon },
-    ],
-  },
-  {
-    label: "Learning",
-    items: [
       { label: "Study Material", href: "/admin/study", icon: GraduationCap },
     ],
   },
   {
-    label: "Product",
+    label: "Product & Marketing",
     items: [
       { label: "Product Content", href: "/admin/product-content", icon: Megaphone },
       { label: "Promotions", href: "/admin/product-content?tab=promotions", icon: BadgePercent, tabMatch: "promotions" },
@@ -80,34 +75,25 @@ const NAV_GROUPS: NavGroup[] = [
     ],
   },
   {
-    label: "Operations",
+    label: "Operations & Users",
     items: [
-      { label: "Enquiries", href: "/admin/messages", icon: MessageSquare, adminOnly: true },
-      { label: "Users", href: "/admin/users", icon: Users, adminOnly: true },
+      { label: "Inquiries & Contact", href: "/admin/messages", icon: MessageSquare, adminOnly: true },
+      { label: "User Management", href: "/admin/users", icon: Users, adminOnly: true },
       { label: "UPI Payments", href: "/admin/payments", icon: CreditCard, adminOnly: true },
     ],
   },
   {
-    label: "Analytics",
-    items: [
-      { label: "Analytics", href: "/admin/analytics", icon: BarChart3, adminOnly: true },
-    ],
-  },
-  {
-    label: "Intelligence",
+    label: "AI & Intelligence",
     items: [
       { label: "AI Control Center", href: "/admin/ai", icon: Cpu, adminOnly: true },
     ],
   },
   {
-    label: "System",
+    label: "Analytics & System",
     items: [
-      {
-      label: "System Health", href: "/admin/system-health", icon: Activity, adminOnly: true
-    },
-    {
-      label: "Settings", href: "/admin/settings", icon: Settings, adminOnly: true
-    },
+      { label: "Analytics", href: "/admin/analytics", icon: BarChart3, adminOnly: true },
+      { label: "System Health", href: "/admin/system-health", icon: Activity, adminOnly: true },
+      { label: "Settings", href: "/admin/settings", icon: Settings, adminOnly: true },
     ],
   },
 ]
@@ -229,7 +215,7 @@ export default function CollapsibleSidebar({
         href={item.href}
         onClick={opts.onNavigate}
         aria-current={active ? "page" : undefined}
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative overflow-hidden border text-[13px] font-medium ${opts.collapsed ? 'justify-center' : ''} ${active ? 'bg-brand/10 border-brand/20 text-brand shadow-sm' : 'bg-transparent border-transparent text-content-muted hover:text-content-primary hover:bg-accent hover:border-border/40'}`}
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-xl transition-all group relative overflow-hidden border text-[13px] font-medium ${opts.collapsed ? 'justify-center' : ''} ${active ? 'bg-brand/10 border-brand/20 text-brand shadow-sm font-semibold' : 'bg-transparent border-transparent text-content-muted hover:text-content-primary hover:bg-accent hover:border-border/40'}`}
         title={opts.collapsed ? item.label : undefined}
       >
         {active && <div className="absolute inset-y-2 left-0 w-1 bg-primary rounded-full" aria-hidden />}
