@@ -1,66 +1,42 @@
 import type { Metadata } from 'next';
-import { getAllResearch } from '@/lib/content';
-import { prisma } from '@/lib/prisma';
+import { getAllUnifiedResearch } from '@/lib/research-content';
 import ResearchClient from '@/components/research/ResearchClient';
-import type { ResearchPost } from '@/types';
 import ContentFaq from '@/components/content/ContentFaq';
 import RelatedContentSection from '@/components/content/RelatedContentSection';
 import PromotionSlot from '@/components/promotions/PromotionSlot';
 import ResearchSubNav from '@/components/hub-navigation/ResearchSubNav';
+import JsonLd, { breadcrumbSchema } from '@/components/seo/JsonLd';
 
 export const metadata: Metadata = {
-  title: { absolute: 'Research Library — Institutional Market Reports' },
+  title: { absolute: 'Research Intelligence — Institutional Financial Research | Kunwar Analytics' },
   description:
-    'Institutional-grade macroeconomic, sector intelligence, fintech, and deep tech research papers with quantitative modeling and strategic frameworks.',
-  alternates: { canonical: '/research' },
+    'Independent financial research, sector intelligence, and quantitative models across Indian and global market sectors for investors, analysts, founders, and business leaders.',
+  alternates: { canonical: 'https://kunwaranalytics.in/research' },
   openGraph: {
     images: ['/og/default.png'],
-    title: 'Research Library | Kunwar Analytics',
+    title: 'Research Intelligence | Kunwar Analytics',
     description:
-      'In-depth institutional research reports, financial modeling, and strategic market intelligence.',
+      'Independent financial research, sector intelligence and data-driven analysis for investors, analysts, founders and business decision-makers.',
     url: 'https://kunwaranalytics.in/research',
     type: 'website',
   },
 };
 
 export default async function ResearchPage() {
-  const fileResearch = getAllResearch();
+  const mergedPosts = await getAllUnifiedResearch();
 
-  let dbReports: any[] = [];
-  try {
-    dbReports = await (prisma as any).post.findMany({
-      where: { type: 'RESEARCH', published: true },
-      orderBy: { createdAt: 'desc' },
-    });
-  } catch (e) {
-    console.error('CMS fetch failed:', e);
-  }
-
-  const cmsResearch: ResearchPost[] = dbReports.map((r) => ({
-    slug: r.slug,
-    title: r.title,
-    summary: r.excerpt || '',
-    sector: r.sector || r.tags?.[0] || 'Strategic Research',
-    tags: r.tags || [],
-    author: r.author?.name || 'Kunwar Analytics Research Desk',
-    date: r.publishedAt?.toISOString() || r.createdAt?.toISOString() || new Date().toISOString(),
-    featured: true,
-    pageCount: r.pageCount || (r.estimatedReadingTime ? Math.ceil(r.estimatedReadingTime * 2.5) : 50),
-    coverImage: r.featuredImage || undefined,
-  }));
-
-  // Merge unique by slug (CMS overrides file if exists)
-  const slugSet = new Set(cmsResearch.map((p) => p.slug));
-  const mergedPosts: ResearchPost[] = [
-    ...cmsResearch,
-    ...fileResearch.filter((p) => !slugSet.has(p.slug)),
-  ];
+  const jsonLd = breadcrumbSchema([
+    { name: 'Home', url: 'https://kunwaranalytics.in' },
+    { name: 'Research Intelligence', url: 'https://kunwaranalytics.in/research' },
+  ]);
 
   return (
     <>
+      <JsonLd data={jsonLd} />
       <ResearchSubNav
-        title="Institutional Financial Research"
-        subtitle="In-depth macroeconomic, sector intelligence, and fundamental equity research publications."
+        title="Research Intelligence"
+        subtitle="Independent financial research, sector intelligence, and quantitative models across Indian and global market sectors."
+        badge="RESEARCH INTELLIGENCE"
       />
       <PromotionSlot slot="CONTENT_TOP" path="/research" />
       <ResearchClient posts={mergedPosts} />

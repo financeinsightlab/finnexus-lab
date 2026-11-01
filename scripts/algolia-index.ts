@@ -57,7 +57,7 @@ async function runIndexing() {
       })),
     ];
 
-    // ─── 2. DB Content (Published Posts from CMS) ────────────────────────────
+    // ─── 2. DB Content (Published Posts from CMS, Deduplicated) ─────────────
     const dbPosts = await prisma.post.findMany({
       where: { published: true },
       select: {
@@ -72,8 +72,14 @@ async function runIndexing() {
       },
     });
 
+    // Deduplicate against MDX: use canonical objectID matching the type and slug
+    const dbSlugs = new Set(dbPosts.map((p) => `${p.type.toLowerCase()}-${p.slug}`));
+
+    // Filter out MDX records that are overridden by CMS database posts
+    const deduplicatedMdxRecords = mdxRecords.filter((rec) => !dbSlugs.has(rec.objectID));
+
     const dbRecords = dbPosts.map((post) => ({
-      objectID: `db-post-${post.id}`,
+      objectID: `${post.type.toLowerCase()}-${post.slug}`,
       type: post.type.toLowerCase(),
       source: 'database',
       slug: post.slug,
@@ -127,7 +133,7 @@ async function runIndexing() {
       console.log('ℹ️  StudyMaterial table not found — skipping study indexing');
     }
 
-    const records = [...mdxRecords, ...dbRecords, ...studyRecords];
+    const records = [...deduplicatedMdxRecords, ...dbRecords, ...studyRecords];
 
     console.log(`📦 Preparing ${records.length} records...`);
     console.log(`   - MDX: ${mdxRecords.length}`);

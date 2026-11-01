@@ -13,13 +13,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return Number.isFinite(d.getTime()) ? d : new Date();
   };
 
-  // ─── MDX Content ───
-  const research = getAllResearch().map((post) => ({
-    url: `${BASE}/research/${post.slug}`,
-    lastModified: safeDate(post.date),
-    changeFrequency: 'monthly' as const,
-    priority: 0.8,
-  }));
+  // ─── Research & Editorial Content (Unified MDX + CMS) ───
+  let research: MetadataRoute.Sitemap = [];
+  try {
+    const { getResearchSitemapEntries } = await import('@/lib/research-content');
+    research = await getResearchSitemapEntries();
+  } catch {
+    research = getAllResearch().map((post) => ({
+      url: `${BASE}/research/${post.slug}`,
+      lastModified: safeDate(post.date),
+      changeFrequency: 'monthly' as const,
+      priority: 0.8,
+    }));
+  }
 
   const insights = getAllInsights().map((post) => ({
     url: `${BASE}/insights/${post.slug}`,

@@ -213,6 +213,32 @@ Lectures:
     - [Lecture 4: Inferential Statistics: t-tests, Chi-square & ANOVA](https://kunwaranalytics.in/pgdm/business-analytics-using-excel/inferential-statistics-excel)
     - [Lecture 5: Correlation & Regression: From Scatter Plot to Prediction](https://kunwaranalytics.in/pgdm/business-analytics-using-excel/correlation-regression-excel)
 
+## Research Intelligence Publications
+
+### In-Depth Financial Research Reports (5,000+ words, DCF/EBITDA models)
+- [India Quick Commerce 2026: Dark Store Density & EBITDA Matrix](https://kunwaranalytics.in/research/india-quick-commerce-2026) — Micro-fulfillment geometry, advertising monetization, and dark store unit economics for Blinkit, Zepto, and Instamart.
+- [Fintech Lending & Credit Underwriting in India](https://kunwaranalytics.in/research/fintech-lending-credit-underwriting-india) — FLDG guidelines, default loss guarantees, and risk-based loan pricing models.
+- [India Semiconductor Manufacturing & Packaging Ecosystem 2026](https://kunwaranalytics.in/research/india-semiconductor-manufacturing-ecosystem-2026) — Fab economics, OSAT packaging, ATMP capex, and ISM subsidy frameworks.
+- [Defence & Aerospace Indigenisation in India](https://kunwaranalytics.in/research/defence-aerospace-indigenisation-india) — DPP/DAP policy shifts, DPSU revenue visibility, and order book multiples.
+- [Electric Mobility & Battery Chemistry Economics](https://kunwaranalytics.in/research/electric-mobility-battery-chemistry-economics) — Cell chemistry (LFP vs NMC), gigafactory capex, and EV commercial fleet TCO parity.
+- [Renewable Energy & Green Hydrogen India 2026](https://kunwaranalytics.in/research/renewable-energy-green-hydrogen-india-2026) — Levelized cost of hydrogen (LCOH), electrolyzer capex, and round-the-clock power.
+- [Data Centers & AI Infrastructure in India](https://kunwaranalytics.in/research/data-centers-ai-infrastructure-india) — Hyperscaler capacity, power density, liquid cooling, and REIT potential.
+- [Private Credit & Direct Lending in India](https://kunwaranalytics.in/research/private-credit-direct-lending-india) — Senior secured credit, mezzanine debt, and promoter financing risk parameters.
+- [Generative AI in Financial Services 2026](https://kunwaranalytics.in/research/generative-ai-financial-services-2026) — Enterprise adoption economics, compliance guardrails, and ROI benchmarks.
+- [Global Macro Rate Cycles & Liquidity Inflections](https://kunwaranalytics.in/research/global-macro-rate-cycles-liquidity-2026) — RBI vs Fed policy divergence, real yields, and capital flow dynamics.
+
+### Selected Strategic Insights & Executive Notes
+- [Why Blinkit EBITDA Matters for Indian Consumer Internet](https://kunwaranalytics.in/insights/why-blinkit-ebitda-matters) — Dark store profitability inflection and ad revenue contribution.
+- [RBI Unsecured Lending Risk Weights & Co-Lending](https://kunwaranalytics.in/insights/rbi-unsecured-lending-risk-weights-colending) — Regulatory capital impact on NBFCs and fintech balance sheets.
+- [Commercial EV Fleet Total Cost of Ownership Parity](https://kunwaranalytics.in/insights/commercial-ev-fleet-tco-parity) — Operating parity points for last-mile delivery fleets.
+- [India Semiconductor OSAT Packaging Strategy](https://kunwaranalytics.in/insights/india-semiconductor-osat-packaging-strategy) — Advanced packaging economics and global foundry partnerships.
+
+### Strategic Advisory Case Studies
+- [The Digital-First Bank: Transformation Roadmap](https://kunwaranalytics.in/case-studies/bank-digital-transformation) — Cutting cost-to-income from 61% to 48% via an API-façade strategy.
+- [Quick Commerce Market Entry Strategy](https://kunwaranalytics.in/case-studies/india-qcommerce-market-entry) — Dark store network planning and unit-economics breakeven.
+- [B2B Fintech Go-To-Market & Capital Strategy](https://kunwaranalytics.in/case-studies/fintech-b2b-g2m) — SaaS enterprise sales motion and regulatory risk mitigation.
+- [B2B SaaS Value-Based Pricing Optimization](https://kunwaranalytics.in/case-studies/saas-pricing-optimization) — Tiered pricing restructuring and net revenue retention acceleration.
+
 ## Interactive calculators
 
 - [DCF Valuation Model — Comprehensive](https://kunwaranalytics.in/tools/dcf-valuation-model) — Full DCF model with 3 scenarios, sensitivity analysis, and WACC calculator.

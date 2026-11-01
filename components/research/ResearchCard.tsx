@@ -3,7 +3,7 @@ import TiltCard from '@/components/ui/TiltCard';
 import { formatDate } from '@/lib/utils';
 import { calculateReportFreshness } from '@/lib/freshness';
 import type { ResearchPost } from '@/types';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Clock } from 'lucide-react';
 
 interface ResearchCardProps {
   post: ResearchPost;
@@ -31,6 +31,10 @@ function FreshnessDot({ score }: { score: number }) {
 export default function ResearchCard({ post }: ResearchCardProps) {
   const freshScore = calculateReportFreshness(post);
   const showFreshness = post.content !== undefined;
+
+  const lengthBadge = post.pageCount && post.pageCount > 0
+    ? `${post.pageCount} Pages`
+    : (post.readingTime || 'Deep Dive');
 
   return (
     <TiltCard maxTilt={4} className="h-full">
@@ -63,8 +67,8 @@ export default function ResearchCard({ post }: ResearchCardProps) {
               </span>
             </div>
 
-            <div className="absolute bottom-2.5 right-3 z-10 text-[11px] font-mono !text-white bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-md border border-white/10">
-              {post.pageCount} Pages
+            <div className="absolute bottom-2.5 right-3 z-10 text-[11px] font-mono !text-white bg-black/50 backdrop-blur-sm px-2 py-0.5 rounded-md border border-white/10 flex items-center gap-1">
+              {lengthBadge}
             </div>
           </div>
 
