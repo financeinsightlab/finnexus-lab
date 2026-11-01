@@ -13,6 +13,7 @@ export default defineConfig({
     resolve: {
         alias: {
             '@': rootDir,
+            'server-only': fileURLToPath(new URL('./tests/mocks/empty.ts', import.meta.url)),
         },
     },
 });

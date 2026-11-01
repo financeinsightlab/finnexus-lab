@@ -1,12 +1,6 @@
 // lib/placement-war-room/ai-client.ts — Reusable AI client for Placement Day War Room
-//
-// Reuses the existing Hugging Face Inference Providers integration
-// (mistralai/Mistral-7B-Instruct-v0.3 via router.huggingface.co) already
-// configured in lib/hf-provider.ts and lib/interview-engine.ts. No new
-// provider, no new API key, no mock responses.
-
-const HF_API_URL = 'https://router.huggingface.co/v1/chat/completions';
-const HF_MODEL = 'mistralai/Mistral-7B-Instruct-v0.3';
+// Migrated to Central AI Gateway (Gemini primary, Groq fallback)
+import { aiGateway } from '@/lib/ai/gateway';
 
 interface ChatMessage {
   role: 'system' | 'user' | 'assistant';
@@ -19,13 +13,7 @@ interface ChatCompletionResponse {
   }>;
 }
 
-function getApiKey(): string {
-  const apiKey = process.env.HUGGINGFACE_API_KEY;
-  if (!apiKey) {
-    throw new Error('HUGGINGFACE_API_KEY is not configured');
-  }
-  return apiKey;
-}
+
 
 function extractJsonFromResponse(content: string): unknown {
   const trimmed = content.trim();
@@ -57,42 +45,25 @@ export async function placementWarRoomAiChat(
   options: { maxTokens?: number; temperature?: number; signal?: AbortSignal } = {}
 ): Promise<string> {
   const { maxTokens = 1000, temperature = 0.3, signal } = options;
-  const apiKey = getApiKey();
-
-  const response = await fetch(HF_API_URL, {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${apiKey}`,
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      model: HF_MODEL,
-      messages,
-      max_tokens: maxTokens,
-      temperature,
-      stream: false,
-    }),
-    signal: signal ?? AbortSignal.timeout(30000),
+  const response = await aiGateway.chat('placement', messages, {
+    maxTokens,
+    temperature,
+    signal,
   });
-
-  if (!response.ok) {
-    throw new Error(`Hugging Face chat completion failed with HTTP ${response.status}`);
-  }
-
-  const data = (await response.json()) as ChatCompletionResponse;
-  const answer = data.choices?.[0]?.message?.content?.trim();
-  if (!answer) {
-    throw new Error('Hugging Face returned an empty chat completion');
-  }
-  return answer;
+  return response.text;
 }
 
 export async function placementWarRoomAiJson<T = unknown>(
   messages: ChatMessage[],
   options: { maxTokens?: number; temperature?: number; signal?: AbortSignal } = {}
 ): Promise<T> {
-  const response = await placementWarRoomAiChat(messages, options);
-  return extractJsonFromResponse(response) as T;
+  const { maxTokens = 1000, temperature = 0.2, signal } = options;
+  const { data } = await aiGateway.json<T>('placement', messages, {
+    maxTokens,
+    temperature,
+    signal,
+  });
+  return data;
 }
 
 export function buildSystemPrompt(role: 'interviewer' | 'evaluator' | 'coach' | 'question-generator'): string {

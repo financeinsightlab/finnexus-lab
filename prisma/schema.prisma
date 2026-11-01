@@ -1430,3 +1430,177 @@ model IngestionRun {
   @@index([startedAt])
   @@index([status])
 }
+
+
+// ─── CENTRAL AI INTELLIGENCE PLATFORM ───────────────────────────────────────
+
+model AIProviderConfig {
+  id           String                 @id @default(cuid())
+  provider     String                 @unique // 'gemini' | 'groq'
+  label        String                 // 'Google Gemini', 'Groq'
+  enabled      Boolean                @default(true)
+  priority     Int                    @default(1)
+  defaultModel String                 // e.g. 'gemini-2.0-flash', 'llama-3.3-70b-versatile'
+  config       Json?                  // Provider-specific metadata or endpoints
+  credentials  AIProviderCredential[]
+  createdAt    DateTime               @default(now())
+  updatedAt    DateTime               @updatedAt
+
+  @@index([enabled, priority])
+}
+
+model AIProviderCredential {
+  id                    String            @id @default(cuid())
+  providerId            String
+  provider              AIProviderConfig  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  label                 String            // e.g. 'Gemini Production Key 1'
+  maskedKey             String            // e.g. 'AIza************3412'
+  encryptedSecret       String            @db.Text // AES-256-GCM ciphertext
+  nonce                 String            // 12-byte IV (hex)
+  authTag               String            // 16-byte authentication tag (hex)
+  keyVersion            Int               @default(1)
+  enabled               Boolean           @default(true)
+  priority              Int               @default(1)
+  status                String            @default("ACTIVE") // 'ACTIVE' | 'DEGRADED' | 'RATE_LIMITED' | 'FAILED' | 'DISABLED'
+  requestLimitPerMinute Int?              @default(60)
+  cooldownUntil         DateTime?
+  lastTestedAt          DateTime?
+  lastUsedAt            DateTime?
+  lastErrorCode         String?
+  totalRequests         Int               @default(0)
+  totalSuccess          Int               @default(0)
+  totalErrors           Int               @default(0)
+  createdAt             DateTime          @default(now())
+  updatedAt             DateTime          @updatedAt
+  usageLogs             AIUsageLog[]
+
+  @@index([providerId, enabled, priority])
+  @@index([status])
+}
+
+model AITaskRoute {
+  id               String   @id @default(cuid())
+  taskKey          String   @unique // 'ask-kunwar' | 'company-intelligence' | 'placement' | 'research' | 'learning'
+  name             String   // e.g. 'Ask Kunwar Platform Assistant'
+  description      String?
+  primaryProvider  String   // 'gemini' | 'groq'
+  primaryModel     String   // 'gemini-2.0-flash', 'llama-3.3-70b-versatile'
+  fallbackProvider String?  // 'groq' | 'gemini'
+  fallbackModel    String?
+  enabled          Boolean  @default(true)
+  temperature      Float    @default(0.3)
+  maxTokens        Int      @default(1000)
+  config           Json?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([enabled])
+}
+
+model AIUsageLog {
+  id               String                @id @default(cuid())
+  task             String                // 'ask-kunwar', 'placement', etc.
+  provider         String                // 'gemini' | 'groq'
+  model            String
+  credentialId     String?
+  credential       AIProviderCredential? @relation(fields: [credentialId], references: [id], onDelete: SetNull)
+  status           String                // 'SUCCESS' | 'ERROR' | 'FALLBACK_TRIGGERED'
+  latencyMs        Int
+  promptTokens     Int?
+  completionTokens Int?
+  totalTokens      Int?
+  fallbackUsed     Boolean               @default(false)
+  fallbackProvider String?
+  fallbackModel    String?
+  errorCategory    String?               // 'RATE_LIMIT' | 'AUTH' | 'TIMEOUT' | 'SCHEMA' | 'NETWORK'
+  errorMessage     String?
+  createdAt        DateTime              @default(now())
+
+  @@index([task, createdAt])
+  @@index([provider, createdAt])
+  @@index([createdAt])
+}
+
+model KnowledgeDocument {
+  id            String           @id @default(cuid())
+  title         String
+  sourceUrl     String?
+  sourceType    String           // 'WEBSITE' | 'ADMIN_UPLOAD' | 'EXTERNAL_URL' | 'MANUAL_ENTRY'
+  category      String           // 'research' | 'insights' | 'tools' | 'pgdm' | 'markets' | 'general'
+  content       String           @db.Text
+  metadata      Json?
+  version       Int              @default(1)
+  status        String           @default("INDEXED") // 'PENDING' | 'INDEXING' | 'INDEXED' | 'FAILED' | 'ARCHIVED'
+  error         String?
+  lastIndexedAt DateTime?
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  chunks        KnowledgeChunk[]
+
+  @@index([sourceType, status])
+  @@index([category])
+}
+
+model KnowledgeChunk {
+  id         String            @id @default(cuid())
+  documentId String
+  document   KnowledgeDocument @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  chunkIndex Int
+  title      String
+  content    String            @db.Text
+  tokenCount Int?
+  metadata   Json?
+  createdAt  DateTime          @default(now())
+
+  @@index([documentId, chunkIndex])
+}
+
+model AIPromptTemplate {
+  id           String   @id @default(cuid())
+  taskKey      String   // 'ask-kunwar' | 'company-intelligence' | 'placement' | 'research' | 'learning'
+  version      Int      @default(1)
+  systemPrompt String   @db.Text
+  temperature  Float    @default(0.3)
+  maxTokens    Int      @default(1000)
+  isActive     Boolean  @default(true)
+  notes        String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@unique([taskKey, version])
+  @@index([taskKey, isActive])
+}
+
+model AIAdminAuditLog {
+  id         String   @id @default(cuid())
+  adminEmail String
+  action     String   // 'ADD_CREDENTIAL' | 'DELETE_CREDENTIAL' | 'UPDATE_ROUTE' | 'REINDEX' | 'KILL_SWITCH'
+  entityType String   // 'CREDENTIAL' | 'PROVIDER' | 'ROUTE' | 'KNOWLEDGE' | 'CONFIG'
+  entityId   String?
+  details    Json?
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([action, createdAt])
+  @@index([createdAt])
+}
+
+model AILeadCapture {
+  id                  String   @id @default(cuid())
+  name                String
+  email               String
+  phone               String?
+  organization        String?
+  projectRequirements String?  @db.Text
+  serviceInterest     String?  // 'CONSULTATION' | 'RESEARCH_PROJECT' | 'FINANCIAL_MODELLING' | 'ENTERPRISE' | 'DEMO'
+  sourceUrl           String?
+  status              String   @default("NEW") // 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'CLOSED'
+  conversationSummary String?  @db.Text
+  consentGiven        Boolean  @default(true)
+  ipAddress           String?
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([email])
+  @@index([status, createdAt])
+}

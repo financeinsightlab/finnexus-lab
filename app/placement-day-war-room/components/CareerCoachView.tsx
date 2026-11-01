@@ -39,7 +39,7 @@ export default function CareerCoachView({ candidateProfile, onNavigateToTab }: C
       role: 'assistant',
       content: `Hello! I am your **AI Placement Career Coach**. I specialize in front-office finance placements across Investment Banking, Equity Research, Corporate Finance, and Credit Analysis.\n\nI am configured for your target role in **${role}** targeting **${company}**. You can ask me to:\n- Explain complex financial formulas and multi-statement flows step-by-step.\n- Test your conceptual grasp with follow-up interview grilling.\n- Review your answers against Indian regulatory standards (Ind AS, RBI, 10Y G-Sec).\n\nWhat would you like to master today?`,
       timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      provider: 'mistralai/Mistral-7B-Instruct-v0.3',
+      provider: 'central-ai-gateway',
     },
   ]);
 
@@ -99,7 +99,7 @@ export default function CareerCoachView({ candidateProfile, onNavigateToTab }: C
         role: 'assistant',
         content: data.reply || 'I could not generate a response. Please try again.',
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        provider: data.provider || 'mistralai/Mistral-7B-Instruct-v0.3',
+        provider: data.provider || 'central-ai-gateway',
       };
 
       setMessages((prev) => [...prev, assistantMessage]);
@@ -142,7 +142,7 @@ export default function CareerCoachView({ candidateProfile, onNavigateToTab }: C
 
         <div className="flex items-center gap-2 text-xs font-mono">
           <span className="text-[11px] text-neutral-400 bg-neutral-900 border border-neutral-800 px-2 py-1 rounded">
-            Engine: mistralai/Mistral-7B-Instruct-v0.3
+            Engine: Central AI Gateway (Gemini/Groq)
           </span>
           {onNavigateToTab && (
             <button

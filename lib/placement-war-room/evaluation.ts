@@ -90,10 +90,8 @@ export async function evaluateAnswer(
     };
   }
 
-  // 2. Attempt AI Evaluation via server-side Hugging Face router
-  const hfKey = process.env.HUGGINGFACE_API_KEY;
-  if (hfKey && hfKey.length > 10) {
-    try {
+  // 2. Attempt AI Evaluation via Central AI Gateway
+  try {
       const prompt = buildEvaluationPrompt(
         qText,
         qSubject,
@@ -147,7 +145,6 @@ export async function evaluateAnswer(
       // AI unavailable or timed out; fall through to deterministic rubric evaluation
       console.warn('Placement AI evaluation timed out or failed; falling back to deterministic rubric:', (error as Error).message);
     }
-  }
 
   // 3. Deterministic Rubric-Based Evaluation (Strictly NO score for answer length)
   return buildDeterministicRubricEvaluation(question, trimmed, expectedKeyPoints, commonMistakes, rubric, options);

@@ -67,6 +67,7 @@
     "react-instantsearch": "^7.28.0",
     "reading-time": "^1.5.0",
     "recharts": "^3.8.1",
+    "server-only": "^0.0.1",
     "sharp": "^0.33.5",
     "three": "^0.185.1",
     "tippy.js": "^6.3.7",

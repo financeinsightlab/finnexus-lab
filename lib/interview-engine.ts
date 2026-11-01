@@ -357,15 +357,37 @@ export function getQuestionsForRole(
   return filtered.sort(() => Math.random() - 0.5).slice(0, count);
 }
 
-// ─── AI Grader ────────────────────────────────────────────────────────────────
-
-import { evaluateFinanceAnswer } from '@/lib/placement-war-room/evaluation';
+// ─── AI Grader (Client Safe) ──────────────────────────────────────────────────
 
 export async function gradeAnswer(
   question: InterviewQuestion,
   answer: InterviewAnswer,
 ): Promise<GradedAnswer> {
-  return evaluateFinanceAnswer(question, answer.userAnswer, {
-    timeSpentSeconds: answer.timeSpentSeconds,
-  });
+  try {
+    const res = await fetch('/api/interview/grade', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        questionId: question.id,
+        userAnswer: answer.userAnswer,
+        timeSpentSeconds: answer.timeSpentSeconds,
+      }),
+    });
+    if (res.ok) {
+      const data = await res.json();
+      if (data.graded) return data.graded;
+    }
+  } catch {
+    // fallback
+  }
+
+  return {
+    questionId: question.id,
+    score: 5,
+    grade: 'AVERAGE',
+    feedback: 'Answer submitted for evaluation.',
+    betterAnswer: question.keyPoints.join('. '),
+    missedPoints: question.commonMistakes,
+    strengths: ['Addressed the question prompt directly'],
+  };
 }

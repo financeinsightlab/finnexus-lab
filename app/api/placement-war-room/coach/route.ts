@@ -96,7 +96,7 @@ GUIDELINES:
       return NextResponse.json({
         success: true,
         reply,
-        provider: 'mistralai/Mistral-7B-Instruct-v0.3',
+        provider: 'central-ai-gateway',
       });
     } catch (aiError) {
       console.warn('AI Coach provider call failed, returning rule-based coaching response:', (aiError as Error).message);

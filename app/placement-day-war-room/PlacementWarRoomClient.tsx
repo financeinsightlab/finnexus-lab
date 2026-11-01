@@ -378,7 +378,7 @@ export default function PlacementWarRoomClient({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <div className="inline-flex items-center gap-2 text-xs font-semibold text-amber-400 bg-amber-400/10 border border-amber-400/20 px-3 py-1 rounded-full mb-2">
-                <span>🎓 AI Finance Placement Operating System — Powered by Mistral 7B & Institutional Evaluation</span>
+                <span>🎓 AI Finance Placement Operating System — Powered by Central AI Gateway & Institutional Evaluation</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
                 Finance Placement Operating System

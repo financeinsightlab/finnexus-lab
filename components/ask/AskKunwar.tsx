@@ -22,7 +22,10 @@ interface AskResponse {
 }
 
 const PROVIDER_LABELS: Record<string, string> = {
-    'huggingface-mistral': 'Hugging Face inference',
+    'gemini-2.0-flash': 'Google Gemini 2.0 Flash',
+    'gemini-1.5-flash': 'Google Gemini 1.5 Flash',
+    'groq-llama-3.3-70b-versatile': 'Groq Llama 3.3 70B',
+    'huggingface-mistral': 'Central AI Gateway',
     'kunwar-knowledge-engine': 'Platform knowledge',
     'local-extractive': 'Local source extraction',
 };
@@ -61,7 +64,11 @@ export default function AskKunwar() {
             const response = await fetch('/api/ask', {
                 method: 'POST',
                 headers: { 'content-type': 'application/json' },
-                body: JSON.stringify({ question: trimmed }),
+                body: JSON.stringify({
+                    question: trimmed,
+                    pageUrl: typeof window !== 'undefined' ? window.location.pathname : undefined,
+                    pageTitle: typeof document !== 'undefined' ? document.title : undefined,
+                }),
             });
             if (!response.ok) {
                 const data = (await response.json().catch(() => ({}))) as { error?: string };

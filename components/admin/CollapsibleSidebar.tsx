@@ -27,6 +27,7 @@ import {
   BadgePercent,
   GraduationCap,
   Search,
+  Cpu,
   type LucideIcon,
 } from "lucide-react"
 
@@ -90,6 +91,12 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Analytics",
     items: [
       { label: "Analytics", href: "/admin/analytics", icon: BarChart3, adminOnly: true },
+    ],
+  },
+  {
+    label: "Intelligence",
+    items: [
+      { label: "AI Control Center", href: "/admin/ai", icon: Cpu, adminOnly: true },
     ],
   },
   {

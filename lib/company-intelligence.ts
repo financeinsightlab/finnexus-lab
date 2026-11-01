@@ -262,42 +262,22 @@ export async function generateAIAnalysis(
   valuation: CompanyValuation,
   healthScore: HealthScore,
 ): Promise<AIAnalysis> {
-  const apiKey = process.env.HUGGINGFACE_API_KEY;
-
   const prompt = buildAnalysisPrompt(profile, financials, valuation, healthScore);
 
-  if (!apiKey) {
-    // Return a structured placeholder when HF is not configured
-    return buildFallbackAnalysis(profile, financials, healthScore);
-  }
-
   try {
-    const res = await fetch('https://router.huggingface.co/v1/chat/completions', {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'mistralai/Mistral-7B-Instruct-v0.3',
-        messages: [
-          { role: 'system', content: 'You are an expert Indian equity analyst. Provide structured, data-driven analysis. Always output valid JSON only.' },
-          { role: 'user', content: prompt },
-        ],
-        max_tokens: 800,
-        temperature: 0.3,
-        stream: false,
-      }),
-      signal: AbortSignal.timeout(25000),
-    });
+    const { aiGateway } = await import('./ai/gateway');
+    const { data: parsed } = await aiGateway.json<Partial<AIAnalysis>>(
+      'company-intelligence',
+      [
+        {
+          role: 'system',
+          content: 'You are an expert Indian equity analyst. Provide structured, data-driven analysis. Always output valid JSON only.',
+        },
+        { role: 'user', content: prompt },
+      ],
+      { temperature: 0.2, maxTokens: 800 }
+    );
 
-    if (!res.ok) return buildFallbackAnalysis(profile, financials, healthScore);
-
-    const data = await res.json() as { choices?: Array<{ message?: { content?: string } }> };
-    const content = data.choices?.[0]?.message?.content?.trim() ?? '';
-
-    // Extract JSON from response
-    const jsonMatch = content.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) return buildFallbackAnalysis(profile, financials, healthScore);
-
-    const parsed = JSON.parse(jsonMatch[0]) as Partial<AIAnalysis>;
     return {
       summary: parsed.summary ?? `${profile.name} is a ${profile.sector} company listed on ${profile.exchange}.`,
       bullCase: parsed.bullCase ?? 'Strong sector position and improving financials.',
