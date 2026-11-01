@@ -134,7 +134,7 @@ export default function FlagshipProductsSection() {
             </div>
 
             <Link
-              href="/interview-war-room"
+              href="/placement-day-war-room"
               className="w-full py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-bold text-xs uppercase tracking-wider border border-slate-700 hover:border-orange-500/50 text-center transition transform active:scale-95"
             >
               Enter War Room →

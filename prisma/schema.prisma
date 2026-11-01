@@ -57,6 +57,15 @@ model User {
   badges                 UserBadge[]
   assessmentAttempts     CourseAssessmentAttempt[]
   courseCertificates     CourseCertificate[]
+  // ─── Placement Day War Room relations ────────────────────────────────────────
+  candidateProfile       CandidateProfile?
+  diagnosticAttempts     DiagnosticAttempt[]
+  interviewSessions      InterviewSession[]
+  studyPlans             StudyPlan[]
+  topicPerformances      TopicPerformance[]
+  financeLabAttempts     FinanceLabAttempt[]
+  learningSignals        LearningSignal[]
+  warRoomPass            WarRoomPass?
 }
 
 model Account {
@@ -1030,4 +1039,290 @@ model PromotionEvent {
   @@index([promotionId, eventType, createdAt])
   @@index([path, createdAt])
   @@index([slot, createdAt])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: CANDIDATE PROFILE ─────────────────────────────────
+model CandidateProfile {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  qualification  String?
+  specialisation String?
+  academicLevel  String?
+  targetRole     String?
+  targetCompany  String?
+  interviewDate  DateTime?
+  experience     String?
+  internships    String?
+  skills         String?
+  proficiency    String?
+  preferredDifficulty String?
+  dailyPrepTime  Int?
+  explanationStyle String?
+  preferredLanguage String?
+  improvementTopics String?
+  onboardingComplete Boolean @default(false)
+  onboardedAt    DateTime?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@index([userId])
+  @@index([targetRole])
+  @@index([onboardingComplete])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: DIAGNOSTIC ASSESSMENT ─────────────────────────────
+model DiagnosticAttempt {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetRole     String
+  totalQuestions Int
+  answeredCount  Int
+  overallScore   Float?
+  completedAt    DateTime?
+  answers        DiagnosticAnswer[]
+  createdAt      DateTime @default(now())
+  @@index([userId])
+  @@index([targetRole])
+  @@index([createdAt])
+}
+model DiagnosticAnswer {
+  id             String   @id @default(cuid())
+  attemptId      String
+  attempt        DiagnosticAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  questionId     String
+  subject        String
+  subtopic       String
+  questionText   String
+  userAnswer     String?
+  isCorrect      Boolean?
+  aiScore        Float?
+  timeSpentSeconds Int
+  createdAt      DateTime @default(now())
+  @@index([attemptId])
+  @@index([questionId])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: QUESTION BANK ─────────────────────────────────────
+model QuestionBankEntry {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  subject        String
+  subtopic       String
+  targetRoles    String[] @default([])
+  questionType   String
+  difficulty     String
+  question       String
+  hint           String?
+  expectedAnswer String?
+  explanation    String?
+  commonMistakes String?
+  followUpQuestions String?
+  rubric         String?
+  formulas       String?
+  calculationSteps String?
+  prerequisites  String?
+  suggestedPrepTimeSeconds Int?
+  source         String?
+  isVerified     Boolean   @default(false)
+  isAiGenerated  Boolean   @default(false)
+  active         Boolean   @default(true)
+  usageCount     Int       @default(0)
+  avgScore       Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@index([subject])
+  @@index([subtopic])
+  @@index([questionType])
+  @@index([difficulty])
+  @@index([isVerified])
+  @@index([active])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: INTERVIEW SESSIONS ────────────────────────────────
+model InterviewSession {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetRole     String
+  experienceLevel String
+  durationMinutes Int
+  interviewType  String
+  difficulty     String
+  targetCompany  String?
+  topicsEmphasised String?
+  status         String   @default("IN_PROGRESS")
+  overallScore   Float?
+  startedAt      DateTime @default(now())
+  completedAt    DateTime?
+  answers        InterviewAnswer[]
+  @@index([userId])
+  @@index([status])
+  @@index([startedAt])
+}
+model InterviewAnswer {
+  id             String   @id @default(cuid())
+  sessionId      String
+  session        InterviewSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  questionId     String
+  questionText   String
+  questionType   String
+  subject        String
+  subtopic       String
+  difficulty     String
+  userAnswer     String
+  aiScore        Float
+  rubricScores   String?
+  feedback       String?
+  betterAnswer   String?
+  missedPoints   String?
+  strengths      String?
+  explanation    String?
+  nextAction     String?
+  followUpQuestion String?
+  timeSpentSeconds Int
+  answeredAt     DateTime @default(now())
+  @@index([sessionId])
+  @@index([questionId])
+  @@index([answeredAt])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: STUDY PLAN ────────────────────────────────────────
+model StudyPlan {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  targetRole     String
+  interviewDate  DateTime?
+  totalDays      Int
+  currentDay     Int      @default(1)
+  status         String   @default("ACTIVE")
+  planData       String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  tasks          StudyTask[]
+  @@index([userId])
+  @@index([status])
+}
+model StudyTask {
+  id             String   @id @default(cuid())
+  planId         String
+  plan           StudyPlan @relation(fields: [planId], references: [id], onDelete: Cascade)
+  day            Int
+  title          String
+  description    String
+  category       String
+  minutes        Int
+  completed      Boolean  @default(false)
+  completedAt    DateTime?
+  topic          String?
+  difficulty     String?
+  createdAt      DateTime @default(now())
+  @@index([planId])
+  @@index([day])
+  @@index([completed])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: TOPIC PERFORMANCE ─────────────────────────────────
+model TopicPerformance {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subject        String
+  subtopic       String
+  questionsAttempted Int   @default(0)
+  correctAnswers Int      @default(0)
+  avgScore       Float    @default(0)
+  strongest      Boolean  @default(false)
+  weakest        Boolean  @default(false)
+  lastPracticed  DateTime?
+  needsRevision  Boolean  @default(false)
+  updatedAt      DateTime @updatedAt
+  @@index([userId])
+  @@index([subject, subtopic])
+  @@index([weakest])
+  @@index([needsRevision])
+  @@unique([userId, subject, subtopic])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: FINANCE LAB EXERCISES ─────────────────────────────
+model FinanceLabExercise {
+  id             String   @id @default(cuid())
+  slug           String   @unique
+  title          String
+  objective      String
+  category       String
+  difficulty     String
+  inputData      String?
+  instructions   String
+  requiredCalculations String?
+  expectedOutput String?
+  hints          String?
+  explanation    String?
+  rubric         String?
+  commonMistakes String?
+  nextExercises  String?
+  active         Boolean  @default(true)
+  createdAt      DateTime @default(now())
+  attempts       FinanceLabAttempt[]
+  @@index([category])
+  @@index([difficulty])
+  @@index([active])
+}
+model FinanceLabAttempt {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId     String
+  exercise       FinanceLabExercise @relation(fields: [exerciseId], references: [id], onDelete: Cascade)
+  userInputs     String?
+  results        String?
+  isCorrect      Boolean?
+  score          Float?
+  feedback       String?
+  completedAt    DateTime @default(now())
+  @@index([userId])
+  @@index([exerciseId])
+  @@index([completedAt])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: LEARNING SIGNALS ──────────────────────────────────
+model LearningSignal {
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  signalType     String
+  subject        String?
+  subtopic       String?
+  questionId     String?
+  score          Float?
+  feedback       String?
+  metadata       String?
+  createdAt      DateTime @default(now())
+  @@index([userId])
+  @@index([signalType])
+  @@index([createdAt])
+}
+
+// ─── PLACEMENT DAY WAR ROOM: WAR ROOM PASS (₹799, 45-day) ─────────────────────
+model WarRoomPass {
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status         String   @default("PENDING")
+  price          Int      @default(799)
+  currency       String   @default("INR")
+  durationDays   Int      @default(45)
+  activatedAt    DateTime?
+  expiresAt      DateTime?
+  utr            String?
+  paymentProof   String?
+  approvedBy     String?
+  approvedAt     DateTime?
+  rejectionReason String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  @@index([userId])
+  @@index([status])
+  @@index([expiresAt])
 }

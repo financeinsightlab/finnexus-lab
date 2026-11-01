@@ -2,20 +2,19 @@ import { NextResponse } from 'next/server';
 import { auth } from '@/auth';
 import { resolvePlan } from '@/lib/entitlements';
 import {
-  QUESTION_BANK,
-  gradeAnswer,
-  type InterviewAnswer,
-  type InterviewQuestion,
-} from '@/lib/interview-engine';
+  UNIFIED_QUESTION_BANK,
+  getUnifiedQuestionById,
+} from '@/lib/placement-war-room/unified-question-bank';
+import { evaluateFinanceAnswer } from '@/lib/placement-war-room/financial-evaluator';
+import { QUESTION_BANK } from '@/lib/interview-engine';
 
 export async function POST(req: Request) {
   try {
     const session = await auth();
     const plan = resolvePlan(session?.user as Parameters<typeof resolvePlan>[0]);
-    const isPaid = plan === 'PRO' || plan === 'ELITE' || plan === 'ENTERPRISE';
 
     const body = await req.json();
-    const { questionId, userAnswer, timeSpentSeconds } = body;
+    const { questionId, userAnswer, timeSpentSeconds, role } = body;
 
     if (!questionId || typeof userAnswer !== 'string') {
       return NextResponse.json(
@@ -24,7 +23,12 @@ export async function POST(req: Request) {
       );
     }
 
-    const question = QUESTION_BANK.find((q) => q.id === questionId);
+    // Lookup in Unified Question Bank first, then fallback to base bank
+    const question =
+      getUnifiedQuestionById(questionId) ||
+      UNIFIED_QUESTION_BANK.find((q) => q.id === questionId) ||
+      QUESTION_BANK.find((q) => q.id === questionId);
+
     if (!question) {
       return NextResponse.json(
         { error: 'Question not found' },
@@ -32,18 +36,15 @@ export async function POST(req: Request) {
       );
     }
 
-    const answerPayload: InterviewAnswer = {
-      questionId,
-      userAnswer,
+    const graded = await evaluateFinanceAnswer(question, userAnswer, {
+      role,
       timeSpentSeconds: Number(timeSpentSeconds) || 0,
-    };
-
-    const graded = await gradeAnswer(question, answerPayload);
+    });
 
     return NextResponse.json({
       success: true,
       graded,
-      isPaid,
+      isPaid: true, // No pricing restriction
       userPlan: plan,
     });
   } catch (error) {

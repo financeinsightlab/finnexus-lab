@@ -90,11 +90,11 @@ export const NAV_CLUSTERS: NavCluster[] = [
         href: '/study',
         description: 'Courses, study material and credentials.',
         items: [
-            { label: 'Interview War Room', href: '/interview-war-room', icon: '🎯', description: "India's #1 AI finance interview simulator" },
             { label: 'Study Material', href: '/study', icon: '📖', description: 'Notes, formula sheets and revision' },
             { label: 'PGDM Program', href: '/pgdm', icon: '🏛️', description: '14 subjects, 73 lectures and quizzes' },
             { label: 'Finance Terms', href: '/finance-terms', icon: '📚', description: 'Plain-language finance definitions' },
             { label: 'Placement Prep', href: '/study/placement-prep', icon: '🧳', description: '60-day finance placement plan' },
+            { label: 'Placement Day War Room', href: '/placement-day-war-room', icon: '🎯', description: "India's #1 AI finance interview simulator & war room" },
             { label: 'Certificates', href: '/certificates', icon: '🏅', description: 'Course completion credentials' },
             { label: 'Podcast', href: '/podcast', icon: '🎙️', description: 'The Kunwar Analytics Podcast' },
         ],

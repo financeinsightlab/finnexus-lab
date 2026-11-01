@@ -30,8 +30,7 @@ export default function InterviewWarRoomClient({ initialQuestions, userPlan, isP
   const [timerSeconds, setTimerSeconds] = useState(0);
   const [timerActive, setTimerActive] = useState(true);
   const [stressMode, setStressMode] = useState(false);
-  const [evaluationCount, setEvaluationCount] = useState(0);
-  const [showPaywallModal, setShowPaywallModal] = useState(false);
+
 
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
@@ -94,11 +93,6 @@ export default function InterviewWarRoomClient({ initialQuestions, userPlan, isP
   const handleSubmitAnswer = async () => {
     if (!currentQuestion || userAnswer.trim().length < 5) return;
 
-    // Check free tier limit (2 questions max per session)
-    if (!isPaid && evaluationCount >= 2) {
-      setShowPaywallModal(true);
-      return;
-    }
 
     setIsGrading(true);
     setTimerActive(false);
@@ -123,7 +117,6 @@ export default function InterviewWarRoomClient({ initialQuestions, userPlan, isP
       if (data.graded) {
         setGradedResult(data.graded);
         setSessionGradedHistory((prev) => [...prev, { q: currentQuestion, g: data.graded }]);
-        setEvaluationCount((c) => c + 1);
       }
     } catch (err) {
       console.error(err);
@@ -139,7 +132,6 @@ export default function InterviewWarRoomClient({ initialQuestions, userPlan, isP
       };
       setGradedResult(fallback);
       setSessionGradedHistory((prev) => [...prev, { q: currentQuestion, g: fallback }]);
-      setEvaluationCount((c) => c + 1);
     } finally {
       setIsGrading(false);
     }
@@ -178,14 +170,7 @@ export default function InterviewWarRoomClient({ initialQuestions, userPlan, isP
                 {userPlan}
               </span>
             </div>
-            {!isPaid && (
-              <Link
-                href="/checkout/pro"
-                className="text-xs font-semibold bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 px-3 py-1.5 rounded-lg shadow-sm transition"
-              >
-                Upgrade to Pro (₹999/mo)
-              </Link>
-            )}
+
           </div>
         </div>
       </div>
@@ -221,10 +206,8 @@ export default function InterviewWarRoomClient({ initialQuestions, userPlan, isP
             </div>
             <div className="w-px h-8 bg-slate-800" />
             <div className="text-center">
-              <div className="text-2xl font-black text-emerald-400">
-                {!isPaid ? `${Math.max(0, 2 - evaluationCount)} left` : '∞ Unltd'}
-              </div>
-              <div className="text-[11px] uppercase tracking-wider text-slate-400">Free Runs</div>
+              <div className="text-2xl font-black text-emerald-400">∞</div>
+              <div className="text-[11px] uppercase tracking-wider text-slate-400">Unlimited</div>
             </div>
           </div>
         </div>
@@ -608,16 +591,7 @@ export default function InterviewWarRoomClient({ initialQuestions, userPlan, isP
                   </div>
                 </div>
 
-                {!isPaid && (
-                  <div className="pt-2">
-                    <Link
-                      href="/pricing"
-                      className="block w-full py-2.5 rounded-xl border border-amber-500/30 bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-xs font-semibold transition"
-                    >
-                      Compare Pro vs Free Features
-                    </Link>
-                  </div>
-                )}
+
               </div>
             )}
 
@@ -664,56 +638,6 @@ export default function InterviewWarRoomClient({ initialQuestions, userPlan, isP
         </div>
       </div>
 
-      {/* Paywall Modal for Free Users after 2 questions */}
-      {showPaywallModal && (
-        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
-          <div className="bg-slate-900 border border-amber-500/30 rounded-2xl max-w-lg w-full p-6 sm:p-8 shadow-2xl relative text-center">
-            <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-amber-500 to-orange-500 flex items-center justify-center mx-auto text-2xl shadow-lg shadow-amber-500/20 text-slate-950 font-black mb-4">
-              👑
-            </div>
-
-            <h3 className="text-2xl font-bold text-white">Unlock Unlimited War Room Access</h3>
-            <p className="mt-2 text-sm text-slate-300 leading-relaxed">
-              You’ve used your 2 free AI mock interview evaluations for this session. Upgrade to{' '}
-              <strong className="text-amber-400">Kunwar Analytics Pro (₹999/month)</strong> to unlock:
-            </p>
-
-            <div className="my-6 text-left space-y-2.5 bg-slate-950 p-4 rounded-xl border border-slate-800 text-xs text-slate-300">
-              <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-bold">✓</span>
-                <span>Unlimited AI Interview evaluations across all 7 Indian finance tracks</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-bold">✓</span>
-                <span>Company-specific question sets (Goldman Sachs India, Avendus, Kotak IB)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-bold">✓</span>
-                <span>Full access to Indian Company Intelligence & AI DCF Studio (Product 1)</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="text-emerald-400 font-bold">✓</span>
-                <span>IIM / B-school Mock Placement Day 6-round simulation</span>
-              </div>
-            </div>
-
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link
-                href="/checkout/pro"
-                className="flex-1 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-400 hover:to-orange-400 text-slate-950 font-bold text-sm shadow-lg transition text-center"
-              >
-                Upgrade to Pro — ₹999/mo (Instant UPI)
-              </Link>
-              <button
-                onClick={() => setShowPaywallModal(false)}
-                className="py-3 px-4 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-300 text-xs font-semibold transition"
-              >
-                Close & Review
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
