@@ -1,3 +1,4 @@
+import { isPlatformAdminEmail } from "@/lib/admin-constants"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
@@ -6,7 +7,7 @@ import SettingsClient from "./SettingsClient"
 export default async function AdminSettingsPage() {
   const session = await auth()
   if (!session?.user) redirect("/auth/signin")
-  if (session.user.role !== "ADMIN") redirect("/")
+  if (session.user.role !== "ADMIN" && !isPlatformAdminEmail(session.user.email)) redirect("/")
 
   // Fetch all posts for the featured picker
   const allPosts = await prisma.post.findMany({

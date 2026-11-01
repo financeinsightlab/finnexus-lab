@@ -29,9 +29,7 @@ export default function BlockSidebar({ onAddBlock, onShowTemplates }: BlockSideb
   })
 
   return (
-
-    <div className="ui-scroll-region flex min-h-0 max-h-[38%] w-full shrink-0 flex-col overflow-hidden border-b border-[#2D3748] bg-[#1A1F2E] md:h-full md:max-h-none md:w-64 md:border-b-0 md:border-r">
-
+    <div className="w-64 bg-surface border-r border-border flex flex-col shrink-0 overflow-hidden">
       {/* Header */}
       <div className="p-4 border-b border-border">
         <p className="text-[10px] font-extrabold text-brand uppercase tracking-[0.2em] mb-3">Block Library</p>
@@ -73,7 +71,7 @@ export default function BlockSidebar({ onAddBlock, onShowTemplates }: BlockSideb
       </div>
 
       {/* Block List */}
-      <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-3 space-y-1" data-lenis-prevent>
+      <div className="flex-1 overflow-y-auto p-3 space-y-1">
         {filtered.map(block => {
           const Icon = ICON_MAP[block.icon] || AlignLeft
           return (
@@ -105,9 +103,7 @@ export default function BlockSidebar({ onAddBlock, onShowTemplates }: BlockSideb
       <div className="p-3 border-t border-border">
         <button
           onClick={onShowTemplates}
-
-          className="min-h-11 w-full flex items-center justify-center gap-2 rounded-xl border border-purple-500/20 bg-purple-500/10 px-4 py-2.5 text-xs font-bold text-purple-400 transition-all hover:border-purple-500 hover:bg-purple-500 hover:text-white"
-
+          className="w-full flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-accent-violet-muted text-accent-violet hover:bg-accent-violet hover:text-content-inverse transition-all text-xs font-bold border border-accent-violet/20 hover:border-accent-violet"
         >
           <LayoutTemplate className="w-4 h-4" />
           Browse Templates

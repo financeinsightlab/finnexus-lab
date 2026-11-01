@@ -1,3 +1,4 @@
+import { isPlatformAdminEmail } from "@/lib/admin-constants"
 // app/admin/study/edit/[id]/page.tsx — Edit existing study material
 
 import { auth } from "@/auth"
@@ -14,7 +15,7 @@ export default async function EditStudyMaterialPage({
 }) {
   const session = await auth()
   if (!session?.user) redirect("/auth/signin")
-  if (!["ADMIN", "ANALYST"].includes(session.user.role as string)) redirect("/")
+  if (!["ADMIN", "ANALYST"].includes(session.user.role as string) && !isPlatformAdminEmail(session.user.email)) redirect("/")
 
   const { id } = await params
 

@@ -26,10 +26,8 @@ export default function BlockPreview({ block, isSelected }: BlockPreviewProps) {
     }
     case 'paragraph':
       return (
-
-        <div className={`${wrapCls} cms-content prose-content`}
-          dangerouslySetInnerHTML={{ __html: data.html || '<p class="text-slate-500">Start writing...</p>' }}
-
+        <div className={`${wrapCls} prose max-w-none prose-sm`}
+          dangerouslySetInnerHTML={{ __html: data.html || '<p class="text-content-muted">Start writing...</p>' }}
         />
       )
     case 'image':
@@ -153,10 +151,8 @@ export default function BlockPreview({ block, isSelected }: BlockPreviewProps) {
       const rows = data.tableData || [];
       const hasHeader = data.hasHeaderRow !== false;
       return (
-
-        <div className={`${wrapCls} horizontal-scroll-region`} role="region" aria-label="Preview data table" tabIndex={0} data-lenis-prevent>
-          <table className="w-full text-sm text-left border border-[#2D3748] rounded-xl overflow-hidden bg-[#1A1F2E]">
-
+        <div className={`${wrapCls} overflow-x-auto`}>
+          <table className="w-full text-sm text-left border border-border rounded-xl overflow-hidden bg-surface">
             {rows.length > 0 && hasHeader && (
               <thead>
                 <tr>
@@ -188,7 +184,7 @@ export default function BlockPreview({ block, isSelected }: BlockPreviewProps) {
               <span className="text-xs font-mono font-bold text-cinema-cyan uppercase">{title}</span>
               <span className="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Architecture Flow</span>
             </div>
-            <pre className="horizontal-scroll-region p-4 text-xs font-mono text-emerald-300 bg-transparent m-0" tabIndex={0} aria-label="Scrollable code sample" data-lenis-prevent>
+            <pre className="p-4 text-xs font-mono text-emerald-300 overflow-x-auto bg-transparent m-0">
               <code>{data.code || '+--------------------------------+\n| Architecture Flow Blueprint    |\n+--------------------------------+'}</code>
             </pre>
           </div>

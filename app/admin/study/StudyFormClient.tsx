@@ -108,7 +108,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
   const labelClass = 'block text-xs font-bold text-content-secondary uppercase tracking-widest mb-2'
 
   return (
-    <div className="w-full min-w-0 max-w-4xl">
+    <div className="max-w-4xl">
       {/* ─── Header ─── */}
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
@@ -347,12 +347,10 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
           </div>
 
           {/* ─── Actions ─── */}
-          <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
+          <div className="flex items-center justify-end gap-3 pt-2">
             <Link
               href="/admin/study"
-
-              className="inline-flex min-h-11 items-center px-4 py-2.5 text-slate-300 hover:text-white text-sm font-medium transition-colors"
-
+              className="px-5 py-2.5 text-content-secondary hover:text-content-primary text-sm font-medium transition-colors"
             >
               Cancel
             </Link>
@@ -360,9 +358,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
               type="button"
               onClick={() => handleSave(false)}
               disabled={isPending}
-
-              className="flex min-h-11 items-center gap-2 px-4 py-2.5 bg-white/[0.05] border border-white/[0.08] text-white rounded-xl hover:bg-white/[0.08] transition-all text-sm font-medium disabled:opacity-50"
-
+              className="flex items-center gap-2 px-5 py-2.5 bg-surface-muted border border-border text-content-primary rounded-xl hover:bg-surface-muted transition-all text-sm font-medium disabled:opacity-50"
             >
               <Save className="w-4 h-4" />
               {isPending ? 'Saving...' : 'Save'}
@@ -371,9 +367,7 @@ export default function StudyFormClient({ categories, material, mode }: Props) {
               type="button"
               onClick={() => handleSave(true)}
               disabled={isPending}
-
-              className="flex min-h-11 items-center gap-2 px-4 py-2.5 bg-[#0D6E6E] text-white rounded-xl hover:bg-[#0B5A5A] transition-all text-sm font-medium disabled:opacity-50"
-
+              className="flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground rounded-xl hover:bg-primary-hover transition-all text-sm font-medium disabled:opacity-50"
             >
               <Eye className="w-4 h-4" />
               {isPending ? 'Publishing...' : published ? 'Save & Publish' : 'Publish'}

@@ -172,11 +172,8 @@ export default function StudyAdminClient({
       </div>
 
       {/* ─── Materials Table ─── */}
-
-      <div className="bg-white/[0.02] border border-white/[0.05] rounded-2xl overflow-hidden">
-        <div className="horizontal-scroll-region" role="region" aria-label="Study materials table" tabIndex={0} data-lenis-prevent>
-        <table className="w-full min-w-[720px]">
-
+      <div className="bg-surface border border-border-subtle rounded-2xl overflow-hidden">
+        <table className="w-full">
           <thead>
             <tr className="border-b border-border-subtle">
               <th className="px-4 py-3 text-left text-[10px] font-bold text-content-muted uppercase tracking-widest">Title</th>
@@ -199,11 +196,9 @@ export default function StudyAdminClient({
               materials.map((material) => (
                 <tr key={material.id} className="border-b border-border-subtle hover:bg-surface transition-colors">
                   <td className="px-4 py-3">
-
-                    <Link href={`/admin/study/edit/${material.id}`} className="hover:text-[#0D6E6E] transition-colors">
-                      <p className="text-sm font-medium text-white">{material.title}</p>
-                      <p className="text-xs text-slate-500 break-words">{material.description}</p>
-
+                    <Link href={`/admin/study/edit/${material.id}`} className="hover:text-brand transition-colors">
+                      <p className="text-sm font-medium text-content-primary">{material.title}</p>
+                      <p className="text-xs text-content-muted line-clamp-1">{material.description}</p>
                     </Link>
                   </td>
                   <td className="px-4 py-3">
@@ -265,7 +260,6 @@ export default function StudyAdminClient({
             )}
           </tbody>
         </table>
-        </div>
       </div>
     </div>
   )

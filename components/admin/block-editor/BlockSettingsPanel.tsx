@@ -399,18 +399,14 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
 
   return (
     <>
-
-      <div className="ui-scroll-region min-h-0 max-h-[45%] w-full shrink-0 overflow-hidden border-t border-[#2D3748] bg-[#1A1F2E] flex flex-col md:h-full md:max-h-none md:w-72 md:border-l md:border-t-0">
-
+      <div className="w-full h-full bg-surface border-l border-border flex flex-col shrink-0 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b border-border">
           <div>
             <p className="text-[10px] font-extrabold text-brand uppercase tracking-widest">Block Settings</p>
             <p className="text-xs font-bold text-content-primary mt-0.5 capitalize">{block.type} Block</p>
           </div>
-
-          <button onClick={onClose} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-slate-500 transition-colors hover:bg-white/10 hover:text-white" aria-label="Close block settings">
-
+          <button onClick={onClose} className="p-2 rounded-lg hover:bg-accent text-content-muted hover:text-content-primary transition-colors">
             <X className="w-4 h-4" />
           </button>
         </div>
@@ -437,7 +433,7 @@ export default function BlockSettingsPanel({ block, onUpdate, onDelete, onClose 
         </div>
 
         {/* Fields */}
-        <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain p-4 space-y-5" data-lenis-prevent>
+        <div className="flex-1 overflow-y-auto p-4 space-y-5">
           {tab === 'content' ? renderContentFields() : renderStyleFields()}
         </div>
 

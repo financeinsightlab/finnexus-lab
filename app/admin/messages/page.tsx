@@ -166,17 +166,15 @@ export default function AdminMessagesPage() {
   });
 
   return (
-    <div className="min-w-0 space-y-8">
+    <div className="space-y-8">
       {/* Header Banner */}
       <div className="relative overflow-hidden bg-brand-navy rounded-3xl p-8 shadow-xl border border-border-subtle">
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div>
-
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="section-label text-teal-400">Admin Inbox</span>
-              <span className="inline-flex max-w-full items-center gap-1.5 break-all px-2.5 py-0.5 rounded-full text-xs font-semibold bg-teal-500/20 text-teal-300 border border-teal-500/30">
-                <Mail className="w-3 h-3 shrink-0" /> kunwaranalytics@gmail.com
-
+            <div className="flex items-center gap-2">
+              <span className="section-label text-brand">Admin Inbox</span>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold bg-brand/20 text-brand border border-brand/30">
+                <Mail className="w-3 h-3" /> kunwaranalytics@gmail.com
               </span>
             </div>
             <h1 className="text-3xl font-extrabold text-white mt-2 leading-tight">
@@ -237,12 +235,10 @@ export default function AdminMessagesPage() {
       {/* Controls & Search */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
         {/* Filter Tabs */}
-
-        <div className="flex flex-wrap items-center gap-1 p-1 bg-gray-100 dark:bg-[#1A1F2E] rounded-xl border border-gray-200 dark:border-[#2D3748] self-start">
-
+        <div className="flex items-center p-1 bg-surface-muted rounded-xl border border-border self-start">
           <button
             onClick={() => setFilter('ALL')}
-            className={`inline-flex min-h-11 items-center px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filter === 'ALL'
                 ? 'bg-primary text-primary-foreground shadow'
                 : 'text-content-muted hover:text-content-primary'
@@ -252,7 +248,7 @@ export default function AdminMessagesPage() {
           </button>
           <button
             onClick={() => setFilter('UNREAD')}
-            className={`inline-flex min-h-11 items-center px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filter === 'UNREAD'
                 ? 'bg-warning text-content-inverse shadow'
                 : 'text-content-muted hover:text-content-primary'
@@ -262,7 +258,7 @@ export default function AdminMessagesPage() {
           </button>
           <button
             onClick={() => setFilter('REPLIED')}
-            className={`inline-flex min-h-11 items-center px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
+            className={`px-4 py-1.5 rounded-lg text-xs font-bold transition-all ${
               filter === 'REPLIED'
                 ? 'bg-success text-content-inverse shadow'
                 : 'text-content-muted hover:text-content-primary'
@@ -314,24 +310,18 @@ export default function AdminMessagesPage() {
               >
                 {/* Header row */}
                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-
-                    <div className="flex min-w-0 items-start gap-4">
-                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-white font-bold text-base flex-shrink-0 shadow-md">
-
+                  <div className="flex items-start gap-4">
+                    <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-teal-500 to-emerald-600 flex items-center justify-center text-primary-foreground font-bold text-base flex-shrink-0 shadow-md">
                       {inquiry.name?.[0]?.toUpperCase() || 'U'}
                     </div>
-                    <div className="min-w-0">
+                    <div>
                       <div className="flex flex-wrap items-center gap-2">
-
-                        <h3 className="break-words font-bold text-gray-900 dark:text-white text-base">
-
+                        <h3 className="font-bold text-content-primary text-base">
                           {inquiry.name}
                         </h3>
                         <a
                           href={`mailto:${inquiry.email}`}
-
-                          className="break-all text-xs text-[#0D6E6E] hover:underline font-mono"
-
+                          className="text-xs text-brand hover:underline font-mono"
                         >
                           {inquiry.email}
                         </a>
@@ -374,13 +364,11 @@ export default function AdminMessagesPage() {
                 </div>
 
                 {/* Subject badge and message content */}
-
-                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-white/5 space-y-2">
-                  <div className="inline-block max-w-full break-words px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                <div className="mt-4 pt-4 border-t border-border-subtle space-y-2">
+                  <div className="inline-block px-3 py-1 rounded-lg text-xs font-bold uppercase tracking-wide bg-info-muted text-info border border-info/20">
                     Subject: {inquiry.subject}
                   </div>
-                  <div className="break-words p-4 rounded-xl bg-gray-50 dark:bg-[#121622] text-sm text-gray-800 dark:text-slate-200 whitespace-pre-wrap leading-relaxed border border-gray-200 dark:border-white/5">
-
+                  <div className="p-4 rounded-xl bg-surface-muted text-sm text-content-secondary whitespace-pre-wrap leading-relaxed border border-border-subtle">
                     {inquiry.message}
                   </div>
                 </div>
@@ -398,19 +386,15 @@ export default function AdminMessagesPage() {
                         </span>
                       )}
                     </div>
-
-                    <p className="break-words text-sm text-slate-300 whitespace-pre-wrap">
-
+                    <p className="text-sm text-content-secondary whitespace-pre-wrap">
                       {inquiry.replyText}
                     </p>
                   </div>
                 )}
 
                 {/* Action buttons */}
-
-                <div className="mt-4 flex flex-wrap items-center justify-between gap-3 pt-2">
-                  <div className="min-w-0 break-all text-xs text-slate-500">
-
+                <div className="mt-4 flex items-center justify-between pt-2">
+                  <div className="text-xs text-content-muted">
                     ID: <span className="font-mono text-[10px]">{inquiry.id}</span>
                   </div>
 
@@ -422,7 +406,7 @@ export default function AdminMessagesPage() {
                         handleStartReply(inquiry);
                       }
                     }}
-                    className={`flex min-h-11 items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
+                    className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${
                       isReplying
                         ? 'bg-surface-muted text-content-primary'
                         : isReplied
@@ -439,10 +423,8 @@ export default function AdminMessagesPage() {
                 {isReplying && (
                   <div className="mt-5 p-5 rounded-2xl bg-surface-muted border border-brand/40 space-y-4 anim-fade-up">
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-
-                      <h4 className="min-w-0 break-words text-sm font-bold text-gray-900 dark:text-white flex flex-wrap items-center gap-2">
-                        <Send className="w-4 h-4 text-[#0D6E6E]" />
-
+                      <h4 className="text-sm font-bold text-content-primary flex items-center gap-2">
+                        <Send className="w-4 h-4 text-brand" />
                         Compose Reply to {inquiry.name} ({inquiry.email})
                       </h4>
                       <span className="text-xs text-content-secondary">
@@ -478,21 +460,17 @@ export default function AdminMessagesPage() {
                     />
 
                     {notificationStatus && notificationStatus.id === inquiry.id && (
-
-                      <div className="break-words p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs flex items-center gap-2">
-
+                      <div className="p-3 rounded-xl bg-success-muted border border-success/20 text-success text-xs flex items-center gap-2">
                         <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
                         {notificationStatus.message}
                       </div>
                     )}
 
-                    <div className="flex flex-wrap items-center justify-end gap-3 pt-2">
+                    <div className="flex items-center justify-end gap-3 pt-2">
                       <button
                         type="button"
                         onClick={() => setActiveReplyId(null)}
-
-                        className="inline-flex min-h-11 items-center px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
-
+                        className="px-4 py-2 text-xs font-semibold text-content-secondary hover:text-content-primary transition-colors"
                       >
                         Cancel
                       </button>
@@ -500,9 +478,7 @@ export default function AdminMessagesPage() {
                         type="button"
                         disabled={sendingReply || !replyText.trim()}
                         onClick={() => handleSendReply(inquiry)}
-
-                        className="flex min-h-11 max-w-full items-center justify-center gap-2 whitespace-normal px-4 py-2.5 rounded-xl bg-[#0D6E6E] hover:bg-[#0b5c5c] text-white font-bold text-xs shadow-lg transition-all disabled:opacity-50"
-
+                        className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary hover:bg-primary-hover text-primary-foreground font-bold text-xs shadow-lg transition-all disabled:opacity-50"
                       >
                         {sendingReply ? (
                           <>

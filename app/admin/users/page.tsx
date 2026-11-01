@@ -1,3 +1,4 @@
+import { isPlatformAdminEmail } from "@/lib/admin-constants"
 ﻿import { prisma } from "@/lib/prisma"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
@@ -20,7 +21,7 @@ export default async function AdminUsersPage({
 }) {
   const session = await auth()
   if (!session?.user) redirect("/auth/signin")
-  if (session.user.role !== "ADMIN") redirect("/")
+  if (session.user.role !== "ADMIN" && !isPlatformAdminEmail(session.user.email)) redirect("/")
 
   const params = await searchParams
   const page = Math.max(1, Number(params.page || 1))

@@ -1,3 +1,4 @@
+import { isPlatformAdminEmail } from "@/lib/admin-constants"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
@@ -9,7 +10,7 @@ import HeroBackground from "@/components/ui/HeroBackground"
 export default async function AdminAnalytics() {
   const session = await auth()
   if (!session?.user) redirect("/auth/signin")
-  if (session.user.role !== "ADMIN") redirect("/")
+  if (session.user.role !== "ADMIN" && !isPlatformAdminEmail(session.user.email)) redirect("/")
 
   const now = new Date()
 

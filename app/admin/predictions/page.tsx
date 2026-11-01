@@ -1,3 +1,4 @@
+import { isPlatformAdminEmail } from "@/lib/admin-constants"
 import { auth } from '@/auth';
 import { redirect } from 'next/navigation';
 import { getOverduePendingPredictions, getAllPredictions, getAllAnalystScores } from '@/lib/predictions';
@@ -19,7 +20,7 @@ const SECTORS = [
 export default async function AdminPredictionsPage() {
   const session = await auth();
   if (!session?.user) redirect('/auth/signin');
-  if (!["ADMIN", "ANALYST"].includes(session.user.role as string)) redirect('/');
+  if (!["ADMIN", "ANALYST"].includes(session.user.role as string) && !isPlatformAdminEmail(session.user.email)) redirect("/");
 
   const [overdueRaw, allRaw, scores] = await Promise.all([
     getOverduePendingPredictions(),
@@ -274,7 +275,7 @@ export default async function AdminPredictionsPage() {
         {all.length === 0 ? (
           <p className="text-slate-500 text-sm">No predictions found.</p>
         ) : (
-          <div className="ui-scroll-region min-h-0 max-h-[min(31.25rem,65dvh)] overflow-y-auto space-y-4 pr-2 custom-scrollbar" data-lenis-prevent>
+          <div className="max-h-[500px] overflow-y-auto space-y-4 pr-2 custom-scrollbar">
             {all.map((p) => (
               <div key={p.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 bg-surface-muted rounded-xl border border-border-subtle">
                 <div className="flex-1">

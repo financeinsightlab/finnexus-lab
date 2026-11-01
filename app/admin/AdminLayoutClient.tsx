@@ -66,7 +66,7 @@ export default function AdminLayoutClient({
     : "lg:ml-64"  // 256px when expanded
 
   return (
-<div className="admin-theme flex min-h-[calc(100dvh-4rem)] min-w-0 bg-background font-sans text-content-primary mt-16">
+    <div className="admin-theme flex min-h-screen bg-background text-content-primary font-sans mt-16">
       <CollapsibleSidebar 
         userName={userName}
         userRole={userRole}
@@ -74,8 +74,8 @@ export default function AdminLayoutClient({
       />
 
       {/* Main Content Area - Dynamic margin based on sidebar state */}
-<main className={`flex-1 min-w-0 ${contentMarginClass} ${isCmsEditor ? 'p-0 overflow-hidden' : 'p-6 md:p-10'} transition-all duration-300`}>
-        <div className={isCmsEditor ? 'w-full h-full min-w-0' : 'content-page anim-fade-up'}>
+      <main className={`flex-1 min-w-0 ${contentMarginClass} ${isCmsEditor ? 'p-0 overflow-hidden' : 'p-6 md:p-10'} transition-all duration-300`}>
+        <div className={isCmsEditor ? 'w-full h-full min-w-0' : 'max-w-6xl mx-auto anim-fade-up'}>
           {children}
         </div>
       </main>

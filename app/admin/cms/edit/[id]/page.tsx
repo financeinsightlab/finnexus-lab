@@ -1,3 +1,4 @@
+import { isPlatformAdminEmail } from "@/lib/admin-constants"
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
@@ -12,7 +13,7 @@ export default async function EditPostPage({
   const session = await auth()
   const { id } = await params
 
-  if (!session?.user || !["ADMIN", "ANALYST"].includes(session.user.role as string)) redirect("/")
+  if (!session?.user || (!["ADMIN", "ANALYST"].includes(session.user.role as string) && !isPlatformAdminEmail(session.user.email))) redirect("/")
 
   // Fetch the post
   let post = null
@@ -38,9 +39,7 @@ export default async function EditPostPage({
   }
 
   return (
-
-    <div className="-mx-6 -my-6 h-[calc(100dvh-4rem)] min-w-0 overflow-hidden bg-[#0B1C2C] md:-mx-10 md:-my-10">
-
+    <div className="-m-8 h-screen bg-background">
       <EditClient post={post} />
     </div>
   )

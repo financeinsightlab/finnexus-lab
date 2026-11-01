@@ -28,11 +28,6 @@ export default function MediaLibraryClient() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid')
   const [filterType, setFilterType] = useState<string>('all')
   const [selectedMedia, setSelectedMedia] = useState<string[]>([])
-  const [insights, setInsights] = useState<any>(null)
-  const [quickFilter, setQuickFilter] = useState<'all' | 'missing-alt' | 'unused'>('all')
-  useEffect(() => {
-    void fetch('/api/admin/media/insights').then((r) => (r.ok ? r.json() : null)).then((j) => j && setInsights(j)).catch(() => {})
-  }, [])
   const [uploadProgress, setUploadProgress] = useState(0)
 
   // Edit fields
@@ -226,8 +221,6 @@ export default function MediaLibraryClient() {
   }
 
   const filteredMedia = media.filter(item => {
-    if (quickFilter === 'missing-alt' && (item.altText && item.altText.trim())) return false
-    if (quickFilter === 'unused' && insights?.unusedSampleIds && !insights.unusedSampleIds.includes(item.id)) return false
     if (filterType === 'all') return true
     if (filterType === 'image') return item.mimeType.startsWith('image/')
     if (filterType === 'document') return item.mimeType.startsWith('application/')
@@ -239,28 +232,16 @@ export default function MediaLibraryClient() {
   const activeMedia = activeMediaId ? media.find(m => m.id === activeMediaId) : null
 
   return (
-
-    <div className="min-h-screen min-w-0 bg-[#0B0D13] p-4 text-white sm:p-6 flex flex-col">
-
+    <div className="min-h-screen bg-surface-muted text-content-primary p-3 sm:p-6 flex flex-col">
       {/* Header */}
-      <div className="mb-6">
+      <div className="mb-8">
         <h1 className="text-3xl font-bold">Media Library</h1>
         <p className="text-content-secondary mt-2">Upload and manage your media files</p>
-        {insights && (
-          <div className="mt-4 flex flex-wrap gap-2 text-xs" aria-label="Media status">
-            <span className="px-3 py-1.5 rounded-full bg-surface-muted border border-border">{insights.total} assets · source: Media table</span>
-            <button type="button" onClick={() => setQuickFilter(quickFilter === 'missing-alt' ? 'all' : 'missing-alt')} aria-pressed={quickFilter === 'missing-alt'} className={`px-3 py-1.5 rounded-full border font-semibold ${quickFilter === 'missing-alt' ? 'bg-amber-500/20 border-amber-500/40 text-amber-300' : 'bg-amber-500/10 border-amber-500/20 text-amber-300'}`}>{insights.missingAlt} missing alt text — fix for accessibility</button>
-            <button type="button" onClick={() => setQuickFilter(quickFilter === 'unused' ? 'all' : 'unused')} aria-pressed={quickFilter === 'unused'} className={`px-3 py-1.5 rounded-full border ${quickFilter === 'unused' ? 'bg-brand/20 border-brand/40 text-brand' : 'bg-surface-muted border border-border text-content-secondary'}`} title={insights.note}>{insights.usedInSampledPosts}/{insights.sampled} sampled assets referenced in posts (best-effort match)</button>
-            {quickFilter !== 'all' && <button type="button" onClick={() => setQuickFilter('all')} className="px-3 py-1.5 rounded-full bg-white/10 border border-white/15">Clear filter</button>}
-          </div>
-        )}
       </div>
 
-
-      <div className="flex min-w-0 flex-1 flex-col gap-4 min-h-[24rem] lg:min-h-[500px] lg:flex-row lg:gap-6">
-
+      <div className="flex flex-1 flex-col lg:flex-row gap-4 lg:gap-6 min-h-[500px] min-w-0">
         {/* Main Content Area */}
-        <div className="flex min-w-0 flex-1 flex-col">
+        <div className="flex-1 flex flex-col min-w-0">
           
           {/* Upload Zone */}
           <div
@@ -298,8 +279,7 @@ export default function MediaLibraryClient() {
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-content-secondary w-5 h-5" />
                 <input
-                  type="search"
-                  aria-label="Search media"
+                  type="text"
                   placeholder="Search media..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -327,21 +307,13 @@ export default function MediaLibraryClient() {
               <div className="flex items-center gap-2 bg-surface border border-border rounded-lg p-1">
                 <button
                   onClick={() => setViewMode('grid')}
-
-                  className={`flex h-11 w-11 items-center justify-center rounded ${viewMode === 'grid' ? 'bg-[#2D3748]' : 'text-gray-400'}`}
-                  aria-label="Grid view"
-                  aria-pressed={viewMode === 'grid'}
-
+                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-surface-muted' : 'text-content-secondary'}`}
                 >
                   <Grid className="w-5 h-5" />
                 </button>
                 <button
                   onClick={() => setViewMode('list')}
-
-                  className={`flex h-11 w-11 items-center justify-center rounded ${viewMode === 'list' ? 'bg-[#2D3748]' : 'text-gray-400'}`}
-                  aria-label="List view"
-                  aria-pressed={viewMode === 'list'}
-
+                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-surface-muted' : 'text-content-secondary'}`}
                 >
                   <List className="w-5 h-5" />
                 </button>
@@ -373,9 +345,7 @@ export default function MediaLibraryClient() {
           </div>
 
           {/* Media Grid/List */}
-
-          <div className="ui-scroll-region min-h-[20rem] min-w-0 flex-1 overflow-auto bg-[#1A1F2E] rounded-2xl border border-[#2D3748] p-4 sm:p-6 shadow-2xl" data-lenis-prevent>
-
+          <div className="flex-1 overflow-auto bg-surface rounded-2xl border border-border p-6 shadow-2xl">
             {loading ? (
               <div className="text-center py-20">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-brand"></div>
@@ -395,14 +365,12 @@ export default function MediaLibraryClient() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                 {filteredMedia.map((item) => (
                   <button
-
-                    key={item.id}
                     type="button"
+                    key={item.id}
                     aria-pressed={selectedMedia.includes(item.id)}
                     aria-label={`${selectedMedia.includes(item.id) ? 'Deselect' : 'Select'} ${item.originalName}`}
-                    className={`relative group w-full cursor-pointer overflow-hidden rounded-2xl border-2 bg-[#0F1117] text-left transition-all shadow-lg hover:shadow-xl hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0D6E6E] ${
-                      selectedMedia.includes(item.id) ? 'border-[#0D6E6E] ring-2 ring-[#0D6E6E]/30' : 'border-[#2D3748] hover:border-white/20'
-
+                    className={`w-full text-left relative group bg-surface rounded-2xl overflow-hidden border-2 transition-all cursor-pointer shadow-lg hover:shadow-xl hover:-translate-y-1 ${
+                      selectedMedia.includes(item.id) ? 'border-brand ring-2 ring-brand/30' : 'border-border hover:border-border-strong'
                     }`}
                     onClick={(e) => toggleMediaSelection(item.id, e.shiftKey)}
                   >
@@ -450,11 +418,9 @@ export default function MediaLibraryClient() {
                 ))}
               </div>
             ) : (
-
-              <div className="horizontal-scroll-region rounded-xl border border-[#2D3748] bg-[#0F1117]" role="region" aria-label="Media file list" tabIndex={0} data-lenis-prevent>
-                <table className="w-full min-w-[640px] text-left">
-                  <thead className="bg-[#1A1F2E] border-b border-[#2D3748]">
-
+              <div className="bg-surface rounded-xl overflow-hidden border border-border">
+                <table className="w-full text-left">
+                  <thead className="bg-surface border-b border-border">
                     <tr>
                       <th className="p-4">
                         <input
@@ -486,9 +452,6 @@ export default function MediaLibraryClient() {
                           <input
                             type="checkbox"
                             checked={selectedMedia.includes(item.id)}
-
-                            aria-label={`Select ${item.originalName}`}
-
                             onClick={(e) => e.stopPropagation()}
                             onChange={() => toggleMediaSelection(item.id)}
                             className="rounded"
@@ -531,21 +494,17 @@ export default function MediaLibraryClient() {
 
         {/* Attachment Details Sidebar - Visible when exactly ONE item is selected */}
         {activeMedia && (
-
-          <div className="ui-scroll-region flex min-h-0 max-h-[min(50dvh,32rem)] w-full shrink-0 flex-col overflow-hidden rounded-2xl border border-[#2D3748] bg-[#1A1F2E] shadow-2xl lg:my-auto lg:h-[min(calc(100dvh-10rem),50rem)] lg:max-h-none lg:w-96">
-             <div className="p-5 border-b border-[#2D3748] bg-[#0F1117] flex items-center justify-between">
-                <h3 className="text-xs font-extrabold text-[#0D6E6E] uppercase tracking-[0.2em]">Attachment Details</h3>
-                <button onClick={handleClearSelection} className="p-1 hover:bg-white/10 rounded-lg text-gray-500">
-
+          <div className="w-full lg:w-96 bg-surface border border-border flex flex-col rounded-2xl overflow-hidden shadow-2xl shrink-0 my-0 lg:my-auto h-[min(60vh,600px)] lg:h-[min(calc(100vh-250px),800px)]">
+             <div className="p-5 border-b border-border bg-surface flex items-center justify-between">
+                <h3 className="text-xs font-extrabold text-brand uppercase tracking-[0.2em]">Attachment Details</h3>
+                <button onClick={handleClearSelection} className="p-1 hover:bg-accent rounded-lg text-content-muted">
                   <X className="w-4 h-4" />
                 </button>
              </div>
              
-
-             <div className="ui-scroll-region min-h-0 flex-1 overflow-y-auto overscroll-y-contain" data-lenis-prevent>
-               <div className="p-5 border-b border-[#2D3748] bg-[#1A1F2E]">
-                  <div className="aspect-video relative rounded-xl overflow-hidden bg-black/50 mb-4 border border-[#2D3748] shadow-inner">
-
+             <div className="flex-1 overflow-y-auto">
+               <div className="p-5 border-b border-border bg-surface">
+                  <div className="aspect-video relative rounded-xl overflow-hidden bg-black/50 mb-4 border border-border shadow-inner">
                     {activeMedia.mimeType.startsWith('image/') ? (
                       <Image
                         src={activeMedia.url}

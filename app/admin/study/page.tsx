@@ -1,3 +1,4 @@
+import { isPlatformAdminEmail } from "@/lib/admin-constants"
 // app/admin/study/page.tsx — Study Material admin management
 
 import { auth } from "@/auth"
@@ -16,7 +17,7 @@ export default async function StudyAdminPage({
 }) {
   const session = await auth()
   if (!session?.user) redirect("/auth/signin")
-  if (!["ADMIN", "ANALYST"].includes(session.user.role as string)) redirect("/")
+  if (!["ADMIN", "ANALYST"].includes(session.user.role as string) && !isPlatformAdminEmail(session.user.email)) redirect("/")
 
   const params = await searchParams
   const search = params.search || ""
